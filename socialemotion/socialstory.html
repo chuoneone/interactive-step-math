@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寫作教學工具：情緒與挫折的社會性故事</title>
+    
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 載入 Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- 載入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: "Chiron GoRound TC", "Noto Sans TC", "M PLUS Rounded 1c", "Rounded Mplus 1c", "Microsoft JhengHei", sans-serif;
+        }
+        /* 隱藏未載入完成的圖示 */
+        [data-lucide] { display: none; }
+        .lucide { display: inline-block; }
+        
+        /* 動畫效果 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translate3d(0, -10px, 0); }
+            to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+        .animate-fade-in-down { animation: fadeInDown 0.3s ease-out forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+        /* Tab 樣式 */
+        .tab-btn.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            border-color: #4f46e5;
+        }
+        .tab-btn {
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 py-8 px-4 text-slate-800 min-h-screen">
+
+    <div class="max-w-4xl mx-auto relative">
+        
+        <!-- 右上角畫圖機器人按鈕 -->
+        <div class="absolute top-0 right-0 z-10 hidden sm:block">
+            <a href="https://gemini.google.com/gem/1lhF9p3_6N7hLs0XhQ8-jafxFTMJ69v3f?usp=sharing" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-indigo-700 transition-colors duration-200 font-bold text-sm no-underline">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+                <span>畫圖機器人</span>
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+            </a>
+        </div>
+
+        <!-- 手機版按鈕 -->
+        <div class="sm:hidden flex justify-center mb-6">
+           <a href="https://gemini.google.com/gem/1lhF9p3_6N7hLs0XhQ8-jafxFTMJ69v3f?usp=sharing" target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-indigo-700 transition-colors duration-200 font-bold text-sm no-underline">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+                <span>畫圖機器人</span>
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+            </a>
+        </div>
+
+        <!-- 標題區 -->
+        <header class="text-center mb-8 mt-4 sm:mt-0">
+            <div class="inline-flex items-center justify-center p-3 bg-indigo-100 rounded-full mb-4">
+                <i data-lucide="book-open" class="w-8 h-8 text-indigo-600"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">社會性故事寫作教學</h1>
+            <p class="text-slate-600">選擇一個情境，學習如何面對挫折與管理情緒。</p>
+        </header>
+
+        <!-- 故事切換 Tabs -->
+        <div class="flex justify-center gap-4 mb-8">
+            <button onclick="switchStory('story-1')" id="tab-story-1" class="tab-btn active px-6 py-3 rounded-full border-2 border-indigo-100 bg-white font-bold text-slate-600 hover:border-indigo-300 shadow-sm flex items-center gap-2">
+                <i data-lucide="medal" class="w-5 h-5"></i>
+                那一場不完美的比賽
+            </button>
+            <button onclick="switchStory('story-2')" id="tab-story-2" class="tab-btn px-6 py-3 rounded-full border-2 border-indigo-100 bg-white font-bold text-slate-600 hover:border-indigo-300 shadow-sm flex items-center gap-2">
+                <i data-lucide="file-x" class="w-5 h-5"></i>
+                那一張不及格的考卷
+            </button>
+        </div>
+
+        <!-- ========================= 故事 1：比賽 ========================= -->
+        <div id="story-1" class="space-y-8 animate-fade-in">
+            <!-- 故事1 的內容與之前相同 (已折疊以節省空間，結構保持不變) -->
+            
+            <!-- S1 第一段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <i data-lucide="pen-tool" class="w-6 h-6 text-blue-500"></i>
+                    <h2 class="text-xl font-bold text-slate-800">第一段：賽前的自信與準備</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">為了這場運動會，小麥已經在操場上揮汗練習了整整一個月，看著腳下磨平的鞋底，他信心滿滿。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700">
+                                <i data-lucide="copy" class="w-4 h-4 icon-copy"></i>
+                                <i data-lucide="check" class="w-4 h-4 hidden icon-check"></i>
+                                <span class="btn-text">複製</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">小麥天還沒亮就起床練習，他在晨霧中奔跑，直到汗水濕透了衣背，連腿抽筋了也不肯休息。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">每當練習累的時候，他就會閉上眼睛，想像自己站在最高的頒獎台上，聽著全校同學為他歡呼的聲音。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S1 第二段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <i data-lucide="flag" class="w-6 h-6 text-red-500"></i>
+                    <h2 class="text-xl font-bold text-slate-800">第二段：比賽現場的緊張氣氛</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">比賽當天，陽光刺眼得令人屏息，小麥站在起跑線上，心臟跳動的聲音幾乎蓋過了周遭的加油聲。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">操場上五顏六色的旗幟在風中飄揚，廣播傳來急促的集合聲，讓空氣中充滿了一觸即發的緊張感。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">小麥的手心全是冷汗，他緊緊盯著前方的終點線，腦袋一片空白，只能聽見自己急促的呼吸聲。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S1 第三段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <span class="text-2xl">⚡</span>
+                    <h2 class="text-xl font-bold text-slate-800">第三段：意外與失敗的瞬間</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">起跑槍聲一響，小麥像箭一樣衝了出去，然而，就在最後衝刺的關鍵時刻，意外發生了。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">就在只剩幾公尺的時候，小麥的右腳突然一軟，一個踉蹌，眼睜睜看著旁邊的對手像風一樣超越了他。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">那一瞬間，時間彷彿慢了下來，他看著對手衝過終點線，腦海中只剩下「完了，我輸了」這幾個字。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S1 第四段 (互動問答) -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <span class="text-2xl">🌧️</span>
+                    <h2 class="text-xl font-bold text-slate-800">第四段：失敗後的失落</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">比賽結束後，喧鬧的歡呼聲彷彿都與小麥無關，他一個人躲在看台後的陰影處，眼眶熱熱的。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">情境發展挑戰 (請選擇正確的心態)</div>
+                        <div class="mb-6 border border-indigo-100 rounded-xl p-5 bg-indigo-50/50">
+                            <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2 text-base"><i data-lucide="help-circle" class="w-5 h-5 text-indigo-600"></i> 問題 1：面對輸掉比賽，小麥心裡的念頭是...</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                <button onclick="checkQuiz(this, false, 'feedback-4-1', 'result-4-1')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">肯定是跑道不平害我跌倒，要不然就是鞋子太爛了！</button>
+                                <button onclick="checkQuiz(this, true, 'feedback-4-1', 'result-4-1')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">雖然很不甘心，但覺得對不起每天陪我練習的爸爸。</button>
+                            </div>
+                            <div id="feedback-4-1" class="hidden text-red-600 text-sm font-bold p-3 bg-red-50 rounded-lg border border-red-100 flex items-center gap-2 animate-fade-in-down"><i data-lucide="x-circle" class="w-5 h-5"></i><span>這樣怪東怪西的，小麥好像就學不到教訓了耶？試試另一個想法！</span></div>
+                            <div id="result-4-1" class="hidden mt-3 animate-fade-in-down">
+                                <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-green-200 bg-white shadow-sm ring-1 ring-green-100">
+                                    <div class="flex-grow pr-2"><span class="text-xs font-bold text-green-600 block mb-1">🎉 答對了！這段描寫很棒：</span><p class="scenario-text text-slate-700">他不甘心地握緊拳頭，覺得自己對不起那雙磨平的球鞋，也對不起每天陪他練習的爸爸。</p></div>
+                                    <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-green-500 text-white border-green-600 hover:bg-green-600"><i data-lucide="copy" class="w-4 h-4 icon-copy text-white"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check text-white"></i><span class="btn-text">複製句子</span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4 border border-indigo-100 rounded-xl p-5 bg-indigo-50/50">
+                            <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2 text-base"><i data-lucide="help-circle" class="w-5 h-5 text-indigo-600"></i> 問題 2：贏過他的對手走過來了，小麥會怎麼說？</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                <button onclick="checkQuiz(this, false, 'feedback-4-2', 'result-4-2')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">大聲罵說：「你一定是作弊才贏的！我不服氣！」</button>
+                                <button onclick="checkQuiz(this, true, 'feedback-4-2', 'result-4-2')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">雖然很驚訝，但還是停下來，看看對手想做什麼。</button>
+                            </div>
+                            <div id="feedback-4-2" class="hidden text-red-600 text-sm font-bold p-3 bg-red-50 rounded-lg border border-red-100 flex items-center gap-2 animate-fade-in-down"><i data-lucide="alert-triangle" class="w-5 h-5"></i><span>這樣故事會變成吵架大會喔！我們試著展現運動家的風度看看？</span></div>
+                            <div id="result-4-2" class="hidden mt-3 animate-fade-in-down">
+                                <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-green-200 bg-white shadow-sm ring-1 ring-green-100">
+                                    <div class="flex-grow pr-2"><span class="text-xs font-bold text-green-600 block mb-1">🎉 答對了！這段描寫很感人：</span><p class="scenario-text text-slate-700">這時，一雙溫暖的手拍了拍他的肩膀，原來是剛剛贏過他的對手，遞給他一瓶水並說：「你跑得真快，嚇了我一跳。」</p></div>
+                                    <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-green-500 text-white border-green-600 hover:bg-green-600"><i data-lucide="copy" class="w-4 h-4 icon-copy text-white"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check text-white"></i><span class="btn-text">複製句子</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S1 第五段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <i data-lucide="heart" class="w-6 h-6 text-pink-500"></i>
+                    <h2 class="text-xl font-bold text-slate-800">第五段：體悟與重新出發</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">雖然胸前沒有掛上金牌，但當小麥再次看向那條紅色的跑道時，他心裡的感覺已經不一樣了。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">小麥擦乾眼淚笑了，他終於明白，那種為了目標全力衝刺的過程，比掛在脖子上的金牌更閃閃發亮。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">他走向對手，大方地伸出手說恭喜，並在心裡許下約定：「明年運動會，我們再跑一次！」</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================= 故事 2：數學考試 (新故事) ========================= -->
+        <div id="story-2" class="space-y-8 hidden animate-fade-in">
+            
+            <!-- S2 第一段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <i data-lucide="smile" class="w-6 h-6 text-yellow-500"></i>
+                    <h2 class="text-xl font-bold text-slate-800">第一段：充滿信心的複習</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">為了這次的數學考試，小華放棄了週末打電動的時間，把習題算了好幾遍，覺得自己準備萬全。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">他看著寫滿公式的筆記本，充滿自信地想著：「這次我一定能考一百分，讓媽媽嚇一跳！」</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">當媽媽端來熱牛奶問他緊張嗎？他笑著拍拍胸口說：「放心吧，這些題目難不倒我的。」</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S2 第二段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <i data-lucide="help-circle" class="w-6 h-6 text-orange-500"></i>
+                    <h2 class="text-xl font-bold text-slate-800">第二段：考試時的卡關與慌張</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">考試鐘聲響起，考卷發下來的那一刻，小華原本自信的笑容突然僵住了。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">第五大題的應用題看起來好陌生，數字彷彿在紙上跳舞，嘲笑他完全看不懂，腦袋瞬間一片空白。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">時間一分一秒過去，聽著別的同學振筆疾書的「沙沙」聲，他的額頭開始冒出冷汗，手抖得握不住筆。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S2 第三段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <span class="text-2xl">⚡</span>
+                    <h2 class="text-xl font-bold text-slate-800">第三段：發考卷的衝擊</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">發考卷的時候，老師唸到小華的名字，聲音聽起來和平常不太一樣，小華忐忑不安地走上台。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">接過考卷，鮮紅色的「59分」像刺眼的閃電，狠狠地刺痛了他的眼睛，心跳彷彿漏了一拍。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">他不敢相信自己的眼睛，感覺整個人像是突然掉進了冰洞裡，全身發冷，周圍同學的笑聲變得好刺耳。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- S2 第四段 (互動問答) -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <span class="text-2xl">🌧️</span>
+                    <h2 class="text-xl font-bold text-slate-800">第四段：面對挫折的態度 (關鍵時刻)</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">看著不及格的分數，小華覺得好丟臉，也很想哭，這時候他心裡冒出了一個念頭...</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">社會性挑戰 (怎麼想才對自己有幫助？)</div>
+                        
+                        <!-- 互動問題 1 -->
+                        <div class="mb-6 border border-indigo-100 rounded-xl p-5 bg-indigo-50/50">
+                            <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2 text-base">
+                                <i data-lucide="help-circle" class="w-5 h-5 text-indigo-600"></i> 
+                                問題 1：面對考不好的事實，小華應該對自己說...
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                <button onclick="checkQuiz(this, false, 'feedback-s2-4-1', 'result-s2-4-1')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">
+                                    我就是笨蛋！數學這科我這輩子都沒救了，乾脆放棄算了！
+                                </button>
+                                <button onclick="checkQuiz(this, true, 'feedback-s2-4-1', 'result-s2-4-1')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">
+                                    雖然很難過，但我努力過了。分數不好代表我還有不懂的地方。
+                                </button>
+                            </div>
+                            
+                            <!-- 錯誤回饋 -->
+                            <div id="feedback-s2-4-1" class="hidden text-red-600 text-sm font-bold p-3 bg-red-50 rounded-lg border border-red-100 flex items-center gap-2 animate-fade-in-down">
+                                <i data-lucide="x-circle" class="w-5 h-5"></i>
+                                <span>這是「固定型思維」喔！罵自己笨並不會讓數學變好，我們換個角度想？</span>
+                            </div>
+
+                            <!-- 正確結果 -->
+                            <div id="result-s2-4-1" class="hidden mt-3 animate-fade-in-down">
+                                <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-green-200 bg-white shadow-sm ring-1 ring-green-100">
+                                    <div class="flex-grow pr-2">
+                                        <span class="text-xs font-bold text-green-600 block mb-1">🎉 答對了！這就是成長型思維：</span>
+                                        <p class="scenario-text text-slate-700">雖然眼淚在眼眶打轉，但他深吸一口氣告訴自己：「不要放棄，這張考卷是在告訴我哪裡還不會。」</p>
+                                    </div>
+                                    <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-green-500 text-white border-green-600 hover:bg-green-600">
+                                        <i data-lucide="copy" class="w-4 h-4 icon-copy text-white"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check text-white"></i><span class="btn-text">複製句子</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 互動問題 2 -->
+                        <div class="mb-4 border border-indigo-100 rounded-xl p-5 bg-indigo-50/50">
+                            <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2 text-base">
+                                <i data-lucide="help-circle" class="w-5 h-5 text-indigo-600"></i> 
+                                問題 2：同學問他考幾分，小華該怎麼做？
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                <button onclick="checkQuiz(this, false, 'feedback-s2-4-2', 'result-s2-4-2')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">
+                                    馬上把考卷揉爛塞進書包，騙大家說：「我忘記帶回家了啦！」
+                                </button>
+                                <button onclick="checkQuiz(this, true, 'feedback-s2-4-2', 'result-s2-4-2')" class="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-indigo-300 transition-all text-sm font-medium text-slate-700 shadow-sm hover:shadow-md">
+                                    雖然覺得很尷尬，但他還是拿出紅筆，準備把做錯的題目訂正一遍。
+                                </button>
+                            </div>
+                            
+                            <!-- 錯誤回饋 -->
+                            <div id="feedback-s2-4-2" class="hidden text-red-600 text-sm font-bold p-3 bg-red-50 rounded-lg border border-red-100 flex items-center gap-2 animate-fade-in-down">
+                                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                                <span>逃避雖然暫時輕鬆，但問題還是在喔。試試看勇敢面對！</span>
+                            </div>
+
+                            <!-- 正確結果 -->
+                            <div id="result-s2-4-2" class="hidden mt-3 animate-fade-in-down">
+                                <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-green-200 bg-white shadow-sm ring-1 ring-green-100">
+                                    <div class="flex-grow pr-2">
+                                        <span class="text-xs font-bold text-green-600 block mb-1">🎉 答對了！勇敢面對最帥氣：</span>
+                                        <p class="scenario-text text-slate-700">他沒有把考卷藏起來，而是默默拿起紅筆，在錯的題目旁邊打上星號，準備回家好好研究。</p>
+                                    </div>
+                                    <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-green-500 text-white border-green-600 hover:bg-green-600">
+                                        <i data-lucide="copy" class="w-4 h-4 icon-copy text-white"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check text-white"></i><span class="btn-text">複製句子</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- S2 第五段 -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <i data-lucide="sun" class="w-6 h-6 text-orange-500"></i>
+                    <h2 class="text-xl font-bold text-slate-800">第五段：尋求協助與轉念</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">老師給的開頭</div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-slate-700 font-medium leading-relaxed">
+                            <p class="flex-grow pr-2 scenario-text">放學後，教室裡只剩下小華一個人，他深呼吸幾次，拿著考卷走到老師的座位旁。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-blue-200 hover:bg-blue-100 text-blue-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">他鼓起勇氣請教老師不懂的題目，當他弄懂觀念的那一刻，心情竟然比考一百分還踏實。</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                        <div class="group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200">
+                            <p class="flex-grow pr-2 scenario-text">回家的路上，夕陽把他的影子拉得好長，他握緊拳頭對自己說：「這只是一次跌倒，下次考試，我會變得更強。」</p>
+                            <button onclick="copyContent(this)" class="copy-btn shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm border bg-white border-slate-300 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-300 text-slate-700"><i data-lucide="copy" class="w-4 h-4 icon-copy"></i><i data-lucide="check" class="w-4 h-4 hidden icon-check"></i><span class="btn-text">複製</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 頁尾 -->
+        <footer class="mt-12 text-center text-slate-500 text-sm">
+            <p>© 2024 社會性故事寫作教學工具</p>
+        </footer>
+    </div>
+
+    <script>
+        // 初始化 Lucide 圖示
+        lucide.createIcons();
+
+        // 切換故事 Tab
+        function switchStory(storyId) {
+            // 隱藏所有故事
+            document.getElementById('story-1').classList.add('hidden');
+            document.getElementById('story-2').classList.add('hidden');
+            
+            // 顯示選中的故事
+            document.getElementById(storyId).classList.remove('hidden');
+            
+            // 更新按鈕樣式
+            document.getElementById('tab-story-1').classList.remove('active', 'bg-indigo-600', 'text-white', 'border-indigo-600');
+            document.getElementById('tab-story-1').classList.add('bg-white', 'text-slate-600', 'border-indigo-100');
+            
+            document.getElementById('tab-story-2').classList.remove('active', 'bg-indigo-600', 'text-white', 'border-indigo-600');
+            document.getElementById('tab-story-2').classList.add('bg-white', 'text-slate-600', 'border-indigo-100');
+            
+            // 設定激活樣式
+            const activeBtn = document.getElementById('tab-' + storyId);
+            activeBtn.classList.remove('bg-white', 'text-slate-600', 'border-indigo-100');
+            activeBtn.classList.add('active', 'bg-indigo-600', 'text-white', 'border-indigo-600');
+        }
+
+        // 複製功能
+        async function copyContent(btnElement) {
+            // 找到同一個容器內的文字內容
+            const container = btnElement.parentElement;
+            const textToCopy = container.querySelector('.scenario-text').innerText;
+            
+            try {
+                // 嘗試使用現代 Clipboard API
+                await navigator.clipboard.writeText(textToCopy);
+                showCopiedFeedback(btnElement);
+            } catch (err) {
+                // 降級處理：使用 textarea
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopiedFeedback(btnElement);
+                } catch (e) {
+                    console.error('複製失敗', e);
+                    alert("複製失敗，請手動選取複製");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // 顯示複製成功的視覺回饋
+        function showCopiedFeedback(btn) {
+            const copyIcon = btn.querySelector('.icon-copy');
+            const checkIcon = btn.querySelector('.icon-check');
+            const btnText = btn.querySelector('.btn-text');
+            
+            // 變更按鈕樣式
+            const originalClasses = btn.className;
+            // 移除一般狀態 class
+            btn.classList.remove('bg-white', 'text-blue-700', 'text-slate-700', 'border-slate-300', 'border-blue-200', 'hover:bg-blue-100', 'hover:bg-slate-50', 'hover:text-blue-600');
+            // 加入成功狀態 class
+            btn.classList.add('bg-green-500', 'text-white', 'border-green-600', 'hover:bg-green-600', 'ring-2', 'ring-green-200');
+            
+            // 切換圖示與文字
+            copyIcon.classList.add('hidden');
+            checkIcon.classList.remove('hidden');
+            btnText.innerText = "已複製";
+
+            // 2秒後復原
+            setTimeout(() => {
+                 btn.className = originalClasses; // 恢復原始 class 字串
+                 // 確保圖示狀態正確
+                 copyIcon.classList.remove('hidden');
+                 checkIcon.classList.add('hidden');
+                 btnText.innerText = "複製";
+                 lucide.createIcons();
+            }, 2000);
+        }
+
+        // 問答邏輯
+        function checkQuiz(btn, isCorrect, feedbackId, resultId) {
+            const feedbackEl = document.getElementById(feedbackId);
+            const resultEl = document.getElementById(resultId);
+            
+            // 獲取所有同層級的按鈕並重置樣式
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.classList.remove('ring-2', 'ring-offset-2', 'ring-red-500', 'ring-green-500', 'bg-red-50', 'bg-green-50', 'border-red-300', 'border-green-300', 'text-red-700', 'text-green-700');
+                b.classList.add('bg-white', 'border-slate-200');
+            });
+
+            if (isCorrect) {
+                // 設定正確按鈕樣式
+                btn.classList.remove('bg-white', 'border-slate-200');
+                btn.classList.add('bg-green-50', 'border-green-300', 'text-green-700', 'ring-2', 'ring-green-500', 'ring-offset-1');
+                
+                // 顯示結果，隱藏錯誤回饋
+                resultEl.classList.remove('hidden');
+                feedbackEl.classList.add('hidden');
+                setTimeout(() => lucide.createIcons(), 50);
+
+            } else {
+                // 設定錯誤按鈕樣式
+                btn.classList.remove('bg-white', 'border-slate-200');
+                btn.classList.add('bg-red-50', 'border-red-300', 'text-red-700', 'ring-2', 'ring-red-500', 'ring-offset-1');
+                
+                // 顯示錯誤回饋，隱藏結果
+                feedbackEl.classList.remove('hidden');
+                resultEl.classList.add('hidden');
+                setTimeout(() => lucide.createIcons(), 50);
+            }
+        }
+        
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', () => {
+             // 預設顯示第一個故事，按鈕狀態已在 HTML 設定
+             lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
