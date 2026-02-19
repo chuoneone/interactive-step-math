@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>9年級數學</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
-
     <link rel="icon" href="images/dog.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
@@ -62,7 +60,30 @@
             transform: rotate(180deg);
         }
 
+        /* --- 新增：自動將沒有連結 (#) 的按鈕變灰 --- */
+        a.btn[href="#"],
+        a.btn[href=""] {
+            background-color: #cfd8dc !important;
+            /* 淺灰色背景 */
+            color: #90a4ae !important;
+            /* 深灰文字 */
+            border: 1px solid #b0bec5 !important;
+            cursor: not-allowed;
+            /* 滑鼠變成禁止符號 */
+            pointer-events: none;
+            /* 禁止點擊觸發 */
+            box-shadow: none;
+            /* 移除陰影 */
+            opacity: 0.7;
+            text-decoration: none;
+        }
 
+        /* 讓變灰的按鈕在手機上也不要有 hover 效果 */
+        a.btn[href="#"]:hover,
+        a.btn[href=""]:hover {
+            transform: none !important;
+            background-color: #cfd8dc !important;
+        }
 
         /* 確保分頁切換正常顯示 */
         .section-content {
@@ -87,50 +108,49 @@
 </head>
 
 <body>
-
     <header class="navbar">
         <div class="logo">SPED</div>
-<nav>
-  <ul class="nav-links">
-    <li><a href="/">HOME</a></li>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">HOME</a></li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7ch">七年級</a>
-        <a href="/8ch">八年級</a>
-        <a href="/9ch">九年級</a>
-      </div>
-    </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/7ch">七年級</a>
+                        <a href="/8ch">八年級</a>
+                        <a href="/9ch">九年級</a>
+                    </div>
+                </li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7">七年級</a>
-        <a href="/8">八年級</a>
-        <a href="/9">九年級</a>
-      </div>
-    </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/7">七年級</a>
+                        <a href="/8">八年級</a>
+                        <a href="/9">九年級</a>
+                    </div>
+                </li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7eng">七年級</a>
-        <a href="/8eng">八年級</a>
-        <a href="/9eng">九年級</a>
-      </div>
-    </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/7eng">七年級</a>
+                        <a href="/8eng">八年級</a>
+                        <a href="/9eng">九年級</a>
+                    </div>
+                </li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-      <div class="dropdown-content">
-        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-      </div>
-    </li>
-  </ul>
-</nav>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
+                        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
+                        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
         <div class="menu-toggle">
             <i class="fas fa-bars"></i>
         </div>
@@ -357,11 +377,11 @@
                 <div class="single-row">
                     <div class="social-group">
                         <h3 style="text-align: center;">2-1 統計數據的分布</h3>
-                        <div class="btn-group">
-                            <a href="https://wordwall.net/play/68570/946/261" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-math-s2-ch2-challenge-01">四分位數</a>
-                            <a href="https://wordwall.net/play/68570/803/750" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-math-s2-ch2-challenge-02">盒狀圖</a>
+                        <div class="btn-group">                            
+                            <a href="#" class="btn" target="_blank">01</a>
+                            <a href="#" class="btn" target="_blank">02</a>
+                            <a href="#" class="btn" target="_blank">03</a>
+                        
                         </div>
                     </div>
                     <div class="social-group">
@@ -382,10 +402,8 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">3-1 立體圖形</h3>
                         <div class="btn-group">
-                            <a href="https://wordwall.net/play/70607/680/874" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-math-s2-ch3-challenge-01">柱體與錐體</a>
-                            <a href="https://wordwall.net/play/70607/789/911" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-math-s2-ch3-challenge-02">展開圖</a>
+                            <a href="#" class="btn" target="_blank">01</a>
+                            <a href="#" class="btn" target="_blank">02</a>
                         </div>
                     </div>
                     <div class="social-group">
@@ -410,9 +428,6 @@
         window.onload = function () {
             const defaultS2 = document.getElementById('default-s2-btn');
             if (defaultS2) defaultS2.click();
-
-            // 初始化進度紀錄
-            // initProgress();
         };
 
         // 切換學期
@@ -476,13 +491,10 @@
             // 4. 為被點擊的按鈕加上 active class
             btn.classList.add('active');
         };
-
-
     </script>
 </body>
 <footer>
     <p style="display: inline;">Created by 米克師</p>
 </footer>
-
 
 </html>
