@@ -100,7 +100,7 @@
     padding-bottom: 160px; /* 給 Footer 留足夠空間 */
   }
 
-  /* --- 解決懸浮按鈕擋住選單 --- */
+/* --- 解決懸浮按鈕擋住選單 --- */
   #floating-toggle {
     position: relative !important;
     top: auto !important;
@@ -109,9 +109,10 @@
     width: fit-content;
     display: flex;
     justify-content: center;
+    z-index: 10 !important; /* 💡 關鍵修正1：降低按鈕的層級 */
   }
 
-  /* --- 導覽列與選單本體 --- */
+/* --- 導覽列與選單本體 --- */
   .nav-links {
     display: flex;
     flex-direction: column;
@@ -120,13 +121,15 @@
     top: 70px;
     left: 5%;
     width: 90%;
+    margin: 0 !important; 
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 20px;
-    z-index: 999;
+    box-sizing: border-box; 
+    z-index: 9999 !important; /* 💡 關鍵修正2：把選單層級拉到最高 (9999)，絕對不會被蓋住 */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     transform: translateY(-10px);
     opacity: 0;

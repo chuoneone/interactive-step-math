@@ -62,35 +62,6 @@
             transform: rotate(180deg);
         }
 
-        /* --- 保留打勾樣式 --- */
-        /* 當按鈕被點擊完成時的狀態 */
-        .btn.completed {
-            background-color: #d1fae5 !important;
-            /* 淺綠色背景 */
-            color: #065f46 !important;
-            /* 深綠色文字 */
-            border-color: #34d399 !important;
-            /* 綠色邊框 */
-            padding-right: 35px !important;
-            /* 留位置給勾勾圖示 */
-            position: relative;
-            /* 確保勾勾定位正確 */
-        }
-
-        /* 完成後的勾勾圖示 */
-        .btn.completed::after {
-            content: '\f00c';
-            /* FontAwesome Check Icon */
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #059669;
-        }
-
-        /* 確保分頁切換正常顯示 */
         .section-content {
             display: none;
         }
@@ -109,6 +80,53 @@
                 opacity: 1;
             }
         }
+
+        /* --- 新增：停止更新公告樣式 --- */
+        .stop-update-notice {
+            background: rgba(255, 235, 238, 0.95);
+            /* 淺粉紅背景 */
+            border: 2px solid #ef5350;
+            /* 紅色邊框 */
+            color: #c62828;
+            /* 深紅文字 */
+            padding: 12px 20px;
+            margin: 20px auto 10px auto;
+            max-width: 90%;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* --- 新增：自動將沒有連結 (#) 的按鈕變灰 --- */
+        a.btn[href="#"],
+        a.btn[href=""] {
+            background-color: #cfd8dc !important;
+            /* 淺灰色背景 */
+            color: #90a4ae !important;
+            /* 深灰文字 */
+            border: 1px solid #b0bec5 !important;
+            cursor: not-allowed;
+            /* 滑鼠變成禁止符號 */
+            pointer-events: none;
+            /* 禁止點擊觸發 */
+            box-shadow: none;
+            /* 移除陰影 */
+            opacity: 0.7;
+            text-decoration: none;
+        }
+
+        /* 讓變灰的按鈕在手機上也不要有 hover 效果 */
+        a.btn[href="#"]:hover,
+        a.btn[href=""]:hover {
+            transform: none !important;
+            background-color: #cfd8dc !important;
+        }
     </style>
 </head>
 
@@ -116,47 +134,47 @@
 
     <header class="navbar">
         <div class="logo">SPED</div>
-<nav>
-  <ul class="nav-links">
-    <li><a href="/">HOME</a></li>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">HOME</a></li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7ch">七年級</a>
-        <a href="/8ch">八年級</a>
-        <a href="/9ch">九年級</a>
-      </div>
-    </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/7ch">七年級</a>
+                        <a href="/8ch">八年級</a>
+                        <a href="/9ch">九年級</a>
+                    </div>
+                </li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7">七年級</a>
-        <a href="/8">八年級</a>
-        <a href="/9">九年級</a>
-      </div>
-    </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/7">七年級</a>
+                        <a href="/8">八年級</a>
+                        <a href="/9">九年級</a>
+                    </div>
+                </li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7eng">七年級</a>
-        <a href="/8eng">八年級</a>
-        <a href="/9eng">九年級</a>
-      </div>
-    </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/7eng">七年級</a>
+                        <a href="/8eng">八年級</a>
+                        <a href="/9eng">九年級</a>
+                    </div>
+                </li>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-      <div class="dropdown-content">
-        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-      </div>
-    </li>
-  </ul>
-</nav>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
+                        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
+                        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
         <div class="menu-toggle">
             <i class="fas fa-bars"></i>
         </div>
@@ -170,6 +188,10 @@
     <div id="semester1-area">
         <div class="section-title text-lg font-bold">
             <i class="fas fa-book-open mr-2"></i> 9上英文
+        </div>
+
+        <div class="stop-update-notice">
+            <i class="fas fa-pause-circle"></i> 公告：英文科目前停止更新，僅保留現有資源供參考
         </div>
 
         <div style="text-align:center; margin-top: 40px;">
@@ -207,6 +229,10 @@
     <div id="semester2-area">
         <div class="section-title text-lg font-bold">
             <i class="fas fa-feather-alt mr-2"></i> 9下英文
+        </div>
+
+        <div class="stop-update-notice">
+            <i class="fas fa-pause-circle"></i> 公告：英文科目前停止更新，僅保留現有資源供參考
         </div>
 
         <div style="text-align:center; margin-top: 40px;">
@@ -290,9 +316,6 @@
         window.onload = function () {
             const defaultS2 = document.getElementById('default-s2-btn');
             if (defaultS2) defaultS2.click();
-
-            // 初始化進度紀錄
-            initProgress();
         };
 
         // 切換學期
@@ -356,42 +379,10 @@
             // 4. 為被點擊的按鈕加上 active class
             btn.classList.add('active');
         };
-
-        // --- 打勾功能邏輯 ---
-        function initProgress() {
-            const allButtons = document.querySelectorAll('.btn');
-
-            allButtons.forEach(btn => {
-                // 使用 data-track-lbl 或 href 作為 ID
-                const trackId = btn.getAttribute('data-track-lbl') || btn.getAttribute('href');
-
-                if (localStorage.getItem(trackId) === 'done') {
-                    btn.classList.add('completed');
-                }
-
-                // 綁定點擊事件
-                btn.addEventListener('click', function (e) {
-                    // 切換狀態
-                    toggleCompletion(this, trackId);
-                });
-            });
-        }
-
-        // 切換完成狀態並存檔
-        function toggleCompletion(btn, trackId) {
-            btn.classList.toggle('completed');
-
-            if (btn.classList.contains('completed')) {
-                localStorage.setItem(trackId, 'done');
-            } else {
-                localStorage.removeItem(trackId);
-            }
-        }
     </script>
 </body>
 <footer>
     <p style="display: inline;">Created by 米克師</p>
 </footer>
-
 
 </html>
