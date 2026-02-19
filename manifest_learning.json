@@ -2,7 +2,7 @@
   "name": "特教數位學習網｜米克師",
   "short_name": "SPED學習網",
   "description": "國中特教生專用數位學習系統",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#5C94FC",
   "theme_color": "#5C94FC",
