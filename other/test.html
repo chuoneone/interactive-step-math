@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WMNZ6FESH7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WMNZ6FESH7');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/dog.png" type="image/png">
+    <title>九九乘法練習測驗</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            font-family: 'Courier New', Courier, monospace;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            font-size: 1.8rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .multiples {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+            .multiples button {
+                background-color: #111;
+                border: 2px solid #0ff;
+                color: #0ff;
+                padding: 20px;
+                font-size: 1.5rem;
+                cursor: pointer;
+                width: 80px;
+                height: 80px;
+                border-radius: 10px;
+                transition: all 0.3s;
+            }
+
+                .multiples button.selected {
+                    background-color: #0ff;
+                    color: #111;
+                }
+
+        #questionArea, #resultArea, #retryArea {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #progressBar {
+            width: 80%;
+            height: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        #progressBarInner {
+            height: 100%;
+            width: 0%;
+            background-color: #0ff;
+            transition: width 0.3s;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        input[type="number"] {
+            font-size: 1.8rem;
+            padding: 5px;
+            width: 100px;
+            text-align: center;
+        }
+
+        button.action {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            background-color: #0ff;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        #feedback {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        #wrongList {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            color: #ff8080;
+        }
+    </style>
+</head>
+<body>
+    <h1>九九乘法練習測驗</h1>
+    <div id="selectionArea">
+        <p>請選擇要練習的乘法：</p>
+        <div class="multiples">
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+        </div>
+        <button class="action" id="startTest">開始測驗</button>
+    </div>
+
+    <div id="questionArea">
+        <div id="progressBar"><div id="progressBarInner"></div></div>
+        <h2 id="questionText"></h2>
+        <input type="number" id="answerInput" autofocus>
+        <p id="feedback"></p>
+        <button class="action" id="nextBtn">下一題</button>
+    </div>
+
+    <div id="resultArea">
+        <h2>測驗完成！</h2>
+        <p id="scoreText"></p>
+        <div id="wrongList"></div>
+        <button class="action" id="retryWrong">錯題重測</button>
+        <button class="action" id="restart">重新測驗</button>
+    </div>
+
+
+    <script>
+        const buttons = document.querySelectorAll('.multiples button');
+        const startBtn = document.getElementById('startTest');
+        const questionArea = document.getElementById('questionArea');
+        const selectionArea = document.getElementById('selectionArea');
+        const questionText = document.getElementById('questionText');
+        const answerInput = document.getElementById('answerInput');
+        const feedback = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBarInner = document.getElementById('progressBarInner');
+        const resultArea = document.getElementById('resultArea');
+        const scoreText = document.getElementById('scoreText');
+        const retryWrongBtn = document.getElementById('retryWrong');
+        const restartBtn = document.getElementById('restart');
+        const wrongList = document.getElementById('wrongList');
+
+        let selectedMultiples = [];
+        let questions = [];
+        let currentQuestion = 0;
+        let correctCount = 0;
+        let wrongAnswers = [];
+        let answerChecked = false;
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('selected');
+            });
+        });
+
+        startBtn.addEventListener('click', () => {
+            selectedMultiples = [...document.querySelectorAll('.multiples button.selected')].map(btn => parseInt(btn.dataset.value));
+            if (selectedMultiples.length === 0) return alert('請選擇至少一個乘法。');
+            generateQuestions();
+            selectionArea.style.display = 'none';
+            questionArea.style.display = 'block';
+            showQuestion();
+        });
+
+        function generateQuestions(fromWrong = false) {
+            questions = [];
+            if (fromWrong) {
+                questions = [...wrongAnswers];
+            } else {
+                for (let i = 0; i < 10; i++) {
+                    let a = selectedMultiples[Math.floor(Math.random() * selectedMultiples.length)];
+                    let b = Math.floor(Math.random() * 9) + 1;
+                    questions.push({ a, b });
+                }
+            }
+            currentQuestion = 0;
+            correctCount = 0;
+            wrongAnswers = [];
+            answerChecked = false;
+        }
+
+        function showQuestion() {
+            let q = questions[currentQuestion];
+            questionText.textContent = `第 ${currentQuestion + 1} 題：${q.a} × ${q.b} = ?`;
+            answerInput.value = '';
+            feedback.textContent = '';
+            answerInput.focus();
+            progressBarInner.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+            answerChecked = false;
+        }
+
+        function checkAnswer() {
+            if (answerChecked) return;
+            let userAns = parseInt(answerInput.value);
+            let q = questions[currentQuestion];
+            let correct = q.a * q.b;
+            if (userAns === correct) {
+                feedback.textContent = '🎉 太棒了！答對了！';
+                correctCount++;
+            } else {
+                feedback.textContent = `😢 沒關係再加油吧！正確答案是 ${correct}`;
+                wrongAnswers.push(q);
+            }
+            answerChecked = true;
+        }
+
+        function nextQuestion() {
+            if (!answerChecked) {
+                checkAnswer();
+                return;
+            }
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        answerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') nextQuestion();
+        });
+
+        nextBtn.addEventListener('click', nextQuestion);
+
+        function showResult() {
+            questionArea.style.display = 'none';
+            resultArea.style.display = 'block';
+            let score = correctCount * 10;
+            scoreText.textContent = `你的成績是 ${score} 分。${score >= 90 ? '太棒了！繼續保持！💪' : ''}`;
+
+            if (wrongAnswers.length > 0) {
+                wrongList.innerHTML = '<h3>錯題列表：</h3><ul>' + wrongAnswers.map(q => `<li>${q.a} × ${q.b} = ${q.a * q.b}</li>`).join('') + '</ul>';
+            } else {
+                wrongList.innerHTML = '<p>🎉 你沒有錯題喔！太厲害了！</p>';
+            }
+        }
+
+        retryWrongBtn.addEventListener('click', () => {
+            if (wrongAnswers.length === 0) return alert('沒有錯題可重測。');
+            generateQuestions(true);
+            resultArea.style.display = 'none';
+            questionArea.style.display = 'block';
+            showQuestion();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            document.querySelectorAll('.multiples button').forEach(btn => btn.classList.remove('selected'));
+            resultArea.style.display = 'none';
+            selectionArea.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
+<footer>
+    <a href="index.html">
+        <img src="images/dog.png" alt="Logo" style="height: 200px; vertical-align: middle; margin-right: 10px;">
+    </a>
+    <br>
+    <p style="display: inline;">Created by Chu Pei Yi</p>
+</footer>
+
