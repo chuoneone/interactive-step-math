@@ -100,7 +100,7 @@
     padding-bottom: 160px; /* 給 Footer 留足夠空間 */
   }
 
-/* --- 解決懸浮按鈕擋住選單 --- */
+  /* --- 解決懸浮按鈕擋住選單 --- */
   #floating-toggle {
     position: relative !important;
     top: auto !important;
@@ -109,10 +109,10 @@
     width: fit-content;
     display: flex;
     justify-content: center;
-    z-index: 10 !important; /* 💡 關鍵修正1：降低按鈕的層級 */
+    z-index: 10 !important; /* 降低按鈕層級 */
   }
 
-/* --- 導覽列與選單本體 --- */
+  /* --- 導覽列與選單本體 --- */
   .nav-links {
     display: flex;
     flex-direction: column;
@@ -121,7 +121,7 @@
     top: 70px;
     left: 5%;
     width: 90%;
-    margin: 0 !important; 
+    margin: 0 !important; /* 清除電腦版的向右推擠，完美置中 */
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -129,7 +129,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 20px;
     box-sizing: border-box; 
-    z-index: 9999 !important; /* 💡 關鍵修正2：把選單層級拉到最高 (9999)，絕對不會被蓋住 */
+    z-index: 9999 !important; /* 拉高選單層級，保證不會被蓋住 */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     transform: translateY(-10px);
     opacity: 0;
@@ -203,31 +203,45 @@
     50% { opacity: 0.35; }
   }
 
+  /* --- 首頁科目大按鈕 (App 網格化設計) --- */
   .button-section {
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     padding: 10px;
-    margin-top: 20px;
+    margin-top: 10px;
+  }
+
+  .grade-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 一排三個 */
+    gap: 10px;
+    width: 100%;
+  }
+
+  .big-button {
+    width: 100%;
+    max-width: none;
+    padding: 15px 5px;
+    font-size: 15px;
+    margin: 0;
+    border-radius: 16px;
+    
+    display: flex;
+    flex-direction: column; /* 圖上字下 */
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .big-button i {
+    margin-right: 0 !important;
+    font-size: 1.6em;
   }
 
   iframe {
     width: 100% !important;
     height: 50vh !important;
-  }
-
-  .big-button {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
-    font-size: 22px;
-    margin: 10px auto;
-  }
-
-  .grade-row {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    width: 100%;
   }
 
   .single-row {
