@@ -4,22 +4,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
 
+/* 修改網頁主體，讓最下方留空間給 Footer */
 body {
-    /* 背景色：保留原色但加入漸層以增強玻璃感 */
     background: radial-gradient(circle at 10% 20%, rgb(92, 148, 252) 0%, rgb(120, 170, 255) 90%);
     background-color: #5C94FC;
-    /* Fallback */
     color: #ffffff;
     margin: 0;
     padding: 20px;
     padding-top: 100px;
-    /* 增加頂部間距避開更寬的 Navbar */
-    padding-bottom: 80px;
+    padding-bottom: 120px; /* 💡 確保拉到最底時，內容不會被 Footer 擋住 */
     box-sizing: border-box;
-    /* 全面改用圓體 */
     font-family: "Chiron GoRound TC", sans-serif;
     font-weight: 500;
     min-height: 100vh;
+    position: relative; /* 💡 這一行非常重要，讓 Footer 能精準抓到網頁最底端 */
 }
 
 /* ========================================= */
@@ -304,45 +302,41 @@ body {
 }
 
 /* ========================================= */
-/* 5. 頁尾 (Footer) - Glassmorphism */
+/* 5. 頁尾 (Footer) - 滿版貼底設計 */
 /* ========================================= */
 
 footer,
 .sticky-footer {
-    position: fixed;
-    bottom: 20px;
-    /* 懸浮感 */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 95%;
-    /* 不滿版 */
-    max-width: 1200px;
+    position: absolute; /* 絕對定位到網頁最底部 */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none; /* 取消寬度限制，左右滿版 */
     height: auto;
-    min-height: 60px;
+    min-height: 80px;
+    margin: 0; /* 移除周圍所有空白 */
+    border-radius: 0; /* 移除圓角，完全填滿角落 */
 
-    background: rgba(200, 76, 12, 0.75);
-    /* 橘色玻璃 */
+    /* 原本的深橘色，稍微調高不透明度讓顏色更扎實 */
+    background: rgba(200, 76, 12, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 30px;
-    /* 超圓 */
+    
+    /* 移除外框，只保留頂部一條微光邊界線增加質感 */
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 
     color: #fff;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 10px 30px;
+    justify-content: space-between;
+    padding: 15px 30px;
     box-sizing: border-box;
     z-index: 9990;
     font-family: "Chiron GoRound TC", sans-serif;
     font-size: 15px;
     text-shadow: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.sticky-footer {
-    justify-content: space-between;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15); /* 陰影改往上打 */
 }
 
 footer p {
@@ -390,12 +384,8 @@ footer p {
     font-weight: 700;
     text-align: center;
     margin: 40px auto 30px;
-    white-space: nowrap;
-    overflow: hidden;
-    border-right: 4px solid #FBD000;
-    /* 光標變細 */
-    width: 0;
-    animation: typing 3.5s steps(25, end) forwards, blink 0.75s step-end infinite;
+    
+    /* 文字漸層與陰影保留 */
     background: linear-gradient(to right, #ffffff, #e0e0e0);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -403,6 +393,19 @@ footer p {
     letter-spacing: 2px;
     max-width: 90vw;
     padding: 0 10px;
+
+    /* 換成呼吸燈閃爍動畫：2.5秒一個循環，無限重複 */
+    animation: slowPulse 1.5s ease-in-out infinite;
+}
+
+/* 這是新的慢慢閃爍動畫 */
+@keyframes slowPulse {
+    0%, 100% { 
+        opacity: 1; /* 完全清楚 */
+    }
+    50% { 
+        opacity: 0.6; /* 變暗到 35% 的透明度 */
+    }
 }
 
 /* 下拉選單基礎樣式 */
@@ -445,21 +448,7 @@ footer p {
 
 
 
-@keyframes typing {
-    from {
-        width: 0;
-    }
 
-    to {
-        width: 100%;
-    }
-}
-
-@keyframes blink {
-    50% {
-        border-color: transparent;
-    }
-}
 
 .section-content {
     display: none;

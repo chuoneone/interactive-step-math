@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 1. 手機版漢堡選單邏輯
-// 1. 手機版漢堡選單邏輯
 function initMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
@@ -19,28 +18,30 @@ function initMobileMenu() {
     if (menuToggle && navLinks) {
         // 點擊漢堡切換開關
         menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // 防止事件冒泡導致立刻被關閉
             navLinks.classList.toggle('active');
         });
 
-        // --- 新增：手機版下拉選單點擊邏輯 ---
+        // --- 手機版下拉選單點擊邏輯 (優化版) ---
         const dropdowns = document.querySelectorAll('.dropdown');
         dropdowns.forEach(drop => {
             const dropBtn = drop.querySelector('.dropbtn');
             if (dropBtn) {
                 dropBtn.addEventListener('click', (e) => {
-                    // 只在手機版寬度時觸發點擊展開
+                    // 只在手機版寬度時 (<= 768px) 觸發點擊展開
                     if (window.innerWidth <= 768) {
-                        e.preventDefault(); // 防止 javascript:void(0) 可能引發的跳轉
-                        e.stopPropagation();
+                        e.preventDefault(); // 防止頁面跳轉
+                        e.stopPropagation(); // 防止觸發 document 的關閉監聽
                         
-                        // 切換目前點擊的下拉選單
-                        drop.classList.toggle('open');
-                        
-                        // (選配) 關閉其他已經打開的下拉選單 (手風琴效果)
+                        // 1. 先關閉其他已經打開的下拉選單 (手風琴效果)
                         dropdowns.forEach(other => {
-                            if (other !== drop) other.classList.remove('open');
+                            if (other !== drop) {
+                                other.classList.remove('open');
+                            }
                         });
+
+                        // 2. 切換目前這個選單的開關狀態
+                        drop.classList.toggle('open');
                     }
                 });
             }
@@ -48,12 +49,15 @@ function initMobileMenu() {
 
         // 點擊外部關閉選單 (包含漢堡選單本身與展開的下拉內容)
         document.addEventListener('click', (e) => {
+            // 如果選單是開著的，且點擊的地方既不是選單內容，也不是漢堡按鈕
             if (navLinks.classList.contains('active') && 
                 !navLinks.contains(e.target) && 
                 !menuToggle.contains(e.target)) {
+                
                 navLinks.classList.remove('active');
+                
                 // 關閉選單時，順便把所有展開的下拉項也收起來
-                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+                dropdowns.forEach(d => d.classList.remove('open'));
             }
         });
     }
@@ -66,7 +70,7 @@ function initNavbarHighlight() {
 
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
-        // 簡單比對：如果當前檔名包含在 href 裡 (例如 7eng.html)
+        // 簡單比對：如果當前檔名包含在 href 裡
         if (href && (href === currentPath || (currentPath === '' && href === 'index.html'))) {
             link.classList.add('active');
         }
@@ -75,34 +79,27 @@ function initNavbarHighlight() {
 
 // 3. 頁籤切換邏輯 (Tabs)
 function initTabs() {
-    // A. 預設行為：如果有按鈕但沒有 active 的，預設點擊第一個
     const buttons = document.querySelectorAll('.section-button');
     const contents = document.querySelectorAll('.section-content');
 
     if (buttons.length > 0 && contents.length > 0) {
-        // 檢查網址是否有指定錨點 (例如 #unit3)
+        // 檢查網址是否有指定錨點
         const hash = window.location.hash.replace('#', '');
         let targetBtn = null;
 
         if (hash) {
-            // 嘗試找到對應此 ID 的按鈕 (假設按鈕 onclick 裡有寫 id)
-            // 這裡使用一個技巧：去比對 onclick 字串內容 (因為原始 HTML 結構限制)
-            // 更理想的做法是給按鈕加 data-target="unit1"
             targetBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick')?.includes(hash));
         }
 
-        // 如果沒有指定錨點，或找不到對應按鈕，就選第一個
+        // 如果沒有指定錨點，或找不到對應按鈕，就選第一個 (且沒有其他預設 active 的話)
         if (!targetBtn && !document.querySelector('.section-button.active')) {
             targetBtn = buttons[0];
         }
 
+        // 自動觸發第一個按鈕的顯示邏輯 (不觸發 click 事件以免影響 GA)
         if (targetBtn) {
-            // 模擬點擊來觸發切換
-            // 注意：這裡我們手動觸發 click 可能會導致 GA 重複送出 (因為 tracking.js 也在監聽 click)
-            // 所以我們直接呼叫 showSection 比較保險，但為了簡單，我們先用 showSection 函式
             const onClickAttr = targetBtn.getAttribute('onclick');
             if(onClickAttr) {
-                 // 提取 ID: showSection('unit1', this) -> unit1
                  const match = onClickAttr.match(/showSection\('([^']+)'/);
                  if(match && match[1]) {
                      showSection(match[1], targetBtn);
@@ -125,25 +122,25 @@ function showSection(id, clickedBtn) {
     
     // 激活按鈕
     if (clickedBtn) clickedBtn.classList.add('active');
-
-    // 更新網址 hash (選擇性，方便分享連結)
-    // history.replaceState(null, null, `#${id}`); 
 }
 
 // 4. 倒數計時器
 function initCountdown() {
-    const timerEl = document.getElementById('countdown'); // 確保頁面上有計時器才執行
+    const timerEl = document.getElementById('days'); // 只要檢查有沒有 days 元素即可
     if (!timerEl) return;
 
-    const countDate = new Date("2026-01-24T00:00:00").getTime();
+    // 設定目標日期：2026年7月1日
+    const countDate = new Date("2026-07-01T00:00:00").getTime();
 
     const updateTimer = () => {
         const now = new Date().getTime();
         const gap = countDate - now;
 
+        const el = document.getElementById("days");
+        if (!el) return;
+
         if (gap < 0) {
-            // 時間到的處理
-            document.getElementById("days").innerText = "00";
+            el.innerText = "0";
             return;
         }
 
@@ -153,19 +150,7 @@ function initCountdown() {
         const day = hour * 24;
 
         const textDay = Math.floor(gap / day);
-        const textHour = Math.floor((gap % day) / hour);
-        const textMinute = Math.floor((gap % hour) / minute);
-        const textSecond = Math.floor((gap % minute) / second);
-
-        const setText = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.innerText = val.toString().padStart(2, '0');
-        };
-
-        setText("days", textDay);
-        setText("hours", textHour);
-        setText("minutes", textMinute);
-        setText("seconds", textSecond);
+        el.innerText = textDay;
     };
 
     setInterval(updateTimer, 1000);
