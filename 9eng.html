@@ -4,184 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9年級英文</title>
+    <title>9年級英文｜米克師</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
-
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
-
-    <style>
-        /* --- 學期區塊顯示設定 --- */
-        /* 預設隱藏 9上，顯示 9下 */
-        #semester1-area {
-            display: none;
-        }
-
-        #semester2-area {
-            display: block;
-        }
-
-        /* --- 右上角懸浮切換按鈕樣式 --- */
-        #floating-toggle {
-            position: fixed;
-            top: 80px;
-            /* 避開上方導覽列 */
-            right: 15px;
-            /* 靠右 */
-            background-color: #333;
-            /* 深色背景 */
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        #floating-toggle:hover {
-            background-color: #555;
-            transform: scale(1.05);
-        }
-
-        #floating-toggle i {
-            transition: transform 0.3s ease;
-        }
-
-        .rotate-icon {
-            transform: rotate(180deg);
-        }
-
-        .section-content {
-            display: none;
-        }
-
-        .active-section {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* --- 新增：停止更新公告樣式 --- */
-        .stop-update-notice {
-            background: rgba(255, 235, 238, 0.95);
-            /* 淺粉紅背景 */
-            border: 2px solid #ef5350;
-            /* 紅色邊框 */
-            color: #c62828;
-            /* 深紅文字 */
-            padding: 12px 20px;
-            margin: 20px auto 10px auto;
-            max-width: 90%;
-            border-radius: 12px;
-            text-align: center;
-            font-family: 'Noto Sans TC', sans-serif;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* --- 新增：自動將沒有連結 (#) 的按鈕變灰 --- */
-        a.btn[href="#"],
-        a.btn[href=""] {
-            background-color: #cfd8dc !important;
-            /* 淺灰色背景 */
-            color: #90a4ae !important;
-            /* 深灰文字 */
-            border: 1px solid #b0bec5 !important;
-            cursor: not-allowed;
-            /* 滑鼠變成禁止符號 */
-            pointer-events: none;
-            /* 禁止點擊觸發 */
-            box-shadow: none;
-            /* 移除陰影 */
-            opacity: 0.7;
-            text-decoration: none;
-        }
-
-        /* 讓變灰的按鈕在手機上也不要有 hover 效果 */
-        a.btn[href="#"]:hover,
-        a.btn[href=""]:hover {
-            transform: none !important;
-            background-color: #cfd8dc !important;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <header class="navbar">
-        <div class="logo">SPED</div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">HOME</a></li>
+    <header class="navbar"></header>
 
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7ch">七年級</a>
-                        <a href="/8ch">八年級</a>
-                        <a href="/9ch">九年級</a>
-                    </div>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7">七年級</a>
-                        <a href="/8">八年級</a>
-                        <a href="/9">九年級</a>
-                    </div>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7eng">七年級</a>
-                        <a href="/8eng">八年級</a>
-                        <a href="/9eng">九年級</a>
-                    </div>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-                        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-                        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
-
-    <div id="floating-toggle" onclick="toggleSemester()">
-        <span id="toggle-text">切換至 9上</span>
+    <div id="floating-toggle">
+        <span id="toggle-text">切換至 上學期</span>
         <i id="toggle-icon" class="fas fa-sync-alt"></i>
     </div>
 
@@ -196,12 +32,9 @@
 
         <div style="text-align:center; margin-top: 40px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s1-section1', this)" id="default-s1-btn"
-                    data-track-cat="category_select" data-track-lbl="g9-eng-s1-vocab">1. 單字區</button>
-                <button class="section-button" onclick="showSection('s1-section2', this)"
-                    data-track-cat="category_select" data-track-lbl="g9-eng-s1-grammar">2. 文法區</button>
-                <button class="section-button" onclick="showSection('s1-section3', this)"
-                    data-track-cat="category_select" data-track-lbl="g9-eng-s1-other">3. 其他區</button>
+                <button class="section-button" onclick="showSection('s1-section1', this)" id="default-s1-btn" data-track-cat="category_select">1. 單字區</button>
+                <button class="section-button" onclick="showSection('s1-section2', this)">2. 文法區</button>
+                <button class="section-button" onclick="showSection('s1-section3', this)">3. 其他區</button>
             </div>
         </div>
 
@@ -237,20 +70,13 @@
 
         <div style="text-align:center; margin-top: 40px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s2-unit1', this)" id="default-s2-btn"
-                    data-track-cat="unit_select" data-track-lbl="g9-eng-s2-u1">U1</button>
-                <button class="section-button" onclick="showSection('s2-unit2', this)" data-track-cat="unit_select"
-                    data-track-lbl="g9-eng-s2-u2">U2</button>
-                <button class="section-button" onclick="showSection('s2-unit3', this)" data-track-cat="unit_select"
-                    data-track-lbl="g9-eng-s2-u3">U3</button>
-                <button class="section-button" onclick="showSection('s2-unit4', this)" data-track-cat="unit_select"
-                    data-track-lbl="g9-eng-s2-u4">U4</button>
-                <button class="section-button" onclick="showSection('s2-unit5', this)" data-track-cat="unit_select"
-                    data-track-lbl="g9-eng-s2-u5">U5</button>
-                <button class="section-button" onclick="showSection('s2-unit6', this)" data-track-cat="unit_select"
-                    data-track-lbl="g9-eng-s2-u6">U6</button>
-                <button class="section-button" onclick="showSection('s2-other', this)" data-track-cat="unit_select"
-                    data-track-lbl="g9-eng-s2-other">其他區</button>
+                <button class="section-button" onclick="showSection('s2-unit1', this)" id="default-s2-btn" data-track-cat="unit_select">U1</button>
+                <button class="section-button" onclick="showSection('s2-unit2', this)">U2</button>
+                <button class="section-button" onclick="showSection('s2-unit3', this)">U3</button>
+                <button class="section-button" onclick="showSection('s2-unit4', this)">U4</button>
+                <button class="section-button" onclick="showSection('s2-unit5', this)">U5</button>
+                <button class="section-button" onclick="showSection('s2-unit6', this)">U6</button>
+                <button class="section-button" onclick="showSection('s2-other', this)">其他區</button>
             </div>
         </div>
 
@@ -260,37 +86,21 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">單字區</h3>
                         <div class="btn-group">
-                            <a href="https://wordwall.net/play/86876/476/973" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-eng-s2-u1-vocab-dialogue">01對話單字</a>
-                            <a href="https://wordwall.net/play/86876/476/884" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g9-eng-s2-u1-vocab-dialogue_spelling">02對話單字拼寫</a>
-                            <a href="https://wordwall.net/play/86876/774/148" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-eng-s2-u1-vocab-theme">03主題單字</a>
-                            <a href="https://wordwall.net/play/86876/774/678" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g9-eng-s2-u1-vocab-theme_spelling">04主題單字拼寫</a>
-                            <a href="https://wordwall.net/play/86876/938/460" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-eng-s2-u1-vocab-reading">05閱讀單字</a>
-                            <a href="https://wordwall.net/play/86876/938/750" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g9-eng-s2-u1-vocab-reading_spelling">06閱讀單字拼寫</a>
+                            <a href="https://wordwall.net/play/86876/476/973" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-vocab-dialogue">01對話單字</a>
+                            <a href="https://wordwall.net/play/86876/476/884" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-vocab-dialogue_spelling">02對話拼寫</a>
+                            <a href="https://wordwall.net/play/86876/774/148" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-vocab-theme">03主題單字</a>
+                            <a href="https://wordwall.net/play/86876/774/678" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-vocab-theme_spelling">04主題拼寫</a>
+                            <a href="https://wordwall.net/play/86876/938/460" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-vocab-reading">05閱讀單字</a>
+                            <a href="https://wordwall.net/play/86876/938/750" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-vocab-reading_spelling">06閱讀拼寫</a>
                         </div>
                     </div>
                     <div class="social-group">
                         <h3 style="text-align: center;">文法區</h3>
                         <div class="btn-group">
-                            <a href="https://wordwall.net/play/86933/949/988" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g9-eng-s2-u1-grammar-affirmative_agreement">01肯定附和句</a>
-                            <a href="https://wordwall.net/play/87390/353/808" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g9-eng-s2-u1-grammar-mcq">02選擇題</a>
-                            <a href="https://wordwall.net/play/87351/235/272" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g9-eng-s2-u1-grammar-workbook_A">03習作A</a>
-                            <a href="https://wordwall.net/play/87351/710/172" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g9-eng-s2-u1-grammar-workbook_D">04習作D</a>
+                            <a href="https://wordwall.net/play/86933/949/988" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-grammar-affirmative_agreement">01肯定附和句</a>
+                            <a href="https://wordwall.net/play/87390/353/808" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-grammar-mcq">02選擇題</a>
+                            <a href="https://wordwall.net/play/87351/235/272" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-grammar-workbook_A">03習作A</a>
+                            <a href="https://wordwall.net/play/87351/710/172" target="_blank" class="btn" data-track-lbl="g9-eng-s2-u1-grammar-workbook_D">04習作D</a>
                         </div>
                     </div>
                 </div>
@@ -303,86 +113,14 @@
         <div id="s2-unit5" class="section-content"></div>
         <div id="s2-unit6" class="section-content"></div>
         <div id="s2-other" class="section-content"></div>
-
     </div>
+
+    <footer class="sticky-footer">
+        <div class="footer-center">Created by 米克師</div>
+    </footer>
 
     <script src="main.js"></script>
     <script src="tracking.js"></script>
-
-    <script>
-        let currentSem = 2; // 預設 9下
-
-        // 頁面載入時，自動觸發 9下 的預設按鈕
-        window.onload = function () {
-            const defaultS2 = document.getElementById('default-s2-btn');
-            if (defaultS2) defaultS2.click();
-        };
-
-        // 切換學期
-        function toggleSemester() {
-            const s1Area = document.getElementById('semester1-area');
-            const s2Area = document.getElementById('semester2-area');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleIcon = document.getElementById('toggle-icon');
-
-            // 旋轉動畫
-            toggleIcon.classList.add('rotate-icon');
-            setTimeout(() => toggleIcon.classList.remove('rotate-icon'), 300);
-
-            if (currentSem === 2) {
-                // 切換至 9上
-                s1Area.style.display = 'block';
-                s2Area.style.display = 'none';
-                toggleText.innerText = "切換至 9下";
-                currentSem = 1;
-
-                // 自動點擊 9上 的第一章
-                const defaultBtn = document.getElementById('default-s1-btn');
-                if (defaultBtn) defaultBtn.click();
-            } else {
-                // 切換至 9下
-                s1Area.style.display = 'none';
-                s2Area.style.display = 'block';
-                toggleText.innerText = "切換至 9上";
-                currentSem = 2;
-
-                // 自動點擊 9下 的第一章
-                const defaultBtn = document.getElementById('default-s2-btn');
-                if (defaultBtn) defaultBtn.click();
-            }
-        }
-
-        // 單元切換邏輯
-        window.showSection = function (sectionId, btn) {
-            // 找出目前顯示的學期區域
-            const activeArea = currentSem === 1 ? document.getElementById('semester1-area') : document.getElementById('semester2-area');
-            if (!activeArea) return;
-
-            // 1. 隱藏該學期內所有的 section-content
-            activeArea.querySelectorAll('.section-content').forEach(content => {
-                content.classList.remove('active-section');
-                content.style.display = 'none';
-            });
-
-            // 2. 移除該學期內所有按鈕的 active class
-            activeArea.querySelectorAll('.section-button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // 3. 顯示被選中的內容
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.classList.add('active-section');
-                targetSection.style.display = 'block';
-            }
-
-            // 4. 為被點擊的按鈕加上 active class
-            btn.classList.add('active');
-        };
-    </script>
 </body>
-<footer>
-    <p style="display: inline;">Created by 米克師</p>
-</footer>
 
 </html>

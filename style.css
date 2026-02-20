@@ -300,78 +300,71 @@ body {
     margin: 30px 0 50px 0;
     text-align: center;
 }
+/* ========================================= */
+/* 5. 頁尾 (Footer) - 絕對置中相容寫法 */
+/* ========================================= */
 
-/* ========================================= */
-/* 5. 頁尾 (Footer) - 滿版貼底設計 */
-/* ========================================= */
 
 footer,
 .sticky-footer {
-    position: absolute; /* 絕對定位到網頁最底部 */
+    position: absolute; 
     bottom: 0;
     left: 0;
     width: 100%;
-    max-width: none; /* 取消寬度限制，左右滿版 */
-    height: auto;
-    min-height: 80px;
-    margin: 0; /* 移除周圍所有空白 */
-    border-radius: 0; /* 移除圓角，完全填滿角落 */
-
-    /* 原本的深橘色，稍微調高不透明度讓顏色更扎實 */
+    min-height: 60px;
     background: rgba(200, 76, 12, 0.95);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    
-    /* 移除外框，只保留頂部一條微光邊界線增加質感 */
-    border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
-
     color: #fff;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 15px 30px;
+    justify-content: center; /* 基礎置中 */
+    padding: 0 30px; /* 移除上下 padding 靠 min-height 撐開，文字更穩 */
     box-sizing: border-box;
     z-index: 9990;
     font-family: "Chiron GoRound TC", sans-serif;
-    font-size: 15px;
-    text-shadow: none;
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15); /* 陰影改往上打 */
 }
 
-footer p {
-    margin: 0;
-    display: inline-block;
+/* 核心：強迫三者寬度絕對相等，不准因為內容長短縮放 */
+.footer-left,
+.footer-center,
+.footer-right {
+    flex: 1; 
+    flex-basis: 0; 
+    display: flex;
+    align-items: center;
+    min-width: 0; 
 }
 
-.footer-left {
+.footer-left { justify-content: flex-start; }
+.footer-center { justify-content: center; text-align: center; }
+.footer-right { justify-content: flex-end; }
+
+.footer-left .countdown-wrapper { 
     display: flex;
     align-items: center;
     gap: 8px;
     background: rgba(0, 0, 0, 0.2);
-    padding: 5px 15px;
+    padding: 5px 12px;
     border-radius: 20px;
 }
+
 
 .footer-btn {
     background: rgba(232, 156, 36, 0.9);
     color: #fff;
     border: none;
-    padding: 8px 20px;
+    padding: 8px 18px;
     border-radius: 20px;
-    font-family: inherit;
     font-weight: 700;
-    font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s;
 }
 
 .footer-btn:hover {
     background: #FBD000;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(251, 208, 0, 0.3);
     color: #333;
+    transform: translateY(-2px);
 }
 
 /* ========================================= */
@@ -661,4 +654,114 @@ footer p {
     background: #E52521;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(229, 37, 33, 0.3);
+}
+
+/* --- 自動將沒有連結 (#) 的按鈕變灰且禁用 --- */
+/* 適用於全站所有 href 為 # 或 空值的 .btn 按鈕 */
+a.btn[href="#"], 
+a.btn[href=""] {
+    background-color: #cfd8dc !important; /* 淺灰色背景 */
+    color: #90a4ae !important;           /* 深灰文字 */
+    border: 1px solid #b0bec5 !important;
+    cursor: not-allowed;                 /* 滑鼠變成禁止符號 */
+    pointer-events: none;                /* 完全禁止點擊與觸發事件 */
+    box-shadow: none !important;         /* 移除陰影 */
+    opacity: 0.7;
+    text-decoration: none;
+}
+
+/* 確保變灰的按鈕即使在手機上或滑鼠經過也不會有變色效果 */
+a.btn[href="#"]:hover, 
+a.btn[href=""]:hover,
+a.btn[href="#"]:active,
+a.btn[href=""]:active {
+    transform: none !important;
+    background-color: #cfd8dc !important;
+    box-shadow: none !important;
+}
+
+/* --- 全站統一：學期區塊顯示設定 --- */
+/* 預設隱藏上學期，顯示下學期 (配合 main.js 邏輯) */
+#semester1-area {
+    display: none;
+}
+#semester2-area {
+    display: block;
+}
+
+/* --- 全站統一：右上角懸浮切換按鈕 --- */
+#floating-toggle {
+    position: fixed;
+    top: 80px;
+    right: 15px;
+    background-color: #333; /* 預設深灰色 */
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+#floating-toggle:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+#floating-toggle i {
+    transition: transform 0.3s ease;
+}
+
+/* 切換時的小動畫 */
+.rotate-icon {
+    transform: rotate(180deg);
+}
+
+/* ============================================================
+   全站通用組件 (由 main.js 驅動)
+   ============================================================ */
+
+/* --- 1. 分頁內容顯示與淡入動畫 --- */
+.section-content {
+    display: none; /* 預設隱藏所有單元內容 */
+}
+
+.active-section {
+    display: block !important;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 2. 停止更新公告樣式 --- */
+.stop-update-notice {
+    background: rgba(255, 235, 238, 0.95); /* 淺粉紅背景 */
+    border: 2px solid #ef5350;             /* 紅色邊框 */
+    color: #c62828;                        /* 深紅文字 */
+    padding: 12px 20px;
+    margin: 20px auto 10px auto;
+    max-width: 90%;
+    border-radius: 12px;
+    text-align: center;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.stop-update-notice i {
+    font-size: 1.2rem;
 }

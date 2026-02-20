@@ -4,118 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7年級英文</title>
+    <title>7年級英文｜米克師</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
 
-    <style>
-        /* --- 學期區塊顯示設定 --- */
-        /* 預設隱藏 7上，顯示 7下 */
-        #semester1-area {
-            display: none;
-        }
 
-        #semester2-area {
-            display: block;
-        }
-
-        /* --- 右上角懸浮切換按鈕樣式 --- */
-        #floating-toggle {
-            position: fixed;
-            top: 80px;
-            /* 避開上方導覽列 */
-            right: 15px;
-            /* 靠右 */
-            background-color: #4e3629;
-            /* 深咖啡色 */
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        #floating-toggle:hover {
-            background-color: #6b4c3a;
-            transform: scale(1.05);
-        }
-
-        #floating-toggle i {
-            transition: transform 0.3s ease;
-        }
-
-        .rotate-icon {
-            transform: rotate(180deg);
-        }
-
-        /* --- 單元按鈕樣式 --- */
-        .section-button.active {
-            background-color: #4e3629 !important;
-            color: #fff !important;
-            border-color: #4e3629 !important;
-        }
-    </style>
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="logo">SPED</div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">HOME</a></li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7ch">七年級</a>
-                        <a href="/8ch">八年級</a>
-                        <a href="/9ch">九年級</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7">七年級</a>
-                        <a href="/8">八年級</a>
-                        <a href="/9">九年級</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7eng">七年級</a>
-                        <a href="/8eng">八年級</a>
-                        <a href="/9eng">九年級</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-                        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-                        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
+    <header class="navbar"></header>
 
-    <div id="floating-toggle" onclick="toggleSemester()">
-        <span id="toggle-text">切換至 7上</span>
+    <div id="floating-toggle">
+        <span id="toggle-text">切換至 上學期</span>
         <i id="toggle-icon" class="fas fa-sync-alt"></i>
     </div>
 
@@ -125,20 +28,13 @@
         </div>
         <div style="text-align:center; margin-top: 20px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s1-unit1', this)" id="default-s1-btn"
-                    data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u1">U1</button>
-                <button class="section-button" onclick="showSection('s1-unit2', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s1-u2">U2</button>
-                <button class="section-button" onclick="showSection('s1-unit3', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s1-u3">U3</button>
-                <button class="section-button" onclick="showSection('s1-unit4', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s1-u4">U4</button>
-                <button class="section-button" onclick="showSection('s1-unit5', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s1-u5">U5</button>
-                <button class="section-button" onclick="showSection('s1-unit6', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s1-u6">U6</button>
-                <button class="section-button" onclick="showSection('s1-pk_zone', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s1-pk_zone">PK區</button>
+                <button class="section-button" onclick="showSection('s1-unit1', this)" id="default-s1-btn" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u1">U1</button>
+                <button class="section-button" onclick="showSection('s1-unit2', this)" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u2">U2</button>
+                <button class="section-button" onclick="showSection('s1-unit3', this)" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u3">U3</button>
+                <button class="section-button" onclick="showSection('s1-unit4', this)" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u4">U4</button>
+                <button class="section-button" onclick="showSection('s1-unit5', this)" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u5">U5</button>
+                <button class="section-button" onclick="showSection('s1-unit6', this)" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-u6">U6</button>
+                <button class="section-button" onclick="showSection('s1-pk_zone', this)" data-track-cat="unit_select" data-track-lbl="g7-eng-s1-pk_zone">PK區</button>
             </div>
         </div>
 
@@ -158,7 +54,7 @@
                         <h3 style="text-align: center;">句型區</h3>
                         <div class="btn-group">
                             <a href="https://wordwall.net/play/96782/625/980" class="btn" target="_blank">01 be動詞</a>
-                            <a href="https://g.co/gemini/share/523f4d51695a" class="btn" target="_blank">02 課本 </a>
+                            <a href="https://g.co/gemini/share/523f4d51695a" class="btn" target="_blank">02 課本</a>
                             <a href="english/G7S1-Unit 1-sheet.html" class="btn" target="_blank">03 學習單</a>
                             <a href="english/G7S1-Unit 1-dialogue.html" class="btn" target="_blank">04 Dialogue朗讀</a>
                         </div>
@@ -203,7 +99,7 @@
                             <a href="https://wordwall.net/play/98684/283/444" class="btn" target="_blank">習作B</a>
                             <a href="https://wordwall.net/play/98622/913/146" class="btn" target="_blank">習作C</a>
                             <a href="https://wordwall.net/play/98622/601/293" class="btn" target="_blank">習作D</a>
-                            <a href="english/G7S1-Unit 2-practiceE.html" class="btn" target="_blank">習作E </a>
+                            <a href="english/G7S1-Unit 2-practiceE.html" class="btn" target="_blank">習作E</a>
                             <a href="https://quizlet.com/924226005/match" class="btn" target="_blank">02單字配對</a>
                         </div>
                     </div>
@@ -284,9 +180,9 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">單字區</h3>
                         <div class="btn-group">
-                            <a href="https://gemini.google.com/share/a885154d9806" class="btn" target="_blank">01 Dialogue </a>
+                            <a href="https://gemini.google.com/share/a885154d9806" class="btn" target="_blank">01 Dialogue</a>
                             <a href="https://gemini.google.com/share/24c5e36b2119" class="btn" target="_blank">02 Theme words</a>
-                            <a href="https://gemini.google.com/share/786415f65071" class="btn" target="_blank">03 Reading </a>
+                            <a href="https://gemini.google.com/share/786415f65071" class="btn" target="_blank">03 Reading</a>
                             <a href="https://gemini.google.com/share/e88752e485bf" class="btn" target="_blank">月份</a>
                         </div>
                     </div>
@@ -313,18 +209,18 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">單字區</h3>
                         <div class="btn-group">
-                            <a href="https://gemini.google.com/share/5b31f90e8e4e" class="btn" target="_blank">01 Dialogue </a>
-                            <a href="https://gemini.google.com/share/e777d8d58397" class="btn" target="_blank">01 Dialogue 口説1</a>
-                            <a href="https://qt.hle.com.tw/61658637" class="btn" target="_blank">01 Dialogue 口說2</a>
+                            <a href="https://gemini.google.com/share/5b31f90e8e4e" class="btn" target="_blank">01 Dialogue</a>
+                            <a href="https://gemini.google.com/share/e777d8d58397" class="btn" target="_blank">01 口説1</a>
+                            <a href="https://qt.hle.com.tw/61658637" class="btn" target="_blank">01 口說2</a>
                             <a href="https://gemini.google.com/share/e7b2b01c3e5f" class="btn" target="_blank">02 Theme words</a>
-                            <a href="https://gemini.google.com/share/2179687500e4" class="btn" target="_blank">03 Reading </a>
+                            <a href="https://gemini.google.com/share/2179687500e4" class="btn" target="_blank">03 Reading</a>
                         </div>
                     </div>
                     <div class="social-group">
                         <h3 style="text-align: center;">文法區</h3>
                         <div class="btn-group">
-                            <a href="english/G7S1-Unit 6-sheet1.html" class="btn" target="_blank">01threre is/are肯定否定</a>
-                            <a href="english/G7S1-Unit 6-grammarquestion.html" class="btn" target="_blank">02文法選擇</a>
+                            <a href="english/G7S1-Unit 6-sheet1.html" class="btn" target="_blank">01 threre is/are</a>
+                            <a href="english/G7S1-Unit 6-grammarquestion.html" class="btn" target="_blank">02 文法選擇</a>
                         </div>
                     </div>
                     <div class="social-group">
@@ -332,7 +228,7 @@
                         <div class="btn-group">
                             <a href="https://gemini.google.com/share/c887f036d0a7" class="btn" target="_blank">對話錄音</a>
                             <a href="english/G7S1-Unit 6-習作.html" class="btn" target="_blank">習作</a>
-                            <a href="english/G7S1-Unit 5&6-wordreview.html" class="btn" target="_blank">單字總複複習</a>
+                            <a href="english/G7S1-Unit 5&6-wordreview.html" class="btn" target="_blank">單字總複習</a>
                             <a href="english/G7S1-Unit 5&6-review-.html" class="btn" target="_blank">習作必考題</a>
                             <a href="english/G7S1-EXAM3.html" class="btn" target="_blank">第三次段考</a>
                         </div>
@@ -367,21 +263,14 @@
         <div class="section-title text-lg font-bold">
             <i class="fas fa-book-open mr-2"></i> 7下英文
         </div>
-
         <div style="text-align:center; margin-top: 20px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s2-unit1', this)" id="default-s2-btn"
-                    data-track-cat="unit_select" data-track-lbl="g7-eng-s2-u1">U1</button>
-                <button class="section-button" onclick="showSection('s2-unit2', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s2-u2">U2</button>
-                <button class="section-button" onclick="showSection('s2-unit3', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s2-u3">U3</button>
-                <button class="section-button" onclick="showSection('s2-unit4', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s2-u4">U4</button>
-                <button class="section-button" onclick="showSection('s2-unit5', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s2-u5">U5</button>
-                <button class="section-button" onclick="showSection('s2-unit6', this)" data-track-cat="unit_select"
-                    data-track-lbl="g7-eng-s2-u6">U6</button>
+                <button class="section-button" onclick="showSection('s2-unit1', this)" id="default-s2-btn" data-track-cat="unit_select">U1</button>
+                <button class="section-button" onclick="showSection('s2-unit2', this)">U2</button>
+                <button class="section-button" onclick="showSection('s2-unit3', this)">U3</button>
+                <button class="section-button" onclick="showSection('s2-unit4', this)">U4</button>
+                <button class="section-button" onclick="showSection('s2-unit5', this)">U5</button>
+                <button class="section-button" onclick="showSection('s2-unit6', this)">U6</button>
             </div>
         </div>
 
@@ -516,82 +405,14 @@
                 </div>
             </div>
         </div>
-
     </div>
+
+    <footer class="sticky-footer">
+        <div class="footer-center">Created by 米克師</div>
+    </footer>
 
     <script src="main.js"></script>
     <script src="tracking.js"></script>
-
-    <script>
-        // 設定初始狀態為 2 (下學期)
-        let currentSem = 2;
-
-        // 頁面載入時，自動觸發 7下 的預設按鈕，確保顯示正確
-        window.onload = function () {
-            const defaultS2 = document.getElementById('default-s2-btn');
-            if (defaultS2) defaultS2.click();
-        };
-
-        // 切換學期
-        function toggleSemester() {
-            const s1Area = document.getElementById('semester1-area');
-            const s2Area = document.getElementById('semester2-area');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleIcon = document.getElementById('toggle-icon');
-
-            // 旋轉動畫
-            toggleIcon.classList.add('rotate-icon');
-            setTimeout(() => toggleIcon.classList.remove('rotate-icon'), 300);
-
-            if (currentSem === 2) {
-                // 原本是 7下，現在切換至 7上
-                s1Area.style.display = 'block';
-                s2Area.style.display = 'none';
-                toggleText.innerText = "切換至 7下";
-                currentSem = 1;
-
-                // 自動點擊 7上 的第一章
-                const defaultBtn = document.getElementById('default-s1-btn');
-                if (defaultBtn) defaultBtn.click();
-            } else {
-                // 原本是 7上，現在切換至 7下
-                s1Area.style.display = 'none';
-                s2Area.style.display = 'block';
-                toggleText.innerText = "切換至 7上";
-                currentSem = 2;
-
-                // 自動點擊 7下 的第一章
-                const defaultBtn = document.getElementById('default-s2-btn');
-                if (defaultBtn) defaultBtn.click();
-            }
-        }
-
-        // 單元切換邏輯
-        window.showSection = function (sectionId, btn) {
-            const activeArea = currentSem === 1 ? document.getElementById('semester1-area') : document.getElementById('semester2-area');
-            if (!activeArea) return;
-
-            activeArea.querySelectorAll('.section-content').forEach(content => {
-                content.classList.remove('active-section');
-                content.style.display = 'none';
-            });
-
-            activeArea.querySelectorAll('.section-button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.classList.add('active-section');
-                targetSection.style.display = 'block';
-            }
-
-            btn.classList.add('active');
-        };
-    </script>
 </body>
-<footer>
-    <p style="display: inline;">Created by 米克師</p>
-</footer>
 
 </html>

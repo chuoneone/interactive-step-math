@@ -4,201 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8年級國文</title>
+    <title>8年級國文｜米克師</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
-
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
 
-    <style>
-        /* --- 學期區塊顯示設定 --- */
-        #semester1-area {
-            display: none;
-        }
-
-        #semester2-area {
-            display: block;
-        }
-
-        /* --- 右上角懸浮切換按鈕 --- */
-        #floating-toggle {
-            position: fixed;
-            top: 80px;
-            right: 15px;
-            background-color: #5d4037;
-            /* 深褐色 */
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        #floating-toggle:hover {
-            background-color: #795548;
-            transform: scale(1.05);
-        }
-
-        #floating-toggle i {
-            transition: transform 0.3s ease;
-        }
-
-        .rotate-icon {
-            transform: rotate(180deg);
-        }
-
-        /* --- 打勾樣式 --- */
-        .btn.completed {
-            background-color: #d1fae5 !important;
-            color: #065f46 !important;
-            border-color: #34d399 !important;
-            padding-right: 35px !important;
-            position: relative;
-        }
-
-        .btn.completed::after {
-            content: '\f00c';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #059669;
-        }
-
-        .section-content {
-            display: none;
-        }
-
-        .active-section {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* --- 新增：停止更新公告樣式 --- */
-        .stop-update-notice {
-            background: rgba(255, 235, 238, 0.95);
-            /* 淺粉紅背景 */
-            border: 2px solid #ef5350;
-            /* 紅色邊框 */
-            color: #c62828;
-            /* 深紅文字 */
-            padding: 12px 20px;
-            margin: 20px auto 10px auto;
-            max-width: 90%;
-            border-radius: 12px;
-            text-align: center;
-            font-family: 'Noto Sans TC', sans-serif;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* --- 新增：自動將沒有連結 (#) 的按鈕變灰 --- */
-        a.btn[href="#"],
-        a.btn[href=""] {
-            background-color: #cfd8dc !important;
-            /* 淺灰色背景 */
-            color: #90a4ae !important;
-            /* 深灰文字 */
-            border: 1px solid #b0bec5 !important;
-            cursor: not-allowed;
-            /* 滑鼠變成禁止符號 */
-            pointer-events: none;
-            /* 禁止點擊觸發 */
-            box-shadow: none;
-            /* 移除陰影 */
-            opacity: 0.7;
-            text-decoration: none;
-        }
-
-        /* 讓變灰的按鈕在手機上也不要有 hover 效果 */
-        a.btn[href="#"]:hover,
-        a.btn[href=""]:hover {
-            transform: none !important;
-            background-color: #cfd8dc !important;
-        }
-    </style>
 </head>
 
 <body>
+    <header class="navbar"></header>
 
-    <header class="navbar">
-        <div class="logo">SPED</div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="/">HOME</a></li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7ch">七年級</a>
-                        <a href="/8ch">八年級</a>
-                        <a href="/9ch">九年級</a>
-                    </div>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7">七年級</a>
-                        <a href="/8">八年級</a>
-                        <a href="/9">九年級</a>
-                    </div>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/7eng">七年級</a>
-                        <a href="/8eng">八年級</a>
-                        <a href="/9eng">九年級</a>
-                    </div>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-                        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-                        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
-
-    <div id="floating-toggle" onclick="toggleSemester()">
-        <span id="toggle-text">切換至 8上</span>
+    <div id="floating-toggle">
+        <span id="toggle-text">切換至 上學期</span>
         <i id="toggle-icon" class="fas fa-sync-alt"></i>
     </div>
 
@@ -211,24 +30,19 @@
             <i class="fas fa-pause-circle"></i> 公告：國文科目前停止更新，僅保留現有資源供參考
         </div>
 
-        <div style="text-align:center; margin-top: 40px;">
-        </div>
-
         <div class="section-content active-section">
             <div class="social-container">
                 <div class="single-row">
                     <div class="social-group">
                         <h3 style="text-align: center;">課程資源</h3>
                         <div class="btn-group">
-                            <a href="https://chuone.my.canva.site/spedchb3" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g8-ch-s1-main_link">8上國文</a>
+                            <a href="https://chuone.my.canva.site/spedchb3" target="_blank" class="btn" data-track-cat="resource_link">8上國文</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <div id="semester2-area">
         <div class="section-title text-lg font-bold">
@@ -241,20 +55,13 @@
 
         <div style="text-align:center; margin-top: 40px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('ch1', this)" id="default-s2-btn"
-                    data-track-cat="chapter_select" data-track-lbl="g8-ch-s2-ch1">L1</button>
-                <button class="section-button" onclick="showSection('ch2', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g8-ch-s2-ch2">L2</button>
-                <button class="section-button" onclick="showSection('ch3', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g8-ch-s2-ch3">L3</button>
-                <button class="section-button" onclick="showSection('ch4', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g8-ch-s2-ch4">L4</button>
-                <button class="section-button" onclick="showSection('ch5', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g8-ch-s2-ch5">L5</button>
-                <button class="section-button" onclick="showSection('ch6', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g8-ch-s2-ch6">L6</button>
-                <button class="section-button" onclick="showSection('self_study', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g8-ch-s2-self_study">自學</button>
+                <button class="section-button" onclick="showSection('ch1', this)" id="default-s2-btn">L1</button>
+                <button class="section-button" onclick="showSection('ch2', this)">L2</button>
+                <button class="section-button" onclick="showSection('ch3', this)">L3</button>
+                <button class="section-button" onclick="showSection('ch4', this)">L4</button>
+                <button class="section-button" onclick="showSection('ch5', this)">L5</button>
+                <button class="section-button" onclick="showSection('ch6', this)">L6</button>
+                <button class="section-button" onclick="showSection('self_study', this)">自學</button>
             </div>
         </div>
 
@@ -264,15 +71,10 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">一、歲月跟著</h3>
                         <div class="btn-group">
-                            <a href="https://quizlet.com/tw/776898388/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8701%E6%AD%B2%E6%9C%88%E8%B7%9F%E8%91%97-flash-cards/?i=3lqzny&x=1jqt"
-                                target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch1-notes">01注釋</a>
-                            <a href="https://wordwall.net/play/67128/320/609" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g8-ch-s2-ch1-text_ordering">02課文排列</a>
-                            <a href="https://wordwall.net/play/70205/821/199" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g8-ch-s2-ch1-word_filling">03詞語填空</a>
-                            <a href="https://oneexam.oneclass.com.tw/quiz/91881574" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g8-ch-s2-ch1-mcq">04選擇題</a>
+                            <a href="https://quizlet.com/tw/776898388/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8701%E6%AD%B2%E6%9C%88%E8%B7%9F%E8%91%97-flash-cards/" target="_blank" class="btn">01注釋</a>
+                            <a href="https://wordwall.net/play/67128/320/609" target="_blank" class="btn">02課文排列</a>
+                            <a href="https://wordwall.net/play/70205/821/199" target="_blank" class="btn">03詞語填空</a>
+                            <a href="https://oneexam.oneclass.com.tw/quiz/91881574" target="_blank" class="btn">04選擇題</a>
                         </div>
                     </div>
                 </div>
@@ -285,214 +87,43 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">二、古詩選</h3>
                         <div class="btn-group">
-                            <a href="https://quizlet.com/tw/785962698/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8702%E5%8F%A4%E8%A9%A9%E9%81%B8-flash-cards/?i=3lqzny&x=1jqt"
-                                target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch2-notes">01注釋</a>
-                            <a href="https://quizlet.com/tw/876727560/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8702%E5%8F%A4%E8%A9%A9%E9%81%B8-%E8%BF%A2%E8%BF%A2%E7%89%BD%E7%89%9B%E6%98%9F-%E7%BF%BB%E8%AD%AF-flash-cards/?i=3lqzny&x=1jqt"
-                                target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch2-translation_1">02翻譯一</a>
-                            <a href="https://quizlet.com/tw/876727820/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8702%E5%8F%A4%E8%A9%A9%E9%81%B8-%E5%9B%9B%E6%9C%88%E5%8D%81%E4%BA%94%E6%97%A5%E5%A4%9C%E9%90%B5%E7%AA%97%E4%B8%8B%E4%BD%9C-%E7%BF%BB%E8%AD%AF-flash-cards/?i=3lqzny&x=1jqt"
-                                target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch2-translation_2">03翻譯二</a>
-                            <a href="https://oneexam.oneclass.com.tw/quiz/38782357" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g8-ch-s2-ch2-mcq">04選擇題</a>
+                            <a href="https://quizlet.com/tw/785962698/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8702%E5%8F%A4%E8%A9%A9%E9%81%B8-flash-cards/" target="_blank" class="btn">01注釋</a>
+                            <a href="https://quizlet.com/tw/876727560/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8702%E5%8F%A4%E8%A9%A9%E9%81%B8-%E8%BF%A2%E8%BF%A2%E7%89%BD%E7%89%9B%E6%98%9F-%E7%BF%BB%E8%AD%AF-flash-cards/" target="_blank" class="btn">02翻譯一</a>
+                            <a href="https://quizlet.com/tw/876727820/%E5%85%AB%E4%B8%8B%E5%9C%8B%E6%96%8702%E5%8F%A4%E8%A9%A9%E9%81%B8-%E5%9B%9B%E6%9C%88%E5%8D%81%E4%BA%94%E6%97%A5%E5%A4%9C%E9%90%B5%E7%AA%97%E4%B8%8B%E4%BD%9C-%E7%BF%BB%E8%AD%AF-flash-cards/" target="_blank" class="btn">03翻譯二</a>
+                            <a href="https://oneexam.oneclass.com.tw/quiz/38782357" target="_blank" class="btn">04選擇題</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="ch3" class="section-content">
-            <div class="social-container">
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">三、L3 (待填)</h3>
-                        <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch3-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch3-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch3-mcq">文意選擇</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="ch4" class="section-content">
-            <div class="social-container">
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">四、L4 (待填)</h3>
-                        <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch4-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch4-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch4-mcq">文意選擇</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="ch5" class="section-content">
-            <div class="social-container">
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">五、L5 (待填)</h3>
-                        <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch5-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch5-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch5-mcq">文意選擇</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="ch6" class="section-content">
-            <div class="social-container">
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">六、L6 (待填)</h3>
-                        <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch6-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch6-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-ch6-mcq">文意選擇</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <div id="ch3" class="section-content"><div class="social-container"><div class="single-row"><div class="social-group"><h3 style="text-align: center;">三、L3</h3><div class="btn-group"><a href="#" class="btn">注釋</a><a href="#" class="btn">句型排列</a><a href="#" class="btn">文意選擇</a></div></div></div></div></div>
+        <div id="ch4" class="section-content"><div class="social-container"><div class="single-row"><div class="social-group"><h3 style="text-align: center;">四、L4</h3><div class="btn-group"><a href="#" class="btn">注釋</a><a href="#" class="btn">句型排列</a><a href="#" class="btn">文意選擇</a></div></div></div></div></div>
+        <div id="ch5" class="section-content"><div class="social-container"><div class="single-row"><div class="social-group"><h3 style="text-align: center;">五、L5</h3><div class="btn-group"><a href="#" class="btn">注釋</a><a href="#" class="btn">句型排列</a><a href="#" class="btn">文意選擇</a></div></div></div></div></div>
+        <div id="ch6" class="section-content"><div class="social-container"><div class="single-row"><div class="social-group"><h3 style="text-align: center;">六、L6</h3><div class="btn-group"><a href="#" class="btn">注釋</a><a href="#" class="btn">句型排列</a><a href="#" class="btn">文意選擇</a></div></div></div></div></div>
+        
         <div id="self_study" class="section-content">
             <div class="social-container">
                 <div class="single-row">
                     <div class="social-group">
-                        <h3 style="text-align: center;">自學一 (待填)</h3>
+                        <h3 style="text-align: center;">自學單元</h3>
                         <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self1-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self1-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self1-mcq">文意選擇</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">自學二 (待填)</h3>
-                        <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self2-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self2-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self2-mcq">文意選擇</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">自學三 (待填)</h3>
-                        <div class="btn-group">
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self3-notes">注釋</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self3-sentence_ordering">句型排列</a>
-                            <a href="#" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g8-ch-s2-self3-mcq">文意選擇</a>
+                            <a href="#" class="btn">自學一資源</a>
+                            <a href="#" class="btn">自學二資源</a>
+                            <a href="#" class="btn">自學三資源</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
+
+    <footer class="sticky-footer">
+        <div class="footer-center">Created by 米克師</div>
+    </footer>
 
     <script src="main.js"></script>
     <script src="tracking.js"></script>
-
-    <script>
-        let currentSem = 2; // 預設 8下
-
-        // 頁面載入時，自動觸發 8下 的預設按鈕 (L1)
-        window.onload = function () {
-            const defaultS2 = document.getElementById('default-s2-btn');
-            if (defaultS2) defaultS2.click();
-        };
-
-        // 切換學期
-        function toggleSemester() {
-            const s1Area = document.getElementById('semester1-area');
-            const s2Area = document.getElementById('semester2-area');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleIcon = document.getElementById('toggle-icon');
-
-            // 旋轉動畫
-            toggleIcon.classList.add('rotate-icon');
-            setTimeout(() => toggleIcon.classList.remove('rotate-icon'), 300);
-
-            if (currentSem === 2) {
-                // 切換至 8上
-                s1Area.style.display = 'block';
-                s2Area.style.display = 'none';
-                toggleText.innerText = "切換至 8下";
-                currentSem = 1;
-            } else {
-                // 切換至 8下
-                s1Area.style.display = 'none';
-                s2Area.style.display = 'block';
-                toggleText.innerText = "切換至 8上";
-                currentSem = 2;
-
-                // 切換回 8下時，重新觸發第一課按鈕，確保顯示正確
-                const defaultS2 = document.getElementById('default-s2-btn');
-                if (defaultS2 && !defaultS2.classList.contains('active')) defaultS2.click();
-            }
-        }
-
-        // 單元切換邏輯
-        window.showSection = function (sectionId, btn) {
-            const activeArea = document.getElementById('semester2-area');
-            if (!activeArea) return;
-
-            // 隱藏該學期內所有的 section-content
-            activeArea.querySelectorAll('.section-content').forEach(content => {
-                content.classList.remove('active-section');
-                content.style.display = 'none';
-            });
-
-            // 移除該學期內所有按鈕的 active class
-            activeArea.querySelectorAll('.section-button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // 顯示被選中的內容
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.classList.add('active-section');
-                targetSection.style.display = 'block';
-            }
-
-            // 為被點擊的按鈕加上 active class
-            btn.classList.add('active');
-        };
-    </script>
 </body>
-<footer>
-    <br>
-    <p style="display: inline;">Created by 米克師</p>
-</footer>
 
 </html>

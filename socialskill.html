@@ -4,63 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>社會技巧</title>
+    <title>社會技巧｜米克師</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="logo">SPED</div>
-<nav>
-  <ul class="nav-links">
-    <li><a href="/">HOME</a></li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7ch">七年級</a>
-        <a href="/8ch">八年級</a>
-        <a href="/9ch">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7">七年級</a>
-        <a href="/8">八年級</a>
-        <a href="/9">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7eng">七年級</a>
-        <a href="/8eng">八年級</a>
-        <a href="/9eng">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-      <div class="dropdown-content">
-        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-      </div>
-    </li>
-  </ul>
-</nav>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
+    <header class="navbar"></header>
 
     <div class="section-title text-lg font-bold">
         <i class="fas fa-compass mr-2"></i>社會技巧
@@ -68,12 +21,9 @@
 
     <div style="text-align:center; margin-top: 40px;">
         <div class="button-container">
-            <button class="section-button" onclick="showSection('people', this)" data-track-cat="chapter_select"
-                data-track-lbl="socialskill-people">處人</button>
-            <button class="section-button" onclick="showSection('self', this)" data-track-cat="chapter_select"
-                data-track-lbl="socialskill-self">處己</button>
-            <button class="section-button" onclick="showSection('environment', this)" data-track-cat="chapter_select"
-                data-track-lbl="socialskill-environment">處環境</button>
+            <button class="section-button" onclick="showSection('people', this)" data-track-cat="chapter_select" id="default-btn">處人</button>
+            <button class="section-button" onclick="showSection('self', this)" data-track-cat="chapter_select">處己</button>
+            <button class="section-button" onclick="showSection('environment', this)" data-track-cat="chapter_select">處環境</button>
         </div>
     </div>
 
@@ -83,8 +33,7 @@
                 <div class="social-group">
                     <h3 style="text-align: center;">處人</h3>
                     <div class="btn-group">
-                        <a href="https://gemini.google.com/share/61fae2c2c8cb" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="socialskill-communication_barrier">溝通卡關</a>
+                        <a href="https://gemini.google.com/share/61fae2c2c8cb" target="_blank" class="btn" data-track-cat="resource_link">溝通卡關</a>
                     </div>
                 </div>
             </div>
@@ -97,15 +46,9 @@
                 <div class="social-group">
                     <h3 style="text-align: center;">處己</h3>
                     <div class="btn-group">
-                        <a href="https://app.edcafe.ai/youtube-quiz/691ac093bda4fff7db33bb31" target="_blank"
-                            class="btn" data-track-cat="resource_link"
-                            data-track-lbl="socialskill-my_interest">01我的興趣</a>
-                        <a href="https://chuone.my.canva.site/likethings" target="_blank" class="btn"
-                            data-track-cat="resource_link"
-                            data-track-lbl="socialskill-three_things_i_like">02我喜歡的三件事</a>
-                        <a href="socialemotion/know.html" target="_blank" class="btn" data-track-cat="resource_link"
-                            data-track-lbl="socialskill-three_things_i_like">03認識情緒</a>
-
+                        <a href="https://app.edcafe.ai/youtube-quiz/691ac093bda4fff7db33bb31" target="_blank" class="btn" data-track-cat="resource_link">01我的興趣</a>
+                        <a href="https://chuone.my.canva.site/likethings" target="_blank" class="btn" data-track-cat="resource_link">02我喜歡的三件事</a>
+                        <a href="socialemotion/know.html" target="_blank" class="btn" data-track-cat="resource_link">03認識情緒</a>
                     </div>
                 </div>
             </div>
@@ -118,12 +61,9 @@
                 <div class="social-group">
                     <h3 style="text-align: center;">處環境</h3>
                     <div class="btn-group">
-                        <a href="https://gemini.google.com/share/4237ae24a09e" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="socialskill-grad_trip">畢業旅行</a>
-                        <a href="https://gemini.google.com/share/e4facbd6f880" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="socialskill-field_trip">校外教學</a>
-                        <a href="socialstory.html" target="_blank" class="btn" data-track-cat="resource_link"
-                            data-track-lbl="socialskill-field_trip">社會性故事</a>
+                        <a href="https://gemini.google.com/share/4237ae24a09e" target="_blank" class="btn">畢業旅行</a>
+                        <a href="https://gemini.google.com/share/e4facbd6f880" target="_blank" class="btn">校外教學</a>
+                        <a href="socialstory.html" target="_blank" class="btn">社會性故事</a>
                     </div>
                 </div>
             </div>
@@ -133,11 +73,9 @@
     <script src="main.js"></script>
     <script src="tracking.js"></script>
 
+    <footer class="sticky-footer">
+        <div class="footer-center">Created by 米克師</div>
+    </footer>
 </body>
-<footer>
-    <br>
-    <p style="display: inline;">Created by 米克師</p>
-</footer>
-
 
 </html>

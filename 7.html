@@ -4,114 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7年級數學</title>
+    <title>7年級數學｜米克師</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
 
-    <style>
-        /* --- 修改處 1：預設隱藏 7上，顯示 7下 --- */
-        #semester1-area {
-            display: none;
-        }
-
-        #semester2-area {
-            display: block;
-        }
-
-        /* 右上角懸浮切換按鈕 */
-        #floating-toggle {
-            position: fixed;
-            top: 80px;
-            /* 避開上方的導覽列 */
-            right: 15px;
-            /* 靠右對齊 */
-            background-color: #333;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        #floating-toggle:hover {
-            background-color: #555;
-            transform: scale(1.05);
-            /* 滑鼠移過去微放大 */
-        }
-
-        #floating-toggle i {
-            transition: transform 0.3s ease;
-        }
-
-        /* 點擊時的小動畫 */
-        .rotate-icon {
-            transform: rotate(180deg);
-        }
-    </style>
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="logo">SPED</div>
-       <nav>
-  <ul class="nav-links">
-    <li><a href="/">HOME</a></li>
+    <header class="navbar"></header>
 
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7ch">七年級</a>
-        <a href="/8ch">八年級</a>
-        <a href="/9ch">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7">七年級</a>
-        <a href="/8">八年級</a>
-        <a href="/9">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7eng">七年級</a>
-        <a href="/8eng">八年級</a>
-        <a href="/9eng">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-      <div class="dropdown-content">
-        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-      </div>
-    </li>
-  </ul>
-</nav>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
-
-    <div id="floating-toggle" onclick="toggleSemester()">
-        <span id="toggle-text">切換至 7上</span>
+    <div id="floating-toggle">
+        <span id="toggle-text">切換至 上學期</span>
         <i id="toggle-icon" class="fas fa-sync-alt"></i>
     </div>
 
@@ -122,14 +28,10 @@
 
         <div style="text-align:center; margin-top: 20px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s1-chapter1', this)" id="default-s1-btn"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s1-ch1">第1章</button>
-                <button class="section-button" onclick="showSection('s1-chapter2', this)"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s1-ch2">第2章</button>
-                <button class="section-button" onclick="showSection('s1-chapter3', this)"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s1-ch3">第3章</button>
-                <button class="section-button" onclick="showSection('s1-videos', this)" data-track-cat="chapter_select"
-                    data-track-lbl="g7-math-s1-videos">影片區</button>
+                <button class="section-button" onclick="showSection('s1-chapter1', this)" id="default-s1-btn" data-track-cat="chapter_select" data-track-lbl="g7-math-s1-ch1">第1章</button>
+                <button class="section-button" onclick="showSection('s1-chapter2', this)" data-track-cat="chapter_select" data-track-lbl="g7-math-s1-ch2">第2章</button>
+                <button class="section-button" onclick="showSection('s1-chapter3', this)" data-track-cat="chapter_select" data-track-lbl="g7-math-s1-ch3">第3章</button>
+                <button class="section-button" onclick="showSection('s1-videos', this)" data-track-cat="chapter_select" data-track-lbl="g7-math-s1-videos">影片區</button>
             </div>
         </div>
 
@@ -139,56 +41,35 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">1-1負數與數線</h3>
                         <div class="btn-group">
-                            <a href="https://chuone.my.canva.site/7-1-1-1" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch1_1-worksheet">01學習單</a>
+                            <a href="https://chuone.my.canva.site/7-1-1-1" target="_blank" class="btn" data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch1_1-worksheet">01學習單</a>
                         </div>
                     </div>
-
                     <div class="social-group">
                         <h3 style="text-align: center;">1-2正負數的加減</h3>
                         <div class="btn-group">
-                            <a href="https://chuone.my.canva.site/math-7-1-1-2" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch1_2-worksheet">01學習單</a>
-                            <a href="math/7-01-1-2.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_2-learning_page">02正負數學習</a>
-                            <a href="math/7-01-1-2L.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_2-learning_page_visual">03正負數學習(圖形)</a>
-                            <a href="math/game1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_2-game">04撿便便好主人遊戲</a>
+                            <a href="https://chuone.my.canva.site/math-7-1-1-2" target="_blank" class="btn" data-track-cat="resource_link">01學習單</a>
+                            <a href="math/7-01-1-2.html" target="_blank" class="btn" data-track-cat="resource_link">02正負數學習</a>
+                            <a href="math/7-01-1-2L.html" target="_blank" class="btn" data-track-cat="resource_link">03正負數學習(圖形)</a>
+                            <a href="math/game1.html" target="_blank" class="btn" data-track-cat="resource_link">04撿便便遊戲</a>
                         </div>
                     </div>
-
                     <div class="social-group">
                         <h3 style="text-align: center;">1-3 乘除與四則運算</h3>
                         <div class="btn-group">
-                            <a href="math/7-01-1-3.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_3-worksheet_fill_in">學習單-填充</a>
-                            <a href="https://chuone.my.canva.site/math-7-1-1-3" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_3-worksheet_mcq">學習單-選擇</a>
+                            <a href="math/7-01-1-3.html" target="_blank" class="btn" data-track-cat="resource_link">學習單-填充</a>
+                            <a href="https://chuone.my.canva.site/math-7-1-1-3" target="_blank" class="btn" data-track-cat="resource_link">學習單-選擇</a>
                         </div>
                     </div>
                 </div>
-
                 <div class="single-row">
                     <div class="social-group">
                         <h3 style="text-align: center;">1-4指數記法與科學記號</h3>
                         <div class="btn-group">
-                            <a href="https://wordwall.net/play/78918/397/429" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_4-exercise_exponent">01指數記法</a>
-                            <a href="https://wordwall.net/play/98338/632/892" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_4-exercise_exponent_L">02指數記法L</a>
-                            <a href="https://wordwall.net/play/72659/100/839" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_4-exercise_is_scientific_notation">03誰是科學記號</a>
-                            <a href="https://wordwall.net/play/72658/911/817" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_4-exercise_scientific_notation_1">04科學記號(1)</a>
-                            <a href="https://wordwall.net/play/72658/809/358" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch1_4-exercise_scientific_notation_2">05科學記號(2)</a>
+                            <a href="https://wordwall.net/play/78918/397/429" target="_blank" class="btn">01指數記法</a>
+                            <a href="https://wordwall.net/play/98338/632/892" target="_blank" class="btn">02指數記法L</a>
+                            <a href="https://wordwall.net/play/72659/100/839" target="_blank" class="btn">03誰是科學記號</a>
+                            <a href="https://wordwall.net/play/72658/911/817" target="_blank" class="btn">04科學記號(1)</a>
+                            <a href="https://wordwall.net/play/72658/809/358" target="_blank" class="btn">05科學記號(2)</a>
                         </div>
                     </div>
                 </div>
@@ -201,40 +82,28 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">2-1因數的應用</h3>
                         <div class="btn-group">
-                            <a href="math/7-01-2-1-1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">01因數的應用</a>
-                            <a href="math/7-01-2-1-34567.html" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch2_1-worksheet">02判別倍數</a>
-                            <a href="https://chuone.my.canva.site/g7s1-ch2-1" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch2_1-worksheet">03認識質數</a>
-                            <a href="math/7-s1-ch2-1-89.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">03質數與合數</a>
-                            <a href="math/7-s1-ch2-1-10.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">04質因數分解</a>
+                            <a href="math/7-01-2-1-1.html" target="_blank" class="btn">01因數的應用</a>
+                            <a href="math/7-01-2-1-34567.html" target="_blank" class="btn">02判別倍數</a>
+                            <a href="https://chuone.my.canva.site/g7s1-ch2-1" target="_blank" class="btn">03認識質數</a>
+                            <a href="math/7-s1-ch2-1-89.html" target="_blank" class="btn">03質數與合數</a>
+                            <a href="math/7-s1-ch2-1-10.html" target="_blank" class="btn">04質因數分解</a>
                         </div>
                     </div>
                     <div class="social-group">
                         <h3 style="text-align: center;">2-2最大公因最小公倍</h3>
                         <div class="btn-group">
-                            <a href="math/7-s1-ch2-2-1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">01因數公因數</a>
-                            <a href="math/7-s1-ch2-2-2.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">02判別互質</a>
-                            <a href="math/7-s1-ch2-2-3.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">03短除法最大公因數</a>
-                            <a href="math/7-s1-ch2-2-4.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">04短除法最小公倍數</a>
+                            <a href="math/7-s1-ch2-2-1.html" target="_blank" class="btn">01因數公因數</a>
+                            <a href="math/7-s1-ch2-2-2.html" target="_blank" class="btn">02判別互質</a>
+                            <a href="math/7-s1-ch2-2-3.html" target="_blank" class="btn">03短除法最大公因數</a>
+                            <a href="math/7-s1-ch2-2-4.html" target="_blank" class="btn">04短除法最小公倍數</a>
                         </div>
                     </div>
                     <div class="social-group">
                         <h3 style="text-align: center;">2-3分數的四則運算</h3>
                         <div class="btn-group">
-                            <a href="math/G7S1-2-3-1&2&3.html" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch2_3">01-03最簡、比大小</a>
-                            <a href="math/G7S1-2-3-4.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_3">04同分母的加減</a>
-                            <a href="math/G7S1-2-3-5.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_3">05異分母的相減</a>
+                            <a href="math/G7S1-2-3-1&2&3.html" target="_blank" class="btn">01-03最簡、比大小</a>
+                            <a href="math/G7S1-2-3-4.html" target="_blank" class="btn">04同分母的加減</a>
+                            <a href="math/G7S1-2-3-5.html" target="_blank" class="btn">05異分母的相減</a>
                         </div>
                     </div>
                 </div>
@@ -247,38 +116,26 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">3-1代數式的化簡</h3>
                         <div class="btn-group">
-                            <a href="math/G7S1-3-1-1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">01文字符號代表數</a>
-                            <a href="math/G7S1-3-1-2.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">02文字符號簡記</a>
-                            <a href="math/G7S1-3-1-3.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">03文字符號表示生活中數量</a>
+                            <a href="math/G7S1-3-1-1.html" target="_blank" class="btn">01文字符號代表數</a>
+                            <a href="math/G7S1-3-1-2.html" target="_blank" class="btn">02文字符號簡記</a>
+                            <a href="math/G7S1-3-1-3.html" target="_blank" class="btn">03表示生活中數量</a>
                         </div>
                     </div>
-
                     <div class="social-group">
                         <h3 style="text-align: center;">3-2解一元一次方程式</h3>
                         <div class="btn-group">
-                            <a href="math/G7S1-3-2-1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch2_1-worksheet">01以符號列出方程式</a>
-                            <a href="https://gemini.google.com/share/6962bcd37d45" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch3_2-worksheet">02移項-加減</a>
-                            <a href="https://gemini.google.com/share/0a6cb7766bb3" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch3_2-worksheet">03移項-乘除</a>
-                            <a href="https://gemini.google.com/share/541d887e4297" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch3_2-worksheet">04移項-混合</a>
-                            <a href="math/G7S1-3-2-6.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-ch3_2-worksheet">05解一元一次-括號</a>
-                            <a href="math/G7S1-3-2-review.html" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch3_2-worksheet">06複習</a>
+                            <a href="math/G7S1-3-2-1.html" target="_blank" class="btn">01列出方程式</a>
+                            <a href="https://gemini.google.com/share/6962bcd37d45" target="_blank" class="btn">02移項-加減</a>
+                            <a href="https://gemini.google.com/share/0a6cb7766bb3" target="_blank" class="btn">03移項-乘除</a>
+                            <a href="https://gemini.google.com/share/541d887e4297" target="_blank" class="btn">04移項-混合</a>
+                            <a href="math/G7S1-3-2-6.html" target="_blank" class="btn">05解方程式-括號</a>
+                            <a href="math/G7S1-3-2-review.html" target="_blank" class="btn">06複習</a>
                         </div>
                     </div>
-
                     <div class="social-group">
                         <h3 style="text-align: center;">段考專區</h3>
                         <div class="btn-group">
-                            <a href="math/G7S1-exam3-review.html" target="_blank" class="btn"
-                                data-track-cat="resource_link" data-track-lbl="g7-math-s1-ch2_1-worksheet">段考複習</a>
+                            <a href="math/G7S1-exam3-review.html" target="_blank" class="btn">段考複習</a>
                         </div>
                     </div>
                 </div>
@@ -291,12 +148,8 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">請選擇︰</h3>
                         <div class="btn-group">
-                            <a href="https://digitalmaster.knsh.com.tw/all/video/j/math_page.html?l1=%E8%AA%B2%E6%9C%AC%E8%A7%A3%E9%A1%8C&l2=7%E4%B8%8A"
-                                target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-video-textbook">課本例題</a>
-                            <a href="https://digitalmaster.knsh.com.tw/all/video/j/math_page.html?l1=%E7%BF%92%E4%BD%9C%E8%A7%A3%E9%A1%8C&l2=7%E4%B8%8A"
-                                target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s1-video-workbook">習作例題</a>
+                            <a href="https://digitalmaster.knsh.com.tw/all/video/j/math_page.html?l1=%E8%AA%B2%E6%9C%AC%E8%A7%A3%E9%A1%8C&l2=7%E4%B8%8A" target="_blank" class="btn">課本例題</a>
+                            <a href="https://digitalmaster.knsh.com.tw/all/video/j/math_page.html?l1=%E7%BF%92%E4%BD%9C%E8%A7%A3%E9%A1%8C&l2=7%E4%B8%8A" target="_blank" class="btn">習作例題</a>
                         </div>
                     </div>
                 </div>
@@ -311,16 +164,11 @@
 
         <div style="text-align:center; margin-top: 20px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s2-chapter1', this)" id="default-s2-btn"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s2-ch1">第1章 </button>
-                <button class="section-button" onclick="showSection('s2-chapter2', this)"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s2-ch2">第2章 </button>
-                <button class="section-button" onclick="showSection('s2-chapter3', this)"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s2-ch3">第3章 </button>
-                <button class="section-button" onclick="showSection('s2-chapter4', this)"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s2-ch4">第4章 </button>
-                <button class="section-button" onclick="showSection('s2-chapter5', this)"
-                    data-track-cat="chapter_select" data-track-lbl="g7-math-s2-ch5">第5章 </button>
+                <button class="section-button" onclick="showSection('s2-chapter1', this)" id="default-s2-btn">第1章</button>
+                <button class="section-button" onclick="showSection('s2-chapter2', this)">第2章</button>
+                <button class="section-button" onclick="showSection('s2-chapter3', this)">第3章</button>
+                <button class="section-button" onclick="showSection('s2-chapter4', this)">第4章</button>
+                <button class="section-button" onclick="showSection('s2-chapter5', this)">第5章</button>
             </div>
         </div>
 
@@ -330,27 +178,16 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">1-1 二元一次方程式</h3>
                         <div class="btn-group">
-                            <a href="math/G7S2-1-1-1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-challenge-formulation">列式與化簡</a>
-                            <a href="https://wordwall.net/play/70607/680/874" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-challenge-formulation">列式選擇</a>
-                            <a href="https://wordwall.net/play/70607/789/911" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-challenge-substitution">代入求值</a>
-                            <a href="https://wordwall.net/play/71329/146/264" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-challenge-combine_like_terms">合併同類項</a>
-                            <a href="https://wordwall.net/play/71329/146/264" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-challenge-remove_parentheses">去括號</a>
-                            <a href="https://wordwall.net/play/71329/146/264" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-challenge-formulate_two_variables">列二元一次</a>
+                            <a href="math/G7S2-1-1-1.html" target="_blank" class="btn">列式與化簡</a>
+                            <a href="https://wordwall.net/play/70607/680/874" target="_blank" class="btn">列式選擇</a>
+                            <a href="https://wordwall.net/play/70607/789/911" target="_blank" class="btn">代入求值</a>
+                            <a href="https://wordwall.net/play/71329/146/264" target="_blank" class="btn">合併同類項</a>
+                            <a href="https://wordwall.net/play/71329/146/264" target="_blank" class="btn">去括號</a>
+                            <a href="https://wordwall.net/play/71329/146/264" target="_blank" class="btn">列二元一次</a>
                         </div>
                     </div>
                     <div class="social-group">
-                        <h3 style="text-align: center;">1-2 解二元一次聯立方程式</h3>
+                        <h3 style="text-align: center;">1-2 解聯立方程式</h3>
                         <div class="btn-group">
                             <a href="#" class="btn" target="_blank">代入消去法</a>
                             <a href="#" class="btn" target="_blank">加減消去法</a>
@@ -359,9 +196,7 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">1-3 應用問題</h3>
                         <div class="btn-group">
-                            <a href="https://mathvideo.hle.com.tw/1B/1-3/" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch1-video-1_3-application">應用問題</a>
+                            <a href="https://mathvideo.hle.com.tw/1B/1-3/" target="_blank" class="btn">應用問題影片</a>
                         </div>
                     </div>
                 </div>
@@ -374,26 +209,16 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">2-1 直角坐標平面</h3>
                         <div class="btn-group">
-                            <a href="https://wordwall.net/play/68570/946/261" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch2-challenge-recognize_coordinates">認識座標</a>
-                            <a href="https://wordwall.net/play/68570/803/750" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch2-challenge-plotting_points">座標平面描點</a>
-                            <a href="https://wordwall.net/play/68571/291/673" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch2-challenge-coordinate_translation">座標平移</a>
-                            <a href="https://wordwall.net/play/68571/703/346" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch2-challenge-identify_quadrants">判別象限</a>
+                            <a href="https://wordwall.net/play/68570/946/261" target="_blank" class="btn">認識座標</a>
+                            <a href="https://wordwall.net/play/68570/803/750" target="_blank" class="btn">座標平面描點</a>
+                            <a href="https://wordwall.net/play/68571/291/673" target="_blank" class="btn">座標平移</a>
+                            <a href="https://wordwall.net/play/68571/703/346" target="_blank" class="btn">判別象限</a>
                         </div>
                     </div>
                     <div class="social-group">
-                        <h3 style="text-align: center;">2-2 二元一次方程式的圖形</h3>
+                        <h3 style="text-align: center;">2-2 方程式的圖形</h3>
                         <div class="btn-group">
-                            <a href="https://chuone.my.canva.site/2-2" target="_blank" class="btn"
-                                data-track-cat="resource_link"
-                                data-track-lbl="g7-math-s2-ch2-learning-2_2-graphing">二元一次圖形</a>
+                            <a href="https://chuone.my.canva.site/2-2" target="_blank" class="btn">二元一次圖形</a>
                         </div>
                     </div>
                 </div>
@@ -461,58 +286,12 @@
             </div>
         </div>
     </div>
+
+    <footer class="sticky-footer">
+        <div class="footer-center">Created by 米克師</div>
+    </footer>
+
     <script src="main.js"></script>
     <script src="tracking.js"></script>
-
-    <script>
-        // --- 修改處 3：預設變數改為 2 (代表7下) ---
-        let currentSem = 2;
-
-        // --- 修改處 4：新增這一段，頁面載入後自動點擊7下的第一個按鈕 ---
-        window.onload = function () {
-            const defaultBtn = document.getElementById('default-s2-btn');
-            if (defaultBtn) defaultBtn.click();
-        };
-
-        function toggleSemester() {
-            const s1Area = document.getElementById('semester1-area');
-            const s2Area = document.getElementById('semester2-area');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleIcon = document.getElementById('toggle-icon');
-
-            // 加入旋轉動畫類別
-            toggleIcon.classList.add('rotate-icon');
-            setTimeout(() => toggleIcon.classList.remove('rotate-icon'), 300);
-
-            if (currentSem === 1) {
-                // 切換到 7下
-                s1Area.style.display = 'none';
-                s2Area.style.display = 'block';
-                toggleText.innerText = "切換至 7上";
-                currentSem = 2;
-
-                // 自動點擊 7下 的第一個章節
-                const defaultBtn = document.getElementById('default-s2-btn');
-                if (defaultBtn) defaultBtn.click();
-            } else {
-                // 切換回 7上
-                s1Area.style.display = 'block';
-                s2Area.style.display = 'none';
-                toggleText.innerText = "切換至 7下";
-                currentSem = 1;
-
-                // 自動點擊 7上 的第一個章節
-                const defaultBtn = document.getElementById('default-s1-btn');
-                if (defaultBtn) defaultBtn.click();
-            }
-        }
-    </script>
 </body>
-<footer>
-    <br>
-    <p style="display: inline;">Created by 米克師</p>
-</footer>
-
-
 </html>
-

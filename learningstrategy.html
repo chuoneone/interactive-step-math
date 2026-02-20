@@ -4,75 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>學習策略</title>
+    <title>學習策略｜米克師</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <header class="navbar">
-        <div class="logo">SPED</div>
-       <nav>
-  <ul class="nav-links">
-    <li><a href="/">HOME</a></li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7ch">七年級</a>
-        <a href="/8ch">八年級</a>
-        <a href="/9ch">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7">七年級</a>
-        <a href="/8">八年級</a>
-        <a href="/9">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
-      <div class="dropdown-content">
-        <a href="/7eng">七年級</a>
-        <a href="/8eng">八年級</a>
-        <a href="/9eng">九年級</a>
-      </div>
-    </li>
-
-    <li class="dropdown">
-      <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-      <div class="dropdown-content">
-        <a href="/socialskill"><i class="fas fa-user-group"></i> 社會技巧</a>
-        <a href="/learningstrategy"><i class="fas fa-lightbulb"></i> 學習策略</a>
-        <a href="/bigtest"><i class="fas fa-pen-alt"></i> 會考專區</a>
-      </div>
-    </li>
-  </ul>
-</nav>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-    </header>
+    <header class="navbar"></header>
 
     <div class="section-title text-lg font-bold">
         <i class="fas fa-compass mr-2"></i> 學習策略
     </div>
 
     <div style="text-align:center; margin-top: 40px;">
-        <button class="section-button" onclick="showSection('section1', this)" data-track-cat="category_select"
-            data-track-lbl="strategy-reading">1.閱讀區</button>
-        <button class="section-button" onclick="showSection('section2', this)" data-track-cat="category_select"
-            data-track-lbl="strategy-focus">2.專注力</button>
-        <button class="section-button" onclick="showSection('section3', this)" data-track-cat="category_select"
-            data-track-lbl="strategy-video">3.影片區</button>
+        <button class="section-button" onclick="showSection('section1', this)" data-track-cat="category_select" id="default-btn">1.閱讀區</button>
+        <button class="section-button" onclick="showSection('section2', this)" data-track-cat="category_select">2.專注力</button>
+        <button class="section-button" onclick="showSection('section3', this)" data-track-cat="category_select">3.影片區</button>
     </div>
 
     <div id="section1" class="section-content active-section">
@@ -81,32 +31,21 @@
                 <div class="social-group">
                     <h3 style="text-align: center;">閱讀測驗</h3>
                     <div class="btn-group">
-                        <a href="https://chuone.my.canva.site/chargespot" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-reading-1">閱讀1</a>
-                        <a href="https://chuone.my.canva.site/book-9-10" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-reading-2">閱讀2</a>
-                        <a href="https://chuone.my.canva.site/book11" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-reading-3">閱讀3</a>
-                        <a href="reading/reading1.html" target="_blank" class="btn" data-track-cat="resource_link"
-                            data-track-lbl="strategy-reading-4">閱讀4</a>
-                        <a href="https://chuone.my.canva.site/reading5" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-reading-5">閱讀5</a>
+                        <a href="https://chuone.my.canva.site/chargespot" target="_blank" class="btn">閱讀1</a>
+                        <a href="https://chuone.my.canva.site/book-9-10" target="_blank" class="btn">閱讀2</a>
+                        <a href="https://chuone.my.canva.site/book11" target="_blank" class="btn">閱讀3</a>
+                        <a href="reading/reading1.html" target="_blank" class="btn">閱讀4</a>
+                        <a href="https://chuone.my.canva.site/reading5" target="_blank" class="btn">閱讀5</a>
                     </div>
                 </div>
 
                 <div class="social-group">
                     <h3 style="text-align: center;">思考力訓練</h3>
                     <div class="btn-group">
-                        <a href="https://wordwall.net/play/71826/122/618" target="_blank" class="btn"
-                            data-track-cat="resource_link"
-                            data-track-lbl="strategy-thinking-horizontal_vertical">水平vs垂直思考</a>
-                        <a href="https://wordwall.net/play/72277/218/579" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-thinking-p_implies_q">若P則Q</a>
-                        <a href="https://www.gimkit.com/practice/6631a12d8ce39001e55860e4" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-thinking-strawman">稻草人謬誤</a>
-                        <a href="https://wordwall.net/play/72930/890/401" target="_blank" class="btn"
-                            data-track-cat="resource_link"
-                            data-track-lbl="strategy-thinking-reasonable_not_correct">合理不等於正確</a>
+                        <a href="https://wordwall.net/play/71826/122/618" target="_blank" class="btn">水平vs垂直思考</a>
+                        <a href="https://wordwall.net/play/72277/218/579" target="_blank" class="btn">若P則Q</a>
+                        <a href="https://www.gimkit.com/practice/6631a12d8ce39001e55860e4" target="_blank" class="btn">稻草人謬誤</a>
+                        <a href="https://wordwall.net/play/72930/890/401" target="_blank" class="btn">合理不等於正確</a>
                     </div>
                 </div>
             </div>
@@ -119,22 +58,15 @@
                 <div class="social-group">
                     <h3 style="text-align: center;">專注力訓練</h3>
                     <div class="btn-group">
-                        <a href="https://math-exercise.johnwu.cc/zh-tw/schulte-table/" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-focus-schulte">舒爾特方格量表</a>
-                        <a href="https://digitalmaster.knsh.com.tw/ju/math/wake-up/" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-focus-brain_activation">腦力活化</a>
+                        <a href="https://math-exercise.johnwu.cc/zh-tw/schulte-table/" target="_blank" class="btn">舒爾特方格量表</a>
+                        <a href="https://digitalmaster.knsh.com.tw/ju/math/wake-up/" target="_blank" class="btn">腦力活化</a>
                     </div>
                 </div>
                 <div class="social-group">
                     <h3 style="text-align: center;">國中學習策略量表</h3>
                     <div class="btn-group">
-                        <a href="https://cbsc.mytest.com.tw/SelfLS_j/Default.aspx" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-focus-assessment">線上施測</a>
-                        <div
-                            style="margin-top: 10px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; font-size: 0.9em;">
-                            帳號︰LSj000019<br>
-                            密碼︰efx7g4
-                        </div>
+                        <a href="https://cbsc.mytest.com.tw/SelfLS_j/Default.aspx" target="_blank" class="btn">線上施測</a>
+ 
                     </div>
                 </div>
             </div>
@@ -145,18 +77,12 @@
         <div class="social-container">
             <div class="single-row">
                 <div class="social-group">
-                    <h3 style="text-align: center;">思考力訓練</h3>
+                    <h3 style="text-align: center;">思考力訓練(影片)</h3>
                     <div class="btn-group">
-                        <a href="https://www.youtube.com/watch?v=6RtmRAYY74M" target="_blank" class="btn"
-                            data-track-cat="resource_link"
-                            data-track-lbl="strategy-video-horizontal_vertical">水平vs垂直思考</a>
-                        <a href="https://www.youtube.com/watch?v=lpHLk3aKbI4" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-video-p_implies_q">若P則Q</a>
-                        <a href="https://www.youtube.com/watch?v=8p2q5o0paRA" target="_blank" class="btn"
-                            data-track-cat="resource_link" data-track-lbl="strategy-video-strawman">稻草人謬誤</a>
-                        <a href="https://www.youtube.com/watch?v=ISjSdBwTffU" target="_blank" class="btn"
-                            data-track-cat="resource_link"
-                            data-track-lbl="strategy-video-reasonable_not_correct">合理不等於正確</a>
+                        <a href="https://www.youtube.com/watch?v=6RtmRAYY74M" target="_blank" class="btn">水平vs垂直思考</a>
+                        <a href="https://www.youtube.com/watch?v=lpHLk3aKbI4" target="_blank" class="btn">若P則Q</a>
+                        <a href="https://www.youtube.com/watch?v=8p2q5o0paRA" target="_blank" class="btn">稻草人謬誤</a>
+                        <a href="https://www.youtube.com/watch?v=ISjSdBwTffU" target="_blank" class="btn">合理不等於正確</a>
                     </div>
                 </div>
             </div>
@@ -166,12 +92,9 @@
     <script src="main.js"></script>
     <script src="tracking.js"></script>
 
+    <footer class="sticky-footer">
+        <div class="footer-center">Created by 米克師</div>
+    </footer>
 </body>
-<footer>
-    <br>
-    <p style="display: inline;">Created by 米克師</p>
-</footer>
-
 
 </html>
-
