@@ -8,7 +8,7 @@ const NAVBAR_TEMPLATE = `
   <div class="logo">SPED</div>
   <nav>
     <ul class="nav-links">
-      <li><a href="index.html">HOME</a></li>
+      <li><a href="/">HOME</a></li>
       <li class="dropdown">
         <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
         <div class="dropdown-content">
