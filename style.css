@@ -260,10 +260,51 @@ footer, .sticky-footer {
 .footer-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #6A1B9A; }
 
 /* ========================================= */
+/* 手機版頁尾專用設定 (文字等比縮放 + 絕對不換行) */
+/* ========================================= */
+@media (max-width: 768px) {
+    footer, .sticky-footer {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        padding: 0 5px;                 
+        justify-content: space-between;
+        align-items: center;
+        min-height: 60px;
+        gap: 5px;                       
+    }
+
+    .footer-left, .footer-center, .footer-right {
+        flex: 0 1 auto; 
+        min-width: 0; /* 防止外框被文字撐破 */
+        display: flex;
+        align-items: center;
+    }
+
+    /* 👇 將三個元件群組起來，強制套用完全相同的字體大小與不換行規則 👇 */
+    .footer-left .countdown-wrapper,
+    .footer-center,
+    .footer-right .footer-btn {
+        /* 字體會在 11px 到 15px 之間，跟著螢幕寬度(3vw)等比縮放 */
+        font-size: clamp(11px, 3vw, 15px) !important; 
+        white-space: nowrap !important; 
+        margin: 0;
+    }
+
+    /* 👇 統一倒數框與按鈕的內邊距與邊框粗細，讓視覺高度也一致 👇 */
+    .footer-left .countdown-wrapper,
+    .footer-right .footer-btn {
+        padding: 4px 8px !important;
+        border-width: 2px !important;
+    }
+}
+/* ========================================= */
 /* 6. 其他通用元件 */
 /* ========================================= */
 .intro-text {
-    font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; text-align: center; margin: 40px auto 30px;
+    /* 👇 主要修改這一行，將三個數值都調大 👇 */
+    font-size: clamp(2.2rem, 6vw, 4rem); 
+    
+    font-weight: 900; text-align: center; margin: 40px auto 30px;
     color: #FFEB3B; text-shadow: 3px 3px 0px #F57F17, 6px 6px 0px rgba(0,0,0,0.2);
     letter-spacing: 2px; max-width: 90vw; padding: 0 10px; animation: slowPulse 1.5s ease-in-out infinite;
 }
@@ -309,7 +350,13 @@ footer, .sticky-footer {
 .big-button {
     background: #8BC34A; color: #fff; padding: 24px 30px; font-size: 28px; border-radius: 24px;
     text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center;
-    border: 4px solid #558B2F; box-shadow: 0 10px 0 #558B2F; letter-spacing: 2px; font-weight: 900; width: 100%;
+    border: 4px solid #558B2F; box-shadow: 0 10px 0 #558B2F; letter-spacing: 2px; font-weight: 900; 
+    
+    /* 👇 主要修改這三行 👇 */
+    width: 100%; 
+    max-width: 300px; /* 限制最大寬度，覺得太寬或太窄可以調整這個數值（例如 250px 或 350px） */
+    margin: 0 auto;   /* 讓按鈕在網格中保持置中 */
+    
     transition: all 0.1s; animation: scaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
