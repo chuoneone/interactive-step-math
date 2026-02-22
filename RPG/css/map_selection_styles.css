@@ -1,0 +1,448 @@
+/* map_selection_styles.css — 全螢幕沉浸式地圖 */
+
+/* ====================================================
+   1. 全螢幕 body / 基礎佈局
+   ===================================================== */
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* 禁止捲動，地圖填滿螢幕 */
+    width: 100vw;
+    height: 100vh;
+    background: #0d0a06;
+    /* 深色底色，地圖載入前不閃白 */
+}
+
+/* 覆蓋 style.css 的 .container 樣式 */
+.container.map-page-container {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* ====================================================
+   2. 地圖包裝 — 填滿全螢幕
+   ===================================================== */
+
+.map-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+/* 地圖圖片：cover 整個視窗，保持比例，不留白邊 */
+#adventure-map-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+
+/* ====================================================
+   3. HUD 資訊欄（右上角浮動）
+   ===================================================== */
+
+.character-reminder.character-reminder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 18px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+    color: #fff;
+    z-index: 20;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+    /* 讓點擊穿透到地圖熱點 */
+    border-radius: 0;
+}
+
+/* 讓 HUD 內的按鈕可以點擊 */
+.character-reminder.character-reminder-overlay button,
+.character-reminder.character-reminder-overlay a {
+    pointer-events: auto;
+}
+
+/* 左側：頭像 + 文字 */
+.character-reminder-overlay .char-avatar-small {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.character-reminder-overlay .reminder-text {
+    font-size: 1em;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    margin-right: 16px;
+}
+
+.character-reminder-overlay .reminder-text strong {
+    color: #ffe082;
+    font-weight: 700;
+}
+
+/* 右側：肉乾計數 + 重置按鈕 */
+.character-reminder-overlay .map-meat-jerky-counter {
+    font-size: 1em;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-right: 10px;
+}
+
+.character-reminder-overlay .map-meat-jerky-counter strong {
+    color: #ffa726;
+    font-weight: 700;
+}
+
+.reset-game-btn {
+    padding: 6px 14px;
+    background-color: rgba(180, 30, 30, 0.85);
+    color: white;
+    border: 1px solid rgba(255, 100, 100, 0.4);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.82em;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    letter-spacing: 0.02em;
+}
+
+.reset-game-btn:hover {
+    background-color: rgba(200, 40, 40, 0.95);
+    transform: scale(1.04);
+}
+
+
+/* ====================================================
+   4. 地點熱點按鈕（地圖上的位置點）
+   ===================================================== */
+
+.map-location-btn {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    padding: 8px 16px;
+    background-color: rgba(60, 35, 15, 0.82);
+    color: #f5deb3;
+    border: 1.5px solid rgba(220, 180, 100, 0.6);
+    border-radius: 22px;
+    cursor: pointer;
+    font-size: clamp(0.72em, 1.4vw, 1em);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    box-shadow:
+        0 0 10px rgba(255, 200, 80, 0.25),
+        0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease, border-color 0.25s ease;
+    white-space: nowrap;
+    z-index: 5;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+
+    /* 脈動光點效果 */
+    animation: hotspot-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes hotspot-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 8px rgba(255, 200, 80, 0.2), 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 18px rgba(255, 200, 80, 0.55), 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+}
+
+.map-location-btn:hover {
+    background-color: rgba(100, 60, 20, 0.92);
+    border-color: rgba(255, 220, 100, 0.9);
+    box-shadow:
+        0 0 22px rgba(255, 210, 80, 0.6),
+        0 4px 12px rgba(0, 0, 0, 0.5);
+    transform: translate(-50%, -50%) scale(1.1);
+    color: #fff8e1;
+}
+
+.map-location-btn:active {
+    transform: translate(-50%, -50%) scale(1.04);
+}
+
+/* 鎖定狀態 */
+.map-location-btn[data-locked="true"] {
+    background-color: rgba(30, 30, 30, 0.75);
+    color: #666;
+    cursor: not-allowed;
+    border-color: rgba(100, 100, 100, 0.4);
+    box-shadow: none;
+    animation: none;
+}
+
+.map-location-btn[data-locked="true"]:hover {
+    transform: translate(-50%, -50%);
+    box-shadow: none;
+    background-color: rgba(30, 30, 30, 0.78);
+}
+
+/* 選中狀態 */
+.map-location-btn.selected-location {
+    border-color: #ffe57f !important;
+    box-shadow:
+        0 0 24px #ffe57f,
+        0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    color: #fff !important;
+    background-color: rgba(120, 80, 10, 0.92) !important;
+}
+
+/* 已解鎖（地下室）*/
+.map-location-btn.unlocked-location {
+    background-color: rgba(20, 80, 30, 0.85);
+    border-color: rgba(80, 200, 100, 0.7);
+    color: #b9f6ca;
+}
+
+.map-location-btn.unlocked-location:hover {
+    background-color: rgba(30, 100, 45, 0.92);
+    border-color: #69f0ae;
+}
+
+
+/* ====================================================
+   5. 地點介紹 Modal（RPG 風格）
+   ===================================================== */
+
+#location-details-modal.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: modal-bg-in 0.25s ease forwards;
+}
+
+@keyframes modal-bg-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+#location-details-modal.modal .modal-content {
+    background: linear-gradient(160deg, #2a1a08 0%, #1c1208 100%);
+    border: 1px solid rgba(200, 150, 60, 0.5);
+    box-shadow:
+        0 0 40px rgba(200, 130, 30, 0.25),
+        0 10px 40px rgba(0, 0, 0, 0.7);
+    border-radius: 14px;
+    padding: 28px 30px 24px;
+    width: min(90vw, 480px);
+    margin: 0;
+    color: #e8d5b0;
+    text-align: left;
+    animation: modal-slide-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes modal-slide-in {
+    from {
+        opacity: 0;
+        transform: scale(0.88) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Modal 標題 */
+#modal-location-name {
+    margin: 0 0 14px 0;
+    color: #ffd54f;
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 12px rgba(255, 180, 30, 0.4);
+    border-bottom: 1px solid rgba(200, 150, 60, 0.3);
+    padding-bottom: 12px;
+}
+
+/* Modal 關閉按鈕 */
+.close-modal-btn {
+    color: #a08060;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-top: -4px;
+}
+
+.close-modal-btn:hover {
+    color: #ffd54f;
+}
+
+/* Modal 介紹文字 */
+#modal-location-intro {
+    font-size: 0.95em;
+    line-height: 1.65;
+    color: #d4b896;
+    margin-bottom: 22px;
+}
+
+/* Modal 按鈕區 */
+.modal-buttons-container {
+    text-align: center;
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.modal-buttons-container button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal-buttons-container button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+#confirm-enter-location-btn {
+    background: linear-gradient(135deg, #a0722a 0%, #c8922a 100%);
+    color: #fff8e1;
+    border: 1px solid rgba(255, 200, 80, 0.4);
+    box-shadow: 0 2px 8px rgba(160, 100, 20, 0.4);
+}
+
+#confirm-enter-location-btn:hover {
+    background: linear-gradient(135deg, #b8862e 0%, #dba82e 100%);
+}
+
+#cancel-modal-btn {
+    background: rgba(80, 60, 40, 0.8);
+    color: #c0a070;
+    border: 1px solid rgba(150, 110, 60, 0.4);
+}
+
+#cancel-modal-btn:hover {
+    background: rgba(100, 75, 50, 0.9);
+    color: #e0c090;
+}
+
+
+/* ====================================================
+   6. 響應式微調
+   ===================================================== */
+
+@media (max-width: 768px) {
+    .character-reminder-overlay .reminder-text {
+        font-size: 0.82em;
+    }
+
+    .character-reminder-overlay .map-meat-jerky-counter {
+        font-size: 0.82em;
+    }
+
+    .character-reminder.character-reminder-overlay {
+        padding: 8px 12px;
+    }
+
+    .map-location-btn {
+        font-size: clamp(0.65em, 2.5vw, 0.82em);
+        padding: 6px 12px;
+    }
+
+    .reset-game-btn {
+        font-size: 0.75em;
+        padding: 5px 10px;
+    }
+
+    #location-details-modal.modal .modal-content {
+        padding: 20px 18px 18px;
+    }
+
+    #modal-location-name {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .character-reminder.character-reminder-overlay {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 6px 10px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    .character-reminder-overlay .char-avatar-small {
+        width: 28px;
+        height: 28px;
+    }
+
+    .map-location-btn {
+        padding: 5px 9px;
+        font-size: clamp(0.6em, 3vw, 0.75em);
+        border-radius: 14px;
+    }
+
+    .modal-buttons-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .modal-buttons-container button {
+        width: 100%;
+    }
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狗子冒險之旅 - 序章</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/intro_char_select_styles.css">
+    <link rel="icon" href="images/sheepdog.png" type="image/png">
+    <style>
+        /* 取消首頁 .container 的白色背景盒子，讓各 section 自己處理外觀 */
+        body.intro-mode .container,
+        body.char-select-mode .container {
+            background-color: transparent;
+            box-shadow: none;
+            border-radius: 0;
+            padding: 0;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 900px;
+        }
+    </style>
+</head>
+
+<body class="intro-mode">
+    <div class="container">
+        <!-- 故事介紹區塊 -->
+        <section id="intro-section" class="active-section">
+            <h1>狗子冒險之旅</h1>
+            <div id="story-text">
+                <!-- 故事文本會由 JS 動態生成 -->
+            </div>
+            <button id="next-story-btn">繼續</button>
+            <button id="skip-intro-btn" class="hidden">跳過介紹</button>
+        </section>
+
+        <!-- 角色選擇區塊 -->
+        <section id="character-selection-section" class="hidden-section">
+            <div class="character-select-header">
+                <h2>選擇你的冒險夥伴</h2>
+                <button id="reset-game-progress-btn" class="reset-button">重置遊戲進度</button>
+            </div>
+            <div class="character-grid">
+                <div class="character-card" data-char="sheepdog" tabindex="0">
+                    <img src="images/sheepdog.png" alt="牧羊犬" class="character-image-full">
+                    <div class="character-overlay-info">
+                        <h3>牧羊犬</h3>
+                        <p class="ability">能力：聰明絕頂，善於解決謎題。</p>
+                    </div>
+                </div>
+                <div class="character-card" data-char="shiba" tabindex="0">
+                    <img src="images/shiba.png" alt="柴犬" class="character-image-full">
+                    <div class="character-overlay-info">
+                        <h3>柴犬</h3>
+                        <p class="ability">能力：敏捷迅速，擅長追蹤。</p>
+                    </div>
+                </div>
+                <div class="character-card" data-char="mix" tabindex="0">
+                    <img src="images/mix.png" alt="米克斯" class="character-image-full">
+                    <div class="character-overlay-info">
+                        <h3>米克斯</h3>
+                        <p class="ability">能力：適應力強，充滿驚喜。</p>
+                    </div>
+                </div>
+                <div class="character-card" data-char="bulldog" tabindex="0">
+                    <img src="images/bulldog.png" alt="鬥牛犬" class="character-image-full">
+                    <div class="character-overlay-info">
+                        <h3>鬥牛犬</h3>
+                        <p class="ability">能力：力大無窮，勇往直前。</p>
+                    </div>
+                </div>
+            </div>
+            <button id="confirm-character-btn" class="confirm-button">確認夥伴，前往地圖</button>
+        </section>
+    </div>
+
+    <script src="js/intro_char_select.js?v=2"></script>
+</body>
+
+</html>

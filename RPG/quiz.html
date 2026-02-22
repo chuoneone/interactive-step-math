@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狗狗冒險之旅 - 地區挑戰</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/quiz_page_styles.css?v=3">
+</head>
+
+<body class=""><!-- The class will be inserted dynamically via JS -->
+    <div class="container">
+        <h1 id="quiz-page-title">挑戰</h1>
+
+        <!-- 玩家資訊欄 -->
+        <div class="player-info-bar">
+            <span>⚔️ 角色：<strong id="player-char">未知夥伴</strong></span>
+            <span class="meat-jerky-counter">🦴 肉乾：<strong id="meat-jerky-display">0</strong></span>
+        </div>
+
+        <!-- 答題區 -->
+        <div class="quiz-area" id="quiz-content-area">
+            <h2 id="question-text">正在加載問題...</h2>
+            <form id="quiz-form">
+                <ul class="quiz-options-list" id="options-container"></ul>
+                <button type="submit" class="quiz-submit-btn" id="submit-answer-btn">✦ 提交答案</button>
+            </form>
+            <p id="quiz-feedback" class="hidden"></p>
+        </div>
+
+        <!-- 導航按鈕 -->
+        <div id="quiz-navigation" class="text-center mt-20 hidden">
+            <button id="next-question-btn" class="quiz-navigation-link">下一題 →</button>
+            <a href="map_selection.html" class="quiz-navigation-link" id="back-to-map-link">← 返回地圖</a>
+        </div>
+
+        <!-- 挑戰完成 -->
+        <div id="quiz-complete-message" class="text-center mt-30 hidden">
+            <h3 id="quiz-complete-title">挑戰完成！</h3>
+            <p id="final-score-message"></p>
+            <p id="basement-unlock-message" class="hidden">🎉 恭喜！你收集到了足夠的肉乾，地下室已經解鎖了！ 🎉</p>
+            <a href="map_selection.html" class="quiz-navigation-link">← 返回地圖選擇</a>
+        </div>
+    </div>
+
+    <!-- 加載問題資料與答題邏輯 -->
+    <script src="js/quiz_data.js"></script>
+    <script src="js/quiz_logic.js?v=3"></script>
+</body>
+
+</html>

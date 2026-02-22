@@ -1,0 +1,285 @@
+/* style.css (General Styles) */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    /* Default background for pages that don't override */
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    /* Default container width */
+    max-width: 960px;
+    /* Default container max-width */
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    /* Default container background */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1,
+h2,
+h3 {
+    /* General heading styles */
+    color: #502916;
+    text-align: center;
+}
+
+/* --- Utility Classes --- */
+.hidden {
+    display: none !important;
+}
+
+.hidden-section {
+    display: none !important;
+}
+
+.active-section {
+    display: block;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.mt-20 {
+    margin-top: 20px !important;
+}
+
+.mt-30 {
+    margin-top: 30px !important;
+}
+
+.mb-15 {
+    margin-bottom: 15px !important;
+}
+
+.text-success {
+    color: green !important;
+}
+
+.font-bold {
+    font-weight: bold !important;
+}
+
+/* --- 通用按鈕樣式 (例如 Next, Skip, Confirm Character) --- */
+/* These buttons are primarily on the intro/char select page */
+/* If #confirm-location-btn is still used outside modal, it can be here */
+.generic-button,
+/* A general class for buttons if needed */
+#next-story-btn,
+#skip-intro-btn,
+#confirm-character-btn {
+    display: block;
+    margin: 30px auto;
+    padding: 12px 25px;
+    background-color: #795548;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    position: relative;
+    z-index: 10;
+    /* Ensure visibility over animated text */
+}
+
+.generic-button:hover,
+#next-story-btn:hover,
+#skip-intro-btn:hover,
+#confirm-character-btn:hover {
+    background-color: #5d4037;
+}
+
+
+/* --- 通用區塊顯示/隱藏 --- */
+.hidden-section {
+    display: none;
+}
+
+.active-section {
+    display: block;
+}
+
+
+/* --- 通用模態框樣式 (If used across multiple pages) --- */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    /* Ensure modal is on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 25px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    text-align: left;
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+.close-modal-btn {
+    /* Class for the 'x' button in modal */
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+    /* Adjust line height for better positioning */
+}
+
+.close-modal-btn:hover,
+.close-modal-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Modal title and intro text (can be styled further in page-specific CSS if needed) */
+#modal-location-name {
+    /* Assuming this ID is unique to the location modal */
+    margin-top: 0;
+    color: #502916;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#modal-location-image {
+    max-width: 100%;
+    height: auto;
+}
+
+#modal-location-intro {
+    /* Assuming this ID is unique to the location modal */
+    font-size: 1em;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.modal-buttons-container {
+    /* Container for modal action buttons */
+    text-align: center;
+    margin-top: 20px;
+}
+
+.modal-buttons-container button {
+    /* General style for buttons inside this container */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 8px;
+    /* Spacing between buttons */
+    margin-right: 8px;
+}
+
+/* Specific modal buttons by ID - these are likely on map_selection.html */
+#confirm-enter-location-btn {
+    background-color: #795548;
+    color: white;
+}
+
+#confirm-enter-location-btn:hover {
+    background-color: #5d4037;
+}
+
+#cancel-modal-btn {
+    background-color: #777;
+    color: white;
+}
+
+#cancel-modal-btn:hover {
+    background-color: #555;
+}
+
+
+/* ====================================================
+   通用響應式設計
+   ===================================================== */
+
+@media (max-width: 768px) {
+    .container {
+        width: 96%;
+        margin: 12px auto;
+        padding: 14px;
+    }
+
+    h1 {
+        font-size: 1.6em;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    h3 {
+        font-size: 1.1em;
+    }
+
+    .modal-content {
+        width: 92%;
+        margin: 8% auto;
+        padding: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        margin: 6px auto;
+        padding: 10px;
+        border-radius: 0;
+    }
+
+    h1 {
+        font-size: 1.35em;
+    }
+
+    h2 {
+        font-size: 1.15em;
+    }
+
+    .modal-content {
+        width: 96%;
+        margin: 4% auto;
+        padding: 14px;
+    }
+
+    .modal-buttons-container button {
+        width: 100%;
+        margin: 6px 0;
+    }
+}

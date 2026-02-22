@@ -1,0 +1,599 @@
+/* quiz_page_styles.css — RPG 沉浸式答題頁 */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap');
+
+/* ====================================================
+   1. 全螢幕佈局
+   ===================================================== */
+
+body[class*="-quiz-page"] {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Serif TC', 'Arial', sans-serif;
+}
+
+/* 暗色漸層遮罩，讓背景圖不搶眼但保留氛圍 */
+body[class*="-quiz-page"]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(160deg,
+            rgba(5, 3, 2, 0.55) 0%,
+            rgba(10, 6, 2, 0.45) 100%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 主容器：卡片浮在場景上 */
+.container.quiz-page-container,
+body[class*="-quiz-page"] .container {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(160deg, rgba(18, 10, 4, 0.90) 0%, rgba(30, 18, 8, 0.88) 100%);
+    border: 1px solid rgba(200, 155, 60, 0.35);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.6),
+        0 8px 32px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 200, 80, 0.08);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin: 1.5vh auto;
+    width: 94%;
+    max-width: 820px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+    max-height: calc(100vh - 3vh);
+    box-sizing: border-box;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* ====================================================
+   2. 標題 & 玩家資訊欄
+   ===================================================== */
+
+body[class*="-quiz-page"] h1#quiz-page-title {
+    font-size: clamp(1em, 2.5vw, 1.35em);
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    flex-shrink: 0;
+    color: #ffd54f;
+    text-align: center;
+    letter-spacing: 0.06em;
+    text-shadow:
+        0 0 16px rgba(255, 180, 30, 0.5),
+        0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+body[class*="-quiz-page"] .player-info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+    background: rgba(255, 200, 60, 0.06);
+    border: 1px solid rgba(200, 155, 60, 0.22);
+    border-radius: 8px;
+    font-size: 0.84em;
+    color: #c8a870;
+}
+
+body[class*="-quiz-page"] .player-info-bar strong {
+    color: #ffe082;
+}
+
+.meat-jerky-counter {
+    font-weight: 600;
+    color: #ffa726;
+}
+
+
+/* ====================================================
+   3. 答題區卡片
+   ===================================================== */
+
+.quiz-area {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(200, 155, 60, 0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: left;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    /* 自定義捲軸 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(200, 155, 60, 0.3) transparent;
+}
+
+.quiz-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.quiz-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.quiz-area::-webkit-scrollbar-thumb {
+    background: rgba(200, 155, 60, 0.35);
+    border-radius: 4px;
+}
+
+/* 題號 + 題目 */
+.quiz-area h2 {
+    font-size: clamp(1.15em, 2.6vw, 1.45em);
+    color: #f0deb0;
+    margin: 0 0 14px 0;
+    line-height: 1.55;
+    font-weight: 700;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(200, 155, 60, 0.22);
+    letter-spacing: 0.03em;
+    text-align: center;
+}
+
+.quiz-area form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0;
+}
+
+
+/* ====================================================
+   4. 選項樣式
+   ===================================================== */
+
+.quiz-area .quiz-options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+
+    /* 2×2 格線排列 */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.quiz-area .quiz-option {
+    margin-bottom: 0;
+    /* gap 取代原本的 margin */
+    display: flex;
+    /* 讓 label 撐滿格子 */
+}
+
+.quiz-area label.quiz-option-label {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(200, 155, 60, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.05em;
+    color: #d4bc90;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    position: relative;
+    letter-spacing: 0.01em;
+    flex: 1;
+    /* 撐滿 .quiz-option 的高度 */
+    min-height: 52px;
+}
+
+.quiz-area label.quiz-option-label:hover {
+    background: rgba(255, 200, 60, 0.1);
+    border-color: rgba(255, 200, 60, 0.45);
+    color: #ffe082;
+    transform: translateX(3px);
+}
+
+/* 隱藏原生 radio */
+.quiz-area label.quiz-option-label input[type="radio"],
+.quiz-area label.quiz-option-label input[type="checkbox"] {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+/* 自訂 radio 圓點 */
+.quiz-area label.quiz-option-label .custom-radio,
+.quiz-area label.quiz-option-label .custom-checkbox {
+    width: 17px;
+    height: 17px;
+    border: 2px solid rgba(200, 155, 60, 0.5);
+    border-radius: 50%;
+    margin-right: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    transition: border-color 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.quiz-area label.quiz-option-label .custom-checkbox {
+    border-radius: 4px;
+}
+
+/* Radio 選中狀態 */
+.quiz-area label.quiz-option-label input[type="radio"]:checked+.custom-radio::after,
+.quiz-area label.quiz-option-label input[type="checkbox"]:checked+.custom-checkbox::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.quiz-area label.quiz-option-label input[type="radio"]:checked+.custom-radio::after {
+    width: 7px;
+    height: 7px;
+    background-color: #ffd54f;
+    border-radius: 50%;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+}
+
+.quiz-area label.quiz-option-label input[type="checkbox"]:checked+.custom-checkbox::after {
+    width: 4px;
+    height: 9px;
+    border: solid #ffd54f;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    position: relative;
+    top: -1px;
+    left: auto;
+}
+
+.quiz-area label.quiz-option-label input[type="radio"]:checked+.custom-radio,
+.quiz-area label.quiz-option-label input[type="checkbox"]:checked+.custom-checkbox {
+    border-color: #ffd54f;
+    background: rgba(255, 213, 79, 0.15);
+}
+
+.quiz-area label.quiz-option-label input[type="radio"]:checked~.option-text,
+.quiz-area label.quiz-option-label input[type="checkbox"]:checked~.option-text {
+    font-weight: 600;
+    color: #ffe082;
+}
+
+/* JS 選中狀態 */
+.quiz-area label.quiz-option-label.selected {
+    background: rgba(255, 200, 60, 0.14) !important;
+    border-color: rgba(255, 213, 79, 0.6) !important;
+    color: #ffe082;
+}
+
+
+/* ====================================================
+   5. 提交按鈕
+   ===================================================== */
+
+.quiz-area .quiz-submit-btn {
+    display: block;
+    width: auto;
+    min-width: 140px;
+    margin: 10px auto 0 auto;
+    padding: 10px 28px;
+    background: linear-gradient(135deg, #a0722a 0%, #c8922a 80%);
+    color: #fff8e1;
+    border: 1px solid rgba(255, 200, 80, 0.4);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 3px 12px rgba(160, 100, 20, 0.4);
+    flex-shrink: 0;
+    font-family: inherit;
+}
+
+.quiz-area .quiz-submit-btn:hover {
+    background: linear-gradient(135deg, #b8862e 0%, #dba82e 80%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(200, 130, 30, 0.5);
+}
+
+.quiz-area .quiz-submit-btn:active {
+    transform: translateY(0);
+}
+
+.quiz-area .quiz-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* ====================================================
+   6. 回饋訊息
+   ===================================================== */
+
+#quiz-feedback {
+    margin-top: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+    animation: feedback-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes feedback-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#quiz-feedback.correct {
+    background: rgba(30, 120, 60, 0.22);
+    color: #69f0ae;
+    border-color: rgba(80, 200, 120, 0.4);
+}
+
+#quiz-feedback.incorrect {
+    background: rgba(180, 30, 30, 0.22);
+    color: #ff8a80;
+    border-color: rgba(200, 60, 60, 0.4);
+}
+
+#quiz-feedback.info {
+    background: rgba(180, 140, 20, 0.18);
+    color: #ffe082;
+    border-color: rgba(200, 160, 30, 0.4);
+}
+
+
+/* ====================================================
+   7. 導航按鈕（下一題 / 返回地圖）
+   ===================================================== */
+
+#quiz-navigation {
+    text-align: center;
+    margin-top: 10px;
+    padding-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.quiz-navigation-link {
+    display: inline-block;
+    padding: 8px 20px;
+    color: #d4bc90;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(200, 155, 60, 0.3);
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    margin: 0 6px;
+    font-size: 0.9em;
+    letter-spacing: 0.03em;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.quiz-navigation-link:hover {
+    background: rgba(255, 200, 60, 0.12);
+    border-color: rgba(255, 200, 60, 0.5);
+    color: #ffe082;
+    text-decoration: none;
+}
+
+#next-question-btn.quiz-navigation-link {
+    background: linear-gradient(135deg, #1a3a6a 0%, #2455a0 100%);
+    border-color: rgba(80, 140, 220, 0.4);
+    color: #c8deff;
+    box-shadow: 0 2px 10px rgba(30, 80, 180, 0.3);
+}
+
+#next-question-btn.quiz-navigation-link:hover {
+    background: linear-gradient(135deg, #204888 0%, #2d68c0 100%);
+    border-color: rgba(100, 160, 240, 0.6);
+    color: #e8f0ff;
+}
+
+
+/* ====================================================
+   8. 挑戰完成訊息
+   ===================================================== */
+
+#quiz-complete-message {
+    text-align: center;
+    margin-top: 12px;
+    padding-bottom: 8px;
+    flex-shrink: 0;
+}
+
+#quiz-complete-message h3 {
+    font-size: clamp(1.2em, 3vw, 1.6em);
+    color: #ffd54f;
+    margin-bottom: 10px;
+    text-shadow: 0 0 18px rgba(255, 180, 30, 0.5);
+    letter-spacing: 0.06em;
+}
+
+#quiz-complete-message p {
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    color: #c8a870;
+}
+
+#basement-unlock-message {
+    font-weight: 700 !important;
+    padding: 10px 14px;
+    background: rgba(30, 120, 60, 0.2);
+    border: 1px solid rgba(100, 200, 120, 0.35);
+    border-radius: 8px;
+    color: #69f0ae;
+}
+
+
+/* ====================================================
+   9. 背景圖片（各場景）
+   ===================================================== */
+
+body.library-quiz-page {
+    background-image: url('../images/library.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+body.playground-quiz-page {
+    background-image: url('../images/ground.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+body.lab-quiz-page {
+    background-image: url('../images/lab.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+body.forest-quiz-page {
+    background-image: url('../images/forest_path.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+body.basement-quiz-page {
+    background-image: url('../images/basement_dark.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+
+/* ====================================================
+   10. 響應式 — 螢幕高度過小
+   ===================================================== */
+
+@media (max-height: 620px) {
+    body[class*="-quiz-page"] .container {
+        padding: 10px 14px;
+        margin: 0.5vh auto;
+    }
+
+    body[class*="-quiz-page"] h1#quiz-page-title {
+        font-size: 1em;
+        margin-bottom: 4px;
+    }
+
+    body[class*="-quiz-page"] .player-info-bar {
+        padding: 4px 10px;
+        margin-bottom: 6px;
+        font-size: 0.8em;
+    }
+
+    .quiz-area {
+        padding: 8px 12px;
+    }
+
+    .quiz-area h2 {
+        font-size: 0.9em;
+        margin-bottom: 8px;
+    }
+
+    .quiz-area .quiz-option {
+        margin-bottom: 5px;
+    }
+
+    .quiz-area label.quiz-option-label {
+        padding: 7px 10px;
+        font-size: 0.87em;
+    }
+
+    .quiz-area .quiz-submit-btn {
+        padding: 8px 20px;
+        margin-top: 6px;
+    }
+
+    #quiz-feedback {
+        margin-top: 6px;
+        padding: 7px 12px;
+    }
+
+    #quiz-navigation {
+        margin-top: 6px;
+    }
+
+    .quiz-navigation-link {
+        padding: 6px 14px;
+        font-size: 0.85em;
+    }
+}
+
+/* ====================================================
+   11. 響應式 — 螢幕寬度
+   ===================================================== */
+
+@media (max-width: 768px) {
+    body[class*="-quiz-page"] .container {
+        width: 96%;
+        margin: 1vh auto;
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    body[class*="-quiz-page"] .container {
+        width: 100%;
+        border-radius: 10px;
+        margin: 0.5vh auto;
+        padding: 10px 10px;
+    }
+
+    .quiz-area label.quiz-option-label {
+        padding: 8px 10px;
+        font-size: 0.88em;
+    }
+
+    .quiz-area .quiz-submit-btn {
+        width: 80%;
+    }
+
+    .quiz-navigation-link {
+        display: block;
+        margin: 6px auto;
+        width: 80%;
+        text-align: center;
+    }
+}
