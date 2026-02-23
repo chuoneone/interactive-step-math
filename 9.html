@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
     <link rel="icon" href="images/dog.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
@@ -27,9 +28,10 @@
 
         <div style="text-align:center; margin-top: 40px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s1-section1', this)" id="default-s1-btn" data-track-cat="chapter_select">第1章</button>
-                <button class="section-button" onclick="showSection('s1-section2', this)">第2章</button>
-                <button class="section-button" onclick="showSection('s1-section3', this)">第3章</button>
+                <button class="section-button" onclick="showSection('s1-section1', this)" id="default-s1-btn"
+                    data-track-cat="chapter_select">Ch1 相似形</button>
+                <button class="section-button" onclick="showSection('s1-section2', this)">Ch2 圓</button>
+                <button class="section-button" onclick="showSection('s1-section3', this)">Ch3 推理證明與三心</button>
             </div>
         </div>
 
@@ -39,8 +41,10 @@
                     <div class="social-group">
                         <h3 style="text-align: center;">1-1 連比</h3>
                         <div class="btn-group">
-                            <a href="https://gemini.google.com/share/f7e0dee60031" target="_blank" class="btn">01最簡整數比</a>
-                            <a href="https://gemini.google.com/share/cbb333293546" target="_blank" class="btn">02連比例運算</a>
+                            <a href="https://gemini.google.com/share/f7e0dee60031" target="_blank"
+                                class="btn">01最簡整數比</a>
+                            <a href="https://gemini.google.com/share/cbb333293546" target="_blank"
+                                class="btn">02連比例運算</a>
                             <a href="math/G9S1-1-1-3sheet.html" target="_blank" class="btn">03連比例運算3</a>
                             <a href="math/G9S1-1-1-4sheet.html" target="_blank" class="btn">04連比例運算4</a>
                         </div>
@@ -79,7 +83,8 @@
                         <h3 style="text-align: center;">2-1點、線、圓</h3>
                         <div class="btn-group">
                             <a href="math/G9S1-2-1-1&2.html" target="_blank" class="btn">01圓定義/02扇形</a>
-                            <a href="https://app.edcafe.ai/quiz/691698d93a294dcdcfafddfa" target="_blank" class="btn">點線圓測驗</a>
+                            <a href="https://app.edcafe.ai/quiz/691698d93a294dcdcfafddfa" target="_blank"
+                                class="btn">點線圓測驗</a>
                         </div>
                     </div>
                     <div class="social-group">
@@ -123,9 +128,10 @@
 
         <div style="text-align:center; margin-top: 40px;">
             <div class="button-container">
-                <button class="section-button" onclick="showSection('s2-chapter1', this)" id="default-s2-btn">第1章</button>
-                <button class="section-button" onclick="showSection('s2-chapter2', this)">第2章</button>
-                <button class="section-button" onclick="showSection('s2-chapter3', this)">第3章</button>
+                <button class="section-button" onclick="showSection('s2-chapter1', this)" id="default-s2-btn">Ch1
+                    二次函數</button>
+                <button class="section-button" onclick="showSection('s2-chapter2', this)">Ch2 機率</button>
+                <button class="section-button" onclick="showSection('s2-chapter3', this)">Ch3 立體圖形</button>
             </div>
         </div>
 
@@ -179,10 +185,50 @@
     </div>
 
     <footer class="sticky-footer">
+        <div class="footer-left">
+            <div class="countdown-wrapper"><i class="fas fa-sun"></i> 暑假倒數：<span id="days">00</span> 天</div>
+        </div>
         <div class="footer-center">Created by 米克師</div>
+        <div class="footer-right">
+            <button id="other-btn" class="footer-btn">其它 <i class="fas fa-caret-up"></i></button>
+        </div>
     </footer>
+
+    <div id="other-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 style="text-align: center; color: #C84C0C; margin-bottom: 20px;">其它資源</h2>
+            <div class="modal-grid">
+                <div class="modal-group">
+                    <h3><i class="fas fa-cogs"></i> 小工具</h3>
+                    <a href="https://play.blooket.com/play" target="_blank" class="btn">Blooket</a>
+                    <a href="https://www.gimkit.com/join?class=60a1e3ba9eaadc0022adafb6" target="_blank"
+                        class="btn">Gimkit</a>
+                    <a href="https://sites.google.com/view/spedmixtool/time" target="_blank" class="btn">計時器</a>
+                </div>
+                <div class="modal-group">
+                    <h3><i class="fas fa-running"></i> 基本練功</h3>
+                    <a href="https://sites.google.com/view/specialchu/home?authuser=0" target="_blank"
+                        class="btn">舊網</a>
+                    <a href="other/test2.html" target="_blank" class="btn">加減法</a>
+                    <a href="other/test.html" target="_blank" class="btn">99乘法</a>
+                    <a href="math/game1.html" target="_blank" class="btn">正負數加減</a>
+                    <a href="https://doggame-math.pages.dev/" target="_blank" class="btn">狗子冒險去</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="main.js"></script>
     <script src="tracking.js"></script>
+    <script>
+        const modal = document.getElementById("other-modal");
+        const otherBtn = document.getElementById("other-btn");
+        const closeSpan = document.querySelector(".close-modal");
+        otherBtn.onclick = () => modal.style.display = "block";
+        closeSpan.onclick = () => modal.style.display = "none";
+        window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
+    </script>
 </body>
+
 </html>
