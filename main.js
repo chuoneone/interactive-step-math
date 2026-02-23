@@ -5,7 +5,7 @@
 
 // 1. 定義共用的導覽列 HTML 模板
 const NAVBAR_TEMPLATE = `
-  <a href="index.html" class="logo">SPED</a>
+  <a href="/" class="logo">SPED</a>
   <nav>
     <ul class="nav-links">
       <li><a href="/">HOME</a></li>
@@ -250,4 +250,5 @@ function initCountdown() {
     setInterval(updateTimer, 60000);
     updateTimer();
 }
+
 
