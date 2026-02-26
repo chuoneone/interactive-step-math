@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>五、通分化簡（同類項合併）</title>
+  <meta name="description" content="七年級數學 - 二元一次式通分化簡同類項合併互動練習，專為特教生設計。">
+  <link rel="icon" href="../images/dog.png" type="image/png">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Nunito:wght@400;600;800&display=swap"
+    rel="stylesheet">
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #818CF8;
+      --secondary: #EC4899;
+      --text-main: #1F2937;
+      --success: #10B981;
+      --error: #EF4444;
+      --warning: #F59E0B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(135deg, #E0E7FF 0%, #FBCFE8 100%);
+      color: var(--text-main);
+      padding: 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* ── Score Board ── */
+    .score-board {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--primary);
+      z-index: 100;
+      border: 2px solid var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .reset-score-btn {
+      background: var(--error);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+
+    .reset-score-btn:hover {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 640px) {
+      .score-board {
+        position: static;
+        margin-bottom: 15px;
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    /* ── Nav Bar ── */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 12px 0;
+      margin-bottom: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .top-nav .unit-name {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .top-nav .unit-name a {
+      color: #9CA3AF;
+      text-decoration: none;
+    }
+
+    .top-nav .unit-name a:hover {
+      color: var(--primary);
+    }
+
+    .q-nav-btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 2px solid var(--primary-light);
+      background: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .q-nav-btn:hover {
+      background: #EEF2FF;
+    }
+
+    .q-nav-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* ── Tip Box ── */
+    .tip-box {
+      background: var(--primary);
+      color: white;
+      padding: 1.2rem;
+      border-radius: 16px;
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .tip-icon {
+      font-size: 2rem;
+    }
+
+    /* ── Two Column Layout ── */
+    .two-col {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .col-stem {
+      flex: 0 0 35%;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 1.5rem;
+      position: sticky;
+      top: 1rem;
+      align-self: flex-start;
+      border: 2px solid var(--primary-light);
+      z-index: 10;
+    }
+
+    .col-steps {
+      flex: 1;
+      min-width: 0;
+    }
+
+    @media (max-width: 768px) {
+      .two-col {
+        flex-direction: column;
+      }
+
+      .col-stem {
+        position: static;
+        flex: none;
+      }
+    }
+
+    .stem-label {
+      font-size: 0.9rem;
+      color: #6B7280;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .stem-math {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 2;
+    }
+
+    /* ── Step Card ── */
+    .step-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.2rem;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .step-card.locked {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.5);
+    }
+
+    .step-card.completed {
+      border-color: var(--success);
+    }
+
+    .step-card.failed-complete {
+      border-color: var(--warning);
+    }
+
+    .step-card.completed .options-row,
+    .step-card.completed .check-area,
+    .step-card.failed-complete .options-row,
+    .step-card.failed-complete .check-area {
+      display: none;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--primary-light);
+      color: white;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .done-mark {
+      display: none;
+      margin-left: 8px;
+    }
+
+    .step-card.completed .done-mark,
+    .step-card.failed-complete .done-mark {
+      display: inline;
+    }
+
+    .equation-line {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      line-height: 2.2;
+    }
+
+    /* ── Slot ── */
+    .slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      min-height: 44px;
+      border: 2px dashed #9CA3AF;
+      border-radius: 10px;
+      padding: 4px 10px;
+      cursor: pointer;
+      background: #F9FAFB;
+      font-size: 1.2rem;
+      font-weight: 700;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .slot.filled {
+      border: 2px solid var(--primary);
+      background: #EEF2FF;
+    }
+
+    .slot.correct {
+      border-color: var(--success);
+      background: #D1FAE5;
+    }
+
+    .slot.revealed {
+      border-color: var(--warning);
+      background: #FFFBEB;
+      border-style: solid;
+    }
+
+    .slot.shake {
+      animation: shake 0.4s;
+      border-color: var(--error);
+      background: #FEE2E2;
+    }
+
+    /* ── Options ── */
+    .options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .opt-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 2px solid #E5E7EB;
+      background: white;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      user-select: none;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #EEF2FF;
+    }
+
+    .opt-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ── Check Button ── */
+    .check-area {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .check-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-check {
+      padding: 10px 24px;
+      border-radius: 10px;
+      border: none;
+      background: var(--success);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-check:hover {
+      background: #059669;
+    }
+
+    .tries-left {
+      font-size: 0.85rem;
+      color: #6B7280;
+      font-weight: 600;
+    }
+
+    .feedback {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .feedback.ok {
+      color: var(--success);
+    }
+
+    .feedback.ng {
+      color: var(--error);
+    }
+
+    .feedback.warn {
+      color: var(--warning);
+    }
+
+    /* ── Completion Modal ── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-bg.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-box h2 {
+      font-size: 1.6rem;
+      margin: 12px 0 6px;
+    }
+
+    .modal-box p {
+      color: #6B7280;
+      margin-bottom: 1.2rem;
+    }
+
+    .modal-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.2s;
+    }
+
+    .modal-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-btn.primary:hover {
+      background: #4338CA;
+    }
+
+    .modal-btn.secondary {
+      background: #F3F4F6;
+      color: #374151;
+    }
+
+    .modal-btn.secondary:hover {
+      background: #E5E7EB;
+    }
+
+    /* ── Bottom Nav ── */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .nav-btn {
+      background: #1F2937;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-6px);
+      }
+
+      50% {
+        transform: translateX(6px);
+      }
+
+      75% {
+        transform: translateX(-6px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="score-board">
+    <span id="scoreDisplay">得分：0 (0/0)</span>
+    <button class="reset-score-btn" id="btn-reset-data">再做一次</button>
+  </div>
+
+  <div class="container">
+    <!-- Top Nav -->
+    <div class="top-nav">
+      <div class="unit-name"><a href="../7.html">7年級數學</a> ／ 通分化簡</div>
+      <div id="nav-btns"></div>
+    </div>
+
+    <!-- Tip -->
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <div><strong>訣竅：</strong>把一樣的文字符號分組（例如 <em>a</em> 跟 <em>a</em> 一組），再把前面的<mark
+          style="background:#FDE68A;padding:0 4px;border-radius:4px;">係數加起來</mark>就好囉！</div>
+    </div>
+
+    <!-- Question Area -->
+    <div id="question-area"></div>
+
+    <!-- Bottom nav -->
+    <div class="nav-buttons">
+      <a href="G7S2-1-1-04.html" class="nav-btn">⬅️ 上一單元</a>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="modal-bg" id="modal">
+    <div class="modal-box">
+      <div style="font-size:3rem;" id="modal-icon">🎉</div>
+      <h2 id="modal-title">太棒了！</h2>
+      <p id="modal-text">你已經完成這一題了！</p>
+      <button class="modal-btn primary" id="btn-modal-retry">再練一題</button>
+      <button class="modal-btn secondary" id="btn-close-modal">留在本頁</button>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_ID = 'G7S2-1-1-05';
+
+    const questions = [
+      {
+        id: 'q1',
+        title: '練習一',
+        stemLatex: '\\frac{2}{3}a + 4b + \\frac{1}{3}a + 2b',
+        steps: [
+          {
+            desc: '步驟一：找出 a 的部分',
+            parts: [
+              { type: 'text', val: 'a 的部分：（' },
+              { type: 'slot', ans: 'frac23', latex: '\\frac{2}{3}' },
+              { type: 'text', val: ' + ' },
+              { type: 'slot', ans: 'frac13', latex: '\\frac{1}{3}' },
+              { type: 'text', val: '）a ＝ ' },
+              { type: 'slot', ans: '1', latex: '1' },
+              { type: 'text', val: ' a' }
+            ],
+            options: [
+              { val: 'frac23', latex: '\\frac{2}{3}' },
+              { val: 'frac13', latex: '\\frac{1}{3}' },
+              { val: '1', latex: '1' },
+              { val: '4', latex: '4' },
+              { val: '2', latex: '2' }
+            ]
+          },
+          {
+            desc: '步驟二：找出 b 的部分',
+            parts: [
+              { type: 'text', val: 'b 的部分：（' },
+              { type: 'slot', ans: '4', latex: '4' },
+              { type: 'text', val: ' + ' },
+              { type: 'slot', ans: '2', latex: '2' },
+              { type: 'text', val: '）b ＝ ' },
+              { type: 'slot', ans: '6', latex: '6' },
+              { type: 'text', val: ' b' }
+            ],
+            options: [
+              { val: '4', latex: '4' },
+              { val: '2', latex: '2' },
+              { val: '6', latex: '6' },
+              { val: '1', latex: '1' },
+              { val: 'frac23', latex: '\\frac{2}{3}' }
+            ]
+          },
+          {
+            desc: '步驟三：寫出答案',
+            parts: [
+              { type: 'text', val: '答案：' },
+              { type: 'slot', ans: '1', latex: '1' },
+              { type: 'text', val: ' a + ' },
+              { type: 'slot', ans: '6', latex: '6' },
+              { type: 'text', val: ' b' }
+            ],
+            options: [
+              { val: '1', latex: '1' },
+              { val: '6', latex: '6' },
+              { val: '4', latex: '4' },
+              { val: '2', latex: '2' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'q2',
+        title: '練習二',
+        stemLatex: '5m - 3n + m + 4n',
+        steps: [
+          {
+            desc: '步驟一：找出 m 的部分',
+            parts: [
+              { type: 'text', val: 'm 的部分：（' },
+              { type: 'slot', ans: '5', latex: '5' },
+              { type: 'text', val: ' + ' },
+              { type: 'slot', ans: '1', latex: '1' },
+              { type: 'text', val: '）m ＝ ' },
+              { type: 'slot', ans: '6', latex: '6' },
+              { type: 'text', val: ' m' }
+            ],
+            options: [
+              { val: '5', latex: '5' },
+              { val: '1', latex: '1' },
+              { val: '6', latex: '6' },
+              { val: '-3', latex: '-3' },
+              { val: '4', latex: '4' }
+            ]
+          },
+          {
+            desc: '步驟二：找出 n 的部分',
+            parts: [
+              { type: 'text', val: 'n 的部分：（' },
+              { type: 'slot', ans: '-3', latex: '-3' },
+              { type: 'text', val: ' + ' },
+              { type: 'slot', ans: '4', latex: '4' },
+              { type: 'text', val: '）n ＝ ' },
+              { type: 'slot', ans: '1', latex: '1' },
+              { type: 'text', val: ' n' }
+            ],
+            options: [
+              { val: '-3', latex: '-3' },
+              { val: '4', latex: '4' },
+              { val: '1', latex: '1' },
+              { val: '5', latex: '5' },
+              { val: '6', latex: '6' }
+            ]
+          },
+          {
+            desc: '步驟三：寫出答案',
+            parts: [
+              { type: 'text', val: '答案：' },
+              { type: 'slot', ans: '6', latex: '6' },
+              { type: 'text', val: ' m + ' },
+              { type: 'slot', ans: '1', latex: '1' },
+              { type: 'text', val: ' n' }
+            ],
+            options: [
+              { val: '6', latex: '6' },
+              { val: '1', latex: '1' },
+              { val: '-3', latex: '-3' },
+              { val: '5', latex: '5' }
+            ]
+          }
+        ]
+      }
+    ];
+
+    let state = JSON.parse(localStorage.getItem(PAGE_ID)) || {
+      curQ: 0,
+      questions: {}
+    };
+
+    // Initialize state if empty
+    questions.forEach(q => {
+      if (!state.questions[q.id]) {
+        state.questions[q.id] = {
+          currentStep: 0,
+          done: false,
+          stepStates: q.steps.map(() => ({
+            tries: 0,
+            status: 'pending', // 'pending', 'completed', 'failed-complete'
+            filledVals: [] // saved filled values index-aligned with slots
+          }))
+        };
+      }
+    });
+
+    function saveState() {
+      localStorage.setItem(PAGE_ID, JSON.stringify(state));
+    }
+
+    document.getElementById('btn-reset-data').onclick = () => {
+      if (confirm('確定要清除所有進度重新開始嗎？')) {
+        localStorage.removeItem(PAGE_ID);
+        location.reload();
+      }
+    };
+
+    function renderLatex(el, latex, displayMode = false) {
+      katex.render(latex, el, { throwOnError: false, displayMode });
+    }
+
+    function updateScoreDisplay() {
+      let totalSteps = 0;
+      let completedSteps = 0;
+      Object.values(state.questions).forEach(qState => {
+        qState.stepStates.forEach(s => {
+          totalSteps++;
+          if (s.status === 'completed' || s.status === 'failed-complete') {
+            completedSteps++;
+          }
+        });
+      });
+      const percent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+      document.getElementById('scoreDisplay').innerText = `進度：${percent}% (${completedSteps}/${totalSteps})`;
+    }
+
+    function initApp() {
+      buildNav();
+      renderQuestion();
+      updateScoreDisplay();
+    }
+
+    function buildNav() {
+      const nav = document.getElementById('nav-btns');
+      nav.innerHTML = '';
+      questions.forEach((q, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'q-nav-btn' + (i === state.curQ ? ' active' : '');
+        btn.textContent = q.title;
+        btn.onclick = () => {
+          state.curQ = i;
+          saveState();
+          renderQuestion();
+        };
+        nav.appendChild(btn);
+      });
+    }
+
+    function renderQuestion() {
+      buildNav();
+      const area = document.getElementById('question-area');
+      area.innerHTML = '';
+
+      const q = questions[state.curQ];
+      const qState = state.questions[q.id];
+
+      const twocol = document.createElement('div');
+      twocol.className = 'two-col';
+
+      // Left Col
+      const colStem = document.createElement('div');
+      colStem.className = 'col-stem';
+      colStem.innerHTML = `
+            <div class="stem-label">題型：同類項合併</div>
+            <div class="stem-math" id="stem-katex"></div>
+        `;
+      twocol.appendChild(colStem);
+
+      // Right Col
+      const colSteps = document.createElement('div');
+      colSteps.className = 'col-steps';
+
+      q.steps.forEach((step, si) => {
+        const stepState = qState.stepStates[si];
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.id = `step-${q.id}-${si}`;
+
+        if (si > qState.currentStep) card.classList.add('locked');
+        if (stepState.status !== 'pending') {
+          card.classList.add(stepState.status === 'completed' ? 'completed' : 'failed-complete');
+        }
+
+        // Badge
+        const badge = document.createElement('div');
+        badge.className = 'step-badge';
+        badge.innerHTML = `${step.desc} <span class="done-mark">${stepState.status === 'completed' ? '✔' : '⚠'} 完成</span>`;
+        card.appendChild(badge);
+
+        // Equation line
+        const eqLine = document.createElement('div');
+        eqLine.className = 'equation-line';
+
+        const slotRefs = [];
+        let slotIndex = 0;
+
+        step.parts.forEach(p => {
+          if (p.type === 'text') {
+            const span = document.createElement('span');
+            span.textContent = p.val;
+            eqLine.appendChild(span);
+          } else {
+            const slot = document.createElement('span');
+            slot.className = 'slot';
+            slot.dataset.ans = p.ans;
+            slot.dataset.latex = p.latex;
+
+            // Recover filled value if any
+            const savedVal = stepState.filledVals[slotIndex];
+            if (savedVal) {
+              slot.classList.add('filled');
+              const opt = step.options.find(o => o.val === savedVal);
+              renderLatex(slot, opt ? opt.latex : '?');
+            }
+            if (stepState.status === 'completed') slot.classList.add('correct');
+            if (stepState.status === 'failed-complete') {
+              slot.innerHTML = '';
+              renderLatex(slot, p.latex);
+              slot.classList.add('revealed');
+            }
+
+            eqLine.appendChild(slot);
+            slotRefs.push({
+              el: slot,
+              ans: p.ans,
+              latex: p.latex,
+              index: slotIndex,
+              filledVal: savedVal || null
+            });
+            slotIndex++;
+          }
+        });
+        card.appendChild(eqLine);
+
+        // Options Row
+        const optRow = document.createElement('div');
+        optRow.className = 'options-row';
+        const optBtns = [];
+
+        step.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'opt-btn';
+          renderLatex(btn, opt.latex);
+
+          // Disable if already used in a slot
+          if (slotRefs.some(sr => sr.filledVal === opt.val)) {
+            btn.disabled = true;
+          }
+
+          btn.onclick = () => {
+            const target = slotRefs.find(sr => sr.filledVal === null);
+            if (!target) return;
+
+            target.filledVal = opt.val;
+            stepState.filledVals[target.index] = opt.val;
+            saveState();
+
+            target.el.innerHTML = '';
+            renderLatex(target.el, opt.latex);
+            target.el.classList.add('filled');
+            btn.disabled = true;
+            fb.textContent = '';
+          };
+          optRow.appendChild(btn);
+          optBtns.push({ btn, val: opt.val });
+        });
+        card.appendChild(optRow);
+
+        // Slot clear on click
+        slotRefs.forEach(sr => {
+          sr.el.onclick = () => {
+            if (sr.filledVal === null || stepState.status !== 'pending') return;
+
+            const oldVal = sr.filledVal;
+            sr.filledVal = null;
+            stepState.filledVals[sr.index] = null;
+            saveState();
+
+            sr.el.innerHTML = '';
+            sr.el.classList.remove('filled', 'shake');
+
+            const ob = optBtns.find(b => b.val === oldVal);
+            if (ob) ob.btn.disabled = false;
+          };
+        });
+
+        // Check area
+        const checkArea = document.createElement('div');
+        checkArea.className = 'check-area';
+
+        const controls = document.createElement('div');
+        controls.className = 'check-controls';
+
+        const btnCheck = document.createElement('button');
+        btnCheck.className = 'btn-check';
+        btnCheck.textContent = '檢查答案';
+
+        const triesSpan = document.createElement('span');
+        triesSpan.className = 'tries-left';
+        const updateTries = () => {
+          const left = 3 - stepState.tries;
+          triesSpan.textContent = `剩餘機會：${left}`;
+        };
+        updateTries();
+
+        const fb = document.createElement('div');
+        fb.className = 'feedback';
+
+        controls.appendChild(btnCheck);
+        controls.appendChild(triesSpan);
+        checkArea.appendChild(controls);
+        checkArea.appendChild(fb);
+        card.appendChild(checkArea);
+
+        btnCheck.onclick = () => {
+          const allFilled = slotRefs.every(sr => sr.filledVal !== null);
+          if (!allFilled) {
+            fb.textContent = '還有空格沒填喔！';
+            fb.className = 'feedback warn';
+            return;
+          }
+
+          stepState.tries++;
+          let allCorrect = true;
+          slotRefs.forEach(sr => {
+            if (sr.filledVal !== sr.ans) {
+              allCorrect = false;
+              sr.el.classList.add('shake');
+              setTimeout(() => sr.el.classList.remove('shake'), 400);
+            }
+          });
+
+          if (allCorrect) {
+            fb.textContent = '都對了！你真棒！ 🎉';
+            fb.className = 'feedback ok';
+            stepState.status = 'completed';
+            confetti({ particleCount: 60, spread: 50 });
+            completeStep(si);
+          } else {
+            if (stepState.tries >= 3) {
+              fb.textContent = '雖然可惜，讓我們看看正確填法，繼續下一題吧！';
+              fb.className = 'feedback warn';
+              stepState.status = 'failed-complete';
+              completeStep(si);
+            } else {
+              fb.textContent = '再想想看，你可以的！';
+              fb.className = 'feedback ng';
+            }
+          }
+          updateTries();
+          saveState();
+          updateScoreDisplay();
+        };
+
+        function completeStep(index) {
+          card.classList.add(stepState.status === 'completed' ? 'completed' : 'failed-complete');
+          if (qState.currentStep === index) {
+            qState.currentStep++;
+            if (qState.currentStep >= q.steps.length) {
+              qState.done = true;
+              showFinalModal();
+            } else {
+              setTimeout(() => {
+                renderQuestion();
+                const next = document.getElementById(`step-${q.id}-${index + 1}`);
+                if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 1000);
+            }
+          }
+          saveState();
+        }
+
+        colSteps.appendChild(card);
+      });
+
+      twocol.appendChild(colSteps);
+      area.appendChild(twocol);
+
+      const stemKatex = document.getElementById('stem-katex');
+      renderLatex(stemKatex, q.stemLatex, true);
+    }
+
+    function showFinalModal() {
+      const modal = document.getElementById('modal');
+      const icon = document.getElementById('modal-icon');
+      const title = document.getElementById('modal-title');
+      const text = document.getElementById('modal-text');
+
+      const q = questions[state.curQ];
+      const qState = state.questions[q.id];
+
+      const perfect = qState.stepStates.every(s => s.status === 'completed');
+
+      if (perfect) {
+        icon.textContent = '🏆';
+        title.textContent = '完美達成！';
+        text.textContent = `你完成了「${q.title}」的所有步驟且全部正確！`;
+      } else {
+        icon.textContent = '💪';
+        title.textContent = '完成練習！';
+        text.textContent = `你完成了「${q.title}」，繼續加油會更厲害喔！`;
+      }
+
+      modal.classList.add('show');
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+    }
+
+    document.getElementById('btn-close-modal').onclick = () => {
+      document.getElementById('modal').classList.remove('show');
+    };
+
+    document.getElementById('btn-modal-retry').onclick = () => {
+      document.getElementById('modal').classList.remove('show');
+      // Find next undone or just stay
+      if (state.curQ + 1 < questions.length) {
+        state.curQ++;
+      } else {
+        state.curQ = 0;
+      }
+      saveState();
+      renderQuestion();
+    };
+
+    // Auto-load KaTeX contrib before init
+    window.onload = () => {
+      const check = setInterval(() => {
+        if (window.katex && window.renderMathInElement) {
+          clearInterval(check);
+          initApp();
+        }
+      }, 100);
+    };
+  </script>
+</body>
+
+</html>
