@@ -277,11 +277,12 @@
     width: 100%;
     padding: 10px 5px;
     font-size: 16px;
-    white-space: nowrap;
+    white-space: normal; /* 允許換行，防止超出 */
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 20px;
+    min-height: 60px; /* 保持一致高度，但允許內容撐開 */
   }
 
   /* --- Footer 滿版貼底 (手機版) --- */
