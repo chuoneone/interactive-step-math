@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文現在簡單式：動詞三單變化練習</title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-label {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .option-input:checked+.option-label {
+            background-color: #dbeafe;
+            border-color: #3b82f6;
+        }
+
+        .option-input:disabled+.option-label {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .correct-option .option-label {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+        }
+
+        .incorrect-selected .option-label {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+
+        .speaker-btn {
+            transition: all 0.2s;
+        }
+
+        .speaker-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
+
+        .speaker-btn.speaking {
+            animation: pulse-speak 0.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-speak {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        .check-btn {
+            transition: all 0.15s;
+        }
+
+        .check-btn:active {
+            transform: scale(0.95);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-fill {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen py-8 px-4">
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10">
+        <header class="mb-6 border-b border-gray-100 pb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 text-center">英文現在簡單式：動詞三單變化練習</h1>
+            <p class="text-gray-500 text-center mt-2 text-sm md:text-base">請根據主詞，選擇正確的動詞形式。逐題作答，點擊「確認答案」檢查。</p>
+        </header>
+
+        <!-- 進度條 -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-gray-500">作答進度</span>
+                <span id="progressText" class="text-sm font-bold text-blue-600">0 / 14</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div id="progressBar"
+                    class="progress-fill bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full"
+                    style="width: 0%"></div>
+            </div>
+        </div>
+
+        <form id="quizForm" class="space-y-12">
+            <!-- 一、 基礎規則變化 (+s) -->
+            <section>
+                <h2 class="text-lg font-bold text-blue-600 mb-4 flex items-center">
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full mr-2 text-sm">規則 1</span>
+                    基礎規則變化 (+s)
+                </h2>
+                <div class="space-y-8" id="section1"></div>
+            </section>
+
+            <!-- 二、 字尾為 -s, -x, -sh, -ch, -o (+es) -->
+            <section>
+                <h2 class="text-lg font-bold text-orange-600 mb-4 flex items-center">
+                    <span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full mr-2 text-sm">規則 2</span>
+                    字尾為 -s, -x, -sh, -ch, -o (+es)
+                </h2>
+                <div class="space-y-8" id="section2"></div>
+            </section>
+
+            <!-- 三、 字尾為「子音+y」(去 y + ies) 與「母音+y」(+s) -->
+            <section>
+                <h2 class="text-lg font-bold text-purple-600 mb-4 flex items-center">
+                    <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full mr-2 text-sm">規則 3</span>
+                    y 字尾的變化
+                </h2>
+                <div class="space-y-8" id="section3"></div>
+            </section>
+
+            <!-- 四、 不規則變化 -->
+            <section>
+                <h2 class="text-lg font-bold text-red-600 mb-4 flex items-center">
+                    <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full mr-2 text-sm">規則 4</span>
+                    不規則變化
+                </h2>
+                <div class="space-y-8" id="section4"></div>
+            </section>
+
+            <div class="pt-8 border-t border-gray-100 flex flex-col items-center gap-4">
+                <div id="summaryArea"
+                    class="hidden w-full bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 text-center fade-in">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">🎉 全部作答完畢！</h3>
+                    <div class="text-4xl font-black text-blue-600 my-3" id="finalScore">0</div>
+                    <p id="finalFeedback" class="text-gray-600"></p>
+                </div>
+                <button type="button" onclick="resetQuiz()" class="text-gray-400 hover:text-gray-600 text-sm underline">
+                    重置所有題目
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const quizData = [
+            { id: 1, section: 1, q: "My sister ______ (sing) beautifully.", fullSentence: "My sister sings beautifully.", zh: "我的姊姊唱歌唱得很好聽。", options: ["sing", "sings", "singing", "singes"], correct: 1, explanation: "一般動詞直接加 s", svgPath: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>' },
+            { id: 2, section: 1, q: "He ______ (listen) to music every night.", fullSentence: "He listens to music every night.", zh: "他每天晚上聽音樂。", options: ["listens", "listen", "listenes", "listening"], correct: 0, explanation: "一般動詞直接加 s", svgPath: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>' },
+            { id: 3, section: 1, q: "The boy ______ (eat) breakfast at seven.", fullSentence: "The boy eats breakfast at seven.", zh: "那個男孩七點吃早餐。", options: ["eat", "eating", "eats", "eates"], correct: 2, explanation: "一般動詞直接加 s", svgPath: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>' },
+            { id: 4, section: 1, q: "She ______ (dance) in the room.", fullSentence: "She dances in the room.", zh: "她在房間裡跳舞。", options: ["dances", "dance", "dancies", "dancing"], correct: 0, explanation: "字尾有 e，直接加 s", svgPath: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>' },
+
+            { id: 5, section: 2, q: "Dad ______ (wash) his car on Sundays.", fullSentence: "Dad washes his car on Sundays.", zh: "爸爸每個星期天洗車。", options: ["washs", "washing", "wash", "washes"], correct: 3, explanation: "字尾 -sh，加 es", svgPath: '<path d="M12 2.5a4.2 4.2 0 0 0-3 1.2c-2 2-5 5-5 8.3A8 8 0 1 0 20 12c0-3.3-3-6.3-5-8.3a4.2 4.2 0 0 0-3-1.2z"/>' },
+            { id: 6, section: 2, q: "The girl ______ (watch) a movie now.", fullSentence: "The girl watches a movie now.", zh: "那個女孩現在正在看電影。", options: ["watchs", "watches", "watch", "watching"], correct: 1, explanation: "字尾 -ch，加 es", svgPath: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>' },
+            { id: 7, section: 2, q: "Tom ______ (go) to school by bus.", fullSentence: "Tom goes to school by bus.", zh: "湯姆搭公車上學。", options: ["goes", "go", "gos", "going"], correct: 0, explanation: "字尾 -o，加 es", svgPath: '<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>' },
+            { id: 8, section: 2, q: "My brother ______ (do) his homework after school.", fullSentence: "My brother does his homework after school.", zh: "我的弟弟放學後做功課。", options: ["do", "dos", "does", "doing"], correct: 2, explanation: "字尾 -o，加 es", svgPath: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>' },
+
+            { id: 9, section: 3, q: "A plane ______ (fly) in the sky.", fullSentence: "A plane flies in the sky.", zh: "一架飛機在天空中飛。", options: ["flys", "flies", "fly", "flying"], correct: 1, explanation: "子音 l + y，去 y 加 ies", svgPath: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>' },
+            { id: 10, section: 3, q: "The student ______ (study) English every day.", fullSentence: "The student studies English every day.", zh: "那個學生每天讀英文。", options: ["studys", "studies", "studyes", "study"], correct: 1, explanation: "子音 d + y，去 y 加 ies", svgPath: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
+            { id: 11, section: 3, q: "She ______ (hurry) to the bus stop.", fullSentence: "She hurries to the bus stop.", zh: "她匆忙趕到公車站。", options: ["hurrys", "hurryes", "hurries", "hurry"], correct: 2, explanation: "子音 rr + y，去 y 加 ies", svgPath: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
+            { id: 12, section: 3, q: "The boy ______ (play) basketball.", fullSentence: "The boy plays basketball.", zh: "那個男孩打籃球。", options: ["plaies", "plays", "playes", "play"], correct: 1, explanation: "母音 a + y，直接加 s", svgPath: '<line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/>' },
+
+            { id: 13, section: 4, q: "It ______ (be) a sunny day.", fullSentence: "It is a sunny day.", zh: "今天是晴天。", options: ["am", "are", "is", "be"], correct: 2, explanation: "be 動詞三單為 is", svgPath: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>' },
+            { id: 14, section: 4, q: "He ______ (have) a new pen.", fullSentence: "He has a new pen.", zh: "他有一支新的筆。", options: ["have", "has", "haves", "having"], correct: 1, explanation: "have 的三單不規則變化為 has", svgPath: '<polyline points="20 12 20 22 4 22 4 12"/><rect width="20" height="5" x="2" y="7"/><line x1="12" x2="12" y1="22" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>' }
+        ];
+
+        const sectionStyles = {
+            1: "text-blue-600 bg-blue-100",
+            2: "text-orange-600 bg-orange-100",
+            3: "text-purple-600 bg-purple-100",
+            4: "text-red-600 bg-red-100"
+        };
+
+        const sectionBtnStyles = {
+            1: "bg-blue-600 hover:bg-blue-700",
+            2: "bg-orange-500 hover:bg-orange-600",
+            3: "bg-purple-600 hover:bg-purple-700",
+            4: "bg-red-600 hover:bg-red-700"
+        };
+
+        let answeredCount = 0;
+        let correctCount = 0;
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85;
+                utterance.pitch = 1;
+
+                const btn = document.querySelector('.speaking');
+                utterance.onend = () => {
+                    document.querySelectorAll('.speaking').forEach(b => b.classList.remove('speaking'));
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('您的瀏覽器不支援語音功能，請使用 Chrome 或 Edge。');
+            }
+        }
+
+        function updateProgress() {
+            const total = quizData.length;
+            const pct = Math.round((answeredCount / total) * 100);
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = `${answeredCount} / ${total}`;
+
+            if (answeredCount === total) {
+                const finalPct = Math.round((correctCount / total) * 100);
+                const area = document.getElementById('summaryArea');
+                area.classList.remove('hidden');
+                document.getElementById('finalScore').textContent = `${correctCount} / ${total}（${finalPct} 分）`;
+
+                let fb = "";
+                if (finalPct === 100) fb = "🏆 太棒了！全部答對！你已經完全掌握了！";
+                else if (finalPct >= 80) fb = "👏 做得很好！快要全對了，再加油一點點！";
+                else if (finalPct >= 60) fb = "👍 及格了！可以再複習一下錯誤的題目。";
+                else fb = "💪 別灰心，多練習幾次一定會進步！";
+                document.getElementById('finalFeedback').textContent = fb;
+
+                area.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function checkAnswer(id) {
+            const item = quizData.find(d => d.id === id);
+            const selected = document.querySelector(`input[name="q${id}"]:checked`);
+
+            if (!selected) {
+                // 提示還沒選
+                const container = document.getElementById(`q-container-${id}`);
+                container.classList.add('border-yellow-300');
+                setTimeout(() => container.classList.remove('border-yellow-300'), 800);
+                return;
+            }
+
+            const selectedIdx = parseInt(selected.value);
+            const isCorrect = selectedIdx === item.correct;
+            const feedback = document.getElementById(`feedback-${id}`);
+            const container = document.getElementById(`q-container-${id}`);
+            const checkBtn = document.getElementById(`check-btn-${id}`);
+
+            // 停用所有選項
+            document.querySelectorAll(`input[name="q${id}"]`).forEach(inp => {
+                inp.disabled = true;
+            });
+
+            // 隱藏檢查按鈕
+            checkBtn.classList.add('hidden');
+
+            // 標記正確選項
+            const correctOptionDiv = document.querySelector(`#q${id}_${item.correct}`).closest('.relative');
+            correctOptionDiv.classList.add('correct-option');
+
+            if (isCorrect) {
+                correctCount++;
+                feedback.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <span class="text-xl">✅</span>
+                        <div>
+                            <p class="font-bold text-green-700">正確！${item.explanation}</p>
+                            <p class="mt-1 text-green-600"><strong>完整句子：</strong>${item.fullSentence}</p>
+                            <p class="mt-1 text-green-600"><strong>中文翻譯：</strong>${item.zh}</p>
+                        </div>
+                    </div>`;
+                feedback.className = 'mt-3 text-sm p-4 rounded-xl bg-green-50 border border-green-200 fade-in';
+                container.classList.add('border-green-200', 'bg-green-50/30');
+            } else {
+                // 標記錯誤選項
+                const wrongOptionDiv = document.querySelector(`#q${id}_${selectedIdx}`).closest('.relative');
+                wrongOptionDiv.classList.add('incorrect-selected');
+
+                feedback.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <span class="text-xl">❌</span>
+                        <div>
+                            <p class="font-bold text-red-700">答錯了！正確答案是 (${String.fromCharCode(65 + item.correct)}) ${item.options[item.correct]}</p>
+                            <p class="mt-1 text-red-600"><strong>規則說明：</strong>${item.explanation}</p>
+                            <p class="mt-1 text-red-600"><strong>完整句子：</strong>${item.fullSentence}</p>
+                            <p class="mt-1 text-red-600"><strong>中文翻譯：</strong>${item.zh}</p>
+                        </div>
+                    </div>`;
+                feedback.className = 'mt-3 text-sm p-4 rounded-xl bg-red-50 border border-red-200 fade-in';
+                container.classList.add('border-red-200', 'bg-red-50/30');
+            }
+
+            // 顯示發音按鈕
+            const speakArea = document.getElementById(`speak-area-${id}`);
+            speakArea.classList.remove('hidden');
+            speakArea.classList.add('fade-in');
+
+            answeredCount++;
+            updateProgress();
+        }
+
+        function renderQuiz() {
+            quizData.forEach(item => {
+                const container = document.getElementById(`section${item.section}`);
+                const qDiv = document.createElement('div');
+                qDiv.className = 'bg-gray-50/50 p-5 rounded-xl border-2 border-transparent transition-all';
+                qDiv.id = `q-container-${item.id}`;
+
+                let optionsHtml = '';
+                item.options.forEach((opt, idx) => {
+                    optionsHtml += `
+                        <div class="relative">
+                            <input type="radio" name="q${item.id}" id="q${item.id}_${idx}" value="${idx}" class="option-input absolute opacity-0 pointer-events-none">
+                            <label for="q${item.id}_${idx}" class="option-label block p-3 rounded-lg border-2 border-gray-200 text-gray-700 hover:border-gray-300">
+                                <span class="inline-block w-6 text-gray-400 font-mono">${String.fromCharCode(65 + idx)}</span> ${opt}
+                            </label>
+                        </div>
+                    `;
+                });
+
+                const iconStyle = sectionStyles[item.section];
+                const btnStyle = sectionBtnStyles[item.section];
+
+                qDiv.innerHTML = `
+                    <div class="flex items-start gap-3 mb-4">
+                        <div class="flex-shrink-0 p-2 rounded-xl ${iconStyle}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                ${item.svgPath}
+                            </svg>
+                        </div>
+                        <p class="font-medium text-gray-800 text-lg pt-1">${item.id}. ${item.q}</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${optionsHtml}
+                    </div>
+                    <div class="mt-4 flex items-center gap-3">
+                        <button type="button" id="check-btn-${item.id}" onclick="checkAnswer(${item.id})"
+                            class="check-btn ${btnStyle} text-white py-2 px-5 rounded-lg font-bold text-sm shadow-sm">
+                            ✏️ 確認答案
+                        </button>
+                        <div id="speak-area-${item.id}" class="hidden flex items-center gap-2">
+                            <button type="button" onclick="this.classList.add('speaking'); speak('${item.fullSentence.replace(/'/g, "\\'")}')"
+                                class="speaker-btn inline-flex items-center gap-1.5 bg-indigo-100 text-indigo-700 py-2 px-4 rounded-lg font-medium text-sm hover:bg-indigo-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                                </svg>
+                                聽發音
+                            </button>
+                        </div>
+                    </div>
+                    <div id="feedback-${item.id}" class="hidden mt-3 text-sm p-3 rounded-lg"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function resetQuiz() {
+            answeredCount = 0;
+            correctCount = 0;
+            document.getElementById('quizForm').reset();
+            document.getElementById('summaryArea').classList.add('hidden');
+
+            quizData.forEach(item => {
+                const feedback = document.getElementById(`feedback-${item.id}`);
+                const container = document.getElementById(`q-container-${item.id}`);
+                const checkBtn = document.getElementById(`check-btn-${item.id}`);
+                const speakArea = document.getElementById(`speak-area-${item.id}`);
+
+                feedback.className = 'hidden mt-3 text-sm p-3 rounded-lg';
+                feedback.innerHTML = '';
+                container.className = 'bg-gray-50/50 p-5 rounded-xl border-2 border-transparent transition-all';
+                checkBtn.classList.remove('hidden');
+                speakArea.classList.add('hidden');
+
+                // 移除選項標記
+                container.querySelectorAll('.correct-option').forEach(el => el.classList.remove('correct-option'));
+                container.querySelectorAll('.incorrect-selected').forEach(el => el.classList.remove('incorrect-selected'));
+
+                // 重新啟用選項
+                document.querySelectorAll(`input[name="q${item.id}"]`).forEach(inp => {
+                    inp.disabled = false;
+                });
+            });
+
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = renderQuiz;
+    </script>
+</body>
+
+</html>
