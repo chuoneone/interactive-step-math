@@ -83,7 +83,7 @@ function initSemesterLogic() {
     // 綁定點擊事件
     toggleBtn.addEventListener('click', () => {
         currentSem = currentSem === 1 ? 2 : 1;
-        
+
         // 圖示旋轉動畫
         const icon = document.getElementById('toggle-icon');
         if (icon) {
@@ -105,7 +105,7 @@ function updateSemesterUI() {
         if (s1Area) s1Area.style.display = 'block';
         if (s2Area) s2Area.style.display = 'none';
         if (toggleText) toggleText.innerText = "切換至 下學期";
-        
+
         // 自動點擊上學期的預設按鈕
         const defBtn = document.getElementById('default-s1-btn');
         if (defBtn) defBtn.click();
@@ -113,7 +113,7 @@ function updateSemesterUI() {
         if (s1Area) s1Area.style.display = 'none';
         if (s2Area) s2Area.style.display = 'block';
         if (toggleText) toggleText.innerText = "切換至 上學期";
-        
+
         // 自動點擊下學期的預設按鈕
         const defBtn = document.getElementById('default-s2-btn');
         if (defBtn) defBtn.click();
@@ -151,8 +151,8 @@ function initMobileMenu() {
         });
 
         document.addEventListener('click', (e) => {
-            if (navLinks.classList.contains('active') && 
-                !navLinks.contains(e.target) && 
+            if (navLinks.classList.contains('active') &&
+                !navLinks.contains(e.target) &&
                 !menuToggle.contains(e.target)) {
                 navLinks.classList.remove('active');
                 dropdowns.forEach(d => d.classList.remove('open'));

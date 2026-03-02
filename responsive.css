@@ -6,14 +6,16 @@
 @media (max-width: 1024px) {
 
   /* --- 全域容器調整 --- */
-  .container, footer, .sticky-footer {
+  .container,
+  footer,
+  .sticky-footer {
     width: 98% !important;
     max-width: 98% !important;
   }
 
   /* --- 標題畫面 (Title Screen) 擠壓修正 --- */
   #title-screen .game-title {
-    font-size: 2.5rem; 
+    font-size: 2.5rem;
     margin-bottom: 50px;
   }
 
@@ -22,11 +24,11 @@
     width: 65px;
     height: 100px;
     bottom: 50px;
-    left: 2%; 
+    left: 2%;
   }
 
   #title-screen .pipe-decoration::before {
-    width: 85px; 
+    width: 85px;
     height: 30px;
     top: -30px;
     left: -10px;
@@ -34,8 +36,8 @@
 
   #title-screen .pipe-decoration.right {
     left: auto;
-    right: 2%; 
-    height: 70px; 
+    right: 2%;
+    height: 70px;
   }
 
   #title-screen .block {
@@ -43,26 +45,26 @@
     height: 50px;
     font-size: 24px;
   }
-  
+
   /* --- 內容頁面調整 --- */
   .button-container {
-      gap: 12px;
+    gap: 12px;
   }
-  
+
   .section-title {
-      font-size: 2.2rem;
+    font-size: 2.2rem;
   }
 }
 
 
 /* 📱 手機版 (直向)：最大寬度 768px */
 @media (max-width: 768px) {
-  
+
   /* --- 修正下拉選單容器 --- */
   .nav-links .dropdown-content {
-    display: none; 
-    position: static; 
-    background: rgba(255, 255, 255, 0.1) !important; 
+    display: none;
+    position: static;
+    background: rgba(255, 255, 255, 0.1) !important;
     box-shadow: none;
     width: 100%;
     border-radius: 12px;
@@ -72,11 +74,11 @@
   }
 
   .nav-links .dropdown-content a {
-    color: #ffffff !important; 
+    color: #ffffff !important;
     background: transparent !important;
     padding: 12px 20px !important;
     font-size: 16px !important;
-    text-align: center !important; 
+    text-align: center !important;
     border: none !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -89,15 +91,16 @@
   }
 
   .nav-links .dropdown-content a:active {
-    background: rgba(232, 156, 36, 0.3) !important; 
-    color: #FFD700 !important; 
+    background: rgba(232, 156, 36, 0.3) !important;
+    color: #FFD700 !important;
   }
 
   /* --- 全域調整 --- */
   body {
     padding: 15px;
     padding-top: 80px;
-    padding-bottom: 160px; /* 給 Footer 留足夠空間 */
+    padding-bottom: 160px;
+    /* 給 Footer 留足夠空間 */
   }
 
   /* --- 解決懸浮按鈕擋住選單 --- */
@@ -109,7 +112,8 @@
     width: fit-content;
     display: flex;
     justify-content: center;
-    z-index: 10 !important; /* 降低按鈕層級 */
+    z-index: 10 !important;
+    /* 降低按鈕層級 */
   }
 
   /* --- 導覽列與選單本體 --- */
@@ -121,15 +125,17 @@
     top: 70px;
     left: 5%;
     width: 90%;
-    margin: 0 !important; /* 清除電腦版的向右推擠，完美置中 */
+    margin: 0 !important;
+    /* 清除電腦版的向右推擠，完美置中 */
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 20px;
-    box-sizing: border-box; 
-    z-index: 9999 !important; /* 拉高選單層級，保證不會被蓋住 */
+    box-sizing: border-box;
+    z-index: 9999 !important;
+    /* 拉高選單層級，保證不會被蓋住 */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     transform: translateY(-10px);
     opacity: 0;
@@ -190,17 +196,24 @@
   .intro-text {
     font-size: 2.5rem;
     letter-spacing: 1px;
-    border-right: none; 
+    border-right: none;
     padding: 0 10px;
     margin-top: 20px;
     white-space: normal;
     height: auto;
     animation: slowPulseMobile 2.5s ease-in-out infinite;
   }
-  
+
   @keyframes slowPulseMobile {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.35;
+    }
   }
 
   /* --- 首頁科目大按鈕 (App 網格化設計) --- */
@@ -214,7 +227,8 @@
 
   .grade-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 一排三個 */
+    grid-template-columns: repeat(3, 1fr);
+    /* 一排三個 */
     gap: 10px;
     width: 100%;
   }
@@ -226,9 +240,10 @@
     font-size: 15px;
     margin: 0;
     border-radius: 16px;
-    
+
     display: flex;
-    flex-direction: column; /* 圖上字下 */
+    flex-direction: column;
+    /* 圖上字下 */
     justify-content: center;
     align-items: center;
     gap: 8px;
@@ -277,12 +292,14 @@
     width: 100%;
     padding: 10px 5px;
     font-size: 16px;
-    white-space: normal; /* 允許換行，防止超出 */
+    white-space: normal;
+    /* 允許換行，防止超出 */
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 20px;
-    min-height: 60px; /* 保持一致高度，但允許內容撐開 */
+    min-height: 60px;
+    /* 保持一致高度，但允許內容撐開 */
   }
 
   /* --- Footer 滿版貼底 (手機版) --- */
@@ -294,7 +311,7 @@
     width: 100% !important;
     margin: 0 !important;
     border-radius: 0 !important;
-    flex-direction: column; 
+    flex-direction: column;
     gap: 15px;
     padding: 20px 15px !important;
   }
