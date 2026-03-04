@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毛毛蟲長大日記：破解等差公式</title>
+    <meta name="description" content="透過觀察毛毛蟲每天吃葉子的變化，學習等差數列公式中為什麼要減1">
+    <link rel="icon" href="dog.png" type="image/png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 毛毛蟲頭部觸角 */
+        .antenna-left {
+            position: absolute;
+            top: -15%;
+            left: 25%;
+            width: 10%;
+            height: 30%;
+            border-top-left-radius: 9999px;
+            border-top-right-radius: 9999px;
+            transform: rotate(-20deg);
+        }
+
+        .antenna-right {
+            position: absolute;
+            top: -15%;
+            right: 25%;
+            width: 10%;
+            height: 30%;
+            border-top-left-radius: 9999px;
+            border-top-right-radius: 9999px;
+            transform: rotate(20deg);
+        }
+
+        .eye {
+            position: absolute;
+            top: 25%;
+            width: 15%;
+            height: 15%;
+            border-radius: 50%;
+        }
+
+        .eye-left {
+            left: 25%;
+        }
+
+        .eye-right {
+            right: 25%;
+        }
+
+        .mouth {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 15%;
+            border-bottom: 1.5px solid #0f172a;
+            border-radius: 50%;
+        }
+
+        /* 選中卡片的動畫效果 */
+        .row-card {
+            transition: all 0.2s ease;
+        }
+
+        .row-card.selected {
+            transform: scale(1.01);
+        }
+
+        /* 可折疊公式區動畫 */
+        .formula-collapsible {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+            opacity: 0;
+        }
+
+        .formula-collapsible.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .formula-toggle-btn {
+            transition: all 0.2s ease;
+        }
+
+        .formula-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .formula-toggle-btn .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .formula-toggle-btn.open .arrow-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-amber-50 p-2 md:p-8 text-slate-800 flex justify-center">
+
+    <div
+        class="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-emerald-100 flex flex-col">
+
+        <!-- 標題區 -->
+        <div class="bg-emerald-500 text-white p-4 md:p-6 relative overflow-hidden shrink-0">
+            <div class="relative z-10 flex items-center gap-3 md:gap-4">
+                <div class="bg-white p-2 md:p-3 rounded-full text-emerald-500 shadow-md shrink-0">
+                    <!-- Bug Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="m8 2 1.88 1.88" />
+                        <path d="M14.12 3.88 16 2" />
+                        <path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" />
+                        <path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" />
+                        <path d="M12 20v-9" />
+                        <path d="M6.53 9C4.6 8.8 3 7.1 3 5" />
+                        <path d="M6 13H2" />
+                        <path d="M3 21c0-2.1 1.7-3.9 3.8-4" />
+                        <path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" />
+                        <path d="M22 13h-4" />
+                        <path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-3xl font-bold">毛毛蟲長大日記：破解等差公式</h1>
+                    <p class="mt-1 md:mt-2 text-emerald-50 text-sm md:text-lg">
+                        觀察毛毛蟲每天吃葉子的變化！為什麼公式裡要減 1 呢？
+                    </p>
+                </div>
+            </div>
+            <!-- 背景裝飾 -->
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-emerald-400 rounded-full opacity-50"></div>
+            <div class="absolute right-20 -bottom-10 w-24 h-24 bg-emerald-600 rounded-full opacity-30"></div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div
+            class="bg-emerald-50 p-3 md:p-4 border-b-2 border-emerald-100 flex flex-wrap items-center justify-center gap-3 md:gap-6 shadow-inner shrink-0 z-10">
+            <div class="hidden md:flex items-center gap-2 font-bold text-emerald-800">
+                <!-- Settings Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 7h-9" />
+                    <path d="M14 17H5" />
+                    <circle cx="17" cy="17" r="3" />
+                    <circle cx="7" cy="7" r="3" />
+                </svg>
+                <span>設定基因：</span>
+            </div>
+
+            <!-- 首項控制 -->
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border-2 border-emerald-200 shadow-sm">
+                <label class="text-sm md:text-base font-bold text-emerald-700">出生長度(a₁)</label>
+                <select id="ctrl-a1" onchange="updateParams()"
+                    class="bg-emerald-50 border border-emerald-300 rounded-lg px-2 py-1 text-emerald-900 font-bold outline-none focus:border-emerald-500 cursor-pointer">
+                    <option value="1">1 節</option>
+                    <option value="2">2 節</option>
+                    <option value="3" selected>3 節</option>
+                    <option value="4">4 節</option>
+                    <option value="5">5 節</option>
+                </select>
+            </div>
+
+            <!-- 公差控制 -->
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border-2 border-yellow-200 shadow-sm">
+                <label class="text-sm md:text-base font-bold text-yellow-600">每天長大(d)</label>
+                <select id="ctrl-d" onchange="updateParams()"
+                    class="bg-yellow-50 border border-yellow-300 rounded-lg px-2 py-1 text-yellow-900 font-bold outline-none focus:border-yellow-500 cursor-pointer">
+                    <option value="1">+1 節</option>
+                    <option value="2" selected>+2 節</option>
+                    <option value="3">+3 節</option>
+                    <option value="4">+4 節</option>
+                </select>
+            </div>
+
+            <!-- 項數控制 -->
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border-2 border-sky-200 shadow-sm">
+                <label class="text-sm md:text-base font-bold text-sky-600">觀察天數(n)</label>
+                <select id="ctrl-n" onchange="updateParams()"
+                    class="bg-sky-50 border border-sky-300 rounded-lg px-2 py-1 text-sky-900 font-bold outline-none focus:border-sky-500 cursor-pointer">
+                    <option value="2">2 天</option>
+                    <option value="3">3 天</option>
+                    <option value="4">4 天</option>
+                    <option value="5" selected>5 天</option>
+                    <option value="6">6 天</option>
+                    <option value="7">7 天</option>
+                    <option value="8">8 天</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="p-3 md:p-6 flex flex-col gap-4 md:gap-6 overflow-hidden">
+
+            <!-- 操作提示 -->
+            <div
+                class="bg-amber-100 p-3 rounded-xl border-2 border-amber-200 flex gap-3 items-center shadow-sm shrink-0">
+                <!-- MousePointerClick Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-amber-600 flex-shrink-0"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="m9 9 5 12 1.8-5.2L21 14Z" />
+                    <path d="M7.2 2.2 8 5.1" />
+                    <path d="m5.1 8-2.9-.8" />
+                    <path d="M14 4.1 12 6" />
+                    <path d="m6 12-1.9 2" />
+                </svg>
+                <p class="text-amber-900 text-sm md:text-base font-medium">
+                    點擊不同天數的卡片，並利用右下角的按鈕展開算式！
+                </p>
+            </div>
+
+            <!-- 視覺化呈現與公式 -->
+            <div class="flex flex-col gap-4 md:gap-6 min-w-0 w-full overflow-y-auto pr-1">
+
+                <!-- 視覺化毛毛蟲區 -->
+                <div
+                    class="bg-white border-2 border-slate-100 rounded-2xl p-2 md:p-4 shadow-inner min-w-0 w-full shrink-0">
+                    <div id="caterpillar-rows" class="flex flex-col gap-3 md:gap-4 w-full">
+                        <!-- JS 動態生成 -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 狀態 =====
+        let a1 = 3;
+        let d = 2;
+        let n = 5;
+        let selectedIndex = n - 1;
+        let mathSteps = new Array(10).fill(0);
+        let formulaOpen = new Array(10).fill(false);
+
+        // ===== 工具函式 =====
+        function calculateValue(index) {
+            return a1 + index * d;
+        }
+
+        function createCaterpillarHead() {
+            const head = document.createElement('div');
+            head.className = 'w-8 sm:w-10 h-auto aspect-square shrink-0 rounded-full bg-emerald-500 flex items-center justify-center relative shadow-sm z-10 border border-emerald-600';
+            head.style.minWidth = '12px';
+
+            // 觸角
+            const antennaL = document.createElement('div');
+            antennaL.className = 'antenna-left bg-emerald-700';
+            head.appendChild(antennaL);
+
+            const antennaR = document.createElement('div');
+            antennaR.className = 'antenna-right bg-emerald-700';
+            head.appendChild(antennaR);
+
+            // 眼睛
+            const eyeL = document.createElement('div');
+            eyeL.className = 'eye eye-left bg-slate-900';
+            head.appendChild(eyeL);
+
+            const eyeR = document.createElement('div');
+            eyeR.className = 'eye eye-right bg-slate-900';
+            head.appendChild(eyeR);
+
+            // 嘴巴
+            const mouth = document.createElement('div');
+            mouth.className = 'mouth';
+            head.appendChild(mouth);
+
+            return head;
+        }
+
+        function createBodySegment(color, borderColor, hasLine) {
+            const seg = document.createElement('div');
+            seg.className = `w-8 sm:w-10 h-auto aspect-square shrink-0 ${color} rounded-full shadow-sm border ${borderColor} relative overflow-hidden`;
+            if (hasLine) {
+                const inner = document.createElement('div');
+                inner.className = 'absolute inset-0 flex items-center justify-center opacity-30';
+                const line = document.createElement('div');
+                line.className = 'w-[1px] h-full bg-yellow-600';
+                inner.appendChild(line);
+                seg.appendChild(inner);
+            }
+            return seg;
+        }
+
+        // ===== 渲染毛毛蟲列 =====
+        function renderRows() {
+            const container = document.getElementById('caterpillar-rows');
+            container.innerHTML = '';
+
+            for (let rowIndex = 0; rowIndex < n; rowIndex++) {
+                const isSelected = selectedIndex === rowIndex;
+
+                // 外層卡片
+                const row = document.createElement('div');
+                row.className = `row-card flex flex-col gap-2 p-2 sm:p-3 rounded-2xl transition-all cursor-pointer border-2 w-full min-w-0 ${isSelected ? 'bg-sky-50 border-sky-300 shadow-md selected' : 'border-slate-100 hover:bg-slate-50'
+                    }`;
+                row.addEventListener('click', () => {
+                    selectedIndex = rowIndex;
+                    renderRows();
+                });
+
+                // ===== 上半部：圖形區 =====
+                const graphRow = document.createElement('div');
+                graphRow.className = 'flex items-center gap-2 md:gap-4 w-full overflow-hidden';
+
+                // 天數標籤
+                const dayLabel = document.createElement('div');
+                dayLabel.className = `w-14 sm:w-20 md:w-24 text-center py-1 md:py-2 rounded-lg md:rounded-xl text-[10px] sm:text-sm font-bold shrink-0 transition-colors ${isSelected ? 'bg-sky-500 text-white shadow-sm' : 'bg-slate-200 text-slate-500'
+                    }`;
+                dayLabel.textContent = `第 ${rowIndex + 1} 天`;
+                graphRow.appendChild(dayLabel);
+
+                // 毛毛蟲本體
+                const body = document.createElement('div');
+                body.className = 'flex-1 flex items-center gap-0.5 sm:gap-1 min-w-0 shrink overflow-x-auto pb-1 hide-scrollbar';
+
+                // 出生部分 (a1)
+                const birthGroup = document.createElement('div');
+                birthGroup.className = `flex items-center shrink-0 gap-[1px] sm:gap-1 p-0.5 sm:p-1.5 rounded-full border border-transparent transition-colors ${isSelected ? 'border-emerald-300 bg-emerald-50/50' : ''
+                    }`;
+                birthGroup.appendChild(createCaterpillarHead());
+                for (let i = 0; i < a1 - 1; i++) {
+                    birthGroup.appendChild(createBodySegment('bg-emerald-400', 'border-emerald-500', false));
+                }
+                body.appendChild(birthGroup);
+
+                // 長大部分 (公差 d)
+                if (rowIndex > 0) {
+                    const growthContainer = document.createElement('div');
+                    growthContainer.className = 'flex items-center gap-0.5 sm:gap-2 ml-0.5 sm:ml-2 shrink-0';
+
+                    for (let groupIndex = 0; groupIndex < rowIndex; groupIndex++) {
+                        const group = document.createElement('div');
+                        group.className = 'flex items-center shrink-0 gap-[1px] sm:gap-1';
+
+                        // 加號
+                        const plus = document.createElement('span');
+                        plus.className = 'text-yellow-500 font-bold text-xs sm:text-sm md:text-base mx-[1px] sm:mx-1 shrink-0';
+                        plus.textContent = '+';
+                        group.appendChild(plus);
+
+                        // 每一次長大的節數群組
+                        const segGroup = document.createElement('div');
+                        segGroup.className = `flex gap-[1px] sm:gap-1 p-0.5 sm:p-1.5 border border-dashed border-yellow-400 rounded-full shrink-0 transition-colors ${isSelected ? 'bg-yellow-50' : ''
+                            }`;
+                        for (let i = 0; i < d; i++) {
+                            segGroup.appendChild(createBodySegment('bg-yellow-300', 'border-yellow-400', true));
+                        }
+                        group.appendChild(segGroup);
+                        growthContainer.appendChild(group);
+                    }
+                    body.appendChild(growthContainer);
+                }
+
+                graphRow.appendChild(body);
+                row.appendChild(graphRow);
+
+                // ===== 下半部：總長度與動態算式區 =====
+                const bottomRow = document.createElement('div');
+                bottomRow.className = 'flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 mt-1 bg-white/60 p-2 rounded-xl border border-slate-100/50 shadow-sm';
+
+                // 總長度
+                const totalDiv = document.createElement('div');
+                totalDiv.className = 'text-sm sm:text-base md:text-lg font-black text-slate-400 flex items-center gap-2';
+                totalDiv.innerHTML = `總長度 = <span class="text-lg sm:text-xl md:text-2xl ${isSelected ? 'text-sky-600' : 'text-slate-500'}">${calculateValue(rowIndex)}</span> 節`;
+                bottomRow.appendChild(totalDiv);
+
+                // 互動算式按鈕與顯示
+                const mathDiv = document.createElement('div');
+                mathDiv.className = 'flex items-center gap-2 ml-auto';
+                mathDiv.addEventListener('click', (e) => e.stopPropagation());
+
+                const step = mathSteps[rowIndex];
+
+                if (step === 1) {
+                    const expr = document.createElement('div');
+                    expr.className = 'text-xs sm:text-sm md:text-base font-mono font-bold text-slate-600 bg-slate-100 px-2 sm:px-3 py-1 rounded-md sm:rounded-lg border border-slate-200 whitespace-nowrap';
+                    if (rowIndex === 0) {
+                        expr.textContent = String(a1);
+                    } else {
+                        let parts = String(a1);
+                        for (let k = 0; k < rowIndex; k++) {
+                            parts += ` + ${d}`;
+                        }
+                        expr.textContent = parts;
+                    }
+                    mathDiv.appendChild(expr);
+                }
+
+                if (step === 2) {
+                    const expr = document.createElement('div');
+                    expr.className = 'text-xs sm:text-sm md:text-base font-mono font-bold text-sky-700 bg-sky-100 px-2 sm:px-3 py-1 rounded-md sm:rounded-lg border border-sky-200 whitespace-nowrap';
+                    expr.textContent = `${a1} + ${rowIndex} × ${d}`;
+                    mathDiv.appendChild(expr);
+                }
+
+                const btn = document.createElement('button');
+                const btnStyles = step === 0
+                    ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
+                    : step === 1
+                        ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300';
+                btn.className = `text-xs md:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-bold transition-colors shadow-sm shrink-0 whitespace-nowrap ${btnStyles}`;
+                btn.textContent = step === 0 ? '👀 看算式' : step === 1 ? '➡️ 變乘法' : '❌ 收起';
+
+                // 閉包保存 rowIndex
+                (function (idx) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        mathSteps[idx] = (mathSteps[idx] + 1) % 3;
+                        renderRows();
+                    });
+                })(rowIndex);
+
+                mathDiv.appendChild(btn);
+                bottomRow.appendChild(mathDiv);
+                row.appendChild(bottomRow);
+
+                // ===== 長度密碼開合區 =====
+                const formulaToggleRow = document.createElement('div');
+                formulaToggleRow.className = 'flex justify-center mt-1';
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = `formula-toggle-btn flex items-center gap-1.5 text-xs md:text-sm px-3 md:px-4 py-1 md:py-1.5 rounded-full font-bold shadow-sm ${formulaOpen[rowIndex]
+                    ? 'bg-sky-500 text-white border border-sky-600 open'
+                    : 'bg-gradient-to-r from-sky-100 to-indigo-100 text-sky-700 border border-sky-200 hover:from-sky-200 hover:to-indigo-200'
+                    }`;
+                toggleBtn.innerHTML = `
+                    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4Z"/>
+                        <circle cx="12" cy="15" r="2"/>
+                    </svg>
+                    <span>${formulaOpen[rowIndex] ? '收起長度密碼' : '🔑 長度密碼'}</span>
+                    <svg class="arrow-icon w-3 h-3 md:w-3.5 md:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                `;
+
+                // 閉包保存 rowIndex
+                (function (idx) {
+                    toggleBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        formulaOpen[idx] = !formulaOpen[idx];
+                        renderRows();
+                    });
+                })(rowIndex);
+
+                formulaToggleRow.appendChild(toggleBtn);
+                row.appendChild(formulaToggleRow);
+
+                // 可折疊的長度密碼內容
+                const formulaPanel = document.createElement('div');
+                formulaPanel.className = `formula-collapsible ${formulaOpen[rowIndex] ? 'open' : ''}`;
+
+                const formulaInner = document.createElement('div');
+                formulaInner.className = 'bg-gradient-to-br from-sky-50 to-indigo-50 rounded-xl md:rounded-2xl p-3 md:p-5 border-2 border-sky-200 mt-2 relative overflow-hidden';
+
+                // 左側裝飾線
+                const decoLine = document.createElement('div');
+                decoLine.className = 'absolute top-0 left-0 w-1 h-full bg-sky-400 rounded-full';
+                formulaInner.appendChild(decoLine);
+
+                // 標題
+                const fTitle = document.createElement('div');
+                fTitle.className = 'flex items-center gap-2 mb-3';
+                fTitle.innerHTML = `
+                    <svg class="w-4 h-4 md:w-5 md:h-5 text-sky-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <span class="text-sm md:text-lg font-bold text-slate-800">第 ${rowIndex + 1} 天的長度密碼</span>
+                `;
+                formulaInner.appendChild(fTitle);
+
+                // 公式展示
+                const fDisplay = document.createElement('div');
+                fDisplay.className = 'bg-white/80 rounded-xl p-3 md:p-4 border border-slate-200/60 shadow-inner mb-3 overflow-x-auto hide-scrollbar';
+
+                const value = calculateValue(rowIndex);
+                const dayNum = rowIndex + 1;
+
+                fDisplay.innerHTML = `
+                    <div class="min-w-max text-base sm:text-xl md:text-2xl lg:text-3xl font-mono font-black text-slate-700 flex flex-nowrap justify-center items-center gap-x-2 sm:gap-x-3 md:gap-x-4 whitespace-nowrap">
+                        <span class="flex flex-col items-center">
+                            <span>a<sub class="text-xs sm:text-base lg:text-lg">${dayNum}</sub></span>
+                            <span class="text-[9px] sm:text-xs md:text-sm text-slate-400 font-sans mt-1">目標天數</span>
+                        </span>
+                        <span>=</span>
+                        <span class="text-emerald-600 flex flex-col items-center">
+                            <span>${a1}</span>
+                            <span class="text-[9px] sm:text-xs md:text-sm text-emerald-700 font-sans font-bold mt-1">剛出生(a₁)</span>
+                        </span>
+                        <span>+</span>
+                        <span class="text-sky-600 flex flex-col items-center">
+                            <span class="bg-sky-100 px-2 sm:px-3 py-0.5 rounded-lg">(${dayNum} - 1)</span>
+                            <span class="text-[9px] sm:text-xs md:text-sm font-sans font-bold mt-1">長大次數(n-1)</span>
+                        </span>
+                        <span>×</span>
+                        <span class="text-yellow-600 flex flex-col items-center">
+                            <span>${d}</span>
+                            <span class="text-[9px] sm:text-xs md:text-sm text-yellow-700 font-sans font-bold mt-1">每天吃(d)</span>
+                        </span>
+                        <span>=</span>
+                        <span class="text-sky-600 text-xl sm:text-3xl lg:text-4xl drop-shadow-sm">${value}</span>
+                    </div>
+                `;
+                formulaInner.appendChild(fDisplay);
+
+                // 觀察家的叮嚀
+                const obsBox = document.createElement('div');
+                obsBox.className = 'bg-amber-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-amber-200 relative';
+                obsBox.innerHTML = `
+                    <div class="absolute -top-2.5 left-2 bg-amber-400 text-amber-900 text-[10px] md:text-xs font-bold px-2 md:px-3 py-0.5 rounded-full shadow-sm" style="transform: rotate(-2deg);">觀察家</div>
+                    <p class="text-xs md:text-sm text-slate-700 leading-relaxed mt-1">
+                        到了第 <strong class="text-sky-600 text-sm md:text-base mx-0.5">${dayNum}</strong> 天，
+                        毛毛蟲從 <strong class="text-emerald-600 text-sm md:text-base mx-0.5">${a1}</strong> 節開始，
+                        因為<strong class="text-red-500 mx-0.5">第一天還沒吃葉子</strong>，
+                        實際只長大了 <strong class="text-sky-600 text-sm md:text-base mx-0.5 bg-sky-100 px-1 rounded">${rowIndex} 次</strong>！
+                        公式用 <strong class="text-sky-600 font-mono text-xs md:text-sm">(n-1)</strong> 就是這個原因！
+                    </p>
+                `;
+                formulaInner.appendChild(obsBox);
+
+                formulaPanel.appendChild(formulaInner);
+                row.appendChild(formulaPanel);
+
+                container.appendChild(row);
+            }
+        }
+
+
+
+        // ===== 參數更新 =====
+        function updateParams() {
+            a1 = parseInt(document.getElementById('ctrl-a1').value);
+            d = parseInt(document.getElementById('ctrl-d').value);
+            n = parseInt(document.getElementById('ctrl-n').value);
+
+            // 重置算式狀態
+            mathSteps = new Array(10).fill(0);
+            formulaOpen = new Array(10).fill(false);
+
+            // 確保 selectedIndex 不超範圍
+            if (selectedIndex >= n) {
+                selectedIndex = n - 1;
+            }
+
+            renderRows();
+        }
+
+        // ===== 初始化 =====
+        window.onload = function () {
+            renderRows();
+        };
+    </script>
+</body>
+
+</html>
