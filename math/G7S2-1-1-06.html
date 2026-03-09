@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二元一次方程式：解的判別互動學習網</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- 加入 KaTeX CSS 與 JS 套件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Chosen Palette: Warm Neutrals with Sky Blue, Emerald Green (Success), and Rose (Error) Accents -->
+    <!-- Application Structure Plan: The SPA is structured into three main thematic sections to support cognitive scaffolding for special education needs. 1. Concept Introduction (Textual/Metaphorical setup), 2. Visual Exploration (Interactive Chart.js to concretize the abstract concept of a 'solution' mapping to a line), 3. Interactive Practice (Immediate feedback loop with step-by-step reveals). This progression moves from abstract metaphor -> concrete visual -> active reinforcement. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method. 1. Concept: Inform -> Text blocks with Unicode icons -> None -> Simple reading for baseline understanding -> HTML/Tailwind. 2. Demonstration: Compare/Inform -> Line/Scatter Chart -> Clickable buttons to plot points -> Visually proves WHY a solution is correct (it sits on the line of the equation) providing a concrete anchor for abstract algebra -> Chart.js. 3. Practice Questions: Organize/Inform -> Interactive Quiz Cards -> Click options to reveal answers and explanations -> Immediate feedback reinforces learning without overwhelming the user -> HTML/Tailwind + Vanilla JS. Confirming NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased">
+
+    <header class="bg-sky-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wide">📐 數學互動教室：方程式的解</h1>
+            <nav class="hidden md:flex space-x-6">
+                <button onclick="scrollToSection('concept-section')"
+                    class="hover:text-sky-200 transition-colors">觀念解密</button>
+                <button onclick="scrollToSection('visual-section')"
+                    class="hover:text-sky-200 transition-colors">視覺探索</button>
+                <button onclick="scrollToSection('practice-section')"
+                    class="hover:text-sky-200 transition-colors">互動練習</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-16">
+
+        <section id="concept-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 fade-in">
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-4xl">🌟</span>
+                <h2 class="text-3xl font-bold text-sky-700">觀念大解密</h2>
+            </div>
+            <p class="text-lg text-slate-600 leading-relaxed mb-6">
+                這個區塊幫助你建立「左邊等於右邊」的核心概念。我們將透過文字與天平的比喻，帶你了解什麼是方程式的「解」。這是所有後續練習的基礎。
+            </p>
+            <div class="bg-sky-50 rounded-xl p-6 border border-sky-100 flex flex-col md:flex-row items-center gap-6">
+                <div class="flex-shrink-0 text-6xl">⚖️</div>
+                <div>
+                    <h3 class="text-xl font-bold text-sky-800 mb-2">什麼是方程式的「解」？</h3>
+                    <p class="text-slate-700 text-lg">
+                        方程式就像一個平衡的<strong>天平</strong>。所謂的「解」，就是當我們把特定的數字「代入」 \(x\) 和 \(y\) 的位置時，能讓天平兩邊的數字完全相等（左邊的計算結果 =
+                        右邊的數字）。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="visual-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 fade-in"
+            style="animation-delay: 0.1s;">
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-4xl">📊</span>
+                <h2 class="text-3xl font-bold text-sky-700">視覺化探索：動手驗證</h2>
+            </div>
+            <p class="text-lg text-slate-600 leading-relaxed mb-8">
+                這個區塊將方程式 \(x+y=6\) 轉換為視覺圖表。你可以點擊下方的不同選項，觀察數字代入後，在圖表上是落在線上（代表是正確的解）還是線外（代表不是解），藉此直觀地驗證計算結果。
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="space-y-6">
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-xl font-bold mb-4 text-slate-800">題目：下列哪一組是方程式 <span
+                                class="text-sky-700 bg-sky-100 px-2 py-1 rounded">\(x + y = 6\)</span> 的解？</h3>
+                        <p class="text-slate-600 mb-4">請點擊下方按鈕進行測試：</p>
+
+                        <div class="space-y-3">
+                            <button onclick="testPoint('A', 1, 6)"
+                                class="w-full text-left px-4 py-3 rounded-lg border-2 border-slate-300 hover:border-sky-500 hover:bg-sky-50 transition-all text-lg flex justify-between items-center group">
+                                <span>(甲) \(x = 1, y = 6\)</span>
+                                <span class="opacity-0 group-hover:opacity-100 text-sky-500 text-sm">點擊測試 👆</span>
+                            </button>
+                            <button onclick="testPoint('B', 2, 3)"
+                                class="w-full text-left px-4 py-3 rounded-lg border-2 border-slate-300 hover:border-sky-500 hover:bg-sky-50 transition-all text-lg flex justify-between items-center group">
+                                <span>(乙) \(x = 2, y = 3\)</span>
+                                <span class="opacity-0 group-hover:opacity-100 text-sky-500 text-sm">點擊測試 👆</span>
+                            </button>
+                            <button onclick="testPoint('C', 2, 4)"
+                                class="w-full text-left px-4 py-3 rounded-lg border-2 border-slate-300 hover:border-sky-500 hover:bg-sky-50 transition-all text-lg flex justify-between items-center group">
+                                <span>(丙) \(x = 2, y = 4\)</span>
+                                <span class="opacity-0 group-hover:opacity-100 text-sky-500 text-sm">點擊測試 👆</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="demo-result" class="hidden p-6 rounded-xl border-2 transition-all">
+                        <h4 id="demo-result-title" class="text-xl font-bold mb-2"></h4>
+                        <p id="demo-result-calc" class="text-lg mb-2"></p>
+                        <p id="demo-result-desc" class="text-lg"></p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center">
+                    <p class="text-sm text-slate-500 mb-2 font-semibold">圖解：藍線代表所有相加等於 6 的組合</p>
+                    <div class="chart-container">
+                        <canvas id="equationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="practice-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 fade-in"
+            style="animation-delay: 0.2s;">
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-4xl">✍️</span>
+                <h2 class="text-3xl font-bold text-sky-700">互動練習區</h2>
+            </div>
+            <p class="text-lg text-slate-600 leading-relaxed mb-8">
+                換你親自動手挑戰看看！這裡為你準備了五道不同類型的題目，包含加法、減法與倍數。點擊你認為正確的選項，系統會立刻告訴你對錯，並提供詳細的計算步驟幫助你釐清觀念。
+            </p>
+
+            <div id="quiz-container" class="space-y-8">
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-8 text-center mt-12">
+        <p class="text-lg">✨ 數學不難，只要一步一步慢慢算！ ✨</p>
+        <p class="text-sm mt-2">特教數學互動學習系列</p>
+    </footer>
+
+    <script>
+        // 設定 KaTeX 渲染參數
+        const katexConfig = {
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '\\(', right: '\\)', display: false }
+            ],
+            throwOnError: false
+        };
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        let eqChart;
+        function initChart() {
+            const ctx = document.getElementById('equationChart').getContext('2d');
+
+            const lineData = [];
+            for (let x = -1; x <= 7; x++) {
+                lineData.push({ x: x, y: 6 - x });
+            }
+
+            eqChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '方程式 x + y = 6 的所有解',
+                        data: lineData,
+                        type: 'line',
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                        borderWidth: 3,
+                        tension: 0,
+                        pointRadius: 0
+                    }, {
+                        label: '你測試的點',
+                        data: [],
+                        backgroundColor: '#ef4444',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            min: 0,
+                            max: 7,
+                            title: { display: true, text: 'X 數值', font: { size: 14, weight: 'bold' } }
+                        },
+                        y: {
+                            min: 0,
+                            max: 7,
+                            title: { display: true, text: 'Y 數值', font: { size: 14, weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 12 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `(x=${context.parsed.x}, y=${context.parsed.y})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function testPoint(option, xVal, yVal) {
+            const resultBox = document.getElementById('demo-result');
+            const title = document.getElementById('demo-result-title');
+            const calc = document.getElementById('demo-result-calc');
+            const desc = document.getElementById('demo-result-desc');
+
+            const sum = xVal + yVal;
+            const isCorrect = (sum === 6);
+
+            resultBox.classList.remove('hidden', 'border-emerald-500', 'bg-emerald-50', 'border-rose-500', 'bg-rose-50');
+
+            let optionLabel = option === 'A' ? '甲' : (option === 'B' ? '乙' : '丙');
+
+            if (isCorrect) {
+                resultBox.classList.add('border-emerald-500', 'bg-emerald-50');
+                title.innerHTML = `✅ 檢查 (${optionLabel})：正確解答！`;
+                title.className = "text-xl font-bold mb-2 text-emerald-700";
+                calc.innerHTML = `把 \\(x=${xVal}, y=${yVal}\\) 代入算式 👉 <span class="font-bold text-emerald-600">\\(${xVal} + ${yVal} = 6\\)</span>`;
+                desc.innerHTML = "結果剛好是 6！這個點完美地落在了藍色直線上。";
+
+                eqChart.data.datasets[1].backgroundColor = '#10b981';
+            } else {
+                resultBox.classList.add('border-rose-500', 'bg-rose-50');
+                title.innerHTML = `❌ 檢查 (${optionLabel})：這不是解。`;
+                title.className = "text-xl font-bold mb-2 text-rose-700";
+                calc.innerHTML = `把 \\(x=${xVal}, y=${yVal}\\) 代入算式 👉 <span class="font-bold text-rose-600">\\(${xVal} + ${yVal} = ${sum}\\)</span>`;
+                desc.innerHTML = `結果是 ${sum}，不是 6。你可以看到圖表上的點並沒有落在藍色直線上。`;
+
+                eqChart.data.datasets[1].backgroundColor = '#f43f5e';
+            }
+
+            eqChart.data.datasets[1].data = [{ x: xVal, y: yVal }];
+            eqChart.update();
+
+            // 動態更新內容後，重新渲染該區塊的數學式
+            renderMathInElement(resultBox, katexConfig);
+        }
+
+        const quizData = [
+            {
+                id: 1,
+                title: "第 1 題：加法練習",
+                question: "下列哪一組數是方程式 <span class='text-sky-700 bg-sky-100 px-1 rounded'>\\(x + y = 10\\)</span> 的解？",
+                options: [
+                    { label: "A", text: "\\(x = 5, y = 6\\)", isCorrect: false },
+                    { label: "B", text: "\\(x = 3, y = 7\\)", isCorrect: true, exp: "\\(3 + 7 = 10\\)" },
+                    { label: "C", text: "\\(x = 1, y = 8\\)", isCorrect: false }
+                ]
+            },
+            {
+                id: 2,
+                title: "第 2 題：減法練習",
+                question: "下列哪一組數是方程式 <span class='text-sky-700 bg-sky-100 px-1 rounded'>\\(x - y = 2\\)</span> 的解？",
+                options: [
+                    { label: "A", text: "\\(x = 5, y = 3\\)", isCorrect: true, exp: "\\(5 - 3 = 2\\)" },
+                    { label: "B", text: "\\(x = 4, y = 6\\)", isCorrect: false },
+                    { label: "C", text: "\\(x = 2, y = 2\\)", isCorrect: false }
+                ]
+            },
+            {
+                id: 3,
+                title: "第 3 題：倍數加法（小心 \\(2x\\) 代表 2 乘以 \\(x\\)）",
+                question: "下列哪一組數是方程式 <span class='text-sky-700 bg-sky-100 px-1 rounded'>\\(2x + y = 7\\)</span> 的解？",
+                options: [
+                    { label: "A", text: "\\(x = 2, y = 3\\)", isCorrect: true, exp: "\\(2 \\times 2 + 3 = 4 + 3 = 7\\)" },
+                    { label: "B", text: "\\(x = 3, y = 2\\)", isCorrect: false },
+                    { label: "C", text: "\\(x = 1, y = 4\\)", isCorrect: false }
+                ]
+            },
+            {
+                id: 4,
+                title: "第 4 題：倍數加法（小心 \\(2y\\) 代表 2 乘以 \\(y\\)）",
+                question: "下列哪一組數是方程式 <span class='text-sky-700 bg-sky-100 px-1 rounded'>\\(x + 2y = 8\\)</span> 的解？",
+                options: [
+                    { label: "A", text: "\\(x = 2, y = 3\\)", isCorrect: false },
+                    { label: "B", text: "\\(x = 4, y = 2\\)", isCorrect: true, exp: "\\(4 + 2 \\times 2 = 4 + 4 = 8\\)" },
+                    { label: "C", text: "\\(x = 6, y = 2\\)", isCorrect: false }
+                ]
+            },
+            {
+                id: 5,
+                title: "第 5 題：大數字挑戰",
+                question: "下列哪一組數是方程式 <span class='text-sky-700 bg-sky-100 px-1 rounded'>\\(x + y = 15\\)</span> 的解？",
+                options: [
+                    { label: "A", text: "\\(x = 10, y = 5\\)", isCorrect: true, exp: "\\(10 + 5 = 15\\)" },
+                    { label: "B", text: "\\(x = 8, y = 6\\)", isCorrect: false },
+                    { label: "C", text: "\\(x = 7, y = 7\\)", isCorrect: false }
+                ]
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+
+            quizData.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-slate-50 rounded-xl p-6 border border-slate-200 shadow-sm";
+
+                let optionsHtml = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <button onclick="checkAnswer(${q.id}, ${optIdx})" id="btn-${q.id}-${optIdx}" class="w-full text-left px-4 py-3 rounded-lg border-2 border-slate-300 bg-white hover:border-sky-400 hover:bg-sky-50 transition-all text-lg mb-3 flex items-center">
+                            <span class="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold mr-4">${opt.label}</span>
+                            <span>${opt.text}</span>
+                        </button>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">${q.title}</h3>
+                    <p class="text-lg text-slate-700 mb-6">${q.question}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            ${optionsHtml}
+                        </div>
+                        <div id="feedback-${q.id}" class="hidden p-6 rounded-xl border-2 h-full flex flex-col justify-center">
+                            <h4 id="feedback-title-${q.id}" class="text-2xl font-bold mb-3"></h4>
+                            <p id="feedback-desc-${q.id}" class="text-lg font-mono text-slate-700"></p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function checkAnswer(questionId, optionIdx) {
+            const question = quizData.find(q => q.id === questionId);
+            const selectedOption = question.options[optionIdx];
+            const feedbackBox = document.getElementById(`feedback-${questionId}`);
+            const feedbackTitle = document.getElementById(`feedback-title-${questionId}`);
+            const feedbackDesc = document.getElementById(`feedback-desc-${questionId}`);
+
+            question.options.forEach((opt, idx) => {
+                const btn = document.getElementById(`btn-${questionId}-${idx}`);
+                btn.classList.remove('border-sky-400', 'bg-sky-50', 'border-emerald-500', 'bg-emerald-50', 'border-rose-500', 'bg-rose-50');
+                if (idx === optionIdx) {
+                    if (selectedOption.isCorrect) {
+                        btn.classList.add('border-emerald-500', 'bg-emerald-50');
+                    } else {
+                        btn.classList.add('border-rose-500', 'bg-rose-50');
+                    }
+                } else {
+                    btn.classList.add('border-slate-300', 'bg-white');
+                    btn.classList.remove('hover:border-sky-400', 'hover:bg-sky-50');
+                }
+            });
+
+            feedbackBox.classList.remove('hidden', 'border-emerald-400', 'bg-emerald-50', 'border-rose-400', 'bg-rose-50');
+
+            if (selectedOption.isCorrect) {
+                feedbackBox.classList.add('border-emerald-400', 'bg-emerald-50');
+                feedbackTitle.innerHTML = `✅ 答對了！`;
+                feedbackTitle.className = "text-2xl font-bold mb-3 text-emerald-700";
+                feedbackDesc.innerHTML = `解析：<br><span class="font-bold text-emerald-600 text-xl">${selectedOption.exp}</span> <br><br> 左邊等於右邊，所以是正確的解！`;
+            } else {
+                feedbackBox.classList.add('border-rose-400', 'bg-rose-50');
+                feedbackTitle.innerHTML = `❌ 再試一次！`;
+                feedbackTitle.className = "text-2xl font-bold mb-3 text-rose-700";
+                feedbackDesc.innerHTML = `這個選項代入後，左右兩邊不相等喔。請嘗試計算其他的選項。`;
+            }
+
+            // 動態更新內容後，重新渲染回饋區塊的數學式
+            renderMathInElement(feedbackBox, katexConfig);
+        }
+
+        window.onload = function () {
+            initChart();
+            renderQuiz();
+
+            // 頁面載入完成後，執行全網頁的 KaTeX 渲染
+            renderMathInElement(document.body, katexConfig);
+        };
+    </script>
+</body>
+
+</html>
