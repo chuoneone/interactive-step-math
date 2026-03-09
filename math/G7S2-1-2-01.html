@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>解的檢驗</title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f5f5f4;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+
+        .math-font {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+
+        .door-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+
+<body class="text-stone-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Warm Neutrals with Teal and Coral Accents. Focused on high contrast and clear visual hierarchies for cognitive accessibility. -->
+
+    <!-- Application Structure Plan: 
+The SPA is refined to prioritize "Learner Pacing". 
+1. Concept Learning (Updated): Now uses a manual step-by-step trigger system. Users must confirm they understand Step 1 before the UI permits movement to Step 2. This prevents information overflow.
+2. Interactive Practice: Keeps the quiz format with immediate visual feedback on the substitution logic.
+3. Performance Summary: Retains the Chart.js visual overview to provide a sense of achievement.
+Why this change: For learners with shorter attention spans or cognitive processing delays, being in control of the "Next Step" is more effective than watching an automatic animation. -->
+
+    <!-- Visualization & Content Choices: 
+1. Interactive "Door" Stages: Replaced automatic timeout-based logic with state-based JS triggers. Method: HTML/Tailwind + JS event listeners.
+2. Visual Cues: Added explicit "Proceed" buttons that only appear when current conditions are met.
+3. Performance Summary: Doughnut Chart (Chart.js) for high-level visualization of success rates.
+CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-teal-700 text-white shadow-md py-6">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-2">
+                <img src="dog.png" alt="icon" class="h-8 w-8 object-contain">
+                <span>🗝️</span> 二元一次聯立方程式：解的檢驗
+            </h1>
+            <div class="flex gap-2">
+                <a href="G7S2-1-2-02.html"
+                    class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2">
+                    下一個概念 ➡️
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl mx-auto px-4 py-8 w-full">
+
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-2 mb-8 bg-stone-200 p-1 rounded-lg w-full max-w-sm mx-auto">
+            <button id="tab-concept" onclick="switchTab('concept')"
+                class="flex-1 py-2 px-4 rounded-md font-bold transition-colors bg-white text-teal-700 shadow-sm">
+                📖 觀念學習
+            </button>
+            <button id="tab-practice" onclick="switchTab('practice')"
+                class="flex-1 py-2 px-4 rounded-md font-bold transition-colors text-stone-600 hover:text-teal-700">
+                ✏️ 實戰練習
+            </button>
+        </div>
+
+        <!-- Section 1: Concept Learning (MANUAL CONTROL UPDATED) -->
+        <section id="section-concept" class="fade-in space-y-6">
+            <div class="bg-white rounded-xl shadow-sm p-6 md:p-8 border-t-4 border-teal-500">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 text-teal-800">什麼是「解的檢驗」？</h2>
+                <div class="prose prose-stone max-w-none">
+                    <p class="text-lg leading-relaxed mb-4">
+                        聯立方程式就像是<strong class="text-teal-700">兩道門</strong>。你手上的數字就是<strong
+                            class="text-teal-700">鑰匙</strong>。<br>
+                        只有這把鑰匙能<strong class="text-rose-600 border-b-2 border-rose-300">同時打開兩道門</strong>，它才是真正的解答喔！
+                    </p>
+                </div>
+
+                <div class="bg-stone-50 p-6 rounded-xl border border-stone-200 mt-6">
+                    <div class="flex flex-col md:flex-row gap-4 justify-center items-stretch mb-8">
+                        <div id="visual-door-1"
+                            class="bg-white p-5 rounded-lg shadow-sm border-2 border-stone-200 text-center flex-1 transition-all duration-300">
+                            <div class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">門 #1</div>
+                            <div class="text-2xl font-bold mb-2"><span class="math-font">x</span> + <span
+                                    class="math-font">y</span> = 1</div>
+                            <div id="door-1-status" class="text-sm font-bold text-stone-400">🔒 尚未檢查</div>
+                        </div>
+                        <div class="hidden md:flex items-center text-3xl text-stone-300">&</div>
+                        <div id="visual-door-2"
+                            class="bg-white p-5 rounded-lg shadow-sm border-2 border-stone-200 text-center flex-1 transition-all duration-300">
+                            <div class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">門 #2</div>
+                            <div class="text-2xl font-bold mb-2">2<span class="math-font">x</span> + <span
+                                    class="math-font">y</span> = 4</div>
+                            <div id="door-2-status" class="text-sm font-bold text-stone-400">🔒 尚未檢查</div>
+                        </div>
+                    </div>
+
+                    <div class="text-center bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-8">
+                        <p class="text-lg">測試鑰匙： <strong class="text-xl px-2 py-1 rounded"> <span
+                                    class="math-font text-blue-700">x</span> = 3 , <span
+                                    class="math-font text-blue-700">y</span> = -2 </strong></p>
+                    </div>
+
+                    <!-- Step 1 Trigger -->
+                    <div id="concept-trigger-1" class="flex justify-center">
+                        <button onclick="startStepOne()"
+                            class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2">
+                            <span>1️⃣</span> 檢查第一道門
+                        </button>
+                    </div>
+
+                    <!-- Step 1 Content -->
+                    <div id="step1-content" class="mt-6 space-y-4 hidden">
+                        <div class="bg-white border-l-4 border-teal-500 p-6 rounded shadow-sm fade-in">
+                            <h4 class="font-bold text-lg mb-3">步驟 1：代入第一道門</h4>
+                            <p class="text-lg mb-3">把 <span class="math-font">x</span> 換成 <span
+                                    class="text-blue-700 font-bold">3</span>，<span class="math-font">y</span> 換成 <span
+                                    class="text-blue-700 font-bold">-2</span>：</p>
+                            <div
+                                class="text-2xl font-mono bg-stone-100 p-4 rounded-lg text-center border border-stone-200">
+                                <span class="text-blue-700">3</span> + (<span class="text-blue-700">-2</span>) = <span
+                                    class="text-emerald-600 font-bold">1</span>
+                            </div>
+                            <div class="mt-4 flex items-center justify-center gap-3 text-emerald-600 font-bold text-lg">
+                                <span>✅</span> 算出來是 1，右邊也是 1。第一道門打開了！
+                            </div>
+
+                            <!-- Trigger Step 2 Button (Appears only after Step 1 is done) -->
+                            <div class="mt-8 flex justify-center">
+                                <button id="concept-trigger-2" onclick="startStepTwo()"
+                                    class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2">
+                                    <span>2️⃣</span> 沒問題，去開第二道門！
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 Content -->
+                    <div id="step2-content" class="mt-6 space-y-4 hidden">
+                        <div class="bg-white border-l-4 border-amber-500 p-6 rounded shadow-sm fade-in">
+                            <h4 class="font-bold text-lg mb-3">步驟 2：代入第二道門</h4>
+                            <p class="text-lg mb-3">同樣把 <span class="math-font text-blue-700">x</span>=3, <span
+                                    class="math-font text-blue-700">y</span>=-2 放進去：</p>
+                            <div
+                                class="text-2xl font-mono bg-stone-100 p-4 rounded-lg text-center border border-stone-200">
+                                2 × (<span class="text-blue-700">3</span>) + (<span class="text-blue-700">-2</span>) = 6
+                                - 2 = <span class="text-emerald-600 font-bold">4</span>
+                            </div>
+                            <div class="mt-4 flex items-center justify-center gap-3 text-emerald-600 font-bold text-lg">
+                                <span>✅</span> 算出來是 4，右邊也是 4。第二道門也打開了！
+                            </div>
+
+                            <!-- Final Result Button (Appears only after Step 2) -->
+                            <div class="mt-8 flex justify-center">
+                                <button id="concept-trigger-conclusion" onclick="showFinalConclusion()"
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2">
+                                    <span>🎯</span> 看看最後結論
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conclusion Message -->
+                    <div id="step-final-conclusion"
+                        class="mt-8 bg-emerald-600 text-white p-8 rounded-2xl text-center hidden fade-in shadow-xl">
+                        <div class="text-4xl mb-4">🏆</div>
+                        <p class="text-2xl font-bold mb-2">成功！兩道門都開了！</p>
+                        <p class="text-lg opacity-90">所以這把鑰匙 (<span class="math-font">x</span>=3, <span
+                                class="math-font">y</span>=-2) <br>確實是這組聯立方程式的<strong
+                                class="underline decoration-2 underline-offset-4">正確解答</strong>。</p>
+
+                        <div class="mt-8">
+                            <button onclick="switchTab('practice')"
+                                class="bg-white text-emerald-700 font-bold py-2 px-6 rounded-lg hover:bg-stone-100 transition-colors">
+                                準備好了，開始練習！ ➡️
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reset Link (Always hidden unless needed) -->
+                    <div class="mt-6 text-center">
+                        <button id="reset-concept-btn" onclick="resetConceptLearning()"
+                            class="text-stone-400 text-sm hover:underline hidden">🔄 重新示範一次</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Practice -->
+        <section id="section-practice" class="hidden space-y-6">
+            <div id="quiz-container" class="bg-white rounded-xl shadow-sm p-6 md:p-8 border-t-4 border-amber-500">
+                <div class="flex justify-between items-center mb-6 border-b border-stone-100 pb-4">
+                    <h2 class="text-xl md:text-2xl font-bold text-amber-800">實戰練習區</h2>
+                    <span id="question-counter" class="bg-amber-100 text-amber-800 py-1 px-3 rounded-full font-bold">第 1
+                        / 5 題</span>
+                </div>
+
+                <div class="mb-6">
+                    <p class="text-lg mb-4 text-stone-600">請選出正確的解：</p>
+                    <div
+                        class="flex items-center justify-center gap-4 bg-stone-50 p-8 rounded-2xl text-2xl font-bold border border-stone-200">
+                        <span class="text-5xl text-stone-300 font-light">{</span>
+                        <div id="current-equations" class="flex flex-col gap-3">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- JS Inject -->
+                </div>
+
+                <div id="feedback-area" class="hidden rounded-2xl p-6 border mb-6 fade-in shadow-sm">
+                    <h3 id="feedback-title" class="text-xl font-bold mb-4 flex items-center gap-2"></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white bg-opacity-80 p-5 rounded-xl border border-white shadow-sm">
+                            <p class="font-bold text-stone-500 mb-2 flex items-center gap-2"><span>🚪</span> 門 1： <span
+                                    id="fb-eq1" class="math-font font-normal"></span></p>
+                            <p id="fb-calc1"
+                                class="font-mono text-lg bg-stone-50 p-3 rounded-lg border border-stone-100"></p>
+                            <p id="fb-res1" class="font-bold mt-3 text-lg"></p>
+                        </div>
+                        <div id="fb-step2-container"
+                            class="bg-white bg-opacity-80 p-5 rounded-xl border border-white shadow-sm">
+                            <p class="font-bold text-stone-500 mb-2 flex items-center gap-2"><span>🚪</span> 門 2： <span
+                                    id="fb-eq2" class="math-font font-normal"></span></p>
+                            <p id="fb-calc2"
+                                class="font-mono text-lg bg-stone-50 p-3 rounded-lg border border-stone-100"></p>
+                            <p id="fb-res2" class="font-bold mt-3 text-lg"></p>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center">
+                        <button id="next-btn" onclick="nextQuestion()"
+                            class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-12 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                            下一步 ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-container"
+                class="hidden bg-white rounded-2xl shadow-lg p-8 md:p-12 border-t-8 border-teal-500 text-center">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">🎉 練習結束了！</h2>
+                <p class="text-lg text-stone-500 mb-10">你已經學會如何檢驗解的正確性了。</p>
+
+                <div class="flex flex-col md:flex-row items-center justify-center gap-12 mb-10">
+                    <div class="chart-container">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                    <div
+                        class="text-left space-y-6 bg-stone-50 p-8 rounded-2xl border border-stone-200 flex-1 max-w-sm">
+                        <div class="flex justify-between items-center text-xl">
+                            <span>正確</span>
+                            <span id="score-correct" class="text-3xl font-bold text-emerald-600">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xl">
+                            <span>錯誤</span>
+                            <span id="score-incorrect" class="text-3xl font-bold text-rose-500">0</span>
+                        </div>
+                        <div id="encouragement-msg"
+                            class="pt-6 border-t border-stone-200 font-bold text-teal-700 text-lg text-center"></div>
+                    </div>
+                </div>
+
+                <button onclick="resetQuiz()"
+                    class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-10 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    🔄 再練習一輪
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 text-stone-400 text-xs mt-auto">
+        <p>設計專用於特殊教育數學輔助教材</p>
+    </footer>
+
+    <script>
+        // --- Questions Data ---
+        const questionsData = [
+            {
+                eqs: ["<span class='math-font'>x</span> + <span class='math-font'>y</span> = 6", "<span class='math-font'>x</span> - <span class='math-font'>y</span> = 2"],
+                options: [
+                    { label: "A", x: 3, y: 3 },
+                    { label: "B", x: 4, y: 2 },
+                    { label: "C", x: 5, y: 1 }
+                ],
+                correctIndex: 1,
+                logic: {
+                    eq1_left: (x, y) => `${x} + ${y}`, eq1_val: (x, y) => x + y, eq1_target: 6,
+                    eq2_left: (x, y) => `${x} - ${y < 0 ? `(${y})` : y}`, eq2_val: (x, y) => x - y, eq2_target: 2
+                }
+            },
+            {
+                eqs: ["2<span class='math-font'>x</span> + <span class='math-font'>y</span> = 7", "<span class='math-font'>x</span> + <span class='math-font'>y</span> = 4"],
+                options: [
+                    { label: "A", x: 3, y: 1 },
+                    { label: "B", x: 2, y: 3 },
+                    { label: "C", x: 1, y: 5 }
+                ],
+                correctIndex: 0,
+                logic: {
+                    eq1_left: (x, y) => `2×(${x}) + ${y}`, eq1_val: (x, y) => 2 * x + y, eq1_target: 7,
+                    eq2_left: (x, y) => `${x} + ${y}`, eq2_val: (x, y) => x + y, eq2_target: 4
+                }
+            },
+            {
+                eqs: ["<span class='math-font'>x</span> - <span class='math-font'>y</span> = 5", "2<span class='math-font'>x</span> + <span class='math-font'>y</span> = 1"],
+                options: [
+                    { label: "A", x: 3, y: -2 },
+                    { label: "B", x: 2, y: -3 },
+                    { label: "C", x: 4, y: -1 }
+                ],
+                correctIndex: 1,
+                logic: {
+                    eq1_left: (x, y) => `${x} - ${y < 0 ? `(${y})` : y}`, eq1_val: (x, y) => x - y, eq1_target: 5,
+                    eq2_left: (x, y) => `2×(${x}) + ${y < 0 ? `(${y})` : y}`, eq2_val: (x, y) => 2 * x + y, eq2_target: 1
+                }
+            },
+            {
+                eqs: ["3<span class='math-font'>x</span> + <span class='math-font'>y</span> = 10", "<span class='math-font'>x</span> - 2<span class='math-font'>y</span> = 1"],
+                options: [
+                    { label: "A", x: 2, y: 4 },
+                    { label: "B", x: 4, y: -2 },
+                    { label: "C", x: 3, y: 1 }
+                ],
+                correctIndex: 2,
+                logic: {
+                    eq1_left: (x, y) => `3×(${x}) + ${y}`, eq1_val: (x, y) => 3 * x + y, eq1_target: 10,
+                    eq2_left: (x, y) => `${x} - 2×(${y})`, eq2_val: (x, y) => x - 2 * y, eq2_target: 1
+                }
+            },
+            {
+                eqs: ["<span class='math-font'>x</span> + 2<span class='math-font'>y</span> = 8", "3<span class='math-font'>x</span> - <span class='math-font'>y</span> = 3"],
+                options: [
+                    { label: "A", x: 2, y: 3 },
+                    { label: "B", x: 4, y: 2 },
+                    { label: "C", x: 3, y: 6 }
+                ],
+                correctIndex: 0,
+                logic: {
+                    eq1_left: (x, y) => `${x} + 2×(${y})`, eq1_val: (x, y) => x + 2 * y, eq1_target: 8,
+                    eq2_left: (x, y) => `3×(${x}) - ${y < 0 ? `(${y})` : y}`, eq2_val: (x, y) => 3 * x - y, eq2_target: 3
+                }
+            }
+        ];
+
+        // --- State ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let attemptsChart = null;
+        let answerChecked = false;
+
+        // --- Concept Learning Logic (Manual Pacing) ---
+        function startStepOne() {
+            document.getElementById('concept-trigger-1').classList.add('hidden');
+            document.getElementById('step1-content').classList.remove('hidden');
+
+            // Highlight Door 1
+            const d1 = document.getElementById('visual-door-1');
+            const s1 = document.getElementById('door-1-status');
+            d1.classList.add('border-emerald-400', 'bg-emerald-50', 'ring-4', 'ring-emerald-100');
+            s1.innerText = "🔓 第一道門開了！";
+            s1.classList.replace('text-stone-400', 'text-emerald-600');
+        }
+
+        function startStepTwo() {
+            document.getElementById('concept-trigger-2').classList.add('hidden');
+            document.getElementById('step2-content').classList.remove('hidden');
+
+            // Highlight Door 2
+            const d2 = document.getElementById('visual-door-2');
+            const s2 = document.getElementById('door-2-status');
+            d2.classList.add('border-emerald-400', 'bg-emerald-50', 'ring-4', 'ring-emerald-100');
+            s2.innerText = "🔓 第二道門也開了！";
+            s2.classList.replace('text-stone-400', 'text-emerald-600');
+        }
+
+        function showFinalConclusion() {
+            document.getElementById('concept-trigger-conclusion').classList.add('hidden');
+            document.getElementById('step-final-conclusion').classList.remove('hidden');
+            document.getElementById('reset-concept-btn').classList.remove('hidden');
+        }
+
+        function resetConceptLearning() {
+            // UI Reset
+            ['step1-content', 'step2-content', 'step-final-conclusion', 'reset-concept-btn'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById('concept-trigger-1').classList.remove('hidden');
+            document.getElementById('concept-trigger-2').classList.remove('hidden');
+            document.getElementById('concept-trigger-conclusion').classList.remove('hidden');
+
+            // Door States Reset
+            const d1 = document.getElementById('visual-door-1');
+            const d2 = document.getElementById('visual-door-2');
+            d1.className = "bg-white p-5 rounded-lg shadow-sm border-2 border-stone-200 text-center flex-1 transition-all duration-300";
+            d2.className = "bg-white p-5 rounded-lg shadow-sm border-2 border-stone-200 text-center flex-1 transition-all duration-300";
+
+            document.getElementById('door-1-status').innerText = "🔒 尚未檢查";
+            document.getElementById('door-1-status').className = "text-sm font-bold text-stone-400";
+            document.getElementById('door-2-status').innerText = "🔒 尚未檢查";
+            document.getElementById('door-2-status').className = "text-sm font-bold text-stone-400";
+        }
+
+        // --- SPA Navigation ---
+        function switchTab(tabName) {
+            const conceptSection = document.getElementById('section-concept');
+            const practiceSection = document.getElementById('section-practice');
+            const btnConcept = document.getElementById('tab-concept');
+            const btnPractice = document.getElementById('tab-practice');
+
+            if (tabName === 'concept') {
+                conceptSection.classList.remove('hidden');
+                practiceSection.classList.add('hidden');
+                btnConcept.className = "flex-1 py-2 px-4 rounded-md font-bold transition-colors bg-white text-teal-700 shadow-sm";
+                btnPractice.className = "flex-1 py-2 px-4 rounded-md font-bold transition-colors text-stone-600 hover:text-teal-700";
+            } else {
+                conceptSection.classList.add('hidden');
+                practiceSection.classList.remove('hidden');
+                btnPractice.className = "flex-1 py-2 px-4 rounded-md font-bold transition-colors bg-white text-teal-700 shadow-sm";
+                btnConcept.className = "flex-1 py-2 px-4 rounded-md font-bold transition-colors text-stone-600 hover:text-teal-700";
+                if (currentQuestionIndex === 0 && !answerChecked) renderQuestion();
+            }
+        }
+
+        // --- Practice Logic ---
+        function renderQuestion() {
+            answerChecked = false;
+            const q = questionsData[currentQuestionIndex];
+            document.getElementById('question-counter').innerText = `第 ${currentQuestionIndex + 1} / ${questionsData.length} 題`;
+
+            const eqContainer = document.getElementById('current-equations');
+            eqContainer.innerHTML = `<div>${q.eqs[0]}</div><div>${q.eqs[1]}</div>`;
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "bg-white border-2 border-stone-100 hover:border-amber-400 hover:bg-amber-50 p-6 rounded-2xl text-lg font-bold transition-all flex flex-col items-center gap-3 shadow-sm group";
+                btn.innerHTML = `
+                    <span class="bg-stone-50 group-hover:bg-amber-100 text-stone-400 group-hover:text-amber-700 w-10 h-10 rounded-full flex items-center justify-center text-sm">${opt.label}</span>
+                    <span class="text-xl"><span class="math-font text-stone-400 font-normal">x</span> = ${opt.x} , <span class="math-font text-stone-400 font-normal">y</span> = ${opt.y}</span>
+                `;
+                btn.onclick = () => checkAnswer(idx);
+                optContainer.appendChild(btn);
+            });
+            document.getElementById('feedback-area').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIdx) {
+            if (answerChecked) return;
+            answerChecked = true;
+
+            const q = questionsData[currentQuestionIndex];
+            const isCorrect = selectedIdx === q.correctIndex;
+            const selectedOpt = q.options[selectedIdx];
+            if (isCorrect) score++;
+
+            // Button Styles
+            const btns = document.getElementById('options-container').children;
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].disabled = true;
+                if (i === selectedIdx) {
+                    btns[i].classList.add(isCorrect ? 'border-emerald-500' : 'border-rose-500', 'bg-opacity-20');
+                    btns[i].classList.replace('bg-white', isCorrect ? 'bg-emerald-50' : 'bg-rose-50');
+                } else if (i === q.correctIndex) {
+                    btns[i].classList.add('border-emerald-300', 'border-dashed');
+                }
+            }
+
+            // Feedback Content
+            const fbArea = document.getElementById('feedback-area');
+            const fbTitle = document.getElementById('feedback-title');
+
+            fbArea.className = isCorrect ? "rounded-2xl p-6 border mb-6 fade-in shadow-sm bg-emerald-50 border-emerald-200" : "rounded-2xl p-6 border mb-6 fade-in shadow-sm bg-rose-50 border-rose-200";
+            fbTitle.innerHTML = isCorrect ? "🎉 答對了！這把鑰匙很準喔！" : "🤔 這把鑰匙好像不太合，我們檢查看看：";
+            fbTitle.className = isCorrect ? "text-xl font-bold mb-4 text-emerald-800" : "text-xl font-bold mb-4 text-rose-800";
+
+            // Calculation Details
+            document.getElementById('fb-eq1').innerHTML = q.eqs[0];
+            const val1 = q.logic.eq1_val(selectedOpt.x, selectedOpt.y);
+            document.getElementById('fb-calc1').innerText = `${q.logic.eq1_left(selectedOpt.x, selectedOpt.y)} = ${val1}`;
+
+            const res1 = document.getElementById('fb-res1');
+            const step2Cont = document.getElementById('fb-step2-container');
+
+            if (val1 === q.logic.eq1_target) {
+                res1.innerHTML = "✅ 第一道門打開了！";
+                res1.className = "font-bold mt-3 text-emerald-600";
+                step2Cont.classList.remove('hidden');
+
+                document.getElementById('fb-eq2').innerHTML = q.eqs[1];
+                const val2 = q.logic.eq2_val(selectedOpt.x, selectedOpt.y);
+                document.getElementById('fb-calc2').innerText = `${q.logic.eq2_left(selectedOpt.x, selectedOpt.y)} = ${val2}`;
+
+                const res2 = document.getElementById('fb-res2');
+                if (val2 === q.logic.eq2_target) {
+                    res2.innerHTML = "✅ 第二道門也開了！這是解！";
+                    res2.className = "font-bold mt-3 text-emerald-600";
+                } else {
+                    res2.innerHTML = "❌ 第二道門打不開。這不是解。";
+                    res2.className = "font-bold mt-3 text-rose-600";
+                }
+            } else {
+                res1.innerHTML = `❌ 算出來是 ${val1}，第一道門打不開。`;
+                res1.className = "font-bold mt-3 text-rose-600";
+                step2Cont.classList.add('hidden');
+            }
+
+            document.getElementById('next-btn').innerText = currentQuestionIndex === questionsData.length - 1 ? "完成練習！📊" : "下一題 ➡️";
+            fbArea.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsData.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // --- Results Dashboard ---
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('results-container').classList.remove('hidden');
+
+            const incorrect = questionsData.length - score;
+            document.getElementById('score-correct').innerText = score;
+            document.getElementById('score-incorrect').innerText = incorrect;
+
+            const msg = document.getElementById('encouragement-msg');
+            msg.innerText = score === 5 ? "太棒了！你是開門大師！👑" :
+                score >= 3 ? "做得好！你掌握檢驗技巧了！🚀" : "再試一次，多練習會更厲害喔！🌈";
+
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            if (attemptsChart) attemptsChart.destroy();
+
+            attemptsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['答對', '答錯'],
+                    datasets: [{
+                        data: [score, incorrect],
+                        backgroundColor: ['#10b981', '#f43f5e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('results-container').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            renderQuestion();
+        }
+
+    </script>
+</body>
+
+</html>
