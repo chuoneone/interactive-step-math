@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01解的檢驗</title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 引入 KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfbf7;
+            color: #334155;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .step-blank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.5rem;
+            height: 2.5rem;
+            margin: 0 0.25rem;
+            padding: 0 0.5rem;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 1.25rem;
+            font-family: 'KaTeX_Math', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            vertical-align: middle;
+        }
+
+        .step-blank:hover {
+            border-color: #94a3b8;
+            background: #f1f5f9;
+        }
+
+        .step-blank.active {
+            border-color: #3b82f6;
+            border-style: solid;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .step-blank.correct {
+            border-color: #10b981;
+            border-style: solid;
+            color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .step-blank.incorrect {
+            border-color: #ef4444;
+            border-style: solid;
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .math-part {
+            display: inline-flex;
+            align-items: center;
+            font-size: 1.125rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals with Slate (Text) and Emerald/Blue (Accents) -->
+    <!-- Application Structure Plan: A two-section single-page app. Section 1 introduces the concept with a visual Chart.js representation of the demonstration problem to bridge abstract equations to graphical intersections. Section 2 is an interactive "Practice Zone" featuring a card-based step-by-step validator for the 5 questions, allowing users to actively plug in numbers and receive immediate feedback, reducing cognitive load and supporting structured learning. -->
+    <!-- Visualization & Content Choices: Concept Intro -> Visual Understanding -> Chart.js Line Chart (Shows intersection of two equations) -> Hover/Click -> Reinforces that a solution is the intersection point -> Chart.js (NO SVG). Practice -> Active Learning -> Interactive Form with step-by-step inputs -> Immediate validation -> Ensures step mastery -> HTML/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+
+<body class="min-h-screen pb-12">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <span class="text-2xl">📐</span>
+                    <span class="font-bold text-xl text-slate-800">解的檢驗</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#concept"
+                        class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">🔍
+                        觀念解析</a>
+                    <a href="#practice"
+                        class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">✍️
+                        開始練習</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-12">
+
+        <section id="concept" class="scroll-mt-20">
+            <div class="glass-card rounded-2xl p-6 md:p-10">
+                <div class="mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>🔍</span> 什麼是「聯立方程式的解」？
+                    </h2>
+                    <p class="text-lg text-slate-600 leading-relaxed mb-4">
+                        想像我們有兩條規則（方程式），「解」就是一組特定的數字 (x 和 y)。
+                        這組數字必須要讓<strong>兩條規則都成立</strong>（左邊算出來等於右邊），才叫做這組聯立方程式的解。
+                        在圖形上，這個「解」就是兩條線<strong>相交的那一個點</strong>！
+                    </p>
+                </div>
+
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-700 mb-4">✍️ 示範題：如何檢查？</h3>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-4">
+                            <p class="mb-2">哪一組 \(x\)、\(y\) 是以下方程式的解？</p>
+                            <p class="text-lg text-center bg-slate-100 py-2 rounded">
+                                \( \begin{cases} x + y = 1 \\ 2x + y = 4 \end{cases} \)
+                            </p>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-slate-700">我們拿 <strong>\(x=3, y=-2\)</strong> 來試試看：</p>
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm font-bold mt-1">第一關
+                                </div>
+                                <div>
+                                    <p class="text-sm">\(x + y = 1\)</p>
+                                    <p class="text-slate-600">\(3 + (-2) = 1\) ✅ 通過</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm font-bold mt-1">第二關
+                                </div>
+                                <div>
+                                    <p class="text-sm">\(2x + y = 4\)</p>
+                                    <p class="text-slate-600">\(2 \times 3 + (-2) = 6 - 2 = 4\) ✅ 通過</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-200">
+                                <strong>結論：</strong>因為兩關都過了，所以它是解！右邊的圖表也顯示，兩條線剛好在 \((3, -2)\) 交叉。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full">
+                        <div class="chart-container">
+                            <canvas id="conceptChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="practice" class="scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">📝 強化練習題（步驟填空版）</h2>
+                <p class="text-lg text-slate-600">
+                    依照指示把數字填入括號中，一步一步檢驗答案。全部答對就可以進入下一題！
+                </p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6">
+
+                <div class="w-full md:w-1/4">
+                    <div class="glass-card rounded-xl p-4 sticky top-24">
+                        <h3 class="font-bold text-slate-700 mb-4 text-center">學習進度</h3>
+                        <div class="flex md:flex-col justify-between md:justify-start gap-2" id="progress-indicators">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-3/4">
+                    <div class="glass-card rounded-2xl p-6 md:p-8" id="question-container">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 數字小鍵盤 (預設隱藏，點擊空格後浮動顯示在旁邊) -->
+    <div id="number-pad"
+        class="hidden absolute z-50 bg-white p-3 rounded-xl border border-slate-200 shadow-2xl transition-all w-48">
+        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
+            <h4 class="font-bold text-slate-700 text-sm flex items-center gap-1"><span>🔢</span> 鍵盤</h4>
+            <button onclick="clearActiveBlank()"
+                class="text-slate-400 hover:text-slate-600 text-sm px-2 py-1 rounded hover:bg-slate-100">完成 ✕</button>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+            <button onclick="padInput('1')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">1</button>
+            <button onclick="padInput('2')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">2</button>
+            <button onclick="padInput('3')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">3</button>
+            <button onclick="padInput('4')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">4</button>
+            <button onclick="padInput('5')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">5</button>
+            <button onclick="padInput('6')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">6</button>
+            <button onclick="padInput('7')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">7</button>
+            <button onclick="padInput('8')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">8</button>
+            <button onclick="padInput('9')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">9</button>
+            <button onclick="padInput('-')"
+                class="p-2 bg-slate-200 border border-slate-300 hover:bg-slate-300 rounded-lg text-lg font-bold transition-all shadow-sm">-</button>
+            <button onclick="padInput('0')"
+                class="p-2 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-lg font-bold transition-all shadow-sm">0</button>
+            <button onclick="padBackspace()"
+                class="p-2 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center justify-center">刪</button>
+        </div>
+    </div>
+
+    <script>
+        const conceptChartCtx = document.getElementById('conceptChart').getContext('2d');
+        new Chart(conceptChartCtx, {
+            type: 'line',
+            data: {
+                labels: [0, 1, 2, 3, 4, 5],
+                datasets: [
+                    {
+                        label: 'x + y = 1',
+                        data: [1, 0, -1, -2, -3, -4],
+                        borderColor: '#3b82f6',
+                        backgroundColor: '#3b82f6',
+                        borderWidth: 2,
+                        tension: 0,
+                        pointRadius: 4
+                    },
+                    {
+                        label: '2x + y = 4',
+                        data: [4, 2, 0, -2, -4, -6],
+                        borderColor: '#f59e0b',
+                        backgroundColor: '#f59e0b',
+                        borderWidth: 2,
+                        tension: 0,
+                        pointRadius: 4
+                    },
+                    {
+                        label: '解 (3, -2)',
+                        data: [{ x: 3, y: -2 }],
+                        borderColor: '#10b981',
+                        backgroundColor: '#10b981',
+                        pointRadius: 10,
+                        pointHoverRadius: 12,
+                        showLine: false,
+                        type: 'scatter'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 5,
+                        title: { display: true, text: 'X 軸' }
+                    },
+                    y: {
+                        min: -5,
+                        max: 5,
+                        title: { display: true, text: 'Y 軸' }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return `(${context.parsed.x}, ${context.parsed.y})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 定義每一題的結構，使用 KaTeX 格式與填空題組合
+        const practiceData = [
+            {
+                id: 1, title: "第 1 題：基礎加減", x: 3, y: 2,
+                eq1_display: "x + y = 5", eq2_display: "x - y = 1",
+                step1: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '3' }, { t: 'math', v: ') + (' }, { t: 'blank', a: '2' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '5' }
+                ],
+                step2: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '3' }, { t: 'math', v: ') - (' }, { t: 'blank', a: '2' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '1' }
+                ]
+            },
+            {
+                id: 2, title: "第 2 題：係數變換", x: 3, y: 1,
+                eq1_display: "2x + y = 7", eq2_display: "x + y = 4",
+                step1: [
+                    { t: 'math', v: '2 \\times (' }, { t: 'blank', a: '3' }, { t: 'math', v: ') + (' }, { t: 'blank', a: '1' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '6' }, { t: 'math', v: ' + ' }, { t: 'blank', a: '1' }, { t: 'math', v: ' = ' }, { t: 'blank', a: '7' }
+                ],
+                step2: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '3' }, { t: 'math', v: ') + (' }, { t: 'blank', a: '1' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '4' }
+                ]
+            },
+            {
+                id: 3, title: "第 3 題：包含倍數運算", x: 2, y: 3,
+                eq1_display: "x + 2y = 8", eq2_display: "3x + y = 9",
+                step1: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '2' }, { t: 'math', v: ') + 2 \\times (' }, { t: 'blank', a: '3' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '2' }, { t: 'math', v: ' + ' }, { t: 'blank', a: '6' }, { t: 'math', v: ' = ' }, { t: 'blank', a: '8' }
+                ],
+                step2: [
+                    { t: 'math', v: '3 \\times (' }, { t: 'blank', a: '2' }, { t: 'math', v: ') + (' }, { t: 'blank', a: '3' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '6' }, { t: 'math', v: ' + ' }, { t: 'blank', a: '3' }, { t: 'math', v: ' = ' }, { t: 'blank', a: '9' }
+                ]
+            },
+            {
+                id: 4, title: "第 4 題：代入型態", x: 2, y: 4,
+                eq1_display: "y = x + 2", eq2_display: "x + y = 6",
+                step1: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '4' }, { t: 'math', v: ') = (' }, { t: 'blank', a: '2' }, { t: 'math', v: ') + 2' }
+                ],
+                step2: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '2' }, { t: 'math', v: ') + (' }, { t: 'blank', a: '4' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '6' }
+                ]
+            },
+            {
+                id: 5, title: "第 5 題：挑戰負數", x: 2, y: 1,
+                eq1_display: "2x - y = 3", eq2_display: "x + 2y = 4",
+                step1: [
+                    { t: 'math', v: '2 \\times (' }, { t: 'blank', a: '2' }, { t: 'math', v: ') - (' }, { t: 'blank', a: '1' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '4' }, { t: 'math', v: ' - ' }, { t: 'blank', a: '1' }, { t: 'math', v: ' = ' }, { t: 'blank', a: '3' }
+                ],
+                step2: [
+                    { t: 'math', v: '(' }, { t: 'blank', a: '2' }, { t: 'math', v: ') + 2 \\times (' }, { t: 'blank', a: '1' }, { t: 'math', v: ') = ' }, { t: 'blank', a: '2' }, { t: 'math', v: ' + ' }, { t: 'blank', a: '2' }, { t: 'math', v: ' = ' }, { t: 'blank', a: '4' }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let completedQuestions = [];
+        let activeBlank = null;
+
+        const questionContainer = document.getElementById('question-container');
+        const progressIndicatorsContainer = document.getElementById('progress-indicators');
+        const numberPad = document.getElementById('number-pad');
+
+        function renderProgress() {
+            progressIndicatorsContainer.innerHTML = '';
+            practiceData.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.className = `w-10 h-10 md:w-full md:h-12 rounded-lg flex items-center justify-center font-bold text-sm transition-all duration-300 ${index === currentQuestionIndex
+                    ? 'bg-blue-600 text-white shadow-md scale-105 transform'
+                    : completedQuestions.includes(index)
+                        ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+                        : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                    }`;
+                btn.innerText = completedQuestions.includes(index) ? '✅' : (index + 1);
+                btn.onclick = () => {
+                    currentQuestionIndex = index;
+                    renderQuestion();
+                };
+                progressIndicatorsContainer.appendChild(btn);
+            });
+        }
+
+        // 組合數學公式與互動空格
+        function generateStepHtml(stepArray) {
+            return stepArray.map(item => {
+                if (item.t === 'math') {
+                    return `<span class="math-part">\\(${item.v}\\)</span>`;
+                } else if (item.t === 'blank') {
+                    return `<button class="step-blank" data-ans="${item.a}" onclick="selectBlank(this)">?</button>`;
+                }
+            }).join('');
+        }
+
+        function renderQuestion() {
+            activeBlank = null;
+            numberPad.classList.add('hidden'); // 切換題目時隱藏小鍵盤
+
+            const data = practiceData[currentQuestionIndex];
+
+            const html = `
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-800">${data.title}</h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">目標：\\(x=${data.x}, y=${data.y}\\)</span>
+                </div>
+
+                <div class="mb-6 bg-slate-50 p-4 rounded-lg text-center border border-slate-200">
+                    <p class="text-slate-600 mb-2">請檢查 \\((x=${data.x}, y=${data.y})\\) 是不是以下方程式的解？</p>
+                    <div class="text-xl text-slate-800 inline-block text-left">
+                        <div class="mb-1">1️⃣ \\(${data.eq1_display}\\)</div>
+                        <div>2️⃣ \\(${data.eq2_display}\\)</div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-400"></div>
+                        <h3 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                            <span class="bg-blue-100 text-blue-700 w-6 h-6 flex items-center justify-center rounded-full text-sm">1</span> 
+                            第一步：代入第一式
+                        </h3>
+                        <p class="text-slate-500 mb-4 ml-8">\\(${data.eq1_display}\\)</p>
+                        <div class="text-lg flex flex-wrap items-center gap-1 ml-8 mb-4">
+                            ${generateStepHtml(data.step1)}
+                        </div>
+                        <div class="ml-8 flex items-center gap-4">
+                            <span class="text-slate-600">左邊是否等於右邊？</span>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="check1" value="yes" class="w-4 h-4 text-blue-600"> 是</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="check1" value="no" class="w-4 h-4 text-blue-600"> 否</label>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-400"></div>
+                        <h3 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                            <span class="bg-indigo-100 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full text-sm">2</span> 
+                            第二步：代入第二式
+                        </h3>
+                        <p class="text-slate-500 mb-4 ml-8">\\(${data.eq2_display}\\)</p>
+                        <div class="text-lg flex flex-wrap items-center gap-1 ml-8 mb-4">
+                            ${generateStepHtml(data.step2)}
+                        </div>
+                        <div class="ml-8 flex items-center gap-4">
+                            <span class="text-slate-600">左邊是否等於右邊？</span>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="check2" value="yes" class="w-4 h-4 text-indigo-600"> 是</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="check2" value="no" class="w-4 h-4 text-indigo-600"> 否</label>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 p-5 rounded-xl text-center">
+                        <h3 class="font-bold text-slate-700 mb-4">結論</h3>
+                        <p class="text-lg text-slate-700 mb-4">這組數字 <select id="final-conclusion" class="p-2 border border-slate-300 rounded-md font-bold text-blue-700 outline-none"><option value="">請選擇</option><option value="yes">是</option><option value="no">不是</option></select> 聯立方程式的解。</p>
+                        
+                        <div class="flex justify-center gap-4 mt-6">
+                            <button onclick="checkAnswers()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-md flex items-center gap-2">
+                                <span>🔍</span> 檢查答案
+                            </button>
+                            ${completedQuestions.includes(currentQuestionIndex) && currentQuestionIndex < practiceData.length - 1 ? `<button onclick="nextQuestion()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-md flex items-center gap-2">下一題 <span>➡️</span></button>` : ''}
+                        </div>
+                        <p id="feedback-msg" class="mt-4 font-bold text-lg hidden"></p>
+                    </div>
+                </div>
+            `;
+
+            questionContainer.innerHTML = html;
+            renderProgress();
+
+            // 啟動 KaTeX 自動渲染將區塊內的公式轉成數學排版
+            renderMathInElement(questionContainer, {
+                delimiters: [
+                    { left: '\\(', right: '\\)', display: false },
+                    { left: '\\[', right: '\\]', display: true }
+                ],
+                throwOnError: false
+            });
+        }
+
+        // ---- 小鍵盤互動邏輯 ----
+        function selectBlank(btn) {
+            if (activeBlank) {
+                activeBlank.classList.remove('active');
+            }
+            activeBlank = btn;
+            activeBlank.classList.add('active');
+            activeBlank.classList.remove('correct', 'incorrect');
+
+            // 計算小鍵盤要顯示的位置 (緊貼在空格旁邊/下方)
+            const rect = btn.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+            let padTop = rect.bottom + scrollTop + 8; // 預設在按鈕正下方
+            let padLeft = rect.left + scrollLeft;
+
+            // 確保不會超出畫面右邊 (鍵盤寬度約 192px，抓個 200px 緩衝)
+            if (padLeft + 200 > window.innerWidth + scrollLeft) {
+                padLeft = (window.innerWidth + scrollLeft) - 210;
+            }
+
+            // 如果畫面下方空間不夠，就顯示在輸入框上方，避免被裁切
+            if (rect.bottom + 230 > window.innerHeight) {
+                padTop = rect.top + scrollTop - 210;
+            }
+
+            numberPad.style.top = padTop + 'px';
+            numberPad.style.left = padLeft + 'px';
+            numberPad.classList.remove('hidden'); // 顯示鍵盤
+        }
+
+        function clearActiveBlank() {
+            if (activeBlank) {
+                activeBlank.classList.remove('active');
+                activeBlank = null;
+            }
+            numberPad.classList.add('hidden');
+        }
+
+        function padInput(val) {
+            if (!activeBlank) return;
+            if (activeBlank.innerText === '?') {
+                activeBlank.innerText = val;
+            } else {
+                activeBlank.innerText += val;
+            }
+        }
+
+        function padBackspace() {
+            if (!activeBlank) return;
+            if (activeBlank.innerText !== '?') {
+                activeBlank.innerText = activeBlank.innerText.slice(0, -1);
+                if (activeBlank.innerText === '' || activeBlank.innerText === '-') {
+                    activeBlank.innerText = '?';
+                }
+            }
+        }
+
+        function checkAnswers() {
+            let allCorrect = true;
+            const blanks = document.querySelectorAll('.step-blank');
+
+            blanks.forEach(blank => {
+                const expected = blank.getAttribute('data-ans');
+                const userVal = blank.innerText.trim();
+
+                if (userVal === expected) {
+                    blank.classList.add('correct');
+                    blank.classList.remove('incorrect');
+                } else {
+                    blank.classList.add('incorrect');
+                    blank.classList.remove('correct');
+                    allCorrect = false;
+                }
+            });
+
+            const radio1 = document.querySelector('input[name="check1"]:checked');
+            const radio2 = document.querySelector('input[name="check2"]:checked');
+            const conclusion = document.getElementById('final-conclusion').value;
+
+            if (!radio1 || !radio2 || conclusion === "" || Array.from(blanks).some(b => b.innerText === '?')) {
+                showFeedback("請填寫所有空格並完成選擇題！", "error");
+                return;
+            }
+
+            if (radio1.value === "yes" && radio2.value === "yes" && conclusion === "yes" && allCorrect) {
+                if (!completedQuestions.includes(currentQuestionIndex)) {
+                    completedQuestions.push(currentQuestionIndex);
+                    renderProgress(); // 只有通過時更新側邊欄進度
+                }
+                showFeedback("🎉 太棒了！全部正確！", "success");
+                clearActiveBlank(); // 完成後收起鍵盤，讓學生可以看到成功畫面
+            } else {
+                showFeedback("❌ 還有地方怪怪的，請檢查紅色的空格或選擇題！", "error");
+            }
+        }
+
+        function showFeedback(msg, type) {
+            const fb = document.getElementById('feedback-msg');
+            fb.innerText = msg;
+            fb.classList.remove('hidden', 'text-emerald-600', 'text-ef4444', 'text-red-500');
+            if (type === 'success') {
+                fb.classList.add('text-emerald-600');
+            } else {
+                fb.classList.add('text-red-500');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < practiceData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                document.getElementById('practice').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // 初始化時，一併渲染靜態觀念區的 KaTeX
+        document.addEventListener("DOMContentLoaded", function () {
+            renderMathInElement(document.getElementById('concept'), {
+                delimiters: [
+                    { left: '\\(', right: '\\)', display: false },
+                    { left: '\\[', right: '\\]', display: true }
+                ],
+                throwOnError: false
+            });
+            renderQuestion();
+        });
+
+    </script>
+</body>
+
+</html>
