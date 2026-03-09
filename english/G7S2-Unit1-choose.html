@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 1 互�??��?學�?室�??�在簡單�?/title>
+    <title>Unit 1 互動文法學習室：現在簡單式</title>
     <link rel="icon" href="dog.png" type="image/png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@
     <!-- Application Structure Plan: 
          This SPA translates a static grammar worksheet into an interactive learning dashboard. 
          1. Hero Section: Introduces the topic.
-         2. Concept Cards: The 3 core rules ("?��?�?, "?�主�?, "?��???) are presented as interactive, clickable cards to reduce cognitive load upfront.
+         2. Concept Cards: The 3 core rules ("看動詞", "看主詞", "照妖鏡") are presented as interactive, clickable cards to reduce cognitive load upfront.
          3. Analytics Dashboard: A Chart.js donut chart visualizes the distribution of grammar concepts across the 14 questions, giving users a macro-view of what they will practice.
          4. Interactive Quiz: The 14 questions are transformed into an interactive quiz. Instead of passively reading answers, users must click options. Correct/incorrect feedback is immediate, followed by the dynamic reveal of the specific "Strategy" and "Explanation" from the source report. This "Test-Teach" loop significantly enhances retention.
     -->
@@ -98,7 +98,7 @@
             }
         }
 
-        /* ?��?視覺?�示：螢?��?標籤�?? (?��?學�??�設�? */
+        /* 特教視覺提示：螢光筆標籤樣式 (針對學障生設計) */
         .kw {
             font-weight: 900;
             color: #0f766e;
@@ -109,7 +109,7 @@
             border-bottom: 2px solid #0d9488;
         }
 
-        /* ?�鍵�??��?�?(�? */
+        /* 關鍵字/助動詞 (綠) */
         .verb-kw {
             font-weight: 900;
             color: #b45309;
@@ -120,7 +120,7 @@
             border-bottom: 2px solid #d97706;
         }
 
-        /* ?��? (�? */
+        /* 動詞 (橘) */
         .subj-kw {
             font-weight: 900;
             color: #4338ca;
@@ -131,7 +131,7 @@
             border-bottom: 2px solid #4f46e5;
         }
 
-        /* 主�? (?? */
+        /* 主詞 (藍) */
     </style>
 </head>
 
@@ -140,9 +140,9 @@
     <!-- Navbar -->
     <nav class="bg-teal-700 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wider">?? ?��??��??��?Unit 1</h1>
+            <h1 class="text-xl font-bold tracking-wider">📝 英文特訓班：Unit 1</h1>
             <div class="text-sm font-medium bg-teal-800 px-3 py-1 rounded-full">
-                ?�在簡單�?
+                現在簡單式
             </div>
         </div>
     </nav>
@@ -151,9 +151,9 @@
 
         <!-- Header / Intro -->
         <header class="text-center space-y-4">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-stone-900">?�除?��?迷思�??�握 do ??does</h2>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-stone-900">破除文法迷思：掌握 do 與 does</h2>
             <p class="text-lg text-stone-600 max-w-2xl mx-auto">
-                歡�?來到互�?學�?室�??�單?��??�在?�中?��??��??�「現?�簡?��??�。透�??��?一?��?詞�? Be?��??�差?��?以�?主�??��??��?變�?，幫你建立�?強�?�???�覺??
+                歡迎來到互動學習室！本單元聚焦在國中英文基礎的「現在簡單式」。透過釐清一般動詞與 Be動詞的差異，以及主詞單複數的變化，幫你建立最強的解題直覺。
             </p>
         </header>
 
@@ -161,50 +161,50 @@
         <section id="rules-section" class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-8">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-teal-800 flex items-center gap-2">
-                    <span>?��</span> ?��?�????��
+                    <span>💡</span> 核心解題口訣
                 </h3>
-                <p class="text-stone-500 mt-2">點�??��??��?詳細說�?，這是�??下方測�??�核心鑰?��?/p>
+                <p class="text-stone-500 mt-2">點擊卡片查看詳細說明，這是解答下方測驗的核心鑰匙。</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Rule 1 -->
                 <div class="cursor-pointer group bg-stone-50 border-2 border-stone-100 rounded-xl p-5 hover:border-teal-400 transition-colors"
                     onclick="toggleRule(1)">
-                    <div class="text-3xl mb-3">??�?/div>
-                    <h4 class="text-xl font-bold mb-2">1. ??span class="verb-kw">?��?</span></h4>
-                    <p class="text-sm text-stone-600 font-medium">?��???span class="verb-kw">一?��?�?/span>�?/p>
+                    <div class="text-3xl mb-3">👁️</div>
+                    <h4 class="text-xl font-bold mb-2">1. 看<span class="verb-kw">動詞</span></h4>
+                    <p class="text-sm text-stone-600 font-medium">有沒有<span class="verb-kw">一般動詞</span>？</p>
                     <div id="rule1-detail"
                         class="hidden mt-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
-                        ?��?裡�?沒�?<span class="verb-kw">一?��?�?/span>（�? play, study, like）�?<br><br>
-                        ?? ?��???span class="verb-kw">一?��?�?/span>，造�??��??��??�就要�? <span class="kw">?��?�?(do/does)</span> 來幫忙�?
+                        句子裡有沒有<span class="verb-kw">一般動詞</span>（如 play, study, like）？<br><br>
+                        👉 只要有<span class="verb-kw">一般動詞</span>，造問句或否定句就要請 <span class="kw">助動詞 (do/does)</span> 來幫忙。
                     </div>
                 </div>
 
                 <!-- Rule 2 -->
                 <div class="cursor-pointer group bg-stone-50 border-2 border-stone-100 rounded-xl p-5 hover:border-teal-400 transition-colors"
                     onclick="toggleRule(2)">
-                    <div class="text-3xl mb-3">???�🤝‍�?/div>
-                    <h4 class="text-xl font-bold mb-2">2. ??span class="subj-kw">主�?</span></h4>
-                    <p class="text-sm text-stone-600 font-medium">?�數?�是複數�?/p>
+                    <div class="text-3xl mb-3">🧑‍🤝‍🧑</div>
+                    <h4 class="text-xl font-bold mb-2">2. 看<span class="subj-kw">主詞</span></h4>
+                    <p class="text-sm text-stone-600 font-medium">單數還是複數？</p>
                     <div id="rule2-detail"
                         class="hidden mt-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
-                        ?? <span class="subj-kw">主�?</span> ??<b>I, you, we, they</b> ?�是<b>複數</b>?��?，�???<span
-                            class="kw">do</span>??br><br>
-                        ?? <span class="subj-kw">主�?</span> ??<b>he, she, it</b> ?�是<b>?�數</b>?��?，�???<span
-                            class="kw">does</span>??
+                        👉 <span class="subj-kw">主詞</span> 是 <b>I, you, we, they</b> 或是<b>複數</b>名詞，請用 <span
+                            class="kw">do</span>。<br><br>
+                        👉 <span class="subj-kw">主詞</span> 是 <b>he, she, it</b> 或是<b>單數</b>名詞，請用 <span
+                            class="kw">does</span>。
                     </div>
                 </div>
 
                 <!-- Rule 3 -->
                 <div class="cursor-pointer group bg-stone-50 border-2 border-stone-100 rounded-xl p-5 hover:border-teal-400 transition-colors"
                     onclick="toggleRule(3)">
-                    <div class="text-3xl mb-3">??</div>
-                    <h4 class="text-xl font-bold mb-2">3. <span class="kw">?��???/span>法�?</h4>
-                    <p class="text-sm text-stone-600 font-medium">?��?詞�??��??�形?�露�?/p>
+                    <div class="text-3xl mb-3">🪞</div>
+                    <h4 class="text-xl font-bold mb-2">3. <span class="kw">照妖鏡</span>法則</h4>
+                    <p class="text-sm text-stone-600 font-medium">助動詞一出，原形畢露！</p>
                     <div id="rule3-detail"
                         class="hidden mt-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
-                        ?��?<span class="kw">?��?�?/span>（do / does / don't / doesn't）�??�現...<br><br>
-                        ?? 後面?��?詞�???<span class="verb-kw">?�被?��??�形??/span> （恢復�?形�?詞�?不�? s/es/ing）�?
+                        只要<span class="kw">助動詞</span>（do / does / don't / doesn't）一出現...<br><br>
+                        👉 後面的動詞必須 <span class="verb-kw">「被打回原形」</span> （恢復原形動詞，不加 s/es/ing）。
                     </div>
                 </div>
             </div>
@@ -215,20 +215,20 @@
             class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-8 flex flex-col lg:flex-row gap-8 items-center">
             <div class="lg:w-1/2 space-y-4">
                 <h3 class="text-2xl font-bold text-teal-800 flex items-center gap-2">
-                    <span>??</span> 題�??��??��?
+                    <span>📊</span> 題型雷達分析
                 </h3>
                 <p class="text-stone-600 leading-relaxed">
-                    ?�進入實戰?��??��?了解??14 題練習�??��?點�?佈。這份測�?主�??��?你�??��??��?詞�??��?詞」�??��?，其中�?穿�?了「照妖鏡法�??��??�阱題�?以�??�述?�?��?必�?轉�?使用?�「Be?��??��?
+                    在進入實戰前，先來了解這 14 題練習題的重點分佈。這份測驗主要考驗你對「一般動詞與助動詞」的搭配，其中也穿插了「照妖鏡法則」的陷阱題，以及描述狀態時必須轉換使用的「Be動詞」。
                 </p>
                 <ul class="space-y-2 mt-4 text-sm font-medium">
-                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-teal-500"></span> 一?�助?��?
-                        (Do/Does) ?�斷 - ?�大�??��?</li>
-                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400"></span> ?��??��???
-                        (?�形?��??��?) - ?�錯?�阱</li>
-                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Be?��?
-                        (?�?��?�??��?�? - 概念對�?</li>
-                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-400"></span> ?��??��?
-                        (Have/Has) - ?��??�特�?/li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-teal-500"></span> 一般助動詞
+                        (Do/Does) 判斷 - 最大宗核心</li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400"></span> 照妖鏡法則
+                        (原形動詞還原) - 易錯陷阱</li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Be動詞
+                        (狀態描述/非動作) - 概念對比</li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-400"></span> 擁有動詞
+                        (Have/Has) - 單複數特例</li>
                 </ul>
             </div>
             <div class="lg:w-1/2 w-full">
@@ -242,8 +242,8 @@
         <!-- Section 3: Interactive Quiz -->
         <section id="quiz-section" class="space-y-6">
             <div class="text-center mb-8">
-                <h3 class="text-2xl font-bold text-teal-800">?��? 實戰演練 (??14 �?</h3>
-                <p class="text-stone-500 mt-2">點�??��?作�??��?答�?將自?�解?�「解題�??�」�??��?師解?�」�?/p>
+                <h3 class="text-2xl font-bold text-teal-800">⚔️ 實戰演練 (全 14 題)</h3>
+                <p class="text-stone-500 mt-2">點擊選項作答。作答後將自動解鎖「解題策略」與「名師解析」。</p>
             </div>
 
             <!-- Score & Progress Board (New for LD) -->
@@ -251,13 +251,13 @@
                 class="bg-white rounded-2xl shadow-md border-2 border-teal-400 p-5 sticky top-20 z-40 mb-8 transition-all">
                 <div class="flex justify-between items-center mb-3">
                     <div class="text-xl font-extrabold text-stone-800 flex items-center gap-2">
-                        <span>?? 得�?�?/span>
+                        <span>🏆 得分：</span>
                         <span id="score-display"
                             class="text-3xl text-teal-600 transition-all duration-300 transform inline-block">0</span>
                         <span class="text-stone-400 text-lg font-medium">/ 140</span>
                     </div>
                     <div class="text-stone-600 font-bold bg-stone-100 px-4 py-1.5 rounded-full text-sm">
-                        ?��??�度�?span id="progress-text" class="text-teal-600 text-lg">0</span> / 14 �?
+                        目前進度：<span id="progress-text" class="text-teal-600 text-lg">0</span> / 14 題
                     </div>
                 </div>
                 <!-- Progress Bar -->
@@ -276,7 +276,7 @@
             <div class="text-center pt-8">
                 <button onclick="resetQuiz()"
                     class="bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold py-2 px-6 rounded-full transition-colors">
-                    ?? ?�新測�?
+                    🔄 重新測驗
                 </button>
             </div>
         </section>
@@ -284,7 +284,7 @@
     </main>
 
     <footer class="bg-stone-800 text-stone-400 py-6 mt-16 text-center text-sm">
-        <p>互�??��?學�?�?| ?��? 1 練�?</p>
+        <p>互動文法學習室 | 單元 1 練習</p>
         <p class="mt-1 text-stone-500">Content adapted from Unit1_Grammar_Practice.md</p>
     </footer>
 
@@ -300,112 +300,112 @@
                 q: "A: What \_\_\_\_\_\_ you love?<br>B: I love cats.",
                 options: ["are", "can", "do", "is"],
                 correctIndex: 2,
-                strategy: "??span class='verb-kw'>?��?</span>??span class='subj-kw'>主�?</span>?�句子裡??span class='verb-kw'>一?��?�?love</span>，�?以�?�?span class='kw'>?��?�?/span>?�主詞是 <span class='subj-kw'>you</span>，搭?��??��?詞是 <span class='kw'>do</span>??,
-                explanation: "?�句?�「�??�歡什麼�??��??�含??span class='verb-kw'>一?��?�?/span>，�?主�???<span class='subj-kw'>you</span>，�???(C) do??
+                strategy: "找<span class='verb-kw'>動詞</span>和<span class='subj-kw'>主詞</span>。句子裡有<span class='verb-kw'>一般動詞 love</span>，所以需要<span class='kw'>助動詞</span>。主詞是 <span class='subj-kw'>you</span>，搭配的助動詞是 <span class='kw'>do</span>。",
+                explanation: "問句為「你喜歡什麼？」，因含有<span class='verb-kw'>一般動詞</span>，且主詞為 <span class='subj-kw'>you</span>，故選 (C) do。"
             },
             {
                 id: 2,
                 q: "A: \_\_\_\_\_\_ you play the piano every day?<br>B: Yes, I \_\_\_\_\_\_.",
                 options: ["Do; do", "Are; are", "Is; are", "Does; do"],
                 correctIndex: 0,
-                strategy: "?�到<span class='verb-kw'>?��? play</span>，句首填<span class='kw'>?��?�?/span>?�主詞為 <span class='subj-kw'>you</span>，用 <span class='kw'>Do</span> ?�頭?�簡答句?�Yes, I <span class='kw'>do</span>.?��?後呼?��?,
-                explanation: "??<span class='kw'>Do</span> ?��?就用 <span class='kw'>do</span> ?��?，�???(A)??
+                strategy: "看到<span class='verb-kw'>動詞 play</span>，句首填<span class='kw'>助動詞</span>。主詞為 <span class='subj-kw'>you</span>，用 <span class='kw'>Do</span> 開頭。簡答句「Yes, I <span class='kw'>do</span>.」前後呼應。",
+                explanation: "用 <span class='kw'>Do</span> 問，就用 <span class='kw'>do</span> 回答，故選 (A)。"
             },
             {
                 id: 3,
                 q: "A: What \_\_\_\_\_\_ your sisters do on Fridays?<br>B: They paint on Fridays.",
                 options: ["do", "is", "are", "can"],
                 correctIndex: 0,
-                strategy: "??span class='subj-kw'>主�?</span>?�主詞是 <span class='subj-kw'>your sisters</span>（�? <b>s</b>，是<span class='subj-kw'>複數</span>）�?複數主�?對�??�助?��???<span class='kw'>do</span>??,
-                explanation: "?�然?��?裡�? do（�?）�?但這裡?��???span class='verb-kw'>一?��?�?/span>?��??��?要�???span class='kw'>?��?�?/span>來形?��??�句，�??�主詞�? <span class='kw'>do</span>，�???(A)??
+                strategy: "找<span class='subj-kw'>主詞</span>。主詞是 <span class='subj-kw'>your sisters</span>（有 <b>s</b>，是<span class='subj-kw'>複數</span>），複數主詞對應的助動詞是 <span class='kw'>do</span>。",
+                explanation: "雖然句子裡有 do（做），但這裡是作為<span class='verb-kw'>一般動詞</span>。前面需要一個<span class='kw'>助動詞</span>來形成疑問句，複數主詞配 <span class='kw'>do</span>，故選 (A)。"
             },
             {
                 id: 4,
                 q: "A: Do you like his songs?<br>B: No, \_\_\_\_\_\_.",
-                options: ["I do", "I don?�t", "I am not", "I am"],
+                options: ["I do", "I don’t", "I am not", "I am"],
                 correctIndex: 1,
-                strategy: "簡�?題�??��??�。�??�用 <span class='kw'>Do you...?</span>，否定�?答就??<span class='kw'>No, I don't.</span>??,
-                explanation: "?�助?��? <span class='kw'>Do</span> ?��?，否定簡答�?使用 <span class='kw'>don't</span>，�???(B)??
+                strategy: "簡答題型看問句。問句用 <span class='kw'>Do you...?</span>，否定回答就是 <span class='kw'>No, I don't.</span>。",
+                explanation: "用助動詞 <span class='kw'>Do</span> 提問，否定簡答需使用 <span class='kw'>don't</span>，故選 (B)。"
             },
             {
                 id: 5,
                 q: "A: Does your father like Jeremy Lin?<br>B: No, \_\_\_\_\_\_.",
-                options: ["he doesn?�t like", "he doesn?�t", "he isn?�t", "he don?�t"],
+                options: ["he doesn’t like", "he doesn’t", "he isn’t", "he don’t"],
                 correctIndex: 1,
-                strategy: "簡�?題�??��??�。�??�用 <span class='kw'>Does your father...?</span>，your father ?�男?��?<span class='subj-kw'>he ?�數</span>）�??��?簡�?就是 <span class='kw'>No, he doesn't.</span>??,
-                explanation: "?��?簡�?不�?要�?複�??��??��? like，只要到<span class='kw'>?��?�?/span>?�可，�???(B)??
+                strategy: "簡答題型看問句。問句用 <span class='kw'>Does your father...?</span>，your father 是男生（<span class='subj-kw'>he 單數</span>），否定簡答就是 <span class='kw'>No, he doesn't.</span>。",
+                explanation: "英文簡答不需要重複後面的動詞 like，只要到<span class='kw'>助動詞</span>即可，故選 (B)。"
             },
             {
                 id: 6,
-                q: "A: Does Andy \_\_\_\_\_\_ on Sundays? (?��??�出?��?!)<br>B: Yes, he does.",
+                q: "A: Does Andy \_\_\_\_\_\_ on Sundays? (照妖鏡出現了!)<br>B: Yes, he does.",
                 options: ["swimming", "swim", "swims", "is swimming"],
                 correctIndex: 1,
-                strategy: "?�到 <span class='kw'>Does</span>（助?��?）�??��?<span class='kw'>?�照妖鏡法�???/span>，�??��?詞�?律用<span class='verb-kw'>?�形</span>??,
-                explanation: "?��?詞�??��??��?不能??s, es ??ing，�??�是<span class='verb-kw'>?�形?��? swim</span>，�???(B)??
+                strategy: "看到 <span class='kw'>Does</span>（助動詞），啟動<span class='kw'>「照妖鏡法則」</span>，後面動詞一律用<span class='verb-kw'>原形</span>。",
+                explanation: "助動詞後面的動詞不能加 s, es 或 ing，必須是<span class='verb-kw'>原形動詞 swim</span>，故選 (B)。"
             },
             {
                 id: 7,
                 q: "A: Do the boys \_\_\_\_\_\_ on Sundays?<br>B: Yes, they do.",
-                options: ["painting", "paint", "not paint", "don?�t paint"],
+                options: ["painting", "paint", "not paint", "don’t paint"],
                 correctIndex: 1,
-                strategy: "?��?一題�?�???�到 <span class='kw'>Do</span>（助?��?）�??��?<span class='kw'>?�照妖鏡法�???/span>，�??�接<span class='verb-kw'>?�形?��?</span>??,
-                explanation: "?��?詞�???span class='verb-kw'>?�形?��? paint</span>，�???(B)??
+                strategy: "和上一題一樣，看到 <span class='kw'>Do</span>（助動詞），啟動<span class='kw'>「照妖鏡法則」</span>，後面接<span class='verb-kw'>原形動詞</span>。",
+                explanation: "助動詞後接<span class='verb-kw'>原形動詞 paint</span>，故選 (B)。"
             },
             {
                 id: 8,
                 q: "A: Do they watch TV after school?<br>B: No, they \_\_\_\_\_\_.",
-                options: ["are", "aren?�t", "doesn?�t", "don?�t"],
+                options: ["are", "aren’t", "doesn’t", "don’t"],
                 correctIndex: 3,
-                strategy: "?��??�找線索?��??�是 <span class='kw'>Do they...?</span>，否定簡答就??<span class='kw'>No, they don't.</span>??,
-                explanation: "??<span class='kw'>Do</span> ?��?，主詞是 <span class='subj-kw'>they</span>，否定簡答搭??<span class='kw'>don't</span>，�???(D)??
+                strategy: "看問句找線索。問句是 <span class='kw'>Do they...?</span>，否定簡答就是 <span class='kw'>No, they don't.</span>。",
+                explanation: "用 <span class='kw'>Do</span> 提問，主詞是 <span class='subj-kw'>they</span>，否定簡答搭配 <span class='kw'>don't</span>，故選 (D)。"
             },
             {
                 id: 9,
                 q: "A: \_\_\_\_\_\_ Helen study English every day?<br>B: Yes, she \_\_\_\_\_\_.",
                 options: ["Does; does", "Are; are", "Is; are", "Does; do"],
                 correctIndex: 0,
-                strategy: "??span class='subj-kw'>主�?</span>?�主�?<span class='subj-kw'>Helen</span> ?�第三人�?span class='subj-kw'>?�數</span>（她）�??�以助?��???<span class='kw'>Does</span>?�簡答�??�「Yes, she <span class='kw'>does</span>.?��?,
-                explanation: "?�數主�???<span class='kw'>Does</span>，�? <span class='kw'>Does</span> ?�就??<span class='kw'>does</span> 答�??�選 (A)??
+                strategy: "找<span class='subj-kw'>主詞</span>。主詞 <span class='subj-kw'>Helen</span> 是第三人稱<span class='subj-kw'>單數</span>（她），所以助動詞用 <span class='kw'>Does</span>。簡答則是「Yes, she <span class='kw'>does</span>.」。",
+                explanation: "單數主詞配 <span class='kw'>Does</span>，且 <span class='kw'>Does</span> 問就用 <span class='kw'>does</span> 答，故選 (A)。"
             },
             {
                 id: 10,
                 q: "A: What \_\_\_\_\_\_ your sister do on weekends?<br>B: She \_\_\_\_\_\_ a kite.",
                 options: ["do; flies", "does; flies", "is; flies", "can; fly"],
                 correctIndex: 1,
-                strategy: "第�??��?主�? <span class='subj-kw'>your sister（單?��?</span>，用 <span class='kw'>does</span>?�第二格?�肯定句，主�?<span class='subj-kw'>She</span>（第三人稱單?��?，�?�?fly 必�?要去 y ??ies 變�? <span class='verb-kw'>flies</span>??,
-                explanation: "?��??�由 <span class='kw'>does</span> 幫�?；肯定句中第三人稱單?�主詞�??��??��?�?span class='verb-kw'>??s/es</span>，�???(B)??
+                strategy: "第一格看主詞 <span class='subj-kw'>your sister（單數）</span>，用 <span class='kw'>does</span>。第二格是肯定句，主詞 <span class='subj-kw'>She</span>（第三人稱單數），動詞 fly 必須要去 y 加 ies 變成 <span class='verb-kw'>flies</span>。",
+                explanation: "疑問句由 <span class='kw'>does</span> 幫忙；肯定句中第三人稱單數主詞後面的動詞要<span class='verb-kw'>加 s/es</span>，故選 (B)。"
             },
             {
                 id: 11,
                 q: "Joyce \_\_\_\_\_\_ long legs.",
                 options: ["have", "has", "is", "are"],
                 correctIndex: 1,
-                strategy: "??span class='subj-kw'>主�?</span>??span class='subj-kw'>Joyce</span> ?��??�人（第三人�?span class='subj-kw'>?�數</span>）�?表示?��??�」�??��? have 要改?�單?��???<span class='verb-kw'>has</span>??,
-                explanation: "主�??�第三人稱單?��??��???<span class='verb-kw'>has</span>，�???(B)??
+                strategy: "找<span class='subj-kw'>主詞</span>。<span class='subj-kw'>Joyce</span> 是一個人（第三人稱<span class='subj-kw'>單數</span>），表示「擁有」的動詞 have 要改成單數型態 <span class='verb-kw'>has</span>。",
+                explanation: "主詞為第三人稱單數，動詞用 <span class='verb-kw'>has</span>，故選 (B)。"
             },
             {
                 id: 12,
                 q: "Kevin \_\_\_\_\_\_ have small ears.",
-                options: ["is", "are", "don?�t", "doesn?�t"],
+                options: ["is", "are", "don’t", "doesn’t"],
                 correctIndex: 3,
-                strategy: "??span class='verb-kw'>?��?</span>?�句子裡?��?�?<span class='verb-kw'>have</span>，否定句要�?<span class='kw'>?��?�?/span>來幫忙。主�?<span class='subj-kw'>Kevin</span> ?�單?��??�以用 <span class='kw'>doesn't</span>??,
-                explanation: "?�裡??have ??span class='verb-kw'>一?��?�?/span>，�??�用 Be ?��?(is/are)來否定。單?�主詞�? <span class='kw'>doesn't</span>，�???(D)??
+                strategy: "找<span class='verb-kw'>動詞</span>。句子裡有動詞 <span class='verb-kw'>have</span>，否定句要請<span class='kw'>助動詞</span>來幫忙。主詞 <span class='subj-kw'>Kevin</span> 是單數，所以用 <span class='kw'>doesn't</span>。",
+                explanation: "這裡的 have 是<span class='verb-kw'>一般動詞</span>，不能用 Be 動詞(is/are)來否定。單數主詞配 <span class='kw'>doesn't</span>，故選 (D)。"
             },
             {
                 id: 13,
                 q: "How tall \_\_\_\_\_\_ your English teacher?",
                 options: ["do", "is", "are", "am"],
                 correctIndex: 1,
-                strategy: "詢�?身�??��??��??�徵?��?沒�?一?��?作�?如�??�跳?��?）�?使用?�是 <span class='kw'>Be?��?</span>?�主�?<span class='subj-kw'>your English teacher</span> ?�單?��??��???Be?��???<span class='kw'>is</span>??,
-                explanation: "?�述身�??�?��?使用 do/does，單?�主詞搭??<span class='kw'>is</span>，�???(B)??
+                strategy: "詢問身高、狀態或特徵時，沒有一般動作（如跑、跳、吃），使用的是 <span class='kw'>Be動詞</span>。主詞 <span class='subj-kw'>your English teacher</span> 是單數，搭配的 Be動詞是 <span class='kw'>is</span>。",
+                explanation: "描述身高狀態不使用 do/does，單數主詞搭配 <span class='kw'>is</span>，故選 (B)。"
             },
             {
                 id: 14,
                 q: "A: How tall is your sister?<br>B: She \_\_\_\_\_\_ one hundred fifty centimeters.",
                 options: ["do", "does", "is", "are"],
                 correctIndex: 2,
-                strategy: "延�?上�?題�??�述身�??�?�用 <span class='kw'>Be?��?</span>?�主�?<span class='subj-kw'>She</span>，搭??<span class='kw'>is</span>??,
-                explanation: "表�??�她??150 ?��?高」�??��??��??��?述�?主�? She ?��? <span class='kw'>is</span>，�???(C)??
+                strategy: "延續上一題，描述身高狀態用 <span class='kw'>Be動詞</span>。主詞 <span class='subj-kw'>She</span>，搭配 <span class='kw'>is</span>。",
+                explanation: "表達「她是 150 公分高」，是一個狀態描述，主詞 She 搭配 <span class='kw'>is</span>，故選 (C)。"
             }
         ];
 
@@ -470,11 +470,11 @@
                 htmlStr += `
                     <div id="explanation-${qItem.id}" class="explanation-box bg-stone-50 rounded-lg p-5 border-l-4 border-teal-500 mt-4">
                         <div class="mb-3">
-                            <span class="inline-block bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded mb-1">?�� �??策略</span>
+                            <span class="inline-block bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded mb-1">🎯 解題策略</span>
                             <p class="text-stone-700 text-sm leading-relaxed">${qItem.strategy}</p>
                         </div>
                         <div>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded mb-1">?? �??</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded mb-1">📖 解析</span>
                             <p class="text-stone-700 text-sm leading-relaxed">${qItem.explanation}</p>
                         </div>
                     </div>
@@ -494,13 +494,13 @@
             const qData = quizData.find(q => q.id === questionId);
             const isCorrect = selectedOptionIndex === qData.correctIndex;
 
-            // --- ?��?機制：更?��??��??�度�?---
+            // --- 特教機制：更新計分與進度條 ---
             answeredCount++;
             if (isCorrect) {
                 score += 10;
                 const scoreDisplay = document.getElementById('score-display');
                 scoreDisplay.innerText = score;
-                // �???��?：�??��?跳�???
+                // 正向回饋：加分彈跳動畫
                 scoreDisplay.classList.add('scale-150', 'text-amber-500');
                 setTimeout(() => scoreDisplay.classList.remove('scale-150', 'text-amber-500'), 300);
             }
@@ -520,12 +520,12 @@
                     // Highlight correct answer
                     btn.classList.remove('border-stone-200', 'opacity-60');
                     btn.classList.add('correct');
-                    btn.innerHTML += '<span class="ml-auto text-xl">??/span>';
+                    btn.innerHTML += '<span class="ml-auto text-xl">✅</span>';
                 } else if (idx === selectedOptionIndex && !isCorrect) {
                     // Highlight selected wrong answer
                     btn.classList.remove('border-stone-200');
                     btn.classList.add('incorrect');
-                    btn.innerHTML += '<span class="ml-auto text-xl">??/span>';
+                    btn.innerHTML += '<span class="ml-auto text-xl">❌</span>';
                 }
             });
 
@@ -540,27 +540,27 @@
             }
         }
 
-        // --- ?��?機制：�??�測驗�??��??�面 ---
+        // --- 特教機制：完成測驗的過關畫面 ---
         function showCompletionMessage() {
             const container = document.getElementById('quiz-container');
             const completionDiv = document.createElement('div');
             completionDiv.className = 'bg-teal-50 border-2 border-teal-500 rounded-2xl p-8 text-center shadow-lg mt-8 animation-fadeIn';
 
             let message = "";
-            if (score >= 120) message = "?? 太厲害�?！�?完全?�握了現?�簡?��?�?;
-            else if (score >= 80) message = "?? ?��?好�?觀念�?清�?，�?多練習�?下就完�?了�?";
-            else message = "?�� ?�灰心�?多�?幾次上面?�核心口�??你�?越�?越進步?��?";
+            if (score >= 120) message = "🌟 太厲害了！你完全掌握了現在簡單式！";
+            else if (score >= 80) message = "👍 做得好！觀念很清楚，再多練習一下就完美了！";
+            else message = "💪 別灰心！多看幾次上面的核心口訣，你會越來越進步的！";
 
             completionDiv.innerHTML = `
-                <div class="text-6xl mb-4">??</div>
-                <h3 class="text-3xl font-bold text-teal-800 mb-2">測�?完�?�?/h3>
-                <p class="text-xl text-stone-700 mb-6">你�?總�??��?<span class="text-teal-600 font-extrabold text-4xl mx-2">${score}</span> / 140</p>
+                <div class="text-6xl mb-4">🎉</div>
+                <h3 class="text-3xl font-bold text-teal-800 mb-2">測驗完成！</h3>
+                <p class="text-xl text-stone-700 mb-6">你的總分是：<span class="text-teal-600 font-extrabold text-4xl mx-2">${score}</span> / 140</p>
                 <div class="bg-white rounded-xl p-4 inline-block shadow-sm border border-teal-200">
                     <p class="text-teal-700 font-bold text-xl">${message}</p>
                 </div>
             `;
             container.appendChild(completionDiv);
-            // 滾�??�面?��??��?
+            // 滾動畫面至結果處
             setTimeout(() => {
                 completionDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
@@ -585,7 +585,7 @@
             // Data derivation from report analysis
             // Categories based on grammar rules tested
             const data = {
-                labels: ['一?�助?��? (Do/Does)', '?��??��???(?�形)', '?��??��??��???(Have/Has)', '?�?��?�?(Be?��?)'],
+                labels: ['一般助動詞 (Do/Does)', '照妖鏡法則 (原形)', '擁有動詞單複數 (Have/Has)', '狀態描述 (Be動詞)'],
                 datasets: [{
                     data: [9, 2, 1, 2], // Count of questions per category based on source report
                     backgroundColor: [
@@ -624,7 +624,7 @@
                                 label: function (context) {
                                     let label = context.label || '';
                                     if (label) { label += ': '; }
-                                    label += context.raw + ' �?;
+                                    label += context.raw + ' 題';
                                     return label;
                                 }
                             }
