@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 1 äº’å??‡æ?å­¸ç?å®¤ï??¾åœ¨ç°¡å–®å¼?/title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Chosen Palette: Warm Neutrals & Study Teal (bg-stone-50, text-stone-800, teal-600, amber-500) -->
+    <!-- Application Structure Plan: 
+         This SPA translates a static grammar worksheet into an interactive learning dashboard. 
+         1. Hero Section: Introduces the topic.
+         2. Concept Cards: The 3 core rules ("?‹å?è©?, "?‹ä¸»è©?, "?§å???) are presented as interactive, clickable cards to reduce cognitive load upfront.
+         3. Analytics Dashboard: A Chart.js donut chart visualizes the distribution of grammar concepts across the 14 questions, giving users a macro-view of what they will practice.
+         4. Interactive Quiz: The 14 questions are transformed into an interactive quiz. Instead of passively reading answers, users must click options. Correct/incorrect feedback is immediate, followed by the dynamic reveal of the specific "Strategy" and "Explanation" from the source report. This "Test-Teach" loop significantly enhances retention.
+    -->
+    <!-- Visualization & Content Choices: 
+         1. Core Rules -> Goal: Inform -> Interactive Cards (HTML/Tailwind/JS) -> Justification: Breaks down text-heavy rules into bite-sized, engaging chunks.
+         2. Concept Distribution -> Goal: Organize/Analyze -> Donut Chart (Chart.js) -> Justification: Shows the weight of different concepts (e.g., Do/Does vs. Be verb) in the practice set.
+         3. Practice Questions -> Goal: Assess & Educate -> Interactive Quiz Engine (Vanilla JS) -> Justification: Immediate feedback loop with delayed reveal of explanations ensures active recall before reading the solution.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. HTML unicode used for icons.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        /* CSS Framework & Chart Container Styling Requirements */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafaf9;
+            /* stone-50 */
+        }
+
+        /* STRICT CHART CONTAINER RULES */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            /* Restrict max width for readability */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            /* Base height */
+            max-height: 350px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Quiz Styles */
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            transform: translateX(5px);
+            background-color: #f3f4f6;
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            /* emerald-100 */
+            border-color: #10b981;
+            /* emerald-500 */
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            /* red-100 */
+            border-color: #ef4444;
+            /* red-500 */
+            color: #991b1b;
+        }
+
+        .explanation-box {
+            display: none;
+            /* Hidden by default, toggled via JS */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ?¹æ?è¦–è¦º?ç¤ºï¼šè¢?‰ç?æ¨™ç±¤æ¨?? (?å?å­¸é??Ÿè¨­è¨? */
+        .kw {
+            font-weight: 900;
+            color: #0f766e;
+            font-size: 1.1em;
+            background-color: #ccfbf1;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border-bottom: 2px solid #0d9488;
+        }
+
+        /* ?œéµå­??©å?è©?(ç¶? */
+        .verb-kw {
+            font-weight: 900;
+            color: #b45309;
+            font-size: 1.1em;
+            background-color: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border-bottom: 2px solid #d97706;
+        }
+
+        /* ?•è? (æ©? */
+        .subj-kw {
+            font-weight: 900;
+            color: #4338ca;
+            font-size: 1.1em;
+            background-color: #e0e7ff;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border-bottom: 2px solid #4f46e5;
+        }
+
+        /* ä¸»è? (?? */
+    </style>
+</head>
+
+<body class="text-stone-800 antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-teal-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wider">?? ?±æ??¹è??­ï?Unit 1</h1>
+            <div class="text-sm font-medium bg-teal-800 px-3 py-1 rounded-full">
+                ?¾åœ¨ç°¡å–®å¼?
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- Header / Intro -->
+        <header class="text-center space-y-4">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-stone-900">?´é™¤?‡æ?è¿·æ€ï??Œæ¡ do ??does</h2>
+            <p class="text-lg text-stone-600 max-w-2xl mx-auto">
+                æ­¡è?ä¾†åˆ°äº’å?å­¸ç?å®¤ï??¬å–®?ƒè??¦åœ¨?‹ä¸­?±æ??ºç??„ã€Œç¾?¨ç°¡?®å??ã€‚é€é??æ?ä¸€?¬å?è©è? Be?•è??„å·®?°ï?ä»¥å?ä¸»è??®è??¸ç?è®Šå?ï¼Œå¹«ä½ å»ºç«‹æ?å¼·ç?è§???´è¦º??
+            </p>
+        </header>
+
+        <!-- Section 1: Core Rules (Interactive Cards) -->
+        <section id="rules-section" class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-8">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-teal-800 flex items-center gap-2">
+                    <span>?’¡</span> ?¸å?è§????¨£
+                </h3>
+                <p class="text-stone-500 mt-2">é»æ??¡ç??¥ç?è©³ç´°èªªæ?ï¼Œé€™æ˜¯è§??ä¸‹æ–¹æ¸¬é??„æ ¸å¿ƒé‘°?™ã€?/p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Rule 1 -->
+                <div class="cursor-pointer group bg-stone-50 border-2 border-stone-100 rounded-xl p-5 hover:border-teal-400 transition-colors"
+                    onclick="toggleRule(1)">
+                    <div class="text-3xl mb-3">??ï¸?/div>
+                    <h4 class="text-xl font-bold mb-2">1. ??span class="verb-kw">?•è?</span></h4>
+                    <p class="text-sm text-stone-600 font-medium">?‰æ???span class="verb-kw">ä¸€?¬å?è©?/span>ï¼?/p>
+                    <div id="rule1-detail"
+                        class="hidden mt-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
+                        ?¥å?è£¡æ?æ²’æ?<span class="verb-kw">ä¸€?¬å?è©?/span>ï¼ˆå? play, study, likeï¼‰ï?<br><br>
+                        ?? ?ªè???span class="verb-kw">ä¸€?¬å?è©?/span>ï¼Œé€ å??¥æ??¦å??¥å°±è¦è? <span class="kw">?©å?è©?(do/does)</span> ä¾†å¹«å¿™ã€?
+                    </div>
+                </div>
+
+                <!-- Rule 2 -->
+                <div class="cursor-pointer group bg-stone-50 border-2 border-stone-100 rounded-xl p-5 hover:border-teal-400 transition-colors"
+                    onclick="toggleRule(2)">
+                    <div class="text-3xl mb-3">???ğŸ¤â€ğŸ§?/div>
+                    <h4 class="text-xl font-bold mb-2">2. ??span class="subj-kw">ä¸»è?</span></h4>
+                    <p class="text-sm text-stone-600 font-medium">?®æ•¸?„æ˜¯è¤‡æ•¸ï¼?/p>
+                    <div id="rule2-detail"
+                        class="hidden mt-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
+                        ?? <span class="subj-kw">ä¸»è?</span> ??<b>I, you, we, they</b> ?–æ˜¯<b>è¤‡æ•¸</b>?è?ï¼Œè???<span
+                            class="kw">do</span>??br><br>
+                        ?? <span class="subj-kw">ä¸»è?</span> ??<b>he, she, it</b> ?–æ˜¯<b>?®æ•¸</b>?è?ï¼Œè???<span
+                            class="kw">does</span>??
+                    </div>
+                </div>
+
+                <!-- Rule 3 -->
+                <div class="cursor-pointer group bg-stone-50 border-2 border-stone-100 rounded-xl p-5 hover:border-teal-400 transition-colors"
+                    onclick="toggleRule(3)">
+                    <div class="text-3xl mb-3">??</div>
+                    <h4 class="text-xl font-bold mb-2">3. <span class="kw">?§å???/span>æ³•å?</h4>
+                    <p class="text-sm text-stone-600 font-medium">?©å?è©ä??ºï??Ÿå½¢?¢éœ²ï¼?/p>
+                    <div id="rule3-detail"
+                        class="hidden mt-4 pt-4 border-t border-stone-200 text-sm text-stone-700 leading-relaxed">
+                        ?ªè?<span class="kw">?©å?è©?/span>ï¼ˆdo / does / don't / doesn'tï¼‰ä??ºç¾...<br><br>
+                        ?? å¾Œé¢?„å?è©å???<span class="verb-kw">?Œè¢«?“å??Ÿå½¢??/span> ï¼ˆæ¢å¾©å?å½¢å?è©ï?ä¸å? s/es/ingï¼‰ã€?
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Analytics Dashboard -->
+        <section id="analytics-section"
+            class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-8 flex flex-col lg:flex-row gap-8 items-center">
+            <div class="lg:w-1/2 space-y-4">
+                <h3 class="text-2xl font-bold text-teal-800 flex items-center gap-2">
+                    <span>??</span> é¡Œå??·é??†æ?
+                </h3>
+                <p class="text-stone-600 leading-relaxed">
+                    ?¨é€²å…¥å¯¦æˆ°?ï??ˆä?äº†è§£??14 é¡Œç·´ç¿’é??„é?é»å?ä½ˆã€‚é€™ä»½æ¸¬é?ä¸»è??ƒé?ä½ å??Œä??¬å?è©è??©å?è©ã€ç??­é?ï¼Œå…¶ä¸­ä?ç©¿æ?äº†ã€Œç…§å¦–é¡æ³•å??ç??·é˜±é¡Œï?ä»¥å??è¿°?€?‹æ?å¿…é?è½‰æ?ä½¿ç”¨?„ã€ŒBe?•è??ã€?
+                </p>
+                <ul class="space-y-2 mt-4 text-sm font-medium">
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-teal-500"></span> ä¸€?¬åŠ©?•è?
+                        (Do/Does) ?¤æ–· - ?€å¤§å??¸å?</li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400"></span> ?§å??¡æ???
+                        (?Ÿå½¢?•è??„å?) - ?“éŒ¯?·é˜±</li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Be?•è?
+                        (?€?‹æ?è¿??å?ä½? - æ¦‚å¿µå°æ?</li>
+                    <li class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-400"></span> ?æ??•è?
+                        (Have/Has) - ?®è??¸ç‰¹ä¾?/li>
+                </ul>
+            </div>
+            <div class="lg:w-1/2 w-full">
+                <!-- MANDATORY CHART CONTAINER -->
+                <div class="chart-container">
+                    <canvas id="conceptChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Interactive Quiz -->
+        <section id="quiz-section" class="space-y-6">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-teal-800">?”ï? å¯¦æˆ°æ¼”ç·´ (??14 é¡?</h3>
+                <p class="text-stone-500 mt-2">é»æ??¸é?ä½œç??‚ä?ç­”å?å°‡è‡ª?•è§£?–ã€Œè§£é¡Œç??¥ã€è??Œå?å¸«è§£?ã€ã€?/p>
+            </div>
+
+            <!-- Score & Progress Board (New for LD) -->
+            <div id="score-board"
+                class="bg-white rounded-2xl shadow-md border-2 border-teal-400 p-5 sticky top-20 z-40 mb-8 transition-all">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-xl font-extrabold text-stone-800 flex items-center gap-2">
+                        <span>?? å¾—å?ï¼?/span>
+                        <span id="score-display"
+                            class="text-3xl text-teal-600 transition-all duration-300 transform inline-block">0</span>
+                        <span class="text-stone-400 text-lg font-medium">/ 140</span>
+                    </div>
+                    <div class="text-stone-600 font-bold bg-stone-100 px-4 py-1.5 rounded-full text-sm">
+                        ?®å??²åº¦ï¼?span id="progress-text" class="text-teal-600 text-lg">0</span> / 14 é¡?
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-stone-200 rounded-full h-3 shadow-inner overflow-hidden">
+                    <div id="progress-bar"
+                        class="bg-gradient-to-r from-teal-400 to-teal-600 h-3 rounded-full transition-all duration-500 ease-out w-0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Container (Populated by JS) -->
+            <div id="quiz-container" class="space-y-8">
+                <!-- JS will inject question cards here -->
+            </div>
+
+            <div class="text-center pt-8">
+                <button onclick="resetQuiz()"
+                    class="bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold py-2 px-6 rounded-full transition-colors">
+                    ?? ?æ–°æ¸¬é?
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-stone-400 py-6 mt-16 text-center text-sm">
+        <p>äº’å??‡æ?å­¸ç?å®?| ?®å? 1 ç·´ç?</p>
+        <p class="mt-1 text-stone-500">Content adapted from Unit1_Grammar_Practice.md</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. State Management & Data Storage ---
+        let score = 0;
+        let answeredCount = 0;
+
+        const quizData = [
+            {
+                id: 1,
+                q: "A: What \_\_\_\_\_\_ you love?<br>B: I love cats.",
+                options: ["are", "can", "do", "is"],
+                correctIndex: 2,
+                strategy: "??span class='verb-kw'>?•è?</span>??span class='subj-kw'>ä¸»è?</span>?‚å¥å­è£¡??span class='verb-kw'>ä¸€?¬å?è©?love</span>ï¼Œæ?ä»¥é?è¦?span class='kw'>?©å?è©?/span>?‚ä¸»è©æ˜¯ <span class='subj-kw'>you</span>ï¼Œæ­?ç??©å?è©æ˜¯ <span class='kw'>do</span>??,
+                explanation: "?å¥?ºã€Œä??œæ­¡ä»€éº¼ï??ï?? å«??span class='verb-kw'>ä¸€?¬å?è©?/span>ï¼Œä?ä¸»è???<span class='subj-kw'>you</span>ï¼Œæ???(C) do??
+            },
+            {
+                id: 2,
+                q: "A: \_\_\_\_\_\_ you play the piano every day?<br>B: Yes, I \_\_\_\_\_\_.",
+                options: ["Do; do", "Are; are", "Is; are", "Does; do"],
+                correctIndex: 0,
+                strategy: "?‹åˆ°<span class='verb-kw'>?•è? play</span>ï¼Œå¥é¦–å¡«<span class='kw'>?©å?è©?/span>?‚ä¸»è©ç‚º <span class='subj-kw'>you</span>ï¼Œç”¨ <span class='kw'>Do</span> ?‹é ­?‚ç°¡ç­”å¥?ŒYes, I <span class='kw'>do</span>.?å?å¾Œå‘¼?‰ã€?,
+                explanation: "??<span class='kw'>Do</span> ?ï?å°±ç”¨ <span class='kw'>do</span> ?ç?ï¼Œæ???(A)??
+            },
+            {
+                id: 3,
+                q: "A: What \_\_\_\_\_\_ your sisters do on Fridays?<br>B: They paint on Fridays.",
+                options: ["do", "is", "are", "can"],
+                correctIndex: 0,
+                strategy: "??span class='subj-kw'>ä¸»è?</span>?‚ä¸»è©æ˜¯ <span class='subj-kw'>your sisters</span>ï¼ˆæ? <b>s</b>ï¼Œæ˜¯<span class='subj-kw'>è¤‡æ•¸</span>ï¼‰ï?è¤‡æ•¸ä¸»è?å°æ??„åŠ©?•è???<span class='kw'>do</span>??,
+                explanation: "?–ç„¶?¥å?è£¡æ? doï¼ˆå?ï¼‰ï?ä½†é€™è£¡?¯ä???span class='verb-kw'>ä¸€?¬å?è©?/span>?‚å??¢é?è¦ä???span class='kw'>?©å?è©?/span>ä¾†å½¢?ç??å¥ï¼Œè??¸ä¸»è©é? <span class='kw'>do</span>ï¼Œæ???(A)??
+            },
+            {
+                id: 4,
+                q: "A: Do you like his songs?<br>B: No, \_\_\_\_\_\_.",
+                options: ["I do", "I don?™t", "I am not", "I am"],
+                correctIndex: 1,
+                strategy: "ç°¡ç?é¡Œå??‹å??¥ã€‚å??¥ç”¨ <span class='kw'>Do you...?</span>ï¼Œå¦å®šå?ç­”å°±??<span class='kw'>No, I don't.</span>??,
+                explanation: "?¨åŠ©?•è? <span class='kw'>Do</span> ?å?ï¼Œå¦å®šç°¡ç­”é?ä½¿ç”¨ <span class='kw'>don't</span>ï¼Œæ???(B)??
+            },
+            {
+                id: 5,
+                q: "A: Does your father like Jeremy Lin?<br>B: No, \_\_\_\_\_\_.",
+                options: ["he doesn?™t like", "he doesn?™t", "he isn?™t", "he don?™t"],
+                correctIndex: 1,
+                strategy: "ç°¡ç?é¡Œå??‹å??¥ã€‚å??¥ç”¨ <span class='kw'>Does your father...?</span>ï¼Œyour father ?¯ç”·?Ÿï?<span class='subj-kw'>he ?®æ•¸</span>ï¼‰ï??¦å?ç°¡ç?å°±æ˜¯ <span class='kw'>No, he doesn't.</span>??,
+                explanation: "?±æ?ç°¡ç?ä¸é?è¦é?è¤‡å??¢ç??•è? likeï¼Œåªè¦åˆ°<span class='kw'>?©å?è©?/span>?³å¯ï¼Œæ???(B)??
+            },
+            {
+                id: 6,
+                q: "A: Does Andy \_\_\_\_\_\_ on Sundays? (?§å??¡å‡º?¾ä?!)<br>B: Yes, he does.",
+                options: ["swimming", "swim", "swims", "is swimming"],
+                correctIndex: 1,
+                strategy: "?‹åˆ° <span class='kw'>Does</span>ï¼ˆåŠ©?•è?ï¼‰ï??Ÿå?<span class='kw'>?Œç…§å¦–é¡æ³•å???/span>ï¼Œå??¢å?è©ä?å¾‹ç”¨<span class='verb-kw'>?Ÿå½¢</span>??,
+                explanation: "?©å?è©å??¢ç??•è?ä¸èƒ½??s, es ??ingï¼Œå??ˆæ˜¯<span class='verb-kw'>?Ÿå½¢?•è? swim</span>ï¼Œæ???(B)??
+            },
+            {
+                id: 7,
+                q: "A: Do the boys \_\_\_\_\_\_ on Sundays?<br>B: Yes, they do.",
+                options: ["painting", "paint", "not paint", "don?™t paint"],
+                correctIndex: 1,
+                strategy: "?Œä?ä¸€é¡Œä?æ¨???‹åˆ° <span class='kw'>Do</span>ï¼ˆåŠ©?•è?ï¼‰ï??Ÿå?<span class='kw'>?Œç…§å¦–é¡æ³•å???/span>ï¼Œå??¢æ¥<span class='verb-kw'>?Ÿå½¢?•è?</span>??,
+                explanation: "?©å?è©å???span class='verb-kw'>?Ÿå½¢?•è? paint</span>ï¼Œæ???(B)??
+            },
+            {
+                id: 8,
+                q: "A: Do they watch TV after school?<br>B: No, they \_\_\_\_\_\_.",
+                options: ["are", "aren?™t", "doesn?™t", "don?™t"],
+                correctIndex: 3,
+                strategy: "?‹å??¥æ‰¾ç·šç´¢?‚å??¥æ˜¯ <span class='kw'>Do they...?</span>ï¼Œå¦å®šç°¡ç­”å°±??<span class='kw'>No, they don't.</span>??,
+                explanation: "??<span class='kw'>Do</span> ?å?ï¼Œä¸»è©æ˜¯ <span class='subj-kw'>they</span>ï¼Œå¦å®šç°¡ç­”æ­??<span class='kw'>don't</span>ï¼Œæ???(D)??
+            },
+            {
+                id: 9,
+                q: "A: \_\_\_\_\_\_ Helen study English every day?<br>B: Yes, she \_\_\_\_\_\_.",
+                options: ["Does; does", "Are; are", "Is; are", "Does; do"],
+                correctIndex: 0,
+                strategy: "??span class='subj-kw'>ä¸»è?</span>?‚ä¸»è©?<span class='subj-kw'>Helen</span> ?¯ç¬¬ä¸‰äººç¨?span class='subj-kw'>?®æ•¸</span>ï¼ˆå¥¹ï¼‰ï??€ä»¥åŠ©?•è???<span class='kw'>Does</span>?‚ç°¡ç­”å??¯ã€ŒYes, she <span class='kw'>does</span>.?ã€?,
+                explanation: "?®æ•¸ä¸»è???<span class='kw'>Does</span>ï¼Œä? <span class='kw'>Does</span> ?å°±??<span class='kw'>does</span> ç­”ï??…é¸ (A)??
+            },
+            {
+                id: 10,
+                q: "A: What \_\_\_\_\_\_ your sister do on weekends?<br>B: She \_\_\_\_\_\_ a kite.",
+                options: ["do; flies", "does; flies", "is; flies", "can; fly"],
+                correctIndex: 1,
+                strategy: "ç¬¬ä??¼ç?ä¸»è? <span class='subj-kw'>your sisterï¼ˆå–®?¸ï?</span>ï¼Œç”¨ <span class='kw'>does</span>?‚ç¬¬äºŒæ ¼?¯è‚¯å®šå¥ï¼Œä¸»è©?<span class='subj-kw'>She</span>ï¼ˆç¬¬ä¸‰äººç¨±å–®?¸ï?ï¼Œå?è©?fly å¿…é?è¦å» y ??ies è®Šæ? <span class='verb-kw'>flies</span>??,
+                explanation: "?‘å??¥ç”± <span class='kw'>does</span> å¹«å?ï¼›è‚¯å®šå¥ä¸­ç¬¬ä¸‰äººç¨±å–®?¸ä¸»è©å??¢ç??•è?è¦?span class='verb-kw'>??s/es</span>ï¼Œæ???(B)??
+            },
+            {
+                id: 11,
+                q: "Joyce \_\_\_\_\_\_ long legs.",
+                options: ["have", "has", "is", "are"],
+                correctIndex: 1,
+                strategy: "??span class='subj-kw'>ä¸»è?</span>??span class='subj-kw'>Joyce</span> ?¯ä??‹äººï¼ˆç¬¬ä¸‰äººç¨?span class='subj-kw'>?®æ•¸</span>ï¼‰ï?è¡¨ç¤º?Œæ??‰ã€ç??•è? have è¦æ”¹?å–®?¸å???<span class='verb-kw'>has</span>??,
+                explanation: "ä¸»è??ºç¬¬ä¸‰äººç¨±å–®?¸ï??•è???<span class='verb-kw'>has</span>ï¼Œæ???(B)??
+            },
+            {
+                id: 12,
+                q: "Kevin \_\_\_\_\_\_ have small ears.",
+                options: ["is", "are", "don?™t", "doesn?™t"],
+                correctIndex: 3,
+                strategy: "??span class='verb-kw'>?•è?</span>?‚å¥å­è£¡?‰å?è©?<span class='verb-kw'>have</span>ï¼Œå¦å®šå¥è¦è?<span class='kw'>?©å?è©?/span>ä¾†å¹«å¿™ã€‚ä¸»è©?<span class='subj-kw'>Kevin</span> ?¯å–®?¸ï??€ä»¥ç”¨ <span class='kw'>doesn't</span>??,
+                explanation: "?™è£¡??have ??span class='verb-kw'>ä¸€?¬å?è©?/span>ï¼Œä??½ç”¨ Be ?•è?(is/are)ä¾†å¦å®šã€‚å–®?¸ä¸»è©é? <span class='kw'>doesn't</span>ï¼Œæ???(D)??
+            },
+            {
+                id: 13,
+                q: "How tall \_\_\_\_\_\_ your English teacher?",
+                options: ["do", "is", "are", "am"],
+                correctIndex: 1,
+                strategy: "è©¢å?èº«é??ç??‹æ??¹å¾µ?‚ï?æ²’æ?ä¸€?¬å?ä½œï?å¦‚è??è·³?å?ï¼‰ï?ä½¿ç”¨?„æ˜¯ <span class='kw'>Be?•è?</span>?‚ä¸»è©?<span class='subj-kw'>your English teacher</span> ?¯å–®?¸ï??­é???Be?•è???<span class='kw'>is</span>??,
+                explanation: "?è¿°èº«é??€?‹ä?ä½¿ç”¨ do/doesï¼Œå–®?¸ä¸»è©æ­??<span class='kw'>is</span>ï¼Œæ???(B)??
+            },
+            {
+                id: 14,
+                q: "A: How tall is your sister?<br>B: She \_\_\_\_\_\_ one hundred fifty centimeters.",
+                options: ["do", "does", "is", "are"],
+                correctIndex: 2,
+                strategy: "å»¶ç?ä¸Šä?é¡Œï??è¿°èº«é??€?‹ç”¨ <span class='kw'>Be?•è?</span>?‚ä¸»è©?<span class='subj-kw'>She</span>ï¼Œæ­??<span class='kw'>is</span>??,
+                explanation: "è¡¨é??Œå¥¹??150 ?¬å?é«˜ã€ï??¯ä??‹ç??‹æ?è¿°ï?ä¸»è? She ?­é? <span class='kw'>is</span>ï¼Œæ???(C)??
+            }
+        ];
+
+        let userAnswers = {}; // Store answered state
+
+        // --- 2. Functional UI Logic ---
+
+        // Toggle Core Rules accordion
+        function toggleRule(ruleNum) {
+            const detailDiv = document.getElementById(`rule1-detail`);
+            const targetDiv = document.getElementById(`rule${ruleNum}-detail`);
+
+            if (targetDiv.classList.contains('hidden')) {
+                targetDiv.classList.remove('hidden');
+                targetDiv.classList.add('block');
+            } else {
+                targetDiv.classList.add('hidden');
+                targetDiv.classList.remove('block');
+            }
+        }
+
+        const optionLetters = ['A', 'B', 'C', 'D'];
+
+        // Render the Quiz Questions
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizData.forEach((qItem, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'bg-white rounded-xl shadow-sm border border-stone-200 p-6 md:p-8';
+                questionCard.id = `q-card-${qItem.id}`;
+
+                // Header
+                let htmlStr = `
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="bg-teal-100 text-teal-800 font-bold rounded-full w-10 h-10 flex items-center justify-center shrink-0">
+                            ${qItem.id}
+                        </div>
+                        <h4 class="text-lg md:text-xl font-medium text-stone-800 pt-1 leading-relaxed">
+                            ${qItem.q}
+                        </h4>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6" id="options-${qItem.id}">
+                `;
+
+                // Options
+                qItem.options.forEach((opt, optIndex) => {
+                    htmlStr += `
+                        <button onclick="handleAnswer(${qItem.id}, ${optIndex})" 
+                                id="btn-${qItem.id}-${optIndex}"
+                                class="option-btn text-left border-2 border-stone-200 rounded-lg p-4 text-stone-700 font-medium hover:border-teal-400 focus:outline-none flex items-center gap-3">
+                            <span class="bg-stone-100 text-stone-500 rounded-md px-2 py-1 text-xs">${optionLetters[optIndex]}</span>
+                            <span>${opt}</span>
+                        </button>
+                    `;
+                });
+
+                htmlStr += `</div>`;
+
+                // Explanation Box (Hidden initially)
+                htmlStr += `
+                    <div id="explanation-${qItem.id}" class="explanation-box bg-stone-50 rounded-lg p-5 border-l-4 border-teal-500 mt-4">
+                        <div class="mb-3">
+                            <span class="inline-block bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded mb-1">?¯ è§??ç­–ç•¥</span>
+                            <p class="text-stone-700 text-sm leading-relaxed">${qItem.strategy}</p>
+                        </div>
+                        <div>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded mb-1">?? è§??</span>
+                            <p class="text-stone-700 text-sm leading-relaxed">${qItem.explanation}</p>
+                        </div>
+                    </div>
+                `;
+
+                questionCard.innerHTML = htmlStr;
+                container.appendChild(questionCard);
+            });
+        }
+
+        // Handle Answer Click
+        function handleAnswer(questionId, selectedOptionIndex) {
+            // Prevent re-answering
+            if (userAnswers[questionId] !== undefined) return;
+
+            userAnswers[questionId] = selectedOptionIndex;
+            const qData = quizData.find(q => q.id === questionId);
+            const isCorrect = selectedOptionIndex === qData.correctIndex;
+
+            // --- ?¹æ?æ©Ÿåˆ¶ï¼šæ›´?°è??†è??²åº¦æ¢?---
+            answeredCount++;
+            if (isCorrect) {
+                score += 10;
+                const scoreDisplay = document.getElementById('score-display');
+                scoreDisplay.innerText = score;
+                // æ­???é?ï¼šå??†å?è·³å???
+                scoreDisplay.classList.add('scale-150', 'text-amber-500');
+                setTimeout(() => scoreDisplay.classList.remove('scale-150', 'text-amber-500'), 300);
+            }
+
+            document.getElementById('progress-text').innerText = answeredCount;
+            const progressPercent = (answeredCount / quizData.length) * 100;
+            document.getElementById('progress-bar').style.width = progressPercent + '%';
+            // ------------------------------------
+
+            // Style all buttons for this question
+            qData.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-${questionId}-${idx}`);
+                btn.disabled = true;
+                btn.classList.add('cursor-not-allowed', 'opacity-60');
+
+                if (idx === qData.correctIndex) {
+                    // Highlight correct answer
+                    btn.classList.remove('border-stone-200', 'opacity-60');
+                    btn.classList.add('correct');
+                    btn.innerHTML += '<span class="ml-auto text-xl">??/span>';
+                } else if (idx === selectedOptionIndex && !isCorrect) {
+                    // Highlight selected wrong answer
+                    btn.classList.remove('border-stone-200');
+                    btn.classList.add('incorrect');
+                    btn.innerHTML += '<span class="ml-auto text-xl">??/span>';
+                }
+            });
+
+            // Show explanation
+            const expBox = document.getElementById(`explanation-${questionId}`);
+            // Update border color based on result
+            expBox.className = `explanation-box rounded-lg p-6 border-l-4 mt-4 block ${isCorrect ? 'bg-emerald-50 border-emerald-500' : 'bg-rose-50 border-rose-500'}`;
+
+            // Check if all answered
+            if (answeredCount === quizData.length) {
+                setTimeout(showCompletionMessage, 800);
+            }
+        }
+
+        // --- ?¹æ?æ©Ÿåˆ¶ï¼šå??æ¸¬é©—ç??é??«é¢ ---
+        function showCompletionMessage() {
+            const container = document.getElementById('quiz-container');
+            const completionDiv = document.createElement('div');
+            completionDiv.className = 'bg-teal-50 border-2 border-teal-500 rounded-2xl p-8 text-center shadow-lg mt-8 animation-fadeIn';
+
+            let message = "";
+            if (score >= 120) message = "?? å¤ªå²å®³ä?ï¼ä?å®Œå…¨?Œæ¡äº†ç¾?¨ç°¡?®å?ï¼?;
+            else if (score >= 80) message = "?? ?šå?å¥½ï?è§€å¿µå?æ¸…æ?ï¼Œå?å¤šç·´ç¿’ä?ä¸‹å°±å®Œç?äº†ï?";
+            else message = "?’ª ?¥ç°å¿ƒï?å¤šç?å¹¾æ¬¡ä¸Šé¢?„æ ¸å¿ƒå£è¨??ä½ æ?è¶Šä?è¶Šé€²æ­¥?„ï?";
+
+            completionDiv.innerHTML = `
+                <div class="text-6xl mb-4">??</div>
+                <h3 class="text-3xl font-bold text-teal-800 mb-2">æ¸¬é?å®Œæ?ï¼?/h3>
+                <p class="text-xl text-stone-700 mb-6">ä½ ç?ç¸½å??¯ï?<span class="text-teal-600 font-extrabold text-4xl mx-2">${score}</span> / 140</p>
+                <div class="bg-white rounded-xl p-4 inline-block shadow-sm border border-teal-200">
+                    <p class="text-teal-700 font-bold text-xl">${message}</p>
+                </div>
+            `;
+            container.appendChild(completionDiv);
+            // æ»¾å??«é¢?³ç??œè?
+            setTimeout(() => {
+                completionDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            score = 0;
+            answeredCount = 0;
+            document.getElementById('score-display').innerText = '0';
+            document.getElementById('progress-text').innerText = '0';
+            document.getElementById('progress-bar').style.width = '0%';
+            renderQuiz();
+            window.scrollTo({ top: document.getElementById('quiz-section').offsetTop - 80, behavior: 'smooth' });
+        }
+
+
+        // --- 3. Chart.js Implementation ---
+        function initChart() {
+            const ctx = document.getElementById('conceptChart').getContext('2d');
+
+            // Data derivation from report analysis
+            // Categories based on grammar rules tested
+            const data = {
+                labels: ['ä¸€?¬åŠ©?•è? (Do/Does)', '?§å??¡æ???(?Ÿå½¢)', '?æ??•è??®è???(Have/Has)', '?€?‹æ?è¿?(Be?•è?)'],
+                datasets: [{
+                    data: [9, 2, 1, 2], // Count of questions per category based on source report
+                    backgroundColor: [
+                        '#14b8a6', // teal-500
+                        '#fbbf24', // amber-400
+                        '#818cf8', // indigo-400
+                        '#fb7185'  // rose-400
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            };
+
+            const config = {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Critical for container bounds
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: "'Segoe UI', sans-serif", size: 13 },
+                                color: '#44403c',
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(28, 25, 23, 0.9)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 14 },
+                            padding: 12,
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    label += context.raw + ' é¡?;
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctx, config);
+        }
+
+        // --- 4. Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            initChart();
+        });
+
+    </script>
+</body>
+
+</html>
