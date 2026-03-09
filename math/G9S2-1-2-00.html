@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二次函數圖形實驗室</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        canvas {
+            background-color: white;
+            cursor: crosshair;
+        }
+
+        .control-btn {
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .control-btn:active {
+            transform: scale(0.9);
+        }
+
+        input[type=range] {
+            flex-grow: 1;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-6 text-center">
+            <h1 class="text-3xl font-bold text-slate-800">二次函數圖形實驗室</h1>
+            <p class="text-slate-500 mt-2 text-lg font-medium">觀察頂點位置、開口方向與圖形的平移變化</p>
+        </header>
+
+        <div class="flex flex-col gap-6">
+            <!-- 參數微調與分析面板 (移至上方並橫向排列) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-semibold border-b pb-2 mb-6">參數微調與性質觀察</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- 參數 a -->
+                    <div class="space-y-3">
+                        <label class="flex justify-between items-center font-bold text-red-600">
+                            <span class="flex items-center gap-1">開口係數 a</span>
+                            <span id="val-a"
+                                class="font-mono bg-red-50 px-3 py-1 rounded-full border border-red-100">1</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="adjust('a', -0.1)"
+                                class="control-btn bg-red-100 text-red-600 hover:bg-red-200">−</button>
+                            <input type="range" id="input-a" min="-5" max="5" step="0.1" value="1"
+                                class="accent-red-500">
+                            <button onclick="adjust('a', 0.1)"
+                                class="control-btn bg-red-100 text-red-600 hover:bg-red-200">+</button>
+                        </div>
+                    </div>
+
+                    <!-- 參數 h -->
+                    <div class="space-y-3">
+                        <label class="flex justify-between items-center font-bold text-blue-600">
+                            <span class="flex items-center gap-1">左右平移 h</span>
+                            <span id="val-h"
+                                class="font-mono bg-blue-50 px-3 py-1 rounded-full border border-blue-100">0</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="adjust('h', -0.5)"
+                                class="control-btn bg-blue-100 text-blue-600 hover:bg-blue-200">−</button>
+                            <input type="range" id="input-h" min="-10" max="10" step="0.5" value="0"
+                                class="accent-blue-500">
+                            <button onclick="adjust('h', 0.5)"
+                                class="control-btn bg-blue-100 text-blue-600 hover:bg-blue-200">+</button>
+                        </div>
+                    </div>
+
+                    <!-- 參數 k -->
+                    <div class="space-y-3">
+                        <label class="flex justify-between items-center font-bold text-green-600">
+                            <span class="flex items-center gap-1">上下平移 k</span>
+                            <span id="val-k"
+                                class="font-mono bg-green-50 px-3 py-1 rounded-full border border-green-100">0</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="adjust('k', -0.5)"
+                                class="control-btn bg-green-100 text-green-600 hover:bg-green-200">−</button>
+                            <input type="range" id="input-k" min="-10" max="10" step="0.5" value="0"
+                                class="accent-green-500">
+                            <button onclick="adjust('k', 0.5)"
+                                class="control-btn bg-green-100 text-green-600 hover:bg-green-200">+</button>
+                        </div>
+                    </div>
+
+                    <!-- 重設與資訊 -->
+                    <div class="flex flex-col justify-end gap-2">
+                        <button id="reset-btn"
+                            class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl transition-all shadow-md font-bold">回到原點
+                            (0, 0)</button>
+                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-center">
+                            <span id="info-eq" class="text-sm font-bold text-slate-800 tracking-tight"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 性質摘要 (橫向) -->
+                <div class="mt-6 pt-4 border-t grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="text-slate-400 text-xs font-bold">頂點坐標</span>
+                        <span id="info-vertex" class="font-bold text-purple-600"></span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="text-slate-400 text-xs font-bold">對稱軸</span>
+                        <span id="info-axis" class="font-bold text-blue-500"></span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="text-slate-400 text-xs font-bold">圖形開口</span>
+                        <span id="info-dir" class="font-bold"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下方繪圖區 -->
+            <div class="relative">
+                <div
+                    class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-[600px] flex flex-col">
+                    <canvas id="graph-canvas" class="flex-grow"></canvas>
+                </div>
+                <div class="absolute bottom-4 right-4 pointer-events-none">
+                    <span
+                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg text-sm font-bold text-slate-500 shadow-sm border border-slate-200">
+                        1小格 = 1單位
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('graph-canvas');
+        const ctx = canvas.getContext('2d');
+        const inputA = document.getElementById('input-a');
+        const inputH = document.getElementById('input-h');
+        const inputK = document.getElementById('input-k');
+
+        const valA = document.getElementById('val-a');
+        const valH = document.getElementById('val-h');
+        const valK = document.getElementById('val-k');
+
+        const infoEq = document.getElementById('info-eq');
+        const infoVertex = document.getElementById('info-vertex');
+        const infoAxis = document.getElementById('info-axis');
+        const infoDir = document.getElementById('info-dir');
+        const resetBtn = document.getElementById('reset-btn');
+
+        let width, height;
+        const scale = 35; // 稍微加大比例讓學生看更清楚
+
+        // 微調按鈕邏輯
+        function adjust(param, delta) {
+            const el = document.getElementById(`input-` + param);
+            let val = parseFloat(el.value) + delta;
+            val = Math.max(parseFloat(el.min), Math.min(parseFloat(el.max), val));
+            el.value = val.toFixed(1);
+            update();
+        }
+
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            [inputA, inputH, inputK].forEach(el => el.addEventListener('input', update));
+            resetBtn.addEventListener('click', () => {
+                inputA.value = 1;
+                inputH.value = 0;
+                inputK.value = 0;
+                update();
+            });
+            update();
+        }
+
+        function resize() {
+            const container = canvas.parentElement;
+            width = container.clientWidth;
+            height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+            draw();
+        }
+
+        function update() {
+            valA.textContent = parseFloat(inputA.value);
+            valH.textContent = parseFloat(inputH.value);
+            valK.textContent = parseFloat(inputK.value);
+
+            updateInfo();
+            draw();
+        }
+
+        function updateInfo() {
+            const a = parseFloat(inputA.value);
+            const h = parseFloat(inputH.value);
+            const k = parseFloat(inputK.value);
+
+            // 方程式文字優化：移除 $ 格式，使用純文字與上標
+            let hPart = h === 0 ? "x" : (h > 0 ? `(x - ${h})` : `(x + ${Math.abs(h)})`);
+            let kPart = k === 0 ? "" : (k > 0 ? ` + ${k}` : ` - ${Math.abs(k)}`);
+            let aPart = "";
+            if (a === 1) aPart = "";
+            else if (a === -1) aPart = "-";
+            else aPart = a;
+
+            if (a === 0) {
+                infoEq.innerHTML = `<span class="text-slate-400 text-lg">y = ${kPart || 0} (這是一條直線)</span>`;
+            } else {
+                infoEq.innerHTML = `y = <span class="text-red-600">${aPart}</span><span class="text-blue-600">${hPart}²</span><span class="text-green-600">${kPart}</span>`;
+            }
+
+            infoVertex.innerText = `(${h}, ${k})`;
+            infoAxis.innerText = `x = ${h}`;
+
+            if (a > 0) {
+                infoDir.innerText = "開口向上 (有最小值)";
+                infoDir.style.color = "#10b981";
+            } else if (a < 0) {
+                infoDir.innerText = "開口向下 (有最大值)";
+                infoDir.style.color = "#f43f5e";
+            } else {
+                infoDir.innerText = "水平直線";
+                infoDir.style.color = "#94a3b8";
+            }
+        }
+
+        function toScreen(x, y) {
+            return {
+                x: width / 2 + x * scale,
+                y: height / 2 - y * scale
+            };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            const a = parseFloat(inputA.value);
+            const h = parseFloat(inputH.value);
+            const k = parseFloat(inputK.value);
+
+            // 1. 繪製座標軸網格
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = -30; x <= 30; x++) {
+                let p = toScreen(x, 0);
+                ctx.moveTo(p.x, 0); ctx.lineTo(p.x, height);
+            }
+            for (let y = -20; y <= 20; y++) {
+                let p = toScreen(0, y);
+                ctx.moveTo(0, p.y); ctx.lineTo(width, p.y);
+            }
+            ctx.stroke();
+
+            // 主軸
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            let origin = toScreen(0, 0);
+            ctx.moveTo(0, origin.y); ctx.lineTo(width, origin.y);
+            ctx.moveTo(origin.x, 0); ctx.lineTo(origin.x, height);
+            ctx.stroke();
+
+            // 標註軸名稱
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText('x', width - 20, origin.y - 10);
+            ctx.fillText('y', origin.x + 10, 25);
+
+            // 2. 繪製對稱軸 (藍色虛線)
+            if (a !== 0) {
+                ctx.setLineDash([10, 5]);
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                let axisX = toScreen(h, 0).x;
+                ctx.moveTo(axisX, 0);
+                ctx.lineTo(axisX, height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // 3. 繪製二次函數圖形 (拋物線)
+            if (a !== 0) {
+                ctx.strokeStyle = a > 0 ? '#10b981' : '#f43f5e';
+                ctx.lineWidth = 4;
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+
+                let first = true;
+                const xRange = (width / scale);
+                for (let x = h - xRange; x <= h + xRange; x += 0.05) {
+                    let y = a * Math.pow(x - h, 2) + k;
+                    let p = toScreen(x, y);
+
+                    if (p.y >= -100 && p.y <= height + 100) {
+                        if (first) {
+                            ctx.moveTo(p.x, p.y);
+                            first = false;
+                        } else {
+                            ctx.lineTo(p.x, p.y);
+                        }
+                    }
+                }
+                ctx.stroke();
+            } else {
+                // a=0 時畫直線
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                let p1 = toScreen(-30, k);
+                let p2 = toScreen(30, k);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+
+            // 4. 繪製頂點 (紫色大圓點)
+            let vertex = toScreen(h, k);
+            ctx.fillStyle = '#8b5cf6';
+            ctx.beginPath();
+            ctx.arc(vertex.x, vertex.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 顯示頂點數值文字
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`頂點 (${h}, ${k})`, vertex.x, vertex.y - 20);
+        }
+
+        window.adjust = adjust;
+        window.onload = init;
+    </script>
+</body>
+
+</html>
