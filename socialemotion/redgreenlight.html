@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人際紅綠燈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f4;
+            color: #1c1917;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 30vh;
+            max-height: 350px;
+            min-height: 250px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 40vh;
+                max-height: 400px;
+            }
+        }
+
+        .traffic-light {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .traffic-light:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px currentColor, inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .traffic-light.active {
+            box-shadow: 0 0 25px currentColor, inset 0 0 5px rgba(255, 255, 255, 0.5);
+            border: 4px solid white;
+        }
+
+        .star-btn {
+            transition: transform 0.2s;
+        }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            800: '#292524',
+                            900: '#1c1917',
+                        },
+                        traffic: {
+                            red: '#ef4444',
+                            yellow: '#eab308',
+                            green: '#22c55e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="antialiased selection:bg-yellow-200">
+
+    <!-- Chosen Palette: Warm Neutral with Traffic Light Accents (Stone bg, White cards, Red/Yellow/Green interaction points) -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive "Teacher/Classroom Dashboard". It is structured into four functional zones: 1. Core Rules (interactive traffic light to visually reinforce the primary concept), 2. Mystery Box (randomized interactive prompt generator with topic distribution analytics to drive discussion), 3. Student Tracker (live tracking of the 4 specific students' goals with dynamic charts to visualize participation), and 4. Quiz (interactive assessment of the core concepts). This structure transforms static lesson plans and worksheets into a dynamic, engaging tool that can be used live in the classroom to guide the flow and maintain student attention. -->
+    <!-- Visualization & Content Choices: 1. Traffic Light Rules -> Interactive CSS shapes -> Engages users visually to explore roles. 2. Mystery Box Topics -> JS Array randomizer & Chart.js Donut Chart -> Makes topic selection a game and visualizes the variety of topics discussed. 3. Student Challenges -> Interactive Star Tracker & Chart.js Bar Chart -> Gamifies the individual goals for 小文, 小翔, 小鈴, 小莉, providing immediate visual reward and tracking progress. 4. Quiz -> JS Form -> Turns static worksheet questions into an active recall exercise. Library: Chart.js (Canvas) for all charts. Confirming NO SVG, NO Mermaid JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="sticky top-0 z-50 bg-stone-900 text-stone-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <span class="text-2xl">🚦</span>
+                    <span class="font-bold text-lg tracking-wider">社會技巧小隊：人際紅綠燈</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="scrollToSection('rules')"
+                        class="hover:text-traffic-yellow transition-colors">規則介紹</button>
+                    <button onclick="scrollToSection('box')"
+                        class="hover:text-traffic-yellow transition-colors">神秘題目箱</button>
+                    <button onclick="scrollToSection('tracker')"
+                        class="hover:text-traffic-yellow transition-colors">學生任務</button>
+                    <button onclick="scrollToSection('quiz')"
+                        class="hover:text-traffic-yellow transition-colors">觀念測驗</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <section id="rules" class="scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto mb-8">
+                <h1 class="text-3xl font-bold text-stone-900 mb-4">第一關：溝通的紅綠燈法則</h1>
+                <p class="text-stone-600 text-lg">
+                    這區塊介紹了課堂溝通的核心秩序。點擊下方的紅綠燈，了解每個燈號代表的溝通角色與任務。這能幫助學生具體理解「何時說」與「何時聽」，建立安全的互動界線。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center glass-card p-8 rounded-2xl shadow-sm">
+                <div
+                    class="flex flex-col items-center justify-center p-6 bg-stone-800 rounded-3xl w-48 mx-auto space-y-4 shadow-xl">
+                    <div id="light-red" onclick="showRule('red')"
+                        class="traffic-light w-24 h-24 rounded-full bg-traffic-red opacity-50 text-traffic-red flex items-center justify-center text-4xl">
+                        🔴</div>
+                    <div id="light-yellow" onclick="showRule('yellow')"
+                        class="traffic-light w-24 h-24 rounded-full bg-traffic-yellow opacity-50 text-traffic-yellow flex items-center justify-center text-4xl">
+                        🟡</div>
+                    <div id="light-green" onclick="showRule('green')"
+                        class="traffic-light w-24 h-24 rounded-full bg-traffic-green opacity-50 text-traffic-green flex items-center justify-center text-4xl">
+                        🟢</div>
+                </div>
+
+                <div
+                    class="bg-white p-8 rounded-xl shadow-inner border border-stone-200 min-h-[250px] flex flex-col justify-center">
+                    <div id="rule-content" class="text-center space-y-4">
+                        <div class="text-6xl mb-4">👆</div>
+                        <h2 class="text-2xl font-bold text-stone-800">點擊左側燈號</h2>
+                        <p class="text-stone-500">探索你的溝通角色與任務</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="box" class="scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto mb-8">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">第二關：神秘題目箱</h2>
+                <p class="text-stone-600 text-lg">
+                    這裡收錄了20個專為國中生設計的互動話題。透過隨機抽題，讓「演說家（綠燈）」有具體的內容可以分享，同時訓練「守護者（紅燈）」的聆聽品質。右側圖表顯示題庫的主題分佈。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-7 glass-card p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-6">
+                        <select id="category-filter"
+                            class="bg-stone-100 border border-stone-300 text-stone-900 text-sm rounded-lg focus:ring-stone-500 focus:border-stone-500 block w-1/2 p-2.5">
+                            <option value="all">所有類別 (20題)</option>
+                            <option value="想像與超能力類">🎨 想像與超能力類</option>
+                            <option value="流行與娛樂類">🎮 流行與娛樂類</option>
+                            <option value="飲食與喜好類">🍕 飲食與喜好類</option>
+                            <option value="校園與社交類">🏫 校園與社交類</option>
+                        </select>
+                        <button onclick="drawQuestion()"
+                            class="bg-stone-900 hover:bg-stone-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform transform active:scale-95 flex items-center gap-2">
+                            <span>📦</span> 抽一題
+                        </button>
+                    </div>
+
+                    <div
+                        class="bg-stone-50 rounded-xl p-8 text-center min-h-[200px] flex flex-col justify-center items-center border-2 border-dashed border-stone-300 relative">
+                        <span id="topic-category"
+                            class="absolute top-4 left-4 text-xs font-bold px-3 py-1 bg-stone-200 text-stone-700 rounded-full">等待抽題...</span>
+                        <span id="topic-target"
+                            class="absolute top-4 right-4 text-xs font-bold px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full">適合對象</span>
+
+                        <h3 id="topic-text" class="text-2xl font-bold text-stone-800 mt-4 leading-relaxed">
+                            請點擊上方按鈕抽出今天的討論話題！</h3>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 glass-card p-6 rounded-2xl shadow-sm">
+                    <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">題庫類別分佈</h3>
+                    <div class="chart-container">
+                        <canvas id="topicChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tracker" class="scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto mb-8">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">第三關：小隊專屬挑戰任務</h2>
+                <p class="text-stone-600 text-lg">
+                    針對小文、小翔、小鈴、小莉四位學生的不同特質，設計了專屬的社交行為目標。點擊星星可以即時記錄他們的達成狀況，下方的圖表會同步更新小隊的整體表現。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="student-cards-container">
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">小隊任務達成率即時統計</h3>
+                <div class="chart-container">
+                    <canvas id="studentChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz" class="scroll-mt-20 mb-20">
+            <div class="text-center max-w-3xl mx-auto mb-8">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">第四關：生活小思考</h2>
+                <p class="text-stone-600 text-lg">
+                    這個測驗將課堂上的紅綠燈規則連結到真實的社會情境中，幫助學生理解建立秩序與溝通效率的重要性。請選出最適合的答案。
+                </p>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl shadow-sm max-w-4xl mx-auto">
+                <div id="quiz-container" class="space-y-8">
+                </div>
+
+                <div class="mt-8 flex justify-center">
+                    <button onclick="submitQuiz()"
+                        class="bg-traffic-green hover:bg-green-600 text-white text-lg font-bold py-3 px-12 rounded-full shadow-lg transition-transform transform active:scale-95">
+                        送出答案 🏆
+                    </button>
+                </div>
+
+                <div id="quiz-result" class="mt-6 text-center text-xl font-bold hidden p-4 rounded-xl">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-900 text-stone-400 py-8 text-center text-sm">
+        <p>社會技巧課程互動儀表板 © 2026</p>
+    </footer>
+
+    <script>
+        const rulesData = {
+            red: {
+                title: "🔴 守護者 (紅燈)",
+                icon: "👂",
+                desc: "閉上嘴巴看人，我是守護者。",
+                details: "當別人拿到發言球時，你的任務是保持安靜，用眼睛注視說話的人，守護他人的發言時間，不隨意插話。",
+                color: "text-traffic-red"
+            },
+            yellow: {
+                title: "🟡 觀察員 (黃燈)",
+                icon: "✋",
+                desc: "舉手心裡數 3 秒，我是觀察員。",
+                details: "如果你有想法想分享，請先點頭或舉手示意。在心裡默數 3 秒，等待對方把話說完，準備好你的內容。",
+                color: "text-traffic-yellow"
+            },
+            green: {
+                title: "🟢 演說家 (綠燈)",
+                icon: "🗣️",
+                desc: "拿到球大聲說，我是演說家。",
+                details: "現在是你的專屬時間！請拿好發言球，大聲且清楚地分享你的心情或興趣，讓大家都能聽見你的聲音。",
+                color: "text-traffic-green"
+            }
+        };
+
+        function showRule(color) {
+            document.querySelectorAll('.traffic-light').forEach(el => {
+                el.classList.remove('active', 'opacity-100');
+                el.classList.add('opacity-50');
+            });
+            const selectedLight = document.getElementById(`light-${color}`);
+            selectedLight.classList.remove('opacity-50');
+            selectedLight.classList.add('active', 'opacity-100');
+
+            const content = document.getElementById('rule-content');
+            const data = rulesData[color];
+
+            content.innerHTML = `
+                <div class="text-6xl mb-4 animate-bounce">${data.icon}</div>
+                <h2 class="text-3xl font-bold ${data.color} mb-2">${data.title}</h2>
+                <h3 class="text-xl font-semibold text-stone-800 mb-4">${data.desc}</h3>
+                <p class="text-stone-600 text-lg leading-relaxed bg-stone-50 p-4 rounded-lg border border-stone-200">${data.details}</p>
+            `;
+        }
+
+        const questionsData = [
+            { cat: "想像與超能力類", text: "如果你有一百萬，你第一件想買的東西是什麼？", target: "全班" },
+            { cat: "想像與超能力類", text: "如果你可以隱形一小時，你最想去哪裡？", target: "全班" },
+            { cat: "想像與超能力類", text: "如果你可以選一種超能力（飛翔、瞬間移動、力大無窮），你會選哪一個？", target: "小文、小翔" },
+            { cat: "想像與超能力類", text: "如果你可以穿越時空回到過去，你最想見到誰？", target: "小鈴" },
+            { cat: "想像與超能力類", text: "如果你可以在外太空生活，你最想帶什麼東西去？", target: "小文" },
+            { cat: "流行與娛樂類", text: "你最喜歡的 YouTube 頻道或網紅是誰？為什麼？", target: "小鈴、小翔" },
+            { cat: "流行與娛樂類", text: "如果你可以成為一個遊戲裡的角色，你想當誰？", target: "小文、小翔" },
+            { cat: "流行與娛樂類", text: "如果你可以跟一位明星或名人吃晚餐，你想選誰？", target: "小鈴" },
+            { cat: "流行與娛樂類", text: "你覺得哪一個手機 APP 絕對不能被刪掉？", target: "小鈴" },
+            { cat: "流行與娛樂類", text: "你最喜歡的一首歌或一個樂團是什麼？", target: "全班" },
+            { cat: "飲食與喜好類", text: "你最喜歡的連鎖速食店是哪一家？", target: "小莉、小文" },
+            { cat: "飲食與喜好類", text: "如果你這輩子只能吃一種食物，你會選什麼？", target: "全班" },
+            { cat: "飲食與喜好類", text: "你覺得世界上最難吃的食物是什麼？", target: "全班" },
+            { cat: "飲食與喜好類", text: "如果你可以發明一種新口味的冰淇淋，會是什麼味道？", target: "小莉" },
+            { cat: "飲食與喜好類", text: "你比較喜歡夏天還是冬天？為什麼？", target: "小文、小莉" },
+            { cat: "校園與社交類", text: "如果明天學校突然宣佈放假，你打算做什麼？", target: "全班" },
+            { cat: "校園與社交類", text: "你覺得理想的學校應該是什麼樣子？", target: "小翔" },
+            { cat: "校園與社交類", text: "如果你可以養一隻怪獸當寵物，你會選哪一種？", target: "小文、小莉" },
+            { cat: "校園與社交類", text: "你覺得最好的朋友應該具備什麼特質？", target: "小鈴、小翔" },
+            { cat: "校園與社交類", text: "如果你可以把家裡的房間重新裝潢，你想要什麼風格？", target: "全班" }
+        ];
+
+        let topicChartInstance = null;
+
+        function initTopicChart() {
+            const ctx = document.getElementById('topicChart').getContext('2d');
+
+            const counts = {};
+            questionsData.forEach(q => {
+                counts[q.cat] = (counts[q.cat] || 0) + 1;
+            });
+
+            topicChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        data: Object.values(counts),
+                        backgroundColor: ['#f87171', '#fbbf24', '#4ade80', '#60a5fa'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return ' ' + context.label + ': ' + context.raw + ' 題';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function drawQuestion() {
+            const filter = document.getElementById('category-filter').value;
+            let pool = questionsData;
+
+            if (filter !== 'all') {
+                pool = questionsData.filter(q => q.cat === filter);
+            }
+
+            if (pool.length === 0) return;
+
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            const selected = pool[randomIndex];
+
+            const textEl = document.getElementById('topic-text');
+            textEl.classList.remove('animate-pulse');
+            void textEl.offsetWidth;
+            textEl.classList.add('animate-pulse');
+
+            document.getElementById('topic-category').innerText = selected.cat;
+            document.getElementById('topic-target').innerText = "適合: " + selected.target;
+            textEl.innerText = selected.text;
+        }
+
+        const studentsData = [
+            { id: 0, name: "小文", icon: "👦", task: "🟢 有用圖卡或說話分享興趣", stars: 0, color: "bg-green-100 border-green-300" },
+            { id: 1, name: "小翔", icon: "👦", task: "🟡 主動舉手和老師分享想法", stars: 0, color: "bg-yellow-100 border-yellow-300" },
+            { id: 2, name: "小鈴", icon: "👧", task: "🔴 老師舉紅燈時能安靜10秒", stars: 0, color: "bg-red-100 border-red-300" },
+            { id: 3, name: "小莉", icon: "👧", task: "👁️ 發現誰正在說話並看著他", stars: 0, color: "bg-blue-100 border-blue-300" }
+        ];
+
+        let studentChartInstance = null;
+
+        function renderStudents() {
+            const container = document.getElementById('student-cards-container');
+            container.innerHTML = '';
+
+            studentsData.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-xl border-2 shadow-sm ${student.color} flex flex-col items-center text-center space-y-3 relative overflow-hidden`;
+
+                let starsHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    const isFilled = i <= student.stars;
+                    starsHtml += `<button onclick="toggleStar(${index}, ${i})" class="star-btn text-3xl ${isFilled ? 'text-yellow-400 drop-shadow-md' : 'text-stone-300 grayscale'}">⭐</button>`;
+                }
+
+                card.innerHTML = `
+                    <div class="text-4xl">${student.icon}</div>
+                    <h4 class="font-bold text-xl text-stone-800">${student.name}</h4>
+                    <p class="text-sm font-medium text-stone-700 bg-white/60 p-2 rounded-lg w-full h-16 flex items-center justify-center">${student.task}</p>
+                    <div class="flex gap-2 mt-2">${starsHtml}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleStar(studentIndex, starPos) {
+            if (studentsData[studentIndex].stars === starPos) {
+                studentsData[studentIndex].stars = starPos - 1;
+            } else {
+                studentsData[studentIndex].stars = starPos;
+            }
+            renderStudents();
+            updateStudentChart();
+        }
+
+        function initStudentChart() {
+            const ctx = document.getElementById('studentChart').getContext('2d');
+
+            studentChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: studentsData.map(s => s.name),
+                    datasets: [{
+                        label: '達成星數',
+                        data: studentsData.map(s => s.stars),
+                        backgroundColor: ['#86efac', '#fde047', '#fca5a5', '#93c5fd'],
+                        borderWidth: 1,
+                        borderColor: '#1c1917',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 3,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function updateStudentChart() {
+            if (studentChartInstance) {
+                studentChartInstance.data.datasets[0].data = studentsData.map(s => s.stars);
+                studentChartInstance.update();
+            }
+        }
+
+        const quizData = [
+            {
+                q: "1. 在社會生活中，為什麼需要像「紅綠燈」這樣的規則？",
+                opts: [
+                    "(A) 為了限制大家的自由，讓行動不方便",
+                    "(B) 為了建立秩序，確保所有人都能在安全的環境下達成目標",
+                    "(C) 只是為了裝飾環境，遵守與否並不重要"
+                ],
+                ans: 1
+            },
+            {
+                q: "2. 在教室討論中使用「紅綠燈溝通法」的核心目的是什麼？",
+                opts: [
+                    "(A) 確保每個人的發言都能被尊重與聽見，提升溝通效率",
+                    "(B) 為了讓老師能完全掌控場面，不讓學生表達意見",
+                    "(C) 單純為了好玩，對於學習溝通沒有實質幫助"
+                ],
+                ans: 0
+            },
+            {
+                q: "3. 當一個團體中有人不遵守溝通規則（如：隨意插話）時，最可能導致什麼結果？",
+                opts: [
+                    "(A) 團體氣氛會變得更熱烈，大家感情更好",
+                    "(B) 溝通訊息會中斷、產生誤會，讓真正想表達的人感到被忽略",
+                    "(C) 完全沒有影響，大家還是能清楚聽到彼此的聲音"
+                ],
+                ans: 1
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizData.forEach((item, index) => {
+                const block = document.createElement('div');
+                block.className = "bg-stone-50 p-6 rounded-xl border border-stone-200 quiz-block";
+
+                let optsHtml = '';
+                item.opts.forEach((opt, optIdx) => {
+                    optsHtml += `
+                        <label class="flex items-center p-3 rounded-lg hover:bg-stone-200 cursor-pointer transition-colors border border-transparent has-[:checked]:bg-blue-50 has-[:checked]:border-blue-300">
+                            <input type="radio" name="q${index}" value="${optIdx}" class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-stone-300">
+                            <span class="ml-3 text-stone-700 font-medium">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                block.innerHTML = `
+                    <h4 class="text-xl font-bold text-stone-900 mb-4">${item.q}</h4>
+                    <div class="space-y-2 flex flex-col pl-2">
+                        ${optsHtml}
+                    </div>
+                    <div id="feedback-${index}" class="mt-4 text-sm font-bold hidden px-4 py-2 rounded"></div>
+                `;
+                container.appendChild(block);
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let allAnswered = true;
+
+            quizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const feedbackEl = document.getElementById(`feedback-${index}`);
+                const blockEl = feedbackEl.parentElement;
+
+                if (!selected) {
+                    allAnswered = false;
+                    return;
+                }
+
+                feedbackEl.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+                blockEl.classList.remove('border-green-300', 'border-red-300');
+
+                if (parseInt(selected.value) === item.ans) {
+                    score++;
+                    feedbackEl.innerText = "✅ 答對了！觀念非常正確。";
+                    feedbackEl.classList.add('bg-green-100', 'text-green-800');
+                    blockEl.classList.add('border-green-300');
+                } else {
+                    feedbackEl.innerText = "❌ 答錯了喔，再仔細想想規則的目的是什麼。";
+                    feedbackEl.classList.add('bg-red-100', 'text-red-800');
+                    blockEl.classList.add('border-red-300');
+                }
+            });
+
+            const resultEl = document.getElementById('quiz-result');
+            resultEl.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-yellow-100', 'text-yellow-800');
+
+            if (!allAnswered) {
+                resultEl.innerText = "⚠️ 請完成所有題目後再送出！";
+                resultEl.classList.add('bg-yellow-100', 'text-yellow-800');
+            } else {
+                if (score === quizData.length) {
+                    resultEl.innerText = `🎉 恭喜！你獲得了 ${score}/${quizData.length} 分，你是超級規則大師！`;
+                    resultEl.classList.add('bg-green-100', 'text-green-800');
+                } else {
+                    resultEl.innerText = `💡 你的分數是 ${score}/${quizData.length} 分，繼續加油守護班級秩序！`;
+                    resultEl.classList.add('bg-yellow-100', 'text-yellow-800');
+                }
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.onload = () => {
+            initTopicChart();
+            renderStudents();
+            initStudentChart();
+            renderQuiz();
+        };
+
+    </script>
+</body>
+
+</html>
