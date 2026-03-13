@@ -167,6 +167,15 @@
             animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
         }
 
+        @keyframes floatUpAndFade {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+        }
+
+        .animate-float-up {
+            animation: floatUpAndFade 1s ease-out forwards;
+        }
+
         /* 標記樣式 */
         mark {
             background-color: #fef08a;
@@ -228,8 +237,8 @@
                             </path>
                         </svg>
                     </a>
-                    <button onclick="toggleScoreModal()"
-                        class="flex items-center space-x-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full transition-colors font-bold shadow-sm ml-2">
+                    <button id="score-btn" onclick="toggleScoreModal()"
+                        class="relative flex items-center space-x-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full transition-colors font-bold shadow-sm ml-2">
                         <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
@@ -284,7 +293,11 @@
                     </svg>
                 </div>
                 <h3 class="text-3xl font-black text-gray-900 mb-2">太棒了！</h3>
-                <p class="text-xl text-gray-600 font-medium mb-8">你已經完成這一題了！</p>
+                <p class="text-xl text-gray-600 font-medium mb-4">你已經完成這一題了！</p>
+                <div class="bg-yellow-50 rounded-xl p-4 mb-6 border-2 border-yellow-400 shadow-inner">
+                    <p class="text-lg text-yellow-800 font-bold mb-1">本題獲得成績</p>
+                    <p class="text-4xl font-black text-red-500" id="concept-score">+0 <span class="text-2xl">分</span></p>
+                </div>
                 <div class="flex flex-col space-y-3">
                     <button onclick="closeCompletionModal(true)"
                         class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl text-xl shadow-lg transition-colors">
@@ -419,9 +432,20 @@
         // 記錄步驟嘗試次數 (答錯一次就不給分)
         let attemptCounts = {};
 
-        // 分數管理
-        const SCORE_KEY = 'clickmath_scores';
-        let scoreData = JSON.parse(localStorage.getItem(SCORE_KEY)) || { total: 0, history: [] };
+        // 分數管理：依據檔案名稱獨立計分
+        const appFilename = window.location.pathname.split('/').pop().split('.')[0] || 'unit';
+        const SCORE_KEY = 'math_score_' + appFilename;
+        let scoreData = JSON.parse(localStorage.getItem(SCORE_KEY)) || [];
+        
+        // 每次重新整理頁面都是一次「新的練習」
+        const now = new Date();
+        const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        let currentSession = { time: timeStr, score: 0 };
+        scoreData.unshift(currentSession);
+        if (scoreData.length > 20) scoreData.pop(); // 保留最近 20 次紀錄
+        localStorage.setItem(SCORE_KEY, JSON.stringify(scoreData));
+
+        let earnedSteps = {}; // 記錄本次練習已經給過分的步驟，避免重做刷分
 
         // --- 初始化 ---
         function init() {
@@ -710,9 +734,14 @@
                 // 答對了！
                 card.classList.add('animate-tada');
 
-                // 計分邏輯 (第一次答對給 10 分)
-                if (attemptCounts[step.id] === 0) {
-                    addScore(10, `${appData.problems[currentProblemIndex].title} - 步驟 ${stepIndex + 1}`);
+                // 計分邏輯 (第一次答對且尚未給過分才給滿分，防止重做刷分)
+                if (attemptCounts[step.id] === 0 && !earnedSteps[step.id]) {
+                    earnedSteps[step.id] = true;
+                    currentSession.score += 10;
+                    scoreData[0] = currentSession;
+                    localStorage.setItem(SCORE_KEY, JSON.stringify(scoreData));
+                    updateScoreDisplay();
+                    triggerScoreAnimation(10);
                 }
 
                 setTimeout(() => {
@@ -739,51 +768,63 @@
                 }, 1000); // 動畫結束後執行
 
             } else {
-                // 答錯了
+                // 答錯
                 attemptCounts[step.id]++;
-                feedback.innerText = "答案不對哦，再想想看！";
+                feedback.innerText = "答錯囉！這步已經沒有分數了，但請重新選出正確答案吧！";
                 feedback.classList.remove('hidden');
                 card.classList.add('animate-shake');
                 setTimeout(() => card.classList.remove('animate-shake'), 500);
-                // 不清除答案，讓學生自己點擊清除
+                
+                // 自動清掉這步的錯誤作答，強制得重選
+                progressState[currentProblemIndex].answers[step.id] = [];
+                updateStepUI(stepIndex);
             }
         }
 
         // --- 分數與歷程系統 ---
-        function addScore(points, detail) {
-            scoreData.total += points;
-            const now = new Date();
-            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-            scoreData.history.unshift({ time: timeStr, detail: detail, points: points });
-            // 保留最近 20 筆
-            if (scoreData.history.length > 20) scoreData.history.pop();
+        function triggerScoreAnimation(points) {
+            const btn = document.getElementById('score-btn');
+            if (btn) {
+                // 按鈕縮放動畫
+                btn.classList.add('animate-tada');
+                setTimeout(() => btn.classList.remove('animate-tada'), 1000);
 
-            localStorage.setItem(SCORE_KEY, JSON.stringify(scoreData));
-            updateScoreDisplay();
+                // 飄字動畫
+                const floatText = document.createElement('div');
+                floatText.className = 'absolute -top-6 -right-2 text-red-500 font-black text-2xl animate-float-up pointer-events-none drop-shadow-md z-50';
+                floatText.innerText = '+' + points;
+                btn.appendChild(floatText);
+                setTimeout(() => floatText.remove(), 1000);
+            }
         }
 
         function updateScoreDisplay() {
-            document.getElementById('total-score-display').innerText = `${scoreData.total} 分`;
-            document.getElementById('modal-total-score').innerText = scoreData.total;
+            document.getElementById('total-score-display').innerText = `${currentSession.score} 分`;
+            
+            const modalScoreEl = document.getElementById('modal-total-score');
+            if(modalScoreEl) modalScoreEl.innerText = currentSession.score;
 
             const list = document.getElementById('score-history-list');
-            list.innerHTML = '';
-            if (scoreData.history.length === 0) {
-                list.innerHTML = '<li class="text-gray-500 text-center py-4">目前還沒有紀錄哦，開始挑戰吧！</li>';
-                return;
-            }
+            if(list) {
+                list.innerHTML = '';
+                if (scoreData.length <= 1 && currentSession.score === 0) {
+                    list.innerHTML = '<li class="text-gray-500 text-center py-4">目前還沒有紀錄哦，開始挑戰吧！</li>';
+                    return;
+                }
 
-            scoreData.history.forEach(item => {
-                list.innerHTML += `
-                    <li class="flex justify-between items-center border-b border-gray-200 pb-2">
-                        <div>
-                            <span class="text-sm text-gray-400 mr-2">${item.time}</span>
-                            <span class="font-bold text-gray-700">${item.detail}</span>
-                        </div>
-                        <span class="font-black text-green-600">+${item.points}</span>
-                    </li>
-                `;
-            });
+                scoreData.forEach((session, idx) => {
+                    const isCurrent = idx === 0;
+                    list.innerHTML += `
+                        <li class="flex justify-between items-center border-b border-gray-200 pb-2 ${isCurrent ? 'bg-yellow-50 rounded p-2' : ''}">
+                            <div>
+                                <span class="text-sm text-gray-400 mr-2">${session.time}</span>
+                                <span class="font-bold ${isCurrent ? 'text-red-700' : 'text-gray-700'}">${isCurrent ? '本次練習' : '過去練習紀錄'}</span>
+                            </div>
+                            <span class="font-black ${isCurrent ? 'text-red-500' : 'text-green-600'}">${session.score} 分</span>
+                        </li>
+                    `;
+                });
+            }
         }
 
         function toggleScoreModal() {
@@ -794,7 +835,9 @@
 
         function clearScoreHistory() {
             if (confirm('確定要清除所有分數紀錄嗎？')) {
-                scoreData = { total: 0, history: [] };
+                currentSession.score = 0;
+                scoreData = [currentSession];
+                earnedSteps = {};
                 localStorage.setItem(SCORE_KEY, JSON.stringify(scoreData));
                 updateScoreDisplay();
                 toggleScoreModal();
@@ -803,6 +846,12 @@
 
         // --- 完成視窗控制 ---
         function showCompletionModal() {
+            // 計算本題獲得的分數
+            const problem = appData.problems[currentProblemIndex];
+            const earnedScore = problem.steps.reduce((score, s) => attemptCounts[s.id] === 0 ? score + 10 : score, 0);
+            const scoreDisplay = document.getElementById('concept-score');
+            if (scoreDisplay) scoreDisplay.innerHTML = '+' + earnedScore + ' <span class="text-2xl">分</span>';
+
             const modal = document.getElementById('completion-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
