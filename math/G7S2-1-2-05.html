@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式二元一次聯立方程式學習單</title>
+    <link rel="icon" href="dog.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        .ans-input {
+            width: 4rem;
+            text-align: center;
+            background-color: #f5f5f4;
+            border-bottom-width: 4px;
+            border-color: #a8a29e;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            transition-property: color, background-color, border-color;
+            transition-duration: 300ms;
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
+        }
+
+        .ans-input:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+        }
+
+        .ans-input.correct {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #15803d;
+            pointer-events: none;
+        }
+
+        .ans-input.wrong {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            pointer-events: none;
+        }
+
+        body {
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: #fafaf9;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* 新增小算盤按鈕樣式 */
+        .numpad-btn {
+            background-color: #f5f5f4;
+            color: #44403c;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.75rem 0;
+            border-radius: 0.75rem;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 4px 0 #d6d3d1;
+            user-select: none;
+        }
+
+        .numpad-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #d6d3d1;
+        }
+
+        .numpad-btn-red {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            box-shadow: 0 4px 0 #fca5a5;
+        }
+
+        .numpad-btn-red:active {
+            box-shadow: 0 0 0 #fca5a5;
+        }
+    </style>
+</head>
+
+<body class="text-stone-800 h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Action Blue and Success Green -->
+    <!-- Application Structure Plan: A dashboard layout with a sidebar navigation for the 8 problems. This structure was chosen because presenting 8 complex math problems at once can overwhelm special education students. By chunking them into individual navigable modules and providing a progress dashboard, users can focus on one step at a time while experiencing a sense of achievement as they track their completion rate. -->
+    <!-- Visualization & Content Choices: 
+  1. Overall Progress -> Goal: Inform/Motivate -> Viz: Chart.js Doughnut Chart -> Interaction: Auto-updates upon completion -> Justification: Provides a clear, encouraging visual summary of tasks left vs done without text overload -> Library: Chart.js
+  2. Math Problems -> Goal: Organize & Learn -> Viz: Step-by-step Interactive Form -> Interaction: Progressive disclosure (next step reveals only when current is correct), color-coded feedback -> Justification: Scaffolded learning reduces cognitive load and provides immediate positive reinforcement, crucial for the target demographic -> Method: Vanilla JS DOM manipulation 
+-->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="w-full md:w-72 bg-white border-r border-stone-200 h-auto md:h-full flex flex-col shadow-sm z-10">
+        <div class="p-6 border-b border-stone-200 bg-stone-50">
+            <h1 class="text-2xl font-bold text-stone-800">加減消去法</h1>
+            <p class="text-stone-500 mt-1">互動學習儀表板</p>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100 shadow-inner">
+                <p class="text-sm text-blue-600 font-bold mb-1">目前總分</p>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-3xl font-black text-blue-700" id="nav-score">0</span>
+                    <span class="text-lg font-bold text-blue-500">分</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-2" id="nav-list">
+        </div>
+        <div class="p-4 border-t border-stone-200 bg-stone-50 mt-auto">
+            <a href="G7S2-1-2-04.html"
+                class="flex items-center justify-center w-full text-center px-4 py-3 bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold rounded-xl transition-colors shadow-sm">
+                &#9664; 回前一單元
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-1 h-full overflow-y-auto bg-stone-50 relative">
+        <div id="dashboard-view" class="p-8 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-full">
+            <h2 class="text-3xl font-bold text-stone-800 mb-2">歡迎來到學習區！</h2>
+            <p class="text-xl text-stone-600 mb-10">請從左側選單選擇題目開始練習，我們將一步步引導你。</p>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200 w-full max-w-md text-center">
+                <h3 class="text-2xl font-bold text-stone-700 mb-6">目前學習進度</h3>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <p id="progress-text" class="mt-6 text-xl font-medium text-stone-600">已完成 0 / 8 題</p>
+            </div>
+        </div>
+
+        <div id="problem-view" class="hidden p-8 max-w-4xl mx-auto pb-32">
+            <div class="mb-8 flex justify-between items-center border-b-2 border-stone-200 pb-4">
+                <div>
+                    <span id="p-group"
+                        class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold tracking-wide"></span>
+                    <h2 id="p-title" class="text-3xl font-bold text-stone-800 mt-3"></h2>
+                </div>
+                <div id="p-status" class="text-4xl"></div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                <div id="p-equation"
+                    class="text-3xl border-b-4 border-stone-800 pb-4 mb-8 w-fit mx-auto md:mx-0 overflow-x-auto">
+                </div>
+
+                <div id="p-content" class="space-y-8">
+                </div>
+
+                <div id="celebration"
+                    class="hidden mt-12 p-6 bg-green-50 border-2 border-green-400 rounded-xl text-center transition-all duration-500 transform scale-95">
+                    <div class="text-5xl mb-4">&#127881;</div>
+                    <h3 class="text-2xl font-bold text-green-800">太棒了！計算正確！</h3>
+                    <p class="text-green-600 mt-2 text-lg">你已經完全掌握這題了，請點擊左側進入下一題。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 螢幕小算盤介面 -->
+    <div id="numpad"
+        class="fixed bottom-6 right-6 bg-white/95 backdrop-blur shadow-2xl border border-stone-200 rounded-2xl p-5 z-50 w-72 transition-all duration-300 transform translate-y-[150%]">
+        <div class="flex justify-between items-center mb-4">
+            <span class="text-stone-600 font-bold flex items-center gap-2">⌨️ 螢幕小算盤</span>
+            <button onclick="toggleNumpad()"
+                class="text-stone-400 hover:text-stone-700 p-1 bg-stone-100 hover:bg-stone-200 rounded-md transition-colors">
+                &#10005;
+            </button>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+            <button class="numpad-btn" data-key="1">1</button>
+            <button class="numpad-btn" data-key="2">2</button>
+            <button class="numpad-btn" data-key="3">3</button>
+            <button class="numpad-btn" data-key="4">4</button>
+            <button class="numpad-btn" data-key="5">5</button>
+            <button class="numpad-btn" data-key="6">6</button>
+            <button class="numpad-btn" data-key="7">7</button>
+            <button class="numpad-btn" data-key="8">8</button>
+            <button class="numpad-btn" data-key="9">9</button>
+            <button class="numpad-btn" data-key="-">-</button>
+            <button class="numpad-btn" data-key="0">0</button>
+            <button class="numpad-btn numpad-btn-red" data-key="backspace">⌫</button>
+        </div>
+    </div>
+
+    <!-- 喚醒小算盤的懸浮按鈕 -->
+    <button id="numpad-toggle-btn" onclick="toggleNumpad()"
+        class="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-xl z-40 hover:bg-blue-700 hover:scale-105 transition-all hidden text-2xl">
+        ⌨️
+    </button>
+
+    <script>
+        const problemsData = [
+            { id: 1, type: 'guided', title: '第一題：引導練習', group: '第一組：步驟精熟', xC: 2, yC1: 4, yC2: -1, c1: 10, c2: 5 },
+            { id: 2, type: 'guided', title: '第二題：引導練習', group: '第一組：步驟精熟', xC: 3, yC1: 1, yC2: -2, c1: 7, c2: 4 },
+            { id: 3, type: 'self', title: '第三題：自主練習', group: '第一組：步驟精熟', xC: 4, yC1: 2, yC2: -1, c1: 14, c2: 5 },
+            { id: 4, type: 'guided', title: '第四題：引導練習', group: '第二組：符號挑戰', xC: 5, yC1: 3, yC2: -1, c1: 19, c2: 7 },
+            { id: 5, type: 'guided', title: '第五題：引導練習', group: '第二組：符號挑戰', xC: 1, yC1: 4, yC2: -2, c1: 9, c2: 3 },
+            { id: 6, type: 'self', title: '第六題：自主練習', group: '第二組：符號挑戰', xC: 2, yC1: 5, yC2: -1, c1: 12, c2: 0 },
+            { id: 7, type: 'guided', title: '第七題：引導練習', group: '第三組：移項熟練', xC: 3, yC1: 5, yC2: -1, c1: 21, c2: 3 },
+            { id: 8, type: 'guided', title: '第八題：引導練習', group: '第三組：移項熟練', xC: 4, yC1: 3, yC2: -1, c1: 17, c2: 5 }
+        ];
+
+        let state = {
+            currentProblem: null,
+            completed: {},
+            mistakes: 0, // 記錄總錯誤次数
+            numpadClosedManually: false
+        };
+
+        let progressChart = null;
+        let activeInput = null;
+        let numpadVisible = false;
+
+        function init() {
+            renderNav();
+            initChart();
+            setupInputDelegation();
+            setupNumpad();
+        }
+
+        function setupNumpad() {
+            // 監聽焦點以決定輸入的目標
+            document.addEventListener('focusin', function (e) {
+                if (e.target.classList.contains('ans-input')) {
+                    activeInput = e.target;
+                    if (!numpadVisible) {
+                        if (!state.numpadClosedManually) {
+                            showNumpad();
+                        } else {
+                            document.getElementById('numpad-toggle-btn').classList.remove('hidden');
+                        }
+                    }
+                }
+            });
+
+            // 設定小算盤按鈕的互動
+            document.querySelectorAll('.numpad-btn').forEach(btn => {
+                // 使用 mousedown 與 preventDefault 防止輸入框失去焦點
+                btn.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+
+                    if (!activeInput || activeInput.classList.contains('correct') || activeInput.disabled) return;
+
+                    const key = this.dataset.key;
+                    if (key === 'backspace') {
+                        activeInput.value = activeInput.value.slice(0, -1);
+                    } else {
+                        activeInput.value += key;
+                    }
+
+                    // 派發 input 事件觸發原有的對錯檢查邏輯
+                    activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+        }
+
+        function toggleNumpad() {
+            numpadVisible = !numpadVisible;
+            const numpad = document.getElementById('numpad');
+            const toggleBtn = document.getElementById('numpad-toggle-btn');
+
+            if (numpadVisible) {
+                numpad.classList.remove('translate-y-[150%]');
+                toggleBtn.classList.add('hidden');
+                state.numpadClosedManually = false;
+            } else {
+                numpad.classList.add('translate-y-[150%]');
+                toggleBtn.classList.remove('hidden');
+                state.numpadClosedManually = true;
+            }
+        }
+
+        function showNumpad() {
+            numpadVisible = true;
+            document.getElementById('numpad').classList.remove('translate-y-[150%]');
+            document.getElementById('numpad-toggle-btn').classList.add('hidden');
+        }
+
+        function hideNumpadFully() {
+            numpadVisible = false;
+            document.getElementById('numpad').classList.add('translate-y-[150%]');
+            document.getElementById('numpad-toggle-btn').classList.add('hidden');
+        }
+
+        function formatX(coeff) {
+            return coeff === 1 ? 'x' : coeff + 'x';
+        }
+
+        function formatY(coeff) {
+            if (coeff === 1) return '+ y';
+            if (coeff === -1) return '- y';
+            if (coeff > 0) return '+ ' + coeff + 'y';
+            return '- ' + Math.abs(coeff) + 'y';
+        }
+
+        function renderNav() {
+            const navList = document.getElementById('nav-list');
+            navList.innerHTML = `
+                <button onclick="showDashboard()" class="w-full text-left px-4 py-3 rounded-xl transition-colors font-medium text-stone-600 hover:bg-stone-100 flex items-center gap-3">
+                    <span class="text-xl">&#128202;</span> 學習儀表板
+                </button>
+                <div class="my-2 border-t border-stone-200"></div>
+            `;
+
+            problemsData.forEach(p => {
+                const isCompleted = state.completed[p.id];
+                const icon = isCompleted ? '&#9989;' : '&#9999;&#65039;';
+                const bgClass = state.currentProblem === p.id ? 'bg-blue-50 border-blue-200' : 'hover:bg-stone-100 border-transparent';
+                const textClass = state.currentProblem === p.id ? 'text-blue-700 font-bold' : 'text-stone-600';
+
+                navList.innerHTML += `
+                    <button onclick="loadProblem(${p.id})" class="w-full text-left px-4 py-3 rounded-xl border transition-all ${bgClass} ${textClass} flex items-center justify-between">
+                        <span>${p.title.split('：')[0]}</span>
+                        <span class="text-lg">${icon}</span>
+                    </button>
+                `;
+            });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            progressChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['已完成', '未完成'],
+                    datasets: [{
+                        data: [0, 8],
+                        backgroundColor: ['#22c55e', '#e7e5e4'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 16, family: "'PingFang TC', sans-serif" } } },
+                        tooltip: { titleFont: { size: 16 }, bodyFont: { size: 16 } }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            const completedCount = Object.keys(state.completed).length;
+            progressChart.data.datasets[0].data = [completedCount, 8 - completedCount];
+            progressChart.update();
+            document.getElementById('progress-text').innerText = `已完成 ${completedCount} / 8 題`;
+
+            // 計算並更新分數 (每題平均分配，四捨五入)
+            // 每錯一次扣 5 分，最低 0 分
+            let totalScore = Math.round((completedCount / problemsData.length) * 100);
+            totalScore -= (state.mistakes * 5);
+            if (totalScore < 0) totalScore = 0;
+
+            const scoreEl = document.getElementById('nav-score');
+            if (scoreEl) {
+                scoreEl.innerText = totalScore;
+            }
+
+            renderNav();
+        }
+
+        function showDashboard() {
+            state.currentProblem = null;
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            document.getElementById('problem-view').classList.add('hidden');
+            renderNav();
+            hideNumpadFully();
+        }
+
+        function getProblemAns(p) {
+            const yDiff = p.yC1 - p.yC2;
+            const cDiff = p.c1 - p.c2;
+            const ansY = cDiff / yDiff;
+            const subVal = p.yC1 * ansY;
+            const ansX = (p.c1 - subVal) / p.xC;
+            return { yDiff, cDiff, ansY, subVal, ansX };
+        }
+
+        function buildGuidedHTML(p, ans) {
+            let s1 = `
+                <div id="s1-container" class="transition-opacity duration-500">
+                    <h4 class="text-2xl font-bold text-blue-800 mb-6 flex items-center gap-3 bg-blue-50 p-3 rounded-lg w-fit">&#10112; 先算出 \\( y \\) 的值：</h4>
+                    <div class="ml-4 md:ml-12 space-y-6 text-3xl">
+                        <div class="flex items-center gap-2"><input type="number" class="ans-input" data-ans="${ans.yDiff}" data-next="i-s1-c"> \\( y = \\) <input type="number" class="ans-input" id="i-s1-c" data-ans="${ans.cDiff}" data-next="i-s1-y"></div>
+                        <div class="flex items-center gap-2">\\( y = \\) <input type="number" class="ans-input" id="i-s1-y" data-ans="${ans.ansY}" data-step="s1"></div>
+                    </div>
+                </div>
+            `;
+
+            let eqStr = `${formatX(p.xC)} ${formatY(p.yC1)} = ${p.c1}`;
+            let s2 = `
+                <div id="s2-container" class="opacity-20 pointer-events-none transition-all duration-700 mt-12 pt-8 border-t-2 border-dashed border-stone-200">
+                    <h4 class="text-2xl font-bold text-blue-800 mb-6 flex items-center gap-3 bg-blue-50 p-3 rounded-lg w-fit">&#10113; 將 \\( y \\) 的值代入算式 \\( ${eqStr} \\)：</h4>
+                    <div class="ml-4 md:ml-12 space-y-6 text-3xl">
+            `;
+
+            if (p.yC1 !== 1) {
+                s2 += `<div class="flex items-center gap-2">\\( ${formatX(p.xC)} ${p.yC1 > 0 ? '+' : '-'} ${Math.abs(p.yC1)} \\times \\) <input type="number" class="ans-input" data-ans="${ans.ansY}" data-next="i-s2-sub"> \\( = ${p.c1} \\)</div>`;
+            }
+            s2 += `<div class="flex items-center gap-2">\\( ${formatX(p.xC)} + \\) <input type="number" class="ans-input" id="i-s2-sub" data-ans="${ans.subVal}" data-next="i-s2-sub2"> \\( = ${p.c1} \\)</div>`;
+            s2 += `<div class="flex items-center gap-2">\\( ${formatX(p.xC)} = ${p.c1} - \\) <input type="number" class="ans-input" id="i-s2-sub2" data-ans="${ans.subVal}" data-next="i-s2-diff"></div>`;
+
+            if (p.xC !== 1) {
+                s2 += `<div class="flex items-center gap-2">\\( ${p.xC}x = \\) <input type="number" class="ans-input" id="i-s2-diff" data-ans="${p.c1 - ans.subVal}" data-next="i-s2-x"></div>`;
+            }
+
+            s2 += `<div class="flex items-center gap-2">\\( x = \\) <input type="number" class="ans-input" id="i-s2-x" data-ans="${ans.ansX}" data-step="s2"></div>`;
+            s2 += `</div></div>`;
+
+            let s3 = `
+                <div id="s3-container" class="opacity-20 pointer-events-none transition-all duration-700 mt-12 pt-8 border-t-4 border-stone-800">
+                    <div class="text-4xl font-bold text-stone-800 flex items-center flex-wrap gap-4">
+                        答： \\( x = \\) <input type="number" class="ans-input" data-ans="${ans.ansX}" data-final="true">, 
+                        \\( y = \\) <input type="number" class="ans-input" data-ans="${ans.ansY}" data-final="true">
+                    </div>
+                </div>
+            `;
+
+            return s1 + s2 + s3;
+        }
+
+        function buildSelfHTML(ans) {
+            return `
+                <div class="mt-8 p-10 bg-stone-100 border-4 border-dashed border-stone-300 rounded-2xl text-center">
+                    <p class="text-stone-600 mb-8 text-2xl font-bold">&#9999;&#65039; 自主練習區</p>
+                    <p class="text-stone-500 mb-10 text-xl">請在計算紙上依照前面的直式換行格式完成計算，<br>算出答案後，將結果輸入下方：</p>
+                    <div class="text-4xl font-bold flex justify-center items-center gap-6 flex-wrap">
+                        \\( x = \\) <input type="number" class="ans-input" data-ans="${ans.ansX}" data-final="true">,
+                        \\( y = \\) <input type="number" class="ans-input" data-ans="${ans.ansY}" data-final="true">
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadProblem(id) {
+            state.currentProblem = id;
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('problem-view').classList.remove('hidden');
+            document.getElementById('celebration').classList.add('hidden');
+            document.getElementById('celebration').classList.remove('scale-100');
+            document.getElementById('celebration').classList.add('scale-95');
+            renderNav();
+
+            const p = problemsData.find(x => x.id === id);
+            document.getElementById('p-group').innerHTML = p.group;
+            document.getElementById('p-title').innerHTML = p.title;
+            document.getElementById('p-status').innerHTML = state.completed[id] ? '&#9989;' : '';
+
+            const eqHTML = `\\[ \\begin{array}{rrcr} & ${formatX(p.xC)} ${formatY(p.yC1)} & = & ${p.c1} \\\\ -) & ${formatX(p.xC)} ${formatY(p.yC2)} & = & ${p.c2} \\\\ \\hline \\end{array} \\]`;
+            document.getElementById('p-equation').innerHTML = eqHTML;
+
+            const ans = getProblemAns(p);
+            const contentDiv = document.getElementById('p-content');
+
+            if (p.type === 'guided') {
+                contentDiv.innerHTML = buildGuidedHTML(p, ans);
+            } else {
+                contentDiv.innerHTML = buildSelfHTML(ans);
+            }
+
+            renderMathInElement(document.getElementById('problem-view'), {
+                delimiters: [
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false }
+                ],
+                throwOnError: false
+            });
+
+            if (state.completed[id]) {
+                const inputs = contentDiv.querySelectorAll('input');
+                inputs.forEach(inp => {
+                    inp.value = inp.dataset.ans;
+                    inp.classList.add('correct');
+                });
+                const s2 = document.getElementById('s2-container');
+                const s3 = document.getElementById('s3-container');
+                if (s2) { s2.classList.remove('opacity-20', 'pointer-events-none'); }
+                if (s3) { s3.classList.remove('opacity-20', 'pointer-events-none'); }
+                showCelebration();
+                hideNumpadFully();
+            } else {
+                const firstInput = contentDiv.querySelector('input');
+                if (firstInput) setTimeout(() => firstInput.focus(), 100);
+            }
+        }
+
+        function checkContainerCompletion(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return false;
+            const inputs = container.querySelectorAll('input');
+            let allCorrect = true;
+            inputs.forEach(inp => {
+                if (inp.value !== inp.dataset.ans) allCorrect = false;
+            });
+            return allCorrect;
+        }
+
+        function showCelebration() {
+            const cel = document.getElementById('celebration');
+            cel.classList.remove('hidden');
+            setTimeout(() => {
+                cel.classList.remove('scale-95');
+                cel.classList.add('scale-100');
+            }, 50);
+        }
+
+        function setupInputDelegation() {
+            document.getElementById('p-content').addEventListener('input', function (e) {
+                if (e.target.classList.contains('ans-input')) {
+                    const inp = e.target;
+                    const expected = String(inp.dataset.ans);
+                    const currentVal = String(inp.value);
+
+                    // 每次輸入重置錯誤紅框狀態
+                    inp.classList.remove('wrong');
+
+                    if (currentVal === expected) {
+                        inp.classList.add('correct');
+
+                        const nextId = inp.dataset.next;
+                        if (nextId) {
+                            const nextEl = document.getElementById(nextId);
+                            if (nextEl) nextEl.focus();
+                        }
+
+                        if (inp.dataset.step === 's1') {
+                            if (checkContainerCompletion('s1-container')) {
+                                const s2 = document.getElementById('s2-container');
+                                s2.classList.remove('opacity-20', 'pointer-events-none');
+                                setTimeout(() => {
+                                    const firstS2Input = s2.querySelector('input');
+                                    if (firstS2Input) firstS2Input.focus();
+                                }, 300);
+                            }
+                        }
+
+                        if (inp.dataset.step === 's2') {
+                            if (checkContainerCompletion('s2-container')) {
+                                const s3 = document.getElementById('s3-container');
+                                s3.classList.remove('opacity-20', 'pointer-events-none');
+                                setTimeout(() => {
+                                    const firstS3Input = s3.querySelector('input');
+                                    if (firstS3Input) firstS3Input.focus();
+                                }, 300);
+                            }
+                        }
+
+                        if (inp.dataset.final === 'true') {
+                            const allInputs = document.getElementById('p-content').querySelectorAll('input[data-final="true"]');
+                            let allFinalCorrect = true;
+                            allInputs.forEach(i => {
+                                if (i.value !== i.dataset.ans) allFinalCorrect = false;
+                            });
+
+                            if (allFinalCorrect) {
+                                state.completed[state.currentProblem] = true;
+                                updateChart();
+                                showCelebration();
+                                document.getElementById('p-status').innerHTML = '&#9989;';
+                                hideNumpadFully();
+                            }
+                        }
+                    } else {
+                        inp.classList.remove('correct');
+                    }
+                }
+            });
+
+            // 監聽 change 事件，針對「輸入完後點擊其他地方送出」的情況來判定分數扣除
+            document.getElementById('p-content').addEventListener('change', function (e) {
+                if (e.target.classList.contains('ans-input')) {
+                    const inp = e.target;
+                    const expected = String(inp.dataset.ans);
+                    const currentVal = String(inp.value);
+
+                    if (currentVal !== '' && currentVal !== expected) {
+                        state.mistakes += 1;
+                        updateChart();
+                        inp.classList.add('wrong'); // 顯示紅色
+                    }
+                }
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
