@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佳音翰林 國中英語 iEnglish 一年級 Unit2 單字練習卷</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FDFCF0;
+        }
+
+        .main-container {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn {
+            background-color: #FEF3C7;
+            color: #92400E;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .option-btn:hover {
+            background-color: #FDE68A;
+        }
+
+        .option-btn.selected {
+            border-color: #F59E0B;
+            background-color: #FDE68A;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .correct {
+            background-color: #10B981 !important;
+            color: white !important;
+            border-color: #059669 !important;
+        }
+
+        .incorrect-reveal {
+            background-color: #EF4444 !important;
+            color: white !important;
+            border-color: #DC2626 !important;
+        }
+
+        .speaker-btn {
+            background-color: #FFFBEB;
+            color: #D97706;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .speaker-btn:hover {
+            background-color: #FEF3C7;
+            transform: scale(1.1);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #E5E7EB;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 1rem;
+            background-color: #F59E0B;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+            border-radius: 9999px;
+        }
+
+        .word-preview-item {
+            background-color: #FFFBEB;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .word-preview-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen p-4 pb-16">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-amber-900">佳音翰林 國中英語 iEnglish</h1>
+            <h2 class="text-2xl font-semibold text-amber-700">一年級 Unit 2 單字練習卷</h2>
+        </div>
+
+        <!-- 預覽介面 -->
+        <div id="preview-container" class="main-container p-6 md:p-8">
+            <h2 class="text-3xl font-bold text-center text-amber-800 mb-6">本單元單字預覽</h2>
+            <div id="word-list" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                <!-- JavaScript 會在此生成單字 -->
+            </div>
+            <div class="text-center flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="start-quiz-btn"
+                    class="bg-amber-500 text-white font-bold py-4 px-10 text-xl rounded-full shadow-xl hover:bg-amber-600 transition-transform transform hover:scale-110">開始練習</button>
+                <button id="download-btn"
+                    class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105">下載練習卷
+                    (PDF)</button>
+            </div>
+        </div>
+
+        <!-- 測驗介面 -->
+        <div id="quiz-container" class="hidden main-container p-6 md:p-8">
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <div id="question-counter" class="text-lg font-semibold text-gray-600"></div>
+                    <div id="score-counter" class="text-lg font-bold text-amber-600">分數: 0</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="w-full flex flex-col justify-center items-center">
+                <div class="flex items-center justify-center gap-4 mb-8">
+                    <h3 id="question-text" class="text-3xl md:text-4xl font-bold text-center text-gray-800"></h3>
+                    <button id="speak-question-btn" class="speaker-btn flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+                    <!-- 選項按鈕 -->
+                </div>
+
+                <div id="control-buttons" class="mt-8 text-center">
+                    <button id="check-answer-btn"
+                        class="bg-amber-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-amber-600 transition-transform transform hover:scale-105 w-full md:w-auto">檢核答案</button>
+                    <button id="next-question-btn"
+                        class="hidden bg-emerald-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-emerald-600 transition-transform transform hover:scale-105 w-full md:w-auto">下一題</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果介面 -->
+        <div id="result-container" class="hidden text-center main-container p-8">
+            <h2 class="text-4xl font-bold text-amber-700 mb-4">練習完成！</h2>
+            <p class="text-2xl text-gray-600 mb-2">你的最終分數是</p>
+            <p id="final-score" class="text-6xl font-extrabold text-amber-500 mb-8"></p>
+            <div id="result-buttons" class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <!-- 重測按鈕 -->
+            </div>
+        </div>
+    </div>
+
+    <footer
+        class="fixed bottom-0 left-0 w-full text-center text-gray-400 text-sm bg-white bg-opacity-90 py-3 border-t border-gray-200 backdrop-blur-sm">
+        © 2025 特教米克師｜採用
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW" target="_blank"
+            class="text-amber-600 hover:underline">
+            CC BY-NC-SA 4.0 創用CC授權
+        </a>｜非商業用途歡迎轉載或改編，請保留署名並附上原始連結。
+    </footer>
+
+    <!-- PDF 生成用的 Loading -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+            <p id="export-status" class="text-lg font-semibold text-gray-800">正在產生 PDF 練習卷...</p>
+        </div>
+    </div>
+    <div id="export-render-container" style="position: absolute; left: -9999px; top: -9999px;"></div>
+
+    <script>
+        // 更新後的 Unit 2 單字庫
+        const vocabulary = [
+            { chinese: '刷牙', english: 'brush one’s teeth' },
+            { chinese: '臉', english: 'face' },
+            { chinese: '早餐', english: 'breakfast' },
+            { chinese: '午餐', english: 'lunch' },
+            { chinese: '運動', english: 'exercise' },
+            { chinese: '電腦', english: 'computer' },
+            { chinese: '分鐘', english: 'minute' },
+            { chinese: '回答；答案', english: 'answer' },
+            { chinese: '問題', english: 'question' },
+            { chinese: '困難；麻煩', english: 'trouble' },
+            { chinese: '生命；生活', english: 'life' },
+            { chinese: '愛', english: 'love' },
+            { chinese: '真實的', english: 'real' }
+        ];
+
+        const previewContainer = document.getElementById('preview-container');
+        const wordList = document.getElementById('word-list');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreCounter = document.getElementById('score-counter');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const checkAnswerBtn = document.getElementById('check-answer-btn');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const speakQuestionBtn = document.getElementById('speak-question-btn');
+        const finalScore = document.getElementById('final-score');
+        const progressBar = document.getElementById('progress-bar');
+        const resultButtonsContainer = document.getElementById('result-buttons');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const exportStatus = document.getElementById('export-status');
+
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let attempts = 0;
+        let selectedButton = null;
+        let synth = window.speechSynthesis;
+        let incorrectlyAnswered = [];
+
+        function speak(text, lang) {
+            if (synth.speaking) { synth.cancel(); }
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9;
+            synth.speak(utterance);
+        }
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function showPreview() {
+            previewContainer.classList.remove('hidden');
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            wordList.innerHTML = '';
+
+            vocabulary.forEach(word => {
+                const item = document.createElement('div');
+                item.className = 'word-preview-item';
+                item.innerHTML = `<p class="font-bold text-lg text-amber-900">${word.english}</p><p class="text-gray-600 text-sm">${word.chinese}</p>`;
+                item.addEventListener('click', () => {
+                    speak(word.english, 'en-US');
+                    setTimeout(() => speak(word.chinese, 'zh-TW'), 1000);
+                });
+                wordList.appendChild(item);
+            });
+        }
+
+        function startQuiz(mode = 'all') {
+            previewContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            if (mode === 'incorrect' && incorrectlyAnswered.length > 0) {
+                shuffledQuestions = shuffleArray([...incorrectlyAnswered]);
+            } else {
+                shuffledQuestions = shuffleArray([...vocabulary]);
+                score = 0;
+            }
+            incorrectlyAnswered = [];
+            currentQuestionIndex = 0;
+            scoreCounter.textContent = `分數: ${score}`;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            attempts = 0;
+            selectedButton = null;
+            optionsContainer.innerHTML = '';
+            checkAnswerBtn.classList.remove('hidden');
+            nextQuestionBtn.classList.add('hidden');
+
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                showResults();
+                return;
+            }
+
+            const progressPercentage = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            questionCounter.textContent = `問題 ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
+            questionText.textContent = currentQuestion.chinese;
+            speak(currentQuestion.chinese, 'zh-TW');
+
+            let options = [{ ...currentQuestion }];
+            let tempVocab = [...vocabulary].filter(v => v.english !== currentQuestion.english);
+            while (options.length < 4) {
+                const randomIndex = Math.floor(Math.random() * tempVocab.length);
+                options.push(tempVocab[randomIndex]);
+                tempVocab.splice(randomIndex, 1);
+            }
+
+            shuffleArray(options).forEach(optionData => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn', 'p-4', 'text-lg', 'font-semibold', 'rounded-xl', 'w-full', 'text-center');
+                button.textContent = optionData.english;
+                button.addEventListener('click', () => {
+                    if (button.disabled) return;
+                    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedButton = button;
+                    speak(optionData.english, 'en-US');
+                });
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer() {
+            if (!selectedButton) return;
+
+            attempts++;
+            const allButtons = Array.from(optionsContainer.children);
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const correctAnswer = currentQuestion.english;
+
+            if (selectedButton.textContent === correctAnswer) {
+                if (attempts === 1) {
+                    score++;
+                    scoreCounter.textContent = `分數: ${score}`;
+                }
+                selectedButton.classList.add('correct');
+                speak('Correct!', 'en-US');
+                allButtons.forEach(btn => btn.disabled = true);
+                checkAnswerBtn.classList.add('hidden');
+                nextQuestionBtn.classList.remove('hidden');
+            } else {
+                if (attempts === 1) {
+                    selectedButton.style.opacity = '0.3';
+                    if (!incorrectlyAnswered.some(q => q.english === currentQuestion.english)) {
+                        incorrectlyAnswered.push(currentQuestion);
+                    }
+                    speak('Try again.', 'en-US');
+                    selectedButton = null;
+                } else {
+                    selectedButton.classList.add('incorrect-reveal');
+                    allButtons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.textContent === correctAnswer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                    checkAnswerBtn.classList.add('hidden');
+                    nextQuestionBtn.classList.remove('hidden');
+                }
+            }
+        }
+
+        function showResults() {
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            finalScore.textContent = `${score} / ${shuffledQuestions.length}`;
+            resultButtonsContainer.innerHTML = '';
+
+            if (incorrectlyAnswered.length > 0) {
+                const redoBtn = document.createElement('button');
+                redoBtn.className = 'bg-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-orange-600 transition-transform transform hover:scale-105 w-full sm:w-auto';
+                redoBtn.textContent = `複習錯題 (${incorrectlyAnswered.length} 題)`;
+                redoBtn.onclick = () => startQuiz('incorrect');
+                resultButtonsContainer.appendChild(redoBtn);
+            }
+
+            const restartBtn = document.createElement('button');
+            restartBtn.className = 'bg-amber-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-amber-600 transition-transform transform hover:scale-105 w-full sm:w-auto';
+            restartBtn.textContent = '回單字列表';
+            restartBtn.onclick = showPreview;
+            resultButtonsContainer.appendChild(restartBtn);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        // PDF 功能
+        function createQuestionElementForPdf(question, options, questionNumber) {
+            const container = document.createElement('div');
+            container.style.fontFamily = "'Noto Sans TC', sans-serif";
+            container.style.border = "1px solid #666";
+            container.style.padding = '12px';
+            container.style.width = '350px';
+            container.style.backgroundColor = 'white';
+
+            const chineseText = document.createElement('p');
+            chineseText.textContent = `${questionNumber}. 中文：${question.chinese}`;
+            chineseText.style.fontSize = '18px';
+            chineseText.style.fontWeight = 'bold';
+            chineseText.style.margin = '0 0 10px 0';
+            container.appendChild(chineseText);
+
+            options.forEach((opt, index) => {
+                const label = `(${String.fromCharCode(65 + index)})`;
+                const optionText = document.createElement('p');
+                optionText.textContent = `${label} ${opt.english}`;
+                optionText.style.fontSize = '16px';
+                optionText.style.margin = '5px 0 5px 20px';
+                container.appendChild(optionText);
+            });
+            return container;
+        }
+
+        async function exportPdf() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const renderContainer = document.getElementById('export-render-container');
+
+            const MARGIN = 15;
+            const PAGE_WIDTH = doc.internal.pageSize.getWidth();
+            const ITEM_WIDTH_MM = (PAGE_WIDTH - (MARGIN * 2) - 10) / 2;
+            let yPos = MARGIN + 15;
+
+            doc.setFontSize(18);
+            doc.text('iEnglish Unit 2 Vocabulary Practice', PAGE_WIDTH / 2, MARGIN + 5, { align: 'center' });
+
+            for (let i = 0; i < vocabulary.length; i++) {
+                exportStatus.textContent = `處理中... ${i + 1}/${vocabulary.length}`;
+                const word = vocabulary[i];
+                let options = shuffleArray([{ ...word }, ...shuffleArray([...vocabulary].filter(v => v.english !== word.english)).slice(0, 3)]);
+
+                const element = createQuestionElementForPdf(word, options, i + 1);
+                renderContainer.appendChild(element);
+
+                const canvas = await html2canvas(element, { scale: 2 });
+                const imgData = canvas.toDataURL('image/png');
+                const aspectRatio = canvas.height / canvas.width;
+                const itemHeight = ITEM_WIDTH_MM * aspectRatio;
+
+                const col = i % 2;
+                const row = Math.floor(i / 2);
+                const xPos = MARGIN + (col * (ITEM_WIDTH_MM + 10));
+
+                let currentDrawY = yPos + (row % 4) * (itemHeight + 10);
+                if (i > 0 && i % 8 === 0) {
+                    doc.addPage();
+                    yPos = MARGIN + 15;
+                    currentDrawY = yPos;
+                }
+
+                doc.addImage(imgData, 'PNG', xPos, currentDrawY, ITEM_WIDTH_MM, itemHeight);
+                renderContainer.innerHTML = '';
+            }
+
+            doc.save('iEnglish_Unit2_Practice_Sheet.pdf');
+        }
+
+        startQuizBtn.addEventListener('click', () => startQuiz('all'));
+        downloadBtn.addEventListener('click', async () => {
+            loadingOverlay.classList.remove('hidden');
+            await exportPdf();
+            loadingOverlay.classList.add('hidden');
+        });
+        checkAnswerBtn.addEventListener('click', checkAnswer);
+        nextQuestionBtn.addEventListener('click', nextQuestion);
+        speakQuestionBtn.addEventListener('click', () => {
+            speak(shuffledQuestions[currentQuestionIndex].chinese, 'zh-TW');
+        });
+
+        document.addEventListener('DOMContentLoaded', showPreview);
+    </script>
+</body>
+
+</html>

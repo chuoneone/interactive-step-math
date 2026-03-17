@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Practice (頻率副詞)</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            /* Indigo 600 */
+            --secondary-color: #3b82f6;
+            /* Blue 500 */
+            --accent-color: #f59e0b;
+            /* Amber 500 */
+            --success-color: #10b981;
+            /* Emerald 500 */
+            --error-color: #ef4444;
+            /* Red 500 */
+        }
+
+        body {
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #1f2937;
+            /* 防止手機上長按選取文字干擾拖放體驗 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Card Styles */
+        .exercise-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Word Items */
+        .word-item {
+            display: inline-block;
+            font-family: 'Nunito', sans-serif;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            color: #374151;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 0 #e5e7eb;
+            font-size: 1.05rem;
+            margin: 4px;
+            touch-action: manipulation;
+            /* 優化觸控 */
+        }
+
+        .word-item:active {
+            transform: translateY(2px);
+            box-shadow: none;
+            background-color: #eff6ff;
+        }
+
+        .word-item:hover {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            min-height: 64px;
+            background-color: #f9fafb;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .drop-zone:empty::before {
+            content: '點擊下方單字卡片來組句';
+            color: #94a3b8;
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .drop-zone.correct {
+            background-color: #ecfdf5;
+            border-color: var(--success-color);
+            border-style: solid;
+        }
+
+        .drop-zone.incorrect {
+            background-color: #fef2f2;
+            border-color: var(--error-color);
+            border-style: solid;
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        .drop-zone.active-zone {
+            border-color: var(--secondary-color);
+            background-color: #eff6ff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        #container-section-1 .drop-zone:empty::before {
+            content: '點選上方詞彙填入';
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        /* Buttons */
+        .btn-action {
+            transition: all 0.2s;
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        /* Speaker Icon */
+        .speaker-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+            margin-left: 8px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        .speaker-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Tooltip */
+        #tooltip {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            background: #1f2937;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: none;
+            transform: translate(-50%, -120%);
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+
+        /* --- Completion Animation CSS --- */
+        .checkmark-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .checkmark {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 4;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #10b981;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+
+            0%,
+            100% {
+                transform: none;
+            }
+
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 80px #10b981;
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-4 pb-12 relative">
+
+    <div id="tooltip"></div>
+
+    <!-- Header Record Button -->
+    <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-40">
+        <button onclick="showRecords()"
+            class="bg-white border-2 border-indigo-200 text-indigo-700 font-bold py-2 px-4 rounded-xl shadow hover:bg-indigo-50 transition-colors flex items-center gap-2 text-sm sm:text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd" />
+            </svg>
+            學習紀錄
+        </button>
+    </div>
+
+    <!-- Completion Overlay -->
+    <div id="completion-overlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-500">
+        <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl text-center transform scale-90 transition-transform duration-500 max-w-md w-full mx-4 relative overflow-hidden"
+            id="completion-modal">
+            <div class="checkmark-wrapper mb-6">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-2 animate-bounce">太棒了！</h2>
+            <p class="text-gray-600 text-lg mb-8">你已經完成了所有的練習題！</p>
+            <button onclick="closeOverlay()"
+                class="w-full bg-indigo-600 text-white text-lg px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg transform hover:scale-105 active:scale-95">
+                關閉
+            </button>
+        </div>
+    </div>
+
+    <!-- Records Modal -->
+    <div id="records-overlay"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-300"
+            id="records-modal">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">🏆 學習紀錄</h2>
+                <button onclick="closeRecords()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <p class="text-sm text-gray-600 mb-2 font-bold">歷史完成時間：</p>
+                <div class="max-h-48 overflow-y-auto space-y-2 pr-2" id="records-list">
+                    <!-- Records go here -->
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="clearRecords()"
+                    class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2.5 px-4 rounded-xl transition-colors text-sm">清除紀錄與進度</button>
+                <button onclick="closeRecords()"
+                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl transition-colors text-sm shadow-md">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto pt-8 sm:pt-4">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div
+                class="inline-block p-1 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 mb-4 mt-8 sm:mt-0">
+                <div class="bg-white rounded-full px-6 py-2">
+                    <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600 font-bold tracking-wide uppercase text-sm">Grammar
+                        Practice</span>
+                </div>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">頻率副詞練習</h1>
+            <p class="text-lg text-gray-600 font-medium">副詞位置與簡答句型</p>
+
+            <!-- Progress -->
+            <div class="mt-6 max-w-xs mx-auto">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="progress-bar"
+                        class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-500 ease-out"
+                        style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 text-center font-bold" id="progress-text">完成進度: 0/16</p>
+            </div>
+        </header>
+
+        <!-- Section 1 (New) -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">1</span>
+                <h2 class="text-xl font-bold text-gray-800">一、請依圖提示選出正確的頻率副詞</h2>
+            </div>
+
+            <!-- Shared Word Bank for Section 1 -->
+            <div class="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4 mb-6 relative mt-4">
+                <div
+                    class="absolute -top-3 left-4 bg-indigo-200 text-indigo-800 px-3 py-0.5 rounded-full text-xs font-bold shadow-sm">
+                    詞彙區</div>
+                <div id="shared-bank-1" class="flex flex-wrap justify-center gap-2 min-h-[48px] items-center pt-2">
+                    <!-- Words will be injected here -->
+                </div>
+            </div>
+
+            <div id="container-section-1" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">2</span>
+                <h2 class="text-xl font-bold text-gray-800">二、請加入頻率副詞改寫 (位置: be動詞後、一般動詞前)</h2>
+            </div>
+            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6 text-indigo-900 text-sm sm:text-base">
+                <span class="font-bold bg-indigo-200 px-2 py-0.5 rounded text-indigo-800 mr-2">例句</span>
+                She is busy. (always) ➔ <span class="font-semibold">She is always busy.</span>
+            </div>
+            <div id="container-section-2" class="space-y-6"></div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">3</span>
+                <h2 class="text-xl font-bold text-gray-800">三、請根據第二大題的句子改寫為 Yes/No 疑問句</h2>
+            </div>
+            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6 text-indigo-900 text-sm sm:text-base">
+                <span class="font-bold bg-indigo-200 px-2 py-0.5 rounded text-indigo-800 mr-2">例句</span>
+                She is always busy. ➔ <span class="font-semibold">Is she always busy?</span>
+            </div>
+            <div id="container-section-3" class="space-y-6"></div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">4</span>
+                <h2 class="text-xl font-bold text-gray-800">四、請依提示簡答下列句子</h2>
+            </div>
+            <div
+                class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6 text-indigo-900 text-sm sm:text-base leading-relaxed">
+                <span class="font-bold bg-indigo-200 px-2 py-0.5 rounded text-indigo-800 mr-2">例句</span> Is he always
+                tired after school?<br>
+                （肯定簡答）➔ <span class="font-semibold">Yes, he <span class="text-indigo-600">usually is</span>. (簡答的副詞位置為
+                    be 動詞前)</span><br>
+                （否定簡答）➔ <span class="font-semibold">No, he isn't.</span><br>
+                （以 sometimes 回答）➔ <span class="font-semibold">No, he <span class="text-indigo-600">sometimes
+                        is</span>.</span>
+            </div>
+            <div id="container-section-4" class="space-y-6"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const dictionary = {
+            'always': '總是 (100%)', 'usually': '通常 (約80%)', 'often': '時常 (約60%)', 'sometimes': '有時候 (50%)', 'seldom': '很少 (約20%)', 'never': '從不 (0%)',
+            'I': '我', 'am': '是', 'Am': '是', 'hungry': '飢餓的', 'at': '在', 'night': '夜晚',
+            'He': '他', 'is': '是', 'Is': '是', 'happy': '快樂的', 'with': '和', 'his': '他的', 'family': '家人',
+            'get': '得到', 'up': '向上(get up起床)', 'before': '在...之前', 'seven': '七(點)', 'on': '在', 'school': '學校', 'days': '日子',
+            'Do': '助動詞',
+            'Are': '是...嗎', 'you': '你', 'a': '一個', 'teacher': '老師',
+            'Miss Davis': '戴維斯小姐', 'police': '警察', 'officer': '官員',
+            'Emily': '艾蜜莉', 'reporter': '記者',
+            'Yes': '是', 'No': '不', 'not': '不',
+            'late': '遲到', 'for': '為了', 'every': '每一', 'day': '天',
+            'sing': '唱歌', 'in': '在', 'front': '前面', 'of': '的', 'other': '其他的', 'people': '人們',
+            '.': '。', '?': '？', ',': '，'
+        };
+
+        const exercises = [
+            // Section 1: 圖表配對
+            {
+                id: 's1q1', section: 1,
+                prompt: '<div class="w-16 h-16 rounded-full border-2 border-gray-600 mx-auto" style="background: #4b5563;"></div>',
+                answer: 'always',
+                chunks: ['always']
+            },
+            {
+                id: 's1q2', section: 1,
+                prompt: '<div class="w-16 h-16 rounded-full border-2 border-gray-600 mx-auto" style="background: transparent;"></div>',
+                answer: 'never',
+                chunks: ['never']
+            },
+            {
+                id: 's1q3', section: 1,
+                prompt: '<div class="w-16 h-16 rounded-full border-2 border-gray-600 mx-auto" style="background: conic-gradient(#4b5563 0% 15%, transparent 15% 100%);"></div>',
+                answer: 'seldom',
+                chunks: ['seldom']
+            },
+            {
+                id: 's1q4', section: 1,
+                prompt: '<div class="w-16 h-16 rounded-full border-2 border-gray-600 mx-auto" style="background: conic-gradient(#4b5563 0% 85%, transparent 85% 100%);"></div>',
+                answer: 'usually',
+                chunks: ['usually']
+            },
+            {
+                id: 's1q5', section: 1,
+                prompt: '<div class="w-16 h-16 rounded-full border-2 border-gray-600 mx-auto" style="background: conic-gradient(#4b5563 0% 50%, transparent 50% 100%);"></div>',
+                answer: 'sometimes',
+                chunks: ['sometimes']
+            },
+            {
+                id: 's1q6', section: 1,
+                prompt: '<div class="w-16 h-16 rounded-full border-2 border-gray-600 mx-auto" style="background: conic-gradient(#4b5563 0% 65%, transparent 65% 100%);"></div>',
+                answer: 'often',
+                chunks: ['often']
+            },
+            // Section 2
+            {
+                id: 's2q1', section: 2,
+                prompt: '1. I am hungry at night. (加入 sometimes)',
+                answer: 'I am sometimes hungry at night.',
+                chunks: ['I', 'am', 'sometimes', 'hungry', 'at', 'night', '.']
+            },
+            {
+                id: 's2q2', section: 2,
+                prompt: '2. He is happy with his family. (加入 usually)',
+                answer: 'He is usually happy with his family.',
+                chunks: ['He', 'is', 'usually', 'happy', 'with', 'his', 'family', '.']
+            },
+            {
+                id: 's2q3', section: 2,
+                prompt: '3. I get up before seven. (加入 never)',
+                answer: 'I never get up before seven.',
+                chunks: ['I', 'never', 'get', 'up', 'before', 'seven', '.']
+            },
+
+            // Section 3 (Revised to base on Section 2)
+            {
+                id: 's3q1', section: 3,
+                original: 'I am sometimes hungry at night.',
+                prompt: '1. 請改寫為 Yes/No 疑問句',
+                answer: 'Am I sometimes hungry at night?',
+                chunks: ['Am', 'I', 'sometimes', 'hungry', 'at', 'night', '?']
+            },
+            {
+                id: 's3q2', section: 3,
+                original: 'He is usually happy with his family.',
+                prompt: '2. 請改寫為 Yes/No 疑問句',
+                answer: 'Is he usually happy with his family?',
+                chunks: ['Is', 'he', 'usually', 'happy', 'with', 'his', 'family', '?']
+            },
+            {
+                id: 's3q3', section: 3,
+                original: 'I never get up before seven.',
+                prompt: '3. 請改寫為 Yes/No 疑問句',
+                answer: 'Do I never get up before seven?',
+                chunks: ['Do', 'I', 'never', 'get', 'up', 'before', 'seven', '?']
+            },
+
+            // Section 4
+            {
+                id: 's4q1', section: 4,
+                prompt: '2-1. Are you usually late for school every day? (肯定簡答，保留頻率副詞)',
+                answer: 'Yes, I usually am.',
+                chunks: ['Yes', ',', 'I', 'usually', 'am', '.']
+            },
+            {
+                id: 's4q2', section: 4,
+                prompt: '2-2. Are you usually late for school every day? (否定簡答)',
+                answer: 'No, I am not.',
+                chunks: ['No', ',', 'I', 'am', 'not', '.']
+            },
+            {
+                id: 's4q3', section: 4,
+                prompt: '2-3. Are you usually late for school every day? (以 seldom 回答)',
+                answer: 'No, I seldom am.',
+                chunks: ['No', ',', 'I', 'seldom', 'am', '.']
+            },
+            {
+                id: 's4q4', section: 4,
+                prompt: '3. What do you never do in front of other people? (參考解答：sing)',
+                answer: 'I never sing in front of other people.',
+                chunks: ['I', 'never', 'sing', 'in', 'front', 'of', 'other', 'people', '.']
+            }
+        ];
+
+        let completedCount = 0;
+        const totalCount = exercises.length;
+        const synth = window.speechSynthesis;
+        let activeZoneS1 = null;
+        let isSessionCompletedSaved = false;
+
+        // --- Local Storage Keys ---
+        const LS_PROGRESS_KEY = 'grammar_progress_ids';
+        const LS_HISTORY_KEY = 'grammar_history';
+
+        // --- FUNCTIONS ---
+
+        function updateActiveZoneS1() {
+            document.querySelectorAll('#container-section-1 .drop-zone').forEach(z => z.classList.remove('active-zone'));
+            if (!activeZoneS1 || activeZoneS1.children.length > 0) {
+                const emptyZones = Array.from(document.querySelectorAll('#container-section-1 .drop-zone')).filter(z => z.children.length === 0);
+                activeZoneS1 = emptyZones.length > 0 ? emptyZones[0] : null;
+            }
+            if (activeZoneS1) {
+                activeZoneS1.classList.add('active-zone');
+            }
+        }
+
+        function speak(text, rate = 0.9) {
+            if (!text) return;
+            synth.cancel();
+            const cleanText = text.replace(/[.?]/g, '')
+                .replace(/(\d+)\s?a\.m\./gi, '$1 A M')
+                .replace(/(\d+)\s?p\.m\./gi, '$1 P M');
+            const utterThis = new SpeechSynthesisUtterance(cleanText);
+            utterThis.lang = 'en-US';
+            utterThis.rate = rate;
+            synth.speak(utterThis);
+        }
+
+        function renderApp() {
+            // Load progress from local storage
+            let savedProgress = [];
+            try {
+                savedProgress = JSON.parse(localStorage.getItem(LS_PROGRESS_KEY)) || [];
+            } catch (e) { console.error("Could not load progress"); }
+
+            completedCount = 0; // Reset for initial calculation
+
+            exercises.forEach((ex) => {
+                const containerId = `container-section-${ex.section}`;
+                const containerEl = document.getElementById(containerId);
+                if (!containerEl) return;
+
+                const isCompleted = savedProgress.includes(ex.id);
+                if (isCompleted) completedCount++;
+
+                const card = document.createElement('div');
+                card.className = 'exercise-card p-5 sm:p-6';
+                if (ex.section === 1) {
+                    card.className = 'exercise-card p-4 flex flex-col items-center justify-between';
+                }
+                card.id = `card-${ex.id}`;
+                card.dataset.id = ex.id;
+
+                // --- 處理原句區塊 ---
+                let originalHtml = ex.original ? `
+                    <div class="w-full bg-blue-50 border-l-4 border-blue-400 p-3 mb-4 rounded-r-lg text-blue-900 text-sm sm:text-base shadow-sm">
+                        <span class="font-bold bg-blue-200 text-blue-800 px-2 py-0.5 rounded mr-2 text-xs">原句</span>
+                        ${ex.original}
+                    </div>
+                ` : '';
+
+                let promptHtml = `<span class="text-lg font-bold text-gray-800">${ex.prompt}</span>`;
+
+                if (ex.section === 3 || ex.section === 4) {
+                    const speechText = ex.prompt.split('(')[0].trim().replace(/^\d+[-.]?\d*\.\s*/, ''); // Remove leading numbers for speech
+                    promptHtml += `
+                        <button class="speaker-btn speak-prompt" data-text="${speechText.replace(/"/g, '&quot;')}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 pointer-events-none">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                            </svg>
+                        </button>`;
+                }
+
+                const shuffledWords = [...ex.chunks].sort(() => Math.random() - 0.5);
+
+                // Pre-fill state if completed
+                let zoneContentHtml = '';
+                let bankContentHtml = '';
+
+                if (isCompleted) {
+                    // chunks are already in exact answer order in data
+                    zoneContentHtml = ex.chunks.map(word => `<div class="word-item">${word}</div>`).join('');
+                } else {
+                    bankContentHtml = shuffledWords.map(word => `<div class="word-item">${word}</div>`).join('');
+                }
+
+                if (ex.section === 1) {
+                    card.innerHTML = `
+                        <div class="mb-4 w-full">
+                            ${ex.prompt}
+                        </div>
+                        <div class="drop-zone min-h-[56px] justify-center w-full ${isCompleted ? 'correct' : ''}" id="zone-${ex.id}" ${isCompleted ? 'data-completed="true"' : ''}>${zoneContentHtml}</div>
+                        <div class="flex items-center justify-center gap-2 mt-4 w-full">
+                            <button class="btn-action check-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 px-4 rounded-xl shadow transition-colors text-sm" data-id="${ex.id}">檢查</button>
+                            <button class="btn-action reset-btn bg-white hover:bg-gray-50 text-gray-600 border border-gray-300 font-bold py-1.5 px-4 rounded-xl transition-colors text-sm" data-id="${ex.id}">重置</button>
+                        </div>
+                        <div class="feedback mt-2 h-5 text-xs font-bold text-center w-full ${isCompleted ? 'text-green-600' : ''}">${isCompleted ? '🎉 答對了！' : ''}</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        ${originalHtml}
+                        <div class="mb-4 flex items-center flex-wrap">
+                            ${promptHtml}
+                        </div>
+                        
+                        <!-- Word Bank -->
+                        <div class="word-bank flex flex-wrap gap-2 mb-4" id="bank-${ex.id}">
+                            ${bankContentHtml}
+                        </div>
+
+                        <!-- Drop Zone -->
+                        <div class="drop-zone ${isCompleted ? 'correct' : ''}" id="zone-${ex.id}" ${isCompleted ? 'data-completed="true"' : ''}>${zoneContentHtml}</div>
+
+                        <!-- Actions -->
+                        <div class="flex flex-wrap items-center gap-3 mt-2">
+                            <button class="btn-action check-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl shadow transition-colors text-sm sm:text-base flex-grow sm:flex-grow-0" data-id="${ex.id}">檢查答案</button>
+                            <button class="btn-action reset-btn bg-white hover:bg-gray-50 text-gray-600 border border-gray-300 font-bold py-2 px-4 rounded-xl transition-colors text-sm sm:text-base" data-id="${ex.id}">重置</button>
+                            <button class="btn-action hint-btn bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2 px-4 rounded-xl transition-colors flex items-center gap-2 text-sm sm:text-base ml-auto" data-text="${ex.answer.replace(/"/g, '&quot;')}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                                提示
+                            </button>
+                        </div>
+                        <div class="feedback mt-3 h-6 text-sm font-bold ${isCompleted ? 'text-green-600' : ''}">${isCompleted ? '🎉 答對了！太棒了！' : ''}</div>
+                    `;
+                }
+
+                containerEl.appendChild(card);
+            });
+
+            // Set initial progress UI
+            updateProgress(0);
+
+            // Populate Shared Bank for Section 1 (excluding completed ones)
+            const s1Words = [];
+            exercises.filter(ex => ex.section === 1 && !savedProgress.includes(ex.id)).forEach(ex => s1Words.push(...ex.chunks));
+            s1Words.sort(() => Math.random() - 0.5);
+            const sharedBank = document.getElementById('shared-bank-1');
+            if (sharedBank) {
+                sharedBank.innerHTML = s1Words.map(word => `<div class="word-item m-1 text-base shadow-sm">${word}</div>`).join('');
+            }
+            updateActiveZoneS1();
+        }
+
+        // --- RECORD MODAL LOGIC ---
+        function showRecords() {
+            const overlay = document.getElementById('records-overlay');
+            const modal = document.getElementById('records-modal');
+            const list = document.getElementById('records-list');
+
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(LS_HISTORY_KEY)) || []; } catch (e) { }
+
+            if (history.length === 0) {
+                list.innerHTML = `<p class="text-gray-500 italic py-2">目前尚無完成紀錄，加油！</p>`;
+            } else {
+                list.innerHTML = history.reverse().map((record, index) => `
+                    <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-indigo-400 font-bold">#${history.length - index}</span>
+                            <span class="text-gray-700 font-medium">${record.time}</span>
+                        </div>
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">💯 滿分</span>
+                    </div>
+                `).join('');
+            }
+
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modal.classList.remove('scale-95');
+                modal.classList.add('scale-100');
+            }, 10);
+        }
+
+        window.closeRecords = function () {
+            const overlay = document.getElementById('records-overlay');
+            const modal = document.getElementById('records-modal');
+
+            overlay.classList.add('opacity-0');
+            modal.classList.remove('scale-100');
+            modal.classList.add('scale-95');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        window.clearRecords = function () {
+            if (confirm('確定要清除所有成績紀錄與目前的測驗進度嗎？（此動作無法復原）')) {
+                localStorage.removeItem(LS_PROGRESS_KEY);
+                localStorage.removeItem(LS_HISTORY_KEY);
+                location.reload(); // 重新整理頁面以重置狀態
+            }
+        }
+
+        // --- EVENT DELEGATION ---
+        document.body.addEventListener('click', (e) => {
+            const target = e.target;
+
+            // 1. Word Item Click
+            if (target.classList.contains('word-item')) {
+                speak(target.innerText, 1.0);
+
+                // Check if it belongs to Section 1 (Shared Bank Logic)
+                const isSection1Word = target.closest('#shared-bank-1') || target.closest('#container-section-1');
+                if (isSection1Word) {
+                    const sharedBank = document.getElementById('shared-bank-1');
+                    if (target.parentElement === sharedBank) {
+                        if (activeZoneS1) {
+                            activeZoneS1.appendChild(target);
+                            const zoneId = activeZoneS1.id.replace('zone-', '');
+                            const card = document.getElementById(`card-${zoneId}`);
+                            if (card) {
+                                card.querySelector('.feedback').textContent = '';
+                                activeZoneS1.classList.remove('correct', 'incorrect');
+                            }
+                            updateActiveZoneS1();
+                        }
+                    } else {
+                        const originalZone = target.parentElement;
+                        sharedBank.appendChild(target);
+                        const card = originalZone.closest('.exercise-card');
+                        if (card) {
+                            card.querySelector('.feedback').textContent = '';
+                            originalZone.classList.remove('correct', 'incorrect');
+                        }
+                        updateActiveZoneS1();
+                    }
+                    return;
+                }
+
+                // Original logic for Section 2, 3, 4
+                const card = target.closest('.exercise-card');
+                if (!card) return;
+                const exId = card.dataset.id;
+                const bank = document.getElementById(`bank-${exId}`);
+                const zone = document.getElementById(`zone-${exId}`);
+
+                if (target.parentElement === bank) {
+                    zone.appendChild(target);
+                } else {
+                    bank.appendChild(target);
+                }
+
+                const feedbackEl = card.querySelector('.feedback');
+                feedbackEl.textContent = '';
+                feedbackEl.className = 'feedback mt-3 h-6 text-sm font-bold';
+                zone.classList.remove('correct', 'incorrect');
+                return;
+            }
+
+            // Handle clicking empty drop-zone in Section 1 to make it active
+            const dropZoneTarget = target.classList.contains('drop-zone') ? target : target.closest('.drop-zone');
+            if (dropZoneTarget && dropZoneTarget.closest('#container-section-1')) {
+                if (dropZoneTarget.children.length === 0) {
+                    activeZoneS1 = dropZoneTarget;
+                    updateActiveZoneS1();
+                }
+                return;
+            }
+
+            // 2. Check Button
+            if (target.classList.contains('check-btn')) {
+                const id = target.dataset.id;
+                checkAnswer(id);
+                return;
+            }
+
+            // 3. Reset Button
+            if (target.classList.contains('reset-btn')) {
+                const id = target.dataset.id;
+                resetQuestion(id);
+                return;
+            }
+
+            // 4. Hint Button
+            if (target.closest('.hint-btn')) {
+                const btn = target.closest('.hint-btn');
+                const text = btn.dataset.text;
+                speak(text, 0.5);
+                return;
+            }
+
+            // 5. Speaker Prompt
+            if (target.closest('.speak-prompt')) {
+                const btn = target.closest('.speak-prompt');
+                const text = btn.dataset.text;
+                speak(text, 0.9);
+                return;
+            }
+        });
+
+        // --- Overlay Logic ---
+        function showOverlay() {
+            const overlay = document.getElementById('completion-overlay');
+            const modal = document.getElementById('completion-modal');
+
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modal.classList.remove('scale-90');
+                modal.classList.add('scale-100');
+
+                for (let i = 0; i < 50; i++) {
+                    createConfetti(overlay);
+                }
+            }, 10);
+        }
+
+        window.closeOverlay = function () {
+            const overlay = document.getElementById('completion-overlay');
+            const modal = document.getElementById('completion-modal');
+
+            overlay.classList.add('opacity-0');
+            modal.classList.remove('scale-100');
+            modal.classList.add('scale-90');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                const confettis = document.querySelectorAll('.confetti');
+                confettis.forEach(c => c.remove());
+            }, 500);
+        }
+
+        function createConfetti(container) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            confetti.style.opacity = Math.random();
+            container.appendChild(confetti);
+        }
+
+        function saveProgressId(id) {
+            let saved = [];
+            try { saved = JSON.parse(localStorage.getItem(LS_PROGRESS_KEY)) || []; } catch (e) { }
+            if (!saved.includes(id)) {
+                saved.push(id);
+                localStorage.setItem(LS_PROGRESS_KEY, JSON.stringify(saved));
+            }
+        }
+
+        function removeProgressId(id) {
+            let saved = [];
+            try { saved = JSON.parse(localStorage.getItem(LS_PROGRESS_KEY)) || []; } catch (e) { }
+            saved = saved.filter(savedId => savedId !== id);
+            localStorage.setItem(LS_PROGRESS_KEY, JSON.stringify(saved));
+        }
+
+        function saveCompletionHistory() {
+            if (isSessionCompletedSaved) return; // Prevent saving multiple times in one session
+
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(LS_HISTORY_KEY)) || []; } catch (e) { }
+
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+            history.push({ time: timeStr });
+            localStorage.setItem(LS_HISTORY_KEY, JSON.stringify(history));
+            isSessionCompletedSaved = true;
+        }
+
+        function checkAnswer(id) {
+            const zone = document.getElementById(`zone-${id}`);
+            if (zone.dataset.completed === 'true') return; // 已經答對就不再處理
+
+            const card = document.getElementById(`card-${id}`);
+            const feedbackEl = card.querySelector('.feedback');
+            const exData = exercises.find(e => e.id === id);
+
+            const rawWords = Array.from(zone.children).map(el => el.innerText);
+
+            let userSentence = rawWords.join(' ')
+                .replace(/\s+([,.?])/g, '$1')
+                .replace(/\s+(’t)/g, '$1')
+                .replace(/\s+('t)/g, '$1')
+                .replace(/\.\./g, '.')
+                .trim();
+
+            const normalizedUser = userSentence.replace(/\s+/g, ' ');
+            const normalizedAnswer = exData.answer.replace(/\s+/g, ' ');
+
+            if (normalizedUser === normalizedAnswer) {
+                feedbackEl.textContent = '🎉 答對了！太棒了！';
+                feedbackEl.className = 'feedback mt-3 h-6 text-sm font-bold text-green-600';
+                zone.classList.remove('incorrect');
+                zone.classList.add('correct');
+
+                if (!zone.dataset.completed) {
+                    zone.dataset.completed = 'true';
+                    saveProgressId(id);
+                    updateProgress(1);
+                }
+            } else {
+                feedbackEl.textContent = '🤔 再試試看！';
+                feedbackEl.className = 'feedback mt-3 h-6 text-sm font-bold text-red-500';
+                zone.classList.remove('correct');
+                zone.classList.add('incorrect');
+
+                zone.style.animation = 'none';
+                zone.offsetHeight;
+                zone.style.animation = null;
+            }
+        }
+
+        function resetQuestion(id) {
+            const exData = exercises.find(e => e.id === id);
+            const zone = document.getElementById(`zone-${id}`);
+            const card = document.getElementById(`card-${id}`);
+            const feedbackEl = card.querySelector('.feedback');
+
+            if (exData.section === 1) {
+                const sharedBank = document.getElementById('shared-bank-1');
+                Array.from(zone.children).forEach(child => sharedBank.appendChild(child));
+                // 打亂 Shared Bank
+                const words = Array.from(sharedBank.children);
+                words.sort(() => Math.random() - 0.5);
+                words.forEach(w => sharedBank.appendChild(w));
+                updateActiveZoneS1();
+            } else {
+                const bank = document.getElementById(`bank-${id}`);
+                Array.from(zone.children).forEach(child => bank.appendChild(child));
+
+                const words = Array.from(bank.children);
+                words.sort(() => Math.random() - 0.5);
+                words.forEach(w => bank.appendChild(w));
+            }
+
+            feedbackEl.textContent = '';
+            zone.classList.remove('correct', 'incorrect');
+
+            if (zone.dataset.completed === 'true') {
+                delete zone.dataset.completed;
+                removeProgressId(id);
+                updateProgress(-1);
+            }
+        }
+
+        function updateProgress(change) {
+            completedCount += change;
+            completedCount = Math.max(0, Math.min(completedCount, totalCount));
+
+            const percentage = Math.round((completedCount / totalCount) * 100);
+            const bar = document.getElementById('progress-bar');
+            const text = document.getElementById('progress-text');
+
+            bar.style.width = `${percentage}%`;
+            text.textContent = `完成進度: ${completedCount}/${totalCount}`;
+
+            if (completedCount === totalCount) {
+                bar.classList.remove('from-indigo-500', 'to-blue-500');
+                bar.classList.add('from-green-400', 'to-emerald-500');
+
+                saveCompletionHistory();
+                if (change > 0) showOverlay(); // 只有在剛好完成那瞬間跳出動畫，而不是重整頁面時
+            } else {
+                bar.classList.add('from-indigo-500', 'to-blue-500');
+                bar.classList.remove('from-green-400', 'to-emerald-500');
+            }
+        }
+
+        // --- Tooltip ---
+        const tooltip = document.getElementById('tooltip');
+        document.body.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('word-item')) {
+                const text = e.target.innerText.replace(/[.,?]/g, '').trim();
+                const translation = dictionary[text];
+                if (translation) {
+                    tooltip.textContent = translation;
+                    tooltip.style.display = 'block';
+                    const rect = e.target.getBoundingClientRect();
+                    tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                    tooltip.style.top = `${rect.top}px`;
+                }
+            }
+        });
+        document.body.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('word-item')) {
+                tooltip.style.display = 'none';
+            }
+        });
+
+        // Init
+        renderApp();
+
+    </script>
+</body>
+
+</html>
