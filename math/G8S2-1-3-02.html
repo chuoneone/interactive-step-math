@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學 - 公式代入版</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        /* 數學式樣式 */
+        .math-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #334155;
+            flex-wrap: wrap;
+        }
+
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 60px;
+            height: 48px;
+            border-bottom: 4px solid #3b82f6;
+            margin: 0 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1d4ed8;
+            background-color: #eff6ff;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .slot.filled {
+            border-bottom-color: #10b981;
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        .power-slot {
+            min-width: 40px;
+            height: 34px;
+            font-size: 1.2rem;
+            transform: translateY(-18px);
+        }
+
+        .step-card {
+            transition: all 0.4s ease;
+            opacity: 0.2;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+
+        .step-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            filter: grayscale(0);
+        }
+
+        .step-card.completed {
+            background-color: #f8fafc;
+            border-left: 8px solid #10b981;
+        }
+
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-1deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.02) rotate(1deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.02) rotate(-1deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .tada {
+            animation: tada 0.5s ease-in-out;
+        }
+
+        .nav-active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- 導覽列 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between p-3">
+            <div class="flex items-center overflow-hidden">
+                <div class="whitespace-nowrap font-black text-blue-600 px-4 border-r-2 mr-4 text-xl">
+                    等比計算工具
+                </div>
+                <div id="problem-nav" class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                    <!-- 由 JS 生成 -->
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 ml-4">
+                <div id="timer-display"
+                    class="font-mono font-bold text-2xl text-slate-700 bg-slate-100 px-4 py-2 rounded-xl">07:00</div>
+                <button onclick="showLeaderboard()"
+                    class="px-4 py-2 bg-yellow-400 text-yellow-900 font-bold rounded-xl shadow hover:bg-yellow-300 transition-all">排行榜</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 開始視窗 -->
+    <div id="start-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4 text-center">
+        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full transform transition-all">
+            <div class="text-7xl mb-6">⏱️</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-3">限時挑戰</h3>
+            <p class="text-slate-500 mb-8 text-lg">你有 7 分鐘的時間，請盡快完成所有題目！</p>
+            <input type="text" id="player-name" placeholder="輸入你的名字"
+                class="w-full mb-6 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none text-center text-lg font-bold">
+            <button onclick="startGame()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200 text-xl">開始計時</button>
+        </div>
+    </div>
+
+    <!-- 排行榜視窗 -->
+    <div id="leaderboard-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[200] hidden p-4">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full">
+            <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">🏆 排行榜 (本機紀錄)</h3>
+            <div id="leaderboard-list" class="flex flex-col gap-3 mb-6 max-h-60 overflow-y-auto pr-2">
+                <!-- 動態生成 -->
+            </div>
+            <button onclick="closeLeaderboard()"
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition-all">關閉</button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        <div class="flex flex-col md:flex-row gap-8">
+
+            <!-- 左側：題目區 -->
+            <div class="md:w-1/3">
+                <div class="md:sticky md:top-28 bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100">
+                    <div id="problem-tag"
+                        class="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-bold mb-4">題目
+                        1</div>
+                    <div class="text-slate-500 mb-2 font-medium">已知等比數列：</div>
+                    <div id="problem-desc" class="text-2xl font-black text-slate-800 leading-relaxed mb-6">
+                        <!-- 動態填充 -->
+                    </div>
+
+                    <div class="p-5 bg-blue-50 rounded-2xl border border-blue-100">
+                        <p class="font-bold text-blue-800 flex items-center gap-2 mb-2">
+                            <span>📌</span> 解題提示
+                        </p>
+                        <p class="text-sm text-blue-700">按照題目中的數字順序填入公式。點擊格子可以清除數字。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：三行式填答區 -->
+            <div class="md:w-2/3 flex flex-col gap-6" id="steps-container">
+                <!-- 由 JS 動態生成 -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 完成視窗 -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] hidden">
+        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center mx-4 transform transition-all scale-95 opacity-0"
+            id="modal-content">
+            <div class="text-7xl mb-4">🚀</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-2">太優秀了！</h3>
+            <p class="text-slate-600 mb-8">你成功完成了這個題目的計算步驟。</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="resetProblem()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition">再挑戰一次</button>
+                <button onclick="closeModal()"
+                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-4 rounded-2xl transition">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const problems = [
+            {
+                id: "1", a1: 6, r: 3, n: 4,
+                line1: ["6", "3", "4"],
+                line2: ["6", "3", "3"],
+                line3: ["6", "27", "162"],
+                opts: ["3", "4", "6", "27", "81", "162"]
+            },
+            {
+                id: "2", a1: 7, r: 3, n: 5,
+                line1: ["7", "3", "5"],
+                line2: ["7", "3", "4"],
+                line3: ["7", "81", "567"],
+                opts: ["3", "4", "5", "7", "81", "243", "567"]
+            },
+            {
+                id: "3", a1: 48, r: 2, n: 7,
+                line1: ["48", "2", "7"],
+                line2: ["48", "2", "6"],
+                line3: ["48", "64", "3072"],
+                opts: ["2", "6", "7", "48", "64", "128", "3072"]
+            },
+            {
+                id: "4", a1: 3, r: 2, n: 10,
+                line1: ["3", "2", "10"],
+                line2: ["3", "2", "9"],
+                line3: ["3", "512", "1536"],
+                opts: ["2", "3", "9", "10", "256", "512", "1536"]
+            },
+            {
+                id: "5", a1: 2, r: 3, n: 6,
+                line1: ["2", "3", "6"],
+                line2: ["2", "3", "5"],
+                line3: ["2", "243", "486"],
+                opts: ["2", "3", "5", "6", "81", "243", "486"]
+            }
+        ];
+
+        let currentIdx = 0;
+        let states = {};
+
+        // 計時與分數相關變數
+        let timerInterval;
+        let timeLeft = 7 * 60;
+        let playerName = "";
+        let completedProblemsCount = 0;
+        const LEADERBOARD_KEY = 'math_leaderboard_02';
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (!nameInput) {
+                alert("請輸入名字！");
+                return;
+            }
+            playerName = nameInput;
+            document.getElementById('start-modal').classList.add('hidden');
+
+            timeLeft = 7 * 60;
+            completedProblemsCount = 0;
+            updateTimerDisplay();
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function endGame(isAllCompleted) {
+            clearInterval(timerInterval);
+            const timeUsed = 7 * 60 - timeLeft;
+            const finalScore = completedProblemsCount * 1000 + timeLeft;
+
+            // 儲存紀錄
+            let board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            board.push({ name: playerName, score: finalScore, completed: completedProblemsCount, timeUsed: timeUsed, date: new Date().toLocaleString() });
+            board.sort((a, b) => b.score - a.score);
+            board = board.slice(0, 10);
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+
+            // 修改 Modal 內容
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            c.innerHTML = `
+                <div class="text-7xl mb-6">${isAllCompleted ? '🎉' : '⏰'}</div>
+                <h3 class="text-3xl font-black text-slate-800 mb-3">${isAllCompleted ? '全部完成！' : '時間到！'}</h3>
+                <p class="text-slate-500 mb-8 text-lg">你完成了 ${completedProblemsCount} 題，得分：${finalScore}</p>
+                <div class="flex flex-col gap-3">
+                    <button onclick="showLeaderboard()"
+                        class="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-4 rounded-2xl transition-all shadow-lg">查看排行榜</button>
+                    <button onclick="location.reload()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg">重新開始</button>
+                </div>
+            `;
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10);
+        }
+
+        function showLeaderboard() {
+            const board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = board.map((entry, i) => `
+                <div class="flex justify-between items-center p-3 ${i === 0 ? 'bg-yellow-50 border-yellow-300' : 'bg-slate-50 border-slate-100'} border-2 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-xl w-6 text-center ${i === 0 ? 'text-yellow-500' : 'text-slate-400'}">${i + 1}</span>
+                        <div>
+                            <div class="font-bold text-slate-700">${entry.name}</div>
+                            <div class="text-xs text-slate-400">${entry.date}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-black text-blue-600">${entry.score} 分</div>
+                        <div class="text-xs text-slate-500">完成 ${entry.completed} 題 / 用時 ${entry.timeUsed}s</div>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center text-slate-400 py-4">目前還沒有紀錄喔！</div>';
+
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        function init() {
+            const nav = document.getElementById('problem-nav');
+            problems.forEach((p, i) => {
+                const btn = document.createElement('button');
+                btn.className = `px-5 py-2 rounded-full whitespace-nowrap font-bold transition-all bg-white border text-slate-500`;
+                btn.innerText = `題目 ${i + 1}`;
+                btn.id = `nav-btn-${i}`;
+                btn.onclick = () => switchProblem(i);
+                nav.appendChild(btn);
+
+                states[i] = { step: 1, answers: { 1: [], 2: [], 3: [] }, isCompleted: false };
+            });
+            switchProblem(0);
+        }
+
+        function switchProblem(i) {
+            currentIdx = i;
+            const p = problems[i];
+            document.querySelectorAll('#problem-nav button').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(`nav-btn-${i}`).classList.add('nav-active');
+
+            document.getElementById('problem-tag').innerText = `題目 ${i + 1}`;
+            document.getElementById('problem-desc').innerHTML = `a<sub class="text-sm">1</sub>=${p.a1}, r=${p.r}, 求第 ${p.n} 項。`;
+
+            renderSteps();
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            const p = problems[currentIdx];
+            const state = states[currentIdx];
+
+            // 第一行：a_n = _ * _^(_-1)
+            createLine(1, [
+                { t: `a<sub class="text-sm">${p.n}</sub> =` },
+                { type: 'slot' },
+                { t: '×' },
+                { type: 'slot' },
+                { t: '(' },
+                { type: 'slot', isPower: true },
+                { t: '-1 )', isPower: true }
+            ], p.line1);
+
+            // 第二行：a_n = _ * _^(_)
+            createLine(2, [
+                { t: `a<sub class="text-sm">${p.n}</sub> =` },
+                { type: 'slot' },
+                { t: '×' },
+                { type: 'slot' },
+                { type: 'slot', isPower: true }
+            ], p.line2);
+
+            // 第三行：a_n = _ * _ = _
+            createLine(3, [
+                { t: `a<sub class="text-sm">${p.n}</sub> =` },
+                { type: 'slot' },
+                { t: '×' },
+                { type: 'slot' },
+                { t: '=' },
+                { type: 'slot' }
+            ], p.line3);
+        }
+
+        function createLine(stepNum, elements, correctAnswers) {
+            const state = states[currentIdx];
+            const p = problems[currentIdx];
+            const container = document.getElementById('steps-container');
+
+            const card = document.createElement('div');
+            card.id = `line-card-${stepNum}`;
+            const isActive = state.step >= stepNum;
+            const isDone = state.step > stepNum;
+
+            card.className = `step-card bg-white p-6 rounded-3xl shadow-sm border-2 ${isActive ? 'active border-blue-50' : 'border-transparent'} ${isDone ? 'completed shadow-none' : ''}`;
+
+            const lineDiv = document.createElement('div');
+            lineDiv.className = "math-line mb-6";
+
+            let slotIdx = 0;
+            elements.forEach(el => {
+                if (el.t) {
+                    const span = document.createElement('span');
+                    span.innerHTML = el.t;
+                    if (el.isPower) span.className = "text-base transform translateY(-12px) text-slate-400";
+                    lineDiv.appendChild(span);
+                } else if (el.type === 'slot') {
+                    const slot = document.createElement('div');
+                    const val = state.answers[stepNum][slotIdx];
+                    slot.className = `slot ${val ? 'filled' : ''} ${el.isPower ? 'power-slot' : ''}`;
+                    slot.innerText = val || '';
+                    const curSlotIdx = slotIdx;
+                    slot.onclick = () => clearSlot(stepNum, curSlotIdx);
+                    lineDiv.appendChild(slot);
+                    slotIdx++;
+                }
+            });
+            card.appendChild(lineDiv);
+
+            if (isActive && !isDone) {
+                const optBox = document.createElement('div');
+                optBox.className = "flex flex-wrap gap-2 mt-4 pt-6 border-t-2 border-slate-50";
+
+                // 選項過濾或整理
+                const uniqueOpts = [...new Set(p.opts)].sort((a, b) => a - b);
+                uniqueOpts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = `px-5 py-3 rounded-xl font-bold border-2 transition-all bg-white border-blue-100 text-blue-600 hover:border-blue-500 hover:bg-blue-50 active:scale-90`;
+                    btn.innerText = opt;
+                    btn.onclick = () => fillSlot(stepNum, opt);
+                    optBox.appendChild(btn);
+                });
+                card.appendChild(optBox);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = "w-full mt-6 py-4 bg-blue-600 text-white rounded-2xl font-black text-xl shadow-lg active:scale-95";
+                checkBtn.innerText = "驗證這一行";
+                checkBtn.onclick = () => checkLine(stepNum, correctAnswers);
+                card.appendChild(checkBtn);
+            }
+
+            container.appendChild(card);
+        }
+
+        function fillSlot(stepNum, val) {
+            const state = states[currentIdx];
+            const max = document.querySelectorAll(`#line-card-${stepNum} .slot`).length;
+            for (let i = 0; i < max; i++) {
+                if (!state.answers[stepNum][i]) {
+                    state.answers[stepNum][i] = val;
+                    break;
+                }
+            }
+            renderSteps();
+        }
+
+        function clearSlot(stepNum, idx) {
+            const state = states[currentIdx];
+            if (state.step === stepNum) {
+                state.answers[stepNum][idx] = null;
+                renderSteps();
+            }
+        }
+
+        function checkLine(stepNum, correct) {
+            const state = states[currentIdx];
+            const ans = state.answers[stepNum];
+            if (ans.filter(a => a).length < correct.length) {
+                showToast("還有空格沒填喔！");
+                return;
+            }
+
+            const isOk = ans.every((v, i) => v === correct[i]);
+            if (isOk) {
+                document.getElementById(`line-card-${stepNum}`).classList.add('tada');
+                setTimeout(() => {
+                    if (stepNum === 3) {
+                        state.isCompleted = true;
+                        document.getElementById(`nav-btn-${currentIdx}`).classList.add('!bg-green-100', '!text-green-700', '!border-green-300');
+
+                        // 計算已完成數量
+                        completedProblemsCount = Object.values(states).filter(s => s.isCompleted).length;
+                        if (completedProblemsCount === problems.length) {
+                            endGame(true);
+                        } else {
+                            showToast("成功！進入下一題挑戰吧", "success");
+                        }
+                    } else {
+                        state.step++;
+                        renderSteps();
+                        const next = document.getElementById(`line-card-${state.step}`);
+                        if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 500);
+            } else {
+                showToast("數字好像代錯了，再檢查一下題目！");
+            }
+        }
+
+        function showToast(msg, type = 'error') {
+            const t = document.createElement('div');
+            const color = type === 'error' ? 'bg-rose-500' : 'bg-green-500';
+            t.className = `fixed top-24 left-1/2 -translate-x-1/2 ${color} text-white px-8 py-3 rounded-full shadow-2xl z-[200] font-bold animate-bounce`;
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function showModal() {
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10);
+        }
+
+        function closeModal() {
+            const m = document.getElementById('finish-modal');
+            m.classList.add('hidden');
+        }
+
+        function resetProblem() {
+            states[currentIdx] = { step: 1, answers: { 1: [], 2: [], 3: [] } };
+            closeModal();
+            renderSteps();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

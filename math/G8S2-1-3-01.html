@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學 - 等比數列細分步驟版</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 60px;
+            height: 50px;
+            border-bottom: 4px solid #3b82f6;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1e40af;
+            background-color: #eff6ff;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .slot.filled {
+            border-bottom-color: #10b981;
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        .step-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.3;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        .step-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .step-card.completed {
+            background-color: #f8fafc;
+            border-left: 6px solid #10b981;
+        }
+
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-2deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.05) rotate(2deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.05) rotate(-2deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .tada {
+            animation: tada 0.6s ease-in-out;
+        }
+
+        .nav-active {
+            background-color: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- 頂部導覽列 -->
+    <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between p-3">
+            <div class="flex items-center overflow-hidden">
+                <div class="whitespace-nowrap font-bold text-blue-600 px-4 border-r-2 border-slate-100 mr-4 text-xl">
+                    等比數列探索
+                </div>
+                <div id="problem-nav" class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+                    <!-- 由 JS 生成 -->
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 ml-4">
+                <div id="timer-display"
+                    class="font-mono font-bold text-2xl text-slate-700 bg-slate-100 px-4 py-2 rounded-xl">07:00</div>
+                <button onclick="showLeaderboard()"
+                    class="px-4 py-2 bg-yellow-400 text-yellow-900 font-bold rounded-xl shadow hover:bg-yellow-300 transition-all">排行榜</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 開始視窗 -->
+    <div id="start-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4 text-center">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full transform transition-all">
+            <div class="text-7xl mb-6">⏱️</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-3">限時挑戰</h3>
+            <p class="text-slate-500 mb-8 text-lg">你有 7 分鐘的時間，請盡快完成所有題目！</p>
+            <input type="text" id="player-name" placeholder="輸入你的名字"
+                class="w-full mb-6 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none text-center text-lg font-bold">
+            <button onclick="startGame()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200 text-xl">開始計時</button>
+        </div>
+    </div>
+
+    <!-- 排行榜視窗 -->
+    <div id="leaderboard-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[200] hidden p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full">
+            <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">🏆 排行榜 (本機紀錄)</h3>
+            <div id="leaderboard-list" class="flex flex-col gap-3 mb-6 max-h-60 overflow-y-auto pr-2">
+                <!-- 動態生成 -->
+            </div>
+            <button onclick="closeLeaderboard()"
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition-all">關閉</button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        <div class="flex flex-col md:flex-row gap-8">
+
+            <!-- 左側：題目固定區塊 -->
+            <div class="md:w-2/5">
+                <div class="md:sticky md:top-28 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                    <div id="problem-tag"
+                        class="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-bold mb-4">題目
+                        1</div>
+                    <div class="text-slate-500 text-lg mb-2 italic">觀察這個數列：</div>
+                    <div id="problem-content"
+                        class="text-4xl font-black text-slate-800 leading-tight tracking-widest mb-8 break-all">
+                        <!-- 題目文字 -->
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                            <span class="text-2xl">💡</span>
+                            <div class="text-blue-900">
+                                <p class="font-bold">什麼是等比數列？</p>
+                                <p class="text-sm opacity-80">每一項除以前一項的結果都「一模一樣」才是等比數列喔！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：細分步驟區 -->
+            <div class="md:w-3/5 flex flex-col gap-6" id="steps-container">
+                <!-- 步驟由 JS 動態生成 -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 完成視窗 -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] hidden p-4">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center transform transition-all scale-90 opacity-0"
+            id="modal-content">
+            <div class="text-7xl mb-6">🎯</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-3">挑戰成功！</h3>
+            <p class="text-slate-500 mb-8 text-lg">你非常有耐心地完成了所有細節步驟！</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="resetCurrentProblem()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200">再挑戰一次</button>
+                <button onclick="closeModal()"
+                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-2xl transition-all">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const problems = [
+            { id: "1", seq: [1, 4, 8, 16, 32, 64], isGeo: false, r1: "4", r2: "2", opts: ["4", "2", "8", "1"] },
+            { id: "2", seq: [9, 9, 9, 9, 9, 9, 9], isGeo: true, r1: "1", r2: "1", opts: ["9", "1", "0"] },
+            { id: "3", seq: [-3, 9, -27, -81, 243], isGeo: false, r1: "-3", r2: "-3", r3: "3", special: "注意第四項是 -81 (9/-3=-3, -27/9=-3, -81/-27=3)", opts: ["-3", "3", "9"] },
+            { id: "5", seq: [4, 7, 4, 7, 4, 7, 4, 7], isGeo: false, r1: "1.75", r2: "0.57", opts: ["1.75", "0.57", "4", "7"] },
+            { id: "6", seq: [11, 22, 33, 44, 55, 66], isGeo: false, r1: "2", r2: "1.5", opts: ["2", "1.5", "11"] },
+            { id: "7", seq: [512, -256, 128, -64, 32], isGeo: true, r1: "-0.5", r2: "-0.5", opts: ["-0.5", "0.5", "-2", "2"] }
+        ];
+
+        let currentIndex = 0;
+        let problemStates = {};
+
+        // 計時與分數相關變數
+        let timerInterval;
+        let timeLeft = 7 * 60;
+        let playerName = "";
+        let completedProblemsCount = 0;
+        const LEADERBOARD_KEY = 'math_leaderboard_01';
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (!nameInput) {
+                alert("請輸入名字！");
+                return;
+            }
+            playerName = nameInput;
+            document.getElementById('start-modal').classList.add('hidden');
+
+            timeLeft = 7 * 60;
+            completedProblemsCount = 0;
+            updateTimerDisplay();
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function endGame(isAllCompleted) {
+            clearInterval(timerInterval);
+            const timeUsed = 7 * 60 - timeLeft;
+            const finalScore = completedProblemsCount * 1000 + timeLeft;
+
+            // 儲存紀錄
+            let board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            board.push({ name: playerName, score: finalScore, completed: completedProblemsCount, timeUsed: timeUsed, date: new Date().toLocaleString() });
+            board.sort((a, b) => b.score - a.score);
+            board = board.slice(0, 10);
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+
+            // 修改 Modal 內容
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            c.innerHTML = `
+                <div class="text-7xl mb-6">${isAllCompleted ? '🎉' : '⏰'}</div>
+                <h3 class="text-3xl font-black text-slate-800 mb-3">${isAllCompleted ? '全部完成！' : '時間到！'}</h3>
+                <p class="text-slate-500 mb-8 text-lg">你完成了 ${completedProblemsCount} 題，得分：${finalScore}</p>
+                <div class="flex flex-col gap-3">
+                    <button onclick="showLeaderboard()"
+                        class="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-4 rounded-2xl transition-all shadow-lg">查看排行榜</button>
+                    <button onclick="location.reload()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg">重新開始</button>
+                </div>
+            `;
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-90', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 50);
+        }
+
+        function showLeaderboard() {
+            const board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = board.map((entry, i) => `
+                <div class="flex justify-between items-center p-3 ${i === 0 ? 'bg-yellow-50 border-yellow-300' : 'bg-slate-50 border-slate-100'} border-2 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-xl w-6 text-center ${i === 0 ? 'text-yellow-500' : 'text-slate-400'}">${i + 1}</span>
+                        <div>
+                            <div class="font-bold text-slate-700">${entry.name}</div>
+                            <div class="text-xs text-slate-400">${entry.date}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-black text-blue-600">${entry.score} 分</div>
+                        <div class="text-xs text-slate-500">完成 ${entry.completed} 題 / 用時 ${entry.timeUsed}s</div>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center text-slate-400 py-4">目前還沒有紀錄喔！</div>';
+
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        function init() {
+            const nav = document.getElementById('problem-nav');
+            problems.forEach((p, index) => {
+                const btn = document.createElement('button');
+                btn.className = `px-6 py-2 rounded-full whitespace-nowrap font-bold transition-all bg-white border border-slate-200 text-slate-500 hover:border-blue-400 hover:text-blue-600`;
+                btn.innerText = `題目 (${p.id})`;
+                btn.id = `nav-btn-${index}`;
+                btn.onclick = () => switchProblem(index);
+                nav.appendChild(btn);
+
+                problemStates[index] = {
+                    currentStep: 1,
+                    stepAnswers: { 1: [], 2: [], 3: [], 4: [], 5: [] },
+                    isCompleted: false
+                };
+            });
+            switchProblem(0);
+        }
+
+        function switchProblem(index) {
+            currentIndex = index;
+            const p = problems[index];
+            document.querySelectorAll('#problem-nav button').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(`nav-btn-${index}`).classList.add('nav-active');
+            document.getElementById('problem-tag').innerText = `題目 (${p.id})`;
+            document.getElementById('problem-content').innerText = p.seq.join(' , ');
+            renderSteps();
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            const p = problems[currentIndex];
+            const state = problemStates[currentIndex];
+
+            // 步驟 1：算第一組比例
+            createStep(1, `算出第 2 項 ÷ 第 1 項`, [
+                { t: `${p.seq[1]} ÷ ${p.seq[0]} =` },
+                { type: 'slot' }
+            ], p.opts, [p.r1]);
+
+            // 步驟 2：算第二組比例
+            createStep(2, `算出第 3 項 ÷ 第 2 項`, [
+                { t: `${p.seq[2]} ÷ ${p.seq[1]} =` },
+                { type: 'slot' }
+            ], p.opts, [p.r2]);
+
+            // 步驟 3：比較
+            const isSame = (p.r1 === p.r2);
+            // 針對第3題做特殊邏輯處理(雖然前兩組一樣，但後面不一樣)
+            let compareCorrect = isSame ? "一樣" : "不一樣";
+            if (p.id === "3") compareCorrect = "一樣"; // 第三題前兩個ratio確實是一樣的
+
+            createStep(3, `比較：這兩次的結果一樣嗎？`, [
+                { t: `第 1 次是 ${state.stepAnswers[1][0] || '?'}` },
+                { t: `，第 2 次是 ${state.stepAnswers[2][0] || '?'}` },
+                { t: `，它們` },
+                { type: 'slot' }
+            ], ["一樣", "不一樣"], [compareCorrect]);
+
+            // 步驟 4：最終判斷 (如果是第三題，這裡會再加一動檢查後面的項)
+            let step4Title = "結論：這是等比數列嗎？";
+            let step4Elements = [{ t: `這` }, { type: 'slot' }, { t: `等比數列` }];
+            let step4Correct = [p.isGeo ? "是" : "否"];
+
+            if (p.id === "3" && state.currentStep >= 4) {
+                // 題目3的陷阱：前兩次一樣，但後面 -81 / -27 = 3 (正的)
+                createStep(4, "再檢查一次：第 4 項 ÷ 第 3 項", [
+                    { t: `-81 ÷ -27 =` }, { type: 'slot' }
+                ], ["-3", "3"], ["3"]);
+
+                createStep(5, "最終結論：全部比例都一樣嗎？", [
+                    { t: `這` }, { type: 'slot' }, { t: `等比數列` }
+                ], ["是", "否"], ["否"]);
+            } else {
+                createStep(4, step4Title, step4Elements, ["是", "否"], step4Correct);
+            }
+
+            updateStepUI();
+        }
+
+        function createStep(stepNum, title, elements, options, correctAnswers) {
+            const state = problemStates[currentIndex];
+            const container = document.getElementById('steps-container');
+            const card = document.createElement('div');
+            card.id = `step-card-${stepNum}`;
+            const isActive = state.currentStep >= stepNum;
+            const isDone = state.currentStep > stepNum;
+
+            card.className = `step-card bg-white p-6 rounded-3xl shadow-sm border-2 ${isActive ? 'active border-blue-100' : 'border-transparent'} ${isDone ? 'completed' : ''}`;
+
+            card.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-slate-700">步驟 ${stepNum}. ${title}</h3>
+                    ${isDone ? '<span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-bold animate-bounce">✔ 已完成</span>' : ''}
+                </div>
+                <div class="flex flex-wrap items-center gap-2 mb-6 text-2xl font-medium text-slate-600" id="workspace-${stepNum}"></div>
+            `;
+
+            const workspace = card.querySelector(`#workspace-${stepNum}`);
+            let slotCounter = 0;
+            elements.forEach(el => {
+                if (el.t) {
+                    const s = document.createElement('span');
+                    s.innerText = el.t;
+                    workspace.appendChild(s);
+                } else {
+                    const slot = document.createElement('div');
+                    const val = state.stepAnswers[stepNum][slotCounter];
+                    slot.className = `slot ${val ? 'filled' : ''}`;
+                    slot.innerText = val || '';
+                    const idx = slotCounter;
+                    slot.onclick = () => clearSlot(stepNum, idx);
+                    workspace.appendChild(slot);
+                    slotCounter++;
+                }
+            });
+
+            if (isActive && !isDone) {
+                const optBox = document.createElement('div');
+                optBox.className = "flex flex-wrap gap-3 mt-4 pt-6 border-t border-slate-50";
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    const used = state.stepAnswers[stepNum].includes(opt);
+                    btn.className = `px-6 py-3 rounded-2xl font-bold text-lg transition-all border-2 ${used ? 'bg-slate-50 text-slate-300 border-slate-100' : 'bg-white border-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-100'}`;
+                    btn.innerText = opt;
+                    btn.disabled = used;
+                    btn.onclick = () => fillSlot(stepNum, opt);
+                    optBox.appendChild(btn);
+                });
+                card.appendChild(optBox);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = "w-full mt-6 py-4 bg-slate-800 text-white rounded-2xl font-bold text-xl hover:bg-black transition-all shadow-lg active:scale-95";
+                checkBtn.innerText = "檢查這一步";
+                checkBtn.onclick = () => checkStep(stepNum, correctAnswers);
+                card.appendChild(checkBtn);
+            }
+
+            container.appendChild(card);
+        }
+
+        function fillSlot(stepNum, val) {
+            const state = problemStates[currentIndex];
+            const max = document.querySelectorAll(`#step-card-${stepNum} .slot`).length;
+            for (let i = 0; i < max; i++) {
+                if (!state.stepAnswers[stepNum][i]) {
+                    state.stepAnswers[stepNum][i] = val;
+                    break;
+                }
+            }
+            renderSteps();
+        }
+
+        function clearSlot(stepNum, idx) {
+            const state = problemStates[currentIndex];
+            if (state.currentStep === stepNum) {
+                state.stepAnswers[stepNum][idx] = null;
+                renderSteps();
+            }
+        }
+
+        function checkStep(stepNum, correct) {
+            const state = problemStates[currentIndex];
+            const ans = state.stepAnswers[stepNum];
+            if (ans.filter(a => a).length < correct.length) {
+                toast("還有格子沒填完喔！", "warn");
+                return;
+            }
+
+            const ok = ans.every((v, i) => v === correct[i]);
+            if (ok) {
+                const card = document.getElementById(`step-card-${stepNum}`);
+                card.classList.add('tada');
+                setTimeout(() => {
+                    const p = problems[currentIndex];
+                    let lastStep = (p.id === "3") ? 5 : 4;
+                    if (stepNum >= lastStep) {
+                        state.isCompleted = true;
+                        document.getElementById(`nav-btn-${currentIndex}`).classList.add('!bg-green-100', '!text-green-700', '!border-green-300');
+
+                        // 計算已完成數量
+                        completedProblemsCount = Object.values(problemStates).filter(s => s.isCompleted).length;
+                        if (completedProblemsCount === problems.length) {
+                            endGame(true);
+                        } else {
+                            toast("這題完成了，換下一題吧！", "warn");
+                            // 這裡可以選擇讓玩家自己點擊下一題，或是自動跳下一題
+                        }
+                    } else {
+                        state.currentStep++;
+                        renderSteps();
+                        const next = document.getElementById(`step-card-${state.currentStep}`);
+                        if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 600);
+            } else {
+                toast("哎呀，數字不太對，再試一次！", "error");
+            }
+        }
+
+        function updateStepUI() {
+            const state = problemStates[currentIndex];
+            document.querySelectorAll('.step-card').forEach((c, i) => {
+                const s = i + 1;
+                if (state.currentStep >= s) c.classList.add('active');
+                if (state.currentStep > s) c.classList.add('completed');
+            });
+        }
+
+        function toast(msg, type) {
+            const t = document.createElement('div');
+            const color = type === 'error' ? 'bg-red-500' : 'bg-amber-500';
+            t.className = `fixed bottom-10 left-1/2 -translate-x-1/2 ${color} text-white px-8 py-4 rounded-2xl shadow-2xl z-[200] font-bold text-lg animate-bounce`;
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function showModal() {
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-90', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 50);
+        }
+
+        function closeModal() {
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            c.classList.add('scale-90', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        function resetCurrentProblem() {
+            problemStates[currentIndex] = { currentStep: 1, stepAnswers: { 1: [], 2: [], 3: [], 4: [], 5: [] }, isCompleted: false };
+            closeModal();
+            renderSteps();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學 - 等比中項的應用</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .math {
+            font-size: 28px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 題目顯示用 */
+        .problem-content {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 60px;
+            height: 50px;
+            border-bottom: 4px solid #3b82f6;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1e40af;
+            background-color: #eff6ff;
+            border-radius: 6px 6px 0 0;
+            vertical-align: middle;
+        }
+
+        .slot.filled {
+            border-bottom-color: #10b981;
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        .step-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.3;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        .step-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .step-card.completed {
+            background-color: #f8fafc;
+            border-left: 6px solid #10b981;
+            opacity: 1;
+        }
+
+        @keyframes tada {
+            0% { transform: scale(1); }
+            10%, 20% { transform: scale(0.9) rotate(-2deg); }
+            30%, 50%, 70%, 90% { transform: scale(1.05) rotate(2deg); }
+            40%, 60%, 80% { transform: scale(1.05) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .tada {
+            animation: tada 0.6s ease-in-out;
+        }
+
+        .nav-active {
+            background-color: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+
+        
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- 頂部導覽列 -->
+    <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between p-3">
+            <div class="flex items-center overflow-hidden">
+                <div class="whitespace-nowrap font-bold text-blue-600 px-4 border-r-2 border-slate-100 mr-4 text-xl">
+                    等比中項
+                </div>
+                <div id="problem-nav" class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+                    <!-- 由 JS 生成 -->
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 ml-4">
+                <div id="timer-display" class="font-mono font-bold text-2xl text-slate-700 bg-slate-100 px-4 py-2 rounded-xl">07:00</div>
+                <button onclick="showLeaderboard()" class="px-4 py-2 bg-yellow-400 text-yellow-900 font-bold rounded-xl shadow hover:bg-yellow-300 transition-all">排行榜</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 開始視窗 -->
+    <div id="start-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4 text-center">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full transform transition-all">
+            <div class="text-7xl mb-6">⏱️</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-3">限時挑戰</h3>
+            <p class="text-slate-500 mb-8 text-lg">你有 7 分鐘的時間，請盡快完成所有題目！</p>
+            <input type="text" id="player-name" placeholder="輸入你的名字" class="w-full mb-6 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none text-center text-lg font-bold">
+            <button onclick="startGame()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200 text-xl">開始計時</button>
+        </div>
+    </div>
+
+    <!-- 排行榜視窗 -->
+    <div id="leaderboard-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[200] hidden p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full">
+            <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">🏆 排行榜 (本機紀錄)</h3>
+            <div id="leaderboard-list" class="flex flex-col gap-3 mb-6 max-h-60 overflow-y-auto pr-2">
+                <!-- 動態生成 -->
+            </div>
+            <button onclick="closeLeaderboard()"
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition-all">關閉</button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        <div class="flex flex-col md:flex-row gap-8">
+
+            <!-- 左側：題目固定區塊 -->
+            <div class="md:w-1/3">
+                <div class="md:sticky md:top-24 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                    <div id="problem-tag"
+                        class="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-bold mb-4">題目 1</div>
+                    <div id="problem-content" class="problem-content break-all mb-8">
+                        <!-- 題目文字 -->
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3 p-4 bg-yellow-50 rounded-2xl border border-yellow-100">
+                            <span class="text-2xl">💡</span>
+                            <div class="text-yellow-900">
+                                <p class="font-bold">等比中項公式</p>
+                                <p class="text-sm opacity-80 mt-1">若 a, b, c 成等比數列，則中間項的平方會等於前後兩項相乘：<br><strong>b² = a × c</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：細分步驟區 -->
+            <div class="md:w-2/3 flex flex-col gap-6" id="steps-container">
+                <!-- 步驟由 JS 動態生成 -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 完成視窗 -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] hidden p-4">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center transform transition-all scale-90 opacity-0"
+            id="modal-content">
+            <div class="text-7xl mb-6">🎯</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-3">挑戰成功！</h3>
+            <p class="text-slate-500 mb-8 text-lg">這題的等比中項你已經完全掌握了！</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="resetCurrentProblem()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200">再做一次</button>
+                <button onclick="closeModal()"
+                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-2xl transition-all">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const problems = [
+            {
+                id: 1, 
+                text: "若 <mark class='bg-yellow-200 px-1 rounded'>3, b, 27</mark> 三數成<mark class='bg-blue-100 text-blue-800 px-1 rounded'>等比數列</mark>，求 b 的值。",
+                steps: [
+                    { title: "寫出等比中項關係式：中間項平方 = 前後相乘", els: [{t:"b² = "}, {s:true}, {t:" × "}, {s:true}], ans: ["3", "27"], opts: ["3", "9", "27", "81"], unorder: true },
+                    { title: "算出相乘結果", els: [{t:"b² = "}, {s:true}], ans: ["81"], opts: ["30", "81", "100"], unorder: false },
+                    { title: "推算 b 的值 (正負皆可)", els: [{t:"因為 b² = 81，所以 b = "}, {s:true}, {t:" 或 "}, {s:true}], ans: ["9", "-9"], opts: ["9", "-9", "81", "-81"], unorder: true }
+                ]
+            },
+            {
+                id: 2, 
+                text: "若 <mark class='bg-yellow-200 px-1 rounded'>4, b, 9</mark> 三數成<mark class='bg-blue-100 text-blue-800 px-1 rounded'>等比數列</mark>，求 b 的值。",
+                steps: [
+                    { title: "寫出等比中項關係式", els: [{t:"b² = "}, {s:true}, {t:" × "}, {s:true}], ans: ["4", "9"], opts: ["4", "9", "13", "36"], unorder: true },
+                    { title: "算出相乘結果", els: [{t:"b² = "}, {s:true}], ans: ["36"], opts: ["13", "36", "49"], unorder: false },
+                    { title: "推算 b 的值 (正負皆可)", els: [{t:"因為 b² = 36，所以 b = "}, {s:true}, {t:" 或 "}, {s:true}], ans: ["6", "-6"], opts: ["6", "-6", "36", "-36"], unorder: true }
+                ]
+            },
+            {
+                id: 3, 
+                text: "若 <mark class='bg-yellow-200 px-1 rounded'>28, b, 7</mark> 三數成<mark class='bg-blue-100 text-blue-800 px-1 rounded'>等比數列</mark>，求 b 的值。",
+                steps: [
+                    { title: "寫出等比中項關係式", els: [{t:"b² = "}, {s:true}, {t:" × "}, {s:true}], ans: ["28", "7"], opts: ["7", "28", "35", "196"], unorder: true },
+                    { title: "算出相乘結果", els: [{t:"b² = "}, {s:true}], ans: ["196"], opts: ["144", "196", "225"], unorder: false },
+                    { title: "推算 b 的值 (正負皆可)", els: [{t:"因為 b² = 196，所以 b = "}, {s:true}, {t:" 或 "}, {s:true}], ans: ["14", "-14"], opts: ["14", "-14", "196", "-196"], unorder: true }
+                ]
+            },
+            {
+                id: 4, 
+                text: "若 <mark class='bg-yellow-200 px-1 rounded'>-8, b, -8</mark> 三數成<mark class='bg-blue-100 text-blue-800 px-1 rounded'>等比數列</mark>，求 b 的值。",
+                steps: [
+                    { title: "寫出等比中項關係式", els: [{t:"b² = "}, {s:true}, {t:" × "}, {s:true}], ans: ["-8", "-8"], opts: ["-8", "-8", "8", "64", "-64"], unorder: true },
+                    { title: "算出相乘結果", els: [{t:"b² = "}, {s:true}], ans: ["64"], opts: ["-64", "64", "16", "-16"], unorder: false },
+                    { title: "推算 b 的值 (正負皆可)", els: [{t:"因為 b² = 64，所以 b = "}, {s:true}, {t:" 或 "}, {s:true}], ans: ["8", "-8"], opts: ["8", "-8", "64", "-64"], unorder: true }
+                ]
+            },
+            {
+                id: 5, 
+                text: "若 <mark class='bg-yellow-200 px-1 rounded'>2, b, 8</mark> 三數成<mark class='bg-blue-100 text-blue-800 px-1 rounded'>等比數列</mark>，求 b 的值。",
+                steps: [
+                    { title: "寫出等比中項關係式", els: [{t:"b² = "}, {s:true}, {t:" × "}, {s:true}], ans: ["2", "8"], opts: ["2", "4", "8", "16"], unorder: true },
+                    { title: "算出相乘結果", els: [{t:"b² = "}, {s:true}], ans: ["16"], opts: ["10", "16", "64"], unorder: false },
+                    { title: "推算 b 的值 (正負皆可)", els: [{t:"因為 b² = 16，所以 b = "}, {s:true}, {t:" 或 "}, {s:true}], ans: ["4", "-4"], opts: ["4", "-4", "16", "-16"], unorder: true }
+                ]
+            }
+        ];
+
+        let currentIndex = 0;
+        let pState = {}; // problem states
+        // pState[idx] = { step: 0, blocks: [ { answers: [], usedOpts: [] }, ... ] }
+        
+        // 計時與分數相關變數
+        let timerInterval;
+        let timeLeft = 7 * 60;
+        let playerName = "";
+        let completedProblemsCount = 0;
+        const LEADERBOARD_KEY = 'math_leaderboard_03';
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (!nameInput) {
+                alert("請輸入名字！");
+                return;
+            }
+            playerName = nameInput;
+            document.getElementById('start-modal').classList.add('hidden');
+            
+            timeLeft = 7 * 60;
+            completedProblemsCount = 0;
+            updateTimerDisplay();
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function endGame(isAllCompleted) {
+            clearInterval(timerInterval);
+            const timeUsed = 7 * 60 - timeLeft;
+            const finalScore = completedProblemsCount * 1000 + timeLeft;
+            
+            // 儲存紀錄
+            let board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            board.push({ name: playerName, score: finalScore, completed: completedProblemsCount, timeUsed: timeUsed, date: new Date().toLocaleString() });
+            board.sort((a, b) => b.score - a.score);
+            board = board.slice(0, 10);
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+
+            // 修改 Modal 內容
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            c.innerHTML = `
+                <div class="text-7xl mb-6">${isAllCompleted ? '🎉' : '⏰'}</div>
+                <h3 class="text-3xl font-black text-slate-800 mb-3">${isAllCompleted ? '全部完成！' : '時間到！'}</h3>
+                <p class="text-slate-500 mb-8 text-lg">你完成了 ${completedProblemsCount} 題，得分：${finalScore}</p>
+                <div class="flex flex-col gap-3">
+                    <button onclick="showLeaderboard()"
+                        class="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-4 rounded-2xl transition-all shadow-lg">查看排行榜</button>
+                    <button onclick="location.reload()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg">重新開始</button>
+                </div>
+            `;
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-90', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 50);
+        }
+
+        function showLeaderboard() {
+            const board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = board.map((entry, i) => `
+                <div class="flex justify-between items-center p-3 ${i===0?'bg-yellow-50 border-yellow-300':'bg-slate-50 border-slate-100'} border-2 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-xl w-6 text-center ${i===0?'text-yellow-500':'text-slate-400'}">${i+1}</span>
+                        <div>
+                            <div class="font-bold text-slate-700">${entry.name}</div>
+                            <div class="text-xs text-slate-400">${entry.date}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-black text-blue-600">${entry.score} 分</div>
+                        <div class="text-xs text-slate-500">完成 ${entry.completed} 題 / 用時 ${entry.timeUsed}s</div>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center text-slate-400 py-4">目前還沒有紀錄喔！</div>';
+            
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        function init() {
+            const nav = document.getElementById('problem-nav');
+            problems.forEach((p, index) => {
+                const btn = document.createElement('button');
+                btn.className = `px-6 py-2 rounded-full whitespace-nowrap font-bold transition-all bg-white border border-slate-200 text-slate-500 hover:border-blue-400 hover:text-blue-600`;
+                btn.innerText = `題目 ${p.id}`;
+                btn.id = `nav-btn-${index}`;
+                btn.onclick = () => switchProblem(index);
+                nav.appendChild(btn);
+
+                // Initialize state for each problem
+                const blocks = p.steps.map(() => ({ answers: [], usedOpts: [] }));
+                pState[index] = { step: 0, blocks: blocks, isCompleted: false };
+            });
+            switchProblem(0);
+        }
+
+        function switchProblem(index) {
+            currentIndex = index;
+            const p = problems[index];
+            document.querySelectorAll('#problem-nav button').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(`nav-btn-${index}`).classList.add('nav-active');
+            
+            document.getElementById('problem-tag').innerText = `題目 ${p.id}`;
+            document.getElementById('problem-content').innerHTML = p.text;
+            
+            renderSteps();
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            const p = problems[currentIndex];
+            const state = pState[currentIndex];
+
+            p.steps.forEach((stepDef, sIdx) => {
+                const isActive = state.step >= sIdx;
+                const isDone = state.step > sIdx;
+
+                const card = document.createElement('div');
+                card.id = `step-card-${sIdx}`;
+                card.className = `step-card bg-white p-6 rounded-3xl shadow-sm border-2 ${isActive ? (isDone ? 'completed border-slate-100' : 'active border-blue-200') : 'border-transparent'}`;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-slate-700">Step ${sIdx + 1}. ${stepDef.title}</h3>
+                        ${isDone ? '<span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">✔ 完成</span>' : ''}
+                    </div>
+                `;
+
+                html += `<div class="math mb-6 text-slate-600" id="workspace-${sIdx}"></div>`;
+
+                if (isActive && !isDone) {
+                    html += `<div class="flex flex-wrap gap-3 mt-4 pt-6 border-t border-slate-50" id="opts-${sIdx}"></div>`;
+                    html += `<button id="check-${sIdx}" class="w-full mt-6 py-4 bg-slate-800 text-white rounded-2xl font-bold text-xl hover:bg-black transition-all shadow-lg active:scale-95">檢查答案</button>`;
+                }
+
+                card.innerHTML = html;
+                container.appendChild(card);
+
+                // 產生 workspace
+                const workspace = card.querySelector(`#workspace-${sIdx}`);
+                let slotCounter = 0;
+                
+                stepDef.els.forEach(el => {
+                    if (el.s) {
+                        const slot = document.createElement('div');
+                        const block = state.blocks[sIdx];
+                        const valObj = block.answers[slotCounter];
+                        
+                        slot.className = `slot ${valObj ? 'filled' : ''}`;
+                        slot.innerText = valObj ? valObj.val : '';
+                        
+                        const currentSlotIdx = slotCounter;
+                        if (!isDone) {
+                            slot.onclick = () => clearSlot(sIdx, currentSlotIdx);
+                        } else {
+                            slot.style.cursor = 'default';
+                        }
+                        
+                        workspace.appendChild(slot);
+                        slotCounter++;
+                    } else {
+                        const span = document.createElement('span');
+                        span.innerHTML = el.t;
+                        workspace.appendChild(span);
+                    }
+                });
+
+                // 產生選項
+                if (isActive && !isDone) {
+                    const optBox = card.querySelector(`#opts-${sIdx}`);
+                    const block = state.blocks[sIdx];
+                    
+                    stepDef.opts.forEach((optText, optIdx) => {
+                        const btn = document.createElement('button');
+                        const isUsed = block.usedOpts.includes(optIdx);
+                        
+                        btn.className = `px-6 py-3 rounded-2xl font-bold text-lg transition-all border-2 ${isUsed ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed' : 'bg-white border-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-100 active:scale-95'}`;
+                        btn.innerText = optText;
+                        btn.disabled = isUsed;
+                        btn.onclick = () => fillSlot(sIdx, optText, optIdx);
+                        optBox.appendChild(btn);
+                    });
+
+                    card.querySelector(`#check-${sIdx}`).onclick = () => checkStep(sIdx);
+                }
+            });
+        }
+
+        function fillSlot(sIdx, val, optIdx) {
+            const state = pState[currentIndex];
+            const block = state.blocks[sIdx];
+            const maxSlots = problems[currentIndex].steps[sIdx].els.filter(e => e.s).length;
+            
+            for (let i = 0; i < maxSlots; i++) {
+                if (!block.answers[i]) {
+                    block.answers[i] = { val: val, optIdx: optIdx };
+                    block.usedOpts.push(optIdx);
+                    break;
+                }
+            }
+            renderSteps();
+        }
+
+        function clearSlot(sIdx, slotIdx) {
+            const state = pState[currentIndex];
+            const block = state.blocks[sIdx];
+            
+            if (block.answers[slotIdx]) {
+                const optIdx = block.answers[slotIdx].optIdx;
+                block.usedOpts = block.usedOpts.filter(idx => idx !== optIdx);
+                block.answers[slotIdx] = null;
+                renderSteps();
+            }
+        }
+
+        function checkStep(sIdx) {
+            const state = pState[currentIndex];
+            const block = state.blocks[sIdx];
+            const stepDef = problems[currentIndex].steps[sIdx];
+            const maxSlots = stepDef.els.filter(e => e.s).length;
+            
+            // 確保都有填
+            let filledCount = 0;
+            for(let i=0; i<maxSlots; i++) {
+                if(block.answers[i]) filledCount++;
+            }
+            
+            if (filledCount < maxSlots) {
+                toast("請填滿所有空格喔！", "warn");
+                return;
+            }
+
+            // 驗證邏輯
+            const userVals = block.answers.map(a => a.val);
+            const correctVals = [...stepDef.ans];
+            
+            let isCorrect = false;
+            if (stepDef.unorder) {
+                isCorrect = userVals.slice().sort().join() === correctVals.slice().sort().join();
+            } else {
+                isCorrect = userVals.join() === correctVals.join();
+            }
+
+            if (isCorrect) {
+                const card = document.getElementById(`step-card-${sIdx}`);
+                card.classList.add('tada');
+                
+                setTimeout(() => {
+                    const isLastStep = (sIdx === problems[currentIndex].steps.length - 1);
+                    if (isLastStep) {
+                        state.isCompleted = true;
+                        document.getElementById(`nav-btn-${currentIndex}`).classList.add('!bg-green-100', '!text-green-700', '!border-green-300');
+                        
+                        completedProblemsCount = Object.values(pState).filter(s => s.isCompleted).length;
+                        if (completedProblemsCount === problems.length) {
+                            endGame(true);
+                        } else {
+                            toast("這題完成了，換下一題吧！", "success");
+                        }
+                    } else {
+                        state.step++;
+                        renderSteps();
+                        const next = document.getElementById(`step-card-${state.step}`);
+                        if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 600);
+            } else {
+                toast("答案不太對喔，再想想看！", "error");
+            }
+        }
+
+        function toast(msg, type) {
+            const t = document.createElement('div');
+            const color = type === 'error' ? 'bg-red-500' : 'bg-amber-500';
+            t.className = `fixed bottom-10 left-1/2 -translate-x-1/2 ${color} text-white px-8 py-4 rounded-2xl shadow-2xl z-[200] font-bold text-lg animate-bounce`;
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function showModal() {
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-90', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 50);
+        }
+
+        function closeModal() {
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            c.classList.add('scale-90', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        function resetCurrentProblem() {
+            const blocks = problems[currentIndex].steps.map(() => ({ answers: [], usedOpts: [] }));
+            pState[currentIndex] = { step: 0, blocks: blocks, isCompleted: false };
+            document.getElementById(`nav-btn-${currentIndex}`).classList.remove('!bg-green-100', '!text-green-700', '!border-green-300');
+            closeModal();
+            renderSteps();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
