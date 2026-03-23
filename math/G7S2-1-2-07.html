@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二元一次聯立方程式互動練習</title>
+    <title>加減消去法（相加篇）</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,7 +17,6 @@
             background-color: #f8fafc;
         }
 
-        /* 數學式呈現 */
         .math {
             font-size: 24px;
             font-weight: 600;
@@ -50,7 +49,6 @@
             line-height: 1.5;
         }
 
-        /* 填答格設計 */
         .slot {
             width: 50px;
             height: 40px;
@@ -76,7 +74,6 @@
             border-bottom-color: #10b981;
         }
 
-        /* 按鈕動效 */
         .btn-option {
             transition: transform 0.1s, opacity 0.2s;
             touch-action: manipulation;
@@ -86,7 +83,6 @@
             transform: scale(0.95);
         }
 
-        /* 步驟解鎖動畫 */
         .step-container {
             transition: all 0.5s ease-in-out;
         }
@@ -97,48 +93,18 @@
             pointer-events: none;
         }
 
-        /* 滾動條隱藏 */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* 完成動畫 */
         @keyframes tada {
-            0% {
-                transform: scale(1);
-            }
-
-            10%,
-            20% {
-                transform: scale(0.9) rotate(-3deg);
-            }
-
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: scale(1.1) rotate(3deg);
-            }
-
-            40%,
-            60%,
-            80% {
-                transform: scale(1.1) rotate(-3deg);
-            }
-
-            100% {
-                transform: scale(1) rotate(0);
-            }
+            0%   { transform: scale(1); }
+            10%, 20% { transform: scale(0.9) rotate(-3deg); }
+            30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+            40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+            100% { transform: scale(1) rotate(0); }
         }
 
-        .animate-tada {
-            animation: tada 0.6s ease-in-out;
-        }
+        .animate-tada { animation: tada 0.6s ease-in-out; }
     </style>
 </head>
 
@@ -148,9 +114,8 @@
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="flex items-center justify-between px-4 py-2 border-b">
             <div class="flex items-center w-full overflow-hidden">
-                <span class="font-bold text-blue-700 whitespace-nowrap mr-4">單元：二元一次聯立方程式(二)</span>
+                <span class="font-bold text-orange-600 whitespace-nowrap mr-4">單元：加減消去法（相加篇）</span>
                 <div id="nav-list" class="flex gap-2 overflow-x-auto no-scrollbar py-1 flex-grow">
-                    <!-- 題目按鈕會由 JS 生成 -->
                 </div>
             </div>
             <div class="flex items-center gap-3 ml-4 whitespace-nowrap">
@@ -165,34 +130,31 @@
 
         <!-- 左側：題目固定區塊 -->
         <div id="problem-sidebar" class="w-full md:w-1/3 p-6 md:sticky md:top-14 h-fit">
-            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-blue-100">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-orange-100">
                 <div class="mb-4">
                     <span id="level-tag"
-                        class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold">Level</span>
+                        class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">Level</span>
                     <h2 id="problem-title" class="text-2xl font-bold mt-2">第 1 題</h2>
                 </div>
 
                 <div class="math p-4 bg-gray-50 rounded-xl flex justify-center w-full">
                     <div class="system">
                         <div class="system-content">
-                            <span id="eq1">2x + y = 11</span>
-                            <span id="eq2">2x - y = 5</span>
+                            <span id="eq1"></span>
+                            <span id="eq2"></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-6 space-y-2 text-gray-600">
-                    <p class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span> 目標：先求 y，再求
-                        x</p>
-                    <p class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span> 技巧：相減消去 2x
-                    </p>
+                    <p class="flex items-center"><span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span> 目標：先求 x，再求 y</p>
+                    <p class="flex items-center"><span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span> 技巧：<span id="hint-text"></span></p>
                 </div>
             </div>
         </div>
 
         <!-- 右側：步驟解鎖流程 -->
         <div id="steps-container" class="w-full md:w-2/3 p-6 space-y-8 pb-32">
-            <!-- 步驟會由 JS 動態生成 -->
         </div>
 
     </main>
@@ -207,7 +169,7 @@
                 <button onclick="resetCurrentProblem()"
                     class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition">再做一次</button>
                 <button onclick="closeModal()"
-                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">關閉視窗</button>
+                    class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition">關閉視窗</button>
             </div>
         </div>
     </div>
@@ -220,11 +182,10 @@
                 <span class="text-5xl font-bold text-orange-500" id="record-total-score">0</span>
                 <span class="text-gray-500 font-bold text-xl"> / 50 分</span>
             </div>
-            <div id="records-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-8">
-                <!-- 由 JS 產生 -->
+            <div id="records-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-8">
             </div>
             <button onclick="hideRecords()"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">關閉紀錄</button>
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition">關閉紀錄</button>
         </div>
     </div>
 
@@ -235,26 +196,87 @@
     </div>
 
     <script>
+        /*
+         * 題目格式：eq1=[a,b,c] → ax+by=c（b>0）
+         *            eq2=[d,e,f] → dx-|e|y=f（e<0，|e|=b，相加消去y）
+         * x係數 a≠d（不同），相加後 (a+d)x = c+f
+         *
+         * ans陣列依Level設計，完全對應步驟格：
+         *
+         * Level 1 (id 1,2)：7個答案格
+         *   Step1（求x）: [sumC, sumC, x]
+         *   Step2（代入求y）: [x, ax, byVal, y]
+         *
+         * Level 2 (id 3)：6個答案格
+         *   Step1: [sumC, sumC, x]
+         *   Step2: [x, ax, y]   (b=1，省略by=步驟)
+         *
+         * Level 3 (id 4)：6個答案格
+         *   Step1: [sumC, sumC, x]
+         *   Step2: [ax, byVal, y]  (不顯示x代入過程)
+         *
+         * Level 4 (id 5)：8個答案格
+         *   Step1: [c1, f, sumC, x]
+         *   Step2: [c1, ax, byVal, y]
+         */
         const problems = [
-            { id: 1, level: "Level 1: 全提示", eq1: [2, 1, 11], eq2: [2, -1, 5], ans: [6, 6, 3, 3, 3, 8, 4] },
-            { id: 2, level: "Level 1: 全提示", eq1: [2, 1, 13], eq2: [2, -1, 7], ans: [6, 6, 3, 3, 3, 10, 5] },
-            { id: 3, level: "Level 2: 部分提示", eq1: [2, 1, 12], eq2: [2, -1, 4], ans: [8, 8, 4, 4, 8, 4] },
-            { id: 4, level: "Level 3: 低提示", eq1: [2, 1, 21], eq2: [2, -1, 11], ans: [10, 10, 5, 5, 16, 8] },
-            { id: 5, level: "Level 4: 獨立挑戰", eq1: [2, 1, 23], eq2: [2, -1, 13], ans: [23, 13, 10, 5, 23, 5, 18, 9] }
+            {
+                id: 1, level: "Level 1: 全提示",
+                eq1: [3, 2, 14], eq2: [1, -2, 2],
+                // 3x+2y=14, x-2y=2 → 4x=16 → x=4; 12+2y=14 → 2y=2 → y=1
+                ans: [16, 16, 4,   4, 12, 2, 1]
+            },
+            {
+                id: 2, level: "Level 1: 全提示",
+                eq1: [3, 2, 16], eq2: [1, -2, 0],
+                // 3x+2y=16, x-2y=0 → 4x=16 → x=4; 12+2y=16 → 2y=4 → y=2
+                ans: [16, 16, 4,   4, 12, 4, 2]
+            },
+            {
+                id: 3, level: "Level 2: 部分提示",
+                eq1: [4, 1, 14], eq2: [2, -1, 4],
+                // 4x+y=14, 2x-y=4 → 6x=18 → x=3; 12+y=14 → y=2
+                ans: [18, 18, 3,   3, 12, 2]
+            },
+            {
+                id: 4, level: "Level 3: 低提示",
+                eq1: [7, 2, 23], eq2: [1, -2, 1],
+                // 7x+2y=23, x-2y=1 → 8x=24 → x=3; 21+2y=23 → 2y=2 → y=1
+                ans: [24, 24, 3,   21, 2, 1]
+            },
+            {
+                id: 5, level: "Level 4: 獨立挑戰",
+                eq1: [5, 2, 21], eq2: [3, -2, 3],
+                // 5x+2y=21, 3x-2y=3 → 8x=24 → x=3; 15+2y=21 → 2y=6 → y=3
+                ans: [21, 3, 24, 3,   21, 15, 6, 3]
+            }
         ];
 
         let currentProblemIndex = 0;
         let currentStepIndex = 0;
         let score = 0;
-        let userProgress = Array(problems.length).fill(null).map(() => ({ step: 0, answers: [] }));
 
-        // 初始化導覽列
+        // ===== 方程式顯示 =====
+        function fmtEq1(p) {
+            const [a, b, c] = p.eq1;
+            const aS = a === 1 ? '' : a;
+            const bS = b === 1 ? '' : b;
+            return `${aS}x + ${bS}y = ${c}`;
+        }
+        function fmtEq2(p) {
+            const [d, e, f] = p.eq2;
+            const dS = d === 1 ? '' : d;
+            const eS = Math.abs(e) === 1 ? '' : Math.abs(e);
+            return `${dS}x - ${eS}y = ${f}`;
+        }
+
+        // ===== 導覽列 =====
         function initNav() {
             const nav = document.getElementById('nav-list');
             problems.forEach((p, idx) => {
                 const btn = document.createElement('button');
                 btn.id = `nav-btn-${idx}`;
-                btn.className = `px-4 py-1 rounded-full whitespace-nowrap font-medium transition ${idx === 0 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
+                btn.className = `px-4 py-1 rounded-full whitespace-nowrap font-medium transition ${idx === 0 ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
                 btn.innerText = `題目 ${p.id}`;
                 btn.onclick = () => switchProblem(idx);
                 nav.appendChild(btn);
@@ -262,24 +284,19 @@
         }
 
         function switchProblem(index) {
-            // 保存進度（這裡簡單處理，因為互動主要是即時的）
             currentProblemIndex = index;
             currentStepIndex = 0;
-
-            // 更新導覽 UI
             problems.forEach((p, idx) => {
                 const btn = document.getElementById(`nav-btn-${idx}`);
                 const isSolved = p.solved ? ' <span class="text-green-500 ml-1">✔</span>' : '';
-                btn.className = `px-4 py-1 rounded-full whitespace-nowrap font-medium transition ${idx === index ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
+                btn.className = `px-4 py-1 rounded-full whitespace-nowrap font-medium transition ${idx === index ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
                 btn.innerHTML = `題目 ${p.id}${isSolved}`;
             });
-
             renderProblem();
         }
 
         function updateScoreDisplay() {
             document.getElementById('score-display').innerText = `⭐ ${score}`;
-            // 更新當前導覽按鈕顯示打勾
             const btn = document.getElementById(`nav-btn-${currentProblemIndex}`);
             if (!btn.innerHTML.includes('✔')) {
                 btn.innerHTML += ' <span class="text-green-500 ml-1">✔</span>';
@@ -290,11 +307,10 @@
             const grid = document.getElementById('records-grid');
             grid.innerHTML = '';
             problems.forEach(p => {
-                const isSolved = p.solved;
                 grid.innerHTML += `
-                    <div class="flex flex-col items-center justify-center py-3 px-1 rounded-xl shadow-sm ${isSolved ? 'bg-green-50 border-2 border-green-400' : 'bg-gray-50 border-2 border-gray-200'}">
-                        <span class="font-bold ${isSolved ? 'text-green-700' : 'text-gray-400'}">第 ${p.id} 題</span>
-                        <span class="text-2xl mt-1">${isSolved ? '⭐' : '🔒'}</span>
+                    <div class="flex flex-col items-center justify-center py-3 px-1 rounded-xl shadow-sm ${p.solved ? 'bg-green-50 border-2 border-green-400' : 'bg-gray-50 border-2 border-gray-200'}">
+                        <span class="font-bold ${p.solved ? 'text-green-700' : 'text-gray-400'}">第 ${p.id} 題</span>
+                        <span class="text-2xl mt-1">${p.solved ? '⭐' : '🔒'}</span>
                     </div>
                 `;
             });
@@ -306,27 +322,34 @@
             document.getElementById('records-modal').classList.add('hidden');
         }
 
+        // ===== 渲染題目 =====
         function renderProblem() {
             const p = problems[currentProblemIndex];
+            const [a, b, c1] = p.eq1;
+            const [d, e, f]  = p.eq2;
+            const sumA = a + d;
+
             document.getElementById('level-tag').innerText = p.level;
             document.getElementById('problem-title').innerText = `第 ${p.id} 題`;
-            document.getElementById('eq1').innerText = `${p.eq1[0]}x + y = ${p.eq1[2]}`;
-            document.getElementById('eq2').innerText = `${p.eq2[0]}x - y = ${p.eq2[2]}`;
+            document.getElementById('eq1').innerText = fmtEq1(p);
+            document.getElementById('eq2').innerText = fmtEq2(p);
+
+            const bLabel = b === 1 ? 'y' : `${b}y`;
+            document.getElementById('hint-text').innerText = `相加消去 ${bLabel}（${b}y + (-${b}y) = 0）`;
 
             const container = document.getElementById('steps-container');
-            container.innerHTML = ''; // 清空
+            container.innerHTML = '';
 
-            // 建立步驟
             const stepsData = getStepsStructure(p);
             stepsData.forEach((step, idx) => {
                 const stepEl = document.createElement('div');
                 stepEl.id = `step-${idx}`;
-                stepEl.className = `step-container bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500 ${idx > 0 ? 'locked' : ''}`;
+                stepEl.className = `step-container bg-white p-6 rounded-2xl shadow-sm border-l-4 border-orange-400 ${idx > 0 ? 'locked' : ''}`;
 
-                let html = `
+                stepEl.innerHTML = `
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-bold flex items-center">
-                            <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">${idx + 1}</span>
+                            <span class="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">${idx + 1}</span>
                             ${step.title}
                             <span id="step-check-${idx}" class="ml-2 hidden text-green-500 font-bold">✔ 完成</span>
                         </h3>
@@ -338,89 +361,101 @@
                         ${renderOptions(step.options, idx)}
                     </div>
                     <div class="mt-6 flex justify-end">
-                        <button id="check-btn-${idx}" onclick="checkAnswer(${idx})" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 shadow-md">檢查答案</button>
+                        <button id="check-btn-${idx}" onclick="checkAnswer(${idx})" class="bg-orange-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-600 shadow-md">檢查答案</button>
                     </div>
                 `;
-                stepEl.innerHTML = html;
                 container.appendChild(stepEl);
             });
 
-            // 初始化填答格點擊
             initSlots();
         }
 
+        // ===== 步驟結構（完全對應 06 的 ans 陣列格式）=====
         function getStepsStructure(p) {
-            // 根據 Level 返回不同的步驟結構
-            const level = p.id <= 4 ? 1 : (p.id <= 8 ? 2 : (p.id <= 10 ? 3 : 4));
-            const ans = p.ans;
+            const [a, b, c1] = p.eq1;
+            const [d, e, f]  = p.eq2;
+            const sumA = a + d;
+            const ans  = p.ans;
+            const yl   = b === 1 ? 'y' : `${b}y`;
+            const level = p.id <= 2 ? 1 : (p.id === 3 ? 2 : (p.id === 4 ? 3 : 4));
 
             if (level === 1) {
+                // Step1：3格 [sumC, sumC, x]
+                // Step2：4格 [x, ax, byVal, y]
                 return [
                     {
-                        title: "第一步：求 y",
-                        content: `<div class="flex items-center">2y = <span class="slot" data-ans="${ans[0]}"></span></div>
-                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[1]}"></span> ÷ 2</div>
-                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[2]}"></span></div>`,
+                        title: "第一步：求 x",
+                        content: `<div class="flex items-center">${sumA}x = <span class="slot" data-ans="${ans[0]}"></span></div>
+                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[1]}"></span> ÷ ${sumA}</div>
+                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[2]}"></span></div>`,
                         options: [ans[0], ans[1], ans[2], 2, 5, 8].sort(() => Math.random() - 0.5)
                     },
                     {
-                        title: "第二步：代入求 x",
-                        content: `<div class="flex items-center">2x + y = ${p.eq1[2]}</div>
-                                  <div class="flex items-center">2x + <span class="slot" data-ans="${ans[3]}"></span> = ${p.eq1[2]}</div>
-                                  <div class="flex items-center">2x = ${p.eq1[2]} - <span class="slot" data-ans="${ans[4]}"></span></div>
-                                  <div class="flex items-center">2x = <span class="slot" data-ans="${ans[5]}"></span></div>
-                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[6]}"></span></div>`,
-                        options: [ans[3], ans[4], ans[5], ans[6], 1, 11].sort(() => Math.random() - 0.5)
+                        title: "第二步：代入求 y",
+                        content: `<div class="flex items-center">${a}x + ${yl} = ${c1}</div>
+                                  <div class="flex items-center">${a} × <span class="slot" data-ans="${ans[3]}"></span> + ${yl} = ${c1}</div>
+                                  <div class="flex items-center"><span class="slot" data-ans="${ans[4]}"></span> + ${yl} = ${c1}</div>
+                                  <div class="flex items-center">${yl} = ${c1} - <span class="slot" data-ans="${ans[4]}"></span></div>
+                                  <div class="flex items-center">${yl} = <span class="slot" data-ans="${ans[5]}"></span></div>
+                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[6]}"></span></div>`,
+                        options: [ans[3], ans[4], ans[4], ans[5], ans[6], 1].sort(() => Math.random() - 0.5)
                     }
                 ];
             } else if (level === 2) {
+                // Step1：3格 [sumC, sumC, x]（附提示 c1+c2）
+                // Step2：3格 [x, ax, y]（b=1，省略 by= 行）
                 return [
                     {
-                        title: "第一步：求 y",
-                        content: `<div class="flex items-center">2y = <span class="slot" data-ans="${ans[0]}"></span> <span class="text-gray-400 text-lg ml-2">(${p.eq1[2]} - ${p.eq2[2]})</span></div>
-                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[1]}"></span> ÷ 2</div>
-                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[2]}"></span></div>`,
+                        title: "第一步：求 x",
+                        content: `<div class="flex items-center">${sumA}x = <span class="slot" data-ans="${ans[0]}"></span> <span class="text-gray-400 text-lg ml-2">(${c1} + ${f})</span></div>
+                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[1]}"></span> ÷ ${sumA}</div>
+                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[2]}"></span></div>`,
                         options: [ans[0], ans[1], ans[2], 2, 4, 10].sort(() => Math.random() - 0.5)
                     },
                     {
-                        title: "第二步：代入求 x",
-                        content: `<div class="flex items-center">2x + ( <span class="slot" data-ans="${ans[3]}"></span> ) = ${p.eq1[2]}</div>
-                                  <div class="flex items-center">2x = <span class="slot" data-ans="${ans[4]}"></span></div>
-                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[5]}"></span></div>`,
+                        title: "第二步：代入求 y",
+                        content: `<div class="flex items-center">${a} × ( <span class="slot" data-ans="${ans[3]}"></span> ) + ${yl} = ${c1}</div>
+                                  <div class="flex items-center">${yl} = ${c1} - <span class="slot" data-ans="${ans[4]}"></span></div>
+                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[5]}"></span></div>`,
                         options: [ans[3], ans[4], ans[5], 2, 10, 14].sort(() => Math.random() - 0.5)
                     }
                 ];
             } else if (level === 3) {
+                // Step1：3格 [sumC, sumC, x]（附 c1+c2= 計算）
+                // Step2：3格 [ax, byVal, y]（直接從 by= 開始）
                 return [
                     {
-                        title: "第一步：求 y",
-                        content: `<div class="flex items-center">${p.eq1[2]} - ${p.eq2[2]} = <span class="slot" data-ans="${ans[0]}"></span></div>
-                                  <div class="flex items-center">2y = <span class="slot" data-ans="${ans[1]}"></span></div>
-                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[2]}"></span></div>`,
+                        title: "第一步：求 x",
+                        content: `<div class="flex items-center">${c1} + ${f} = <span class="slot" data-ans="${ans[0]}"></span></div>
+                                  <div class="flex items-center">${sumA}x = <span class="slot" data-ans="${ans[1]}"></span></div>
+                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[2]}"></span></div>`,
                         options: [ans[0], ans[1], ans[2], 2, 10, 15].sort(() => Math.random() - 0.5)
                     },
                     {
-                        title: "第二步：代入求 x",
-                        content: `<div class="flex items-center">2x + <span class="slot" data-ans="${ans[3]}"></span> = ${p.eq1[2]}</div>
-                                  <div class="flex items-center">2x = <span class="slot" data-ans="${ans[4]}"></span></div>
-                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[5]}"></span></div>`,
+                        title: "第二步：代入求 y",
+                        content: `<div class="flex items-center"><span class="slot" data-ans="${ans[3]}"></span> + ${yl} = ${c1}</div>
+                                  <div class="flex items-center">${yl} = <span class="slot" data-ans="${ans[4]}"></span></div>
+                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[5]}"></span></div>`,
                         options: [ans[3], ans[4], ans[5], 2, 5, 12].sort(() => Math.random() - 0.5)
                     }
                 ];
             } else {
+                // Level 4 獨立挑戰：4格+4格，兩邊都要自己填
+                // Step1：4格 [c1, f, sumC, x]
+                // Step2：4格 [c1, ax, byVal, y]
                 return [
                     {
-                        title: "第一步：求 y",
-                        content: `<div class="flex items-center">2y = <span class="slot" data-ans="${ans[0]}"></span> - <span class="slot" data-ans="${ans[1]}"></span></div>
-                                  <div class="flex items-center">2y = <span class="slot" data-ans="${ans[2]}"></span></div>
-                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[3]}"></span></div>`,
+                        title: "第一步：求 x",
+                        content: `<div class="flex items-center">${sumA}x = <span class="slot" data-ans="${ans[0]}"></span> + <span class="slot" data-ans="${ans[1]}"></span></div>
+                                  <div class="flex items-center">${sumA}x = <span class="slot" data-ans="${ans[2]}"></span></div>
+                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[3]}"></span></div>`,
                         options: [ans[0], ans[1], ans[2], ans[3], 2, 8, 15].sort(() => Math.random() - 0.5)
                     },
                     {
-                        title: "第二步：求 x",
-                        content: `<div class="flex items-center">2x = <span class="slot" data-ans="${ans[4]}"></span> - <span class="slot" data-ans="${ans[5]}"></span></div>
-                                  <div class="flex items-center">2x = <span class="slot" data-ans="${ans[6]}"></span></div>
-                                  <div class="flex items-center">x = <span class="slot" data-ans="${ans[7]}"></span></div>`,
+                        title: "第二步：求 y",
+                        content: `<div class="flex items-center">${yl} = <span class="slot" data-ans="${ans[4]}"></span> - <span class="slot" data-ans="${ans[5]}"></span></div>
+                                  <div class="flex items-center">${yl} = <span class="slot" data-ans="${ans[6]}"></span></div>
+                                  <div class="flex items-center">y = <span class="slot" data-ans="${ans[7]}"></span></div>`,
                         options: [ans[4], ans[5], ans[6], ans[7], 2, 10, 18].sort(() => Math.random() - 0.5)
                     }
                 ];
@@ -429,7 +464,7 @@
 
         function renderOptions(options, stepIdx) {
             return options.map(opt => `
-                <button class="btn-option bg-white border-2 border-blue-200 text-blue-700 font-bold px-5 py-2 rounded-xl shadow-sm hover:border-blue-500" 
+                <button class="btn-option bg-white border-2 border-orange-200 text-orange-700 font-bold px-5 py-2 rounded-xl shadow-sm hover:border-orange-500"
                         onclick="fillSlot('${opt}', this, ${stepIdx})">
                     ${opt}
                 </button>
@@ -442,10 +477,9 @@
                     if (slot.innerText !== "") {
                         const val = slot.innerText;
                         const stepIdx = parseInt(slot.closest('.step-container').id.split('-')[1]);
-                        // 恢復按鈕
                         const buttons = document.querySelectorAll(`#options-${stepIdx} button`);
                         for (let btn of buttons) {
-                            if (btn.innerText === val && btn.disabled) {
+                            if (btn.innerText.trim() === val && btn.disabled) {
                                 btn.disabled = false;
                                 btn.classList.remove('opacity-30');
                                 break;
@@ -489,7 +523,6 @@
             }
 
             if (allCorrect) {
-                // 正確
                 stepEl.classList.add('animate-tada', 'bg-green-50', 'border-green-500');
                 document.getElementById(`step-check-${stepIdx}`).classList.remove('hidden');
                 document.getElementById(`check-btn-${stepIdx}`).classList.add('hidden');
@@ -500,7 +533,6 @@
                     unlockNextStep(stepIdx);
                 }, 600);
             } else {
-                // 錯誤
                 showToast("再想想看喔，數字好像不對！");
             }
         }
@@ -511,17 +543,14 @@
                 nextStep.classList.remove('locked');
                 nextStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-                // 全部完成
                 const p = problems[currentProblemIndex];
                 let msg = "你成功的解開了這組聯立方程式！";
-
                 if (!p.solved) {
                     p.solved = true;
                     score += 10;
                     updateScoreDisplay();
                     msg = "太棒了！你獲得了 10 分！⭐";
                 }
-
                 document.getElementById('success-msg').innerText = msg;
                 document.getElementById('success-modal').classList.remove('hidden');
             }
@@ -543,7 +572,6 @@
             document.getElementById('success-modal').classList.add('hidden');
         }
 
-        // 初始化
         window.onload = () => {
             problems.forEach(p => p.solved = false);
             initNav();
