@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G7S2 Unit 1 & 2 Exam</title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Sidebar */
+        .sb-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #78716c;
+            cursor: pointer;
+            transition: all .2s;
+            background: transparent;
+            border: 2px solid transparent;
+            text-align: left;
+        }
+
+        .sb-btn:hover {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .sb-btn.active {
+            background: #ddd6fe;
+            color: #5b21b6;
+            border-color: #c4b5fd;
+        }
+
+        .badge {
+            font-size: .7rem;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-weight: 700;
+        }
+
+        .badge-ok {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-fail {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-none {
+            background: #f5f5f4;
+            color: #a8a29e;
+        }
+
+        /* Matching game */
+        .match-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #d6d3d1;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all .2s;
+            user-select: none;
+            min-height: 80px;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .match-card:hover {
+            border-color: #a78bfa;
+            background: #f5f3ff;
+        }
+
+        .match-card.selected {
+            border-color: #7c3aed;
+            background: #ede9fe;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, .3);
+        }
+
+        .match-card.matched {
+            border-color: #22c55e;
+            background: #dcfce7;
+            pointer-events: none;
+            opacity: .7;
+        }
+
+        .match-card.wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+            animation: shake .4s;
+        }
+
+        .match-emoji {
+            font-size: 2.8rem;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            25% {
+                transform: translateX(-6px)
+            }
+
+            75% {
+                transform: translateX(6px)
+            }
+        }
+
+        /* Fill-in game */
+        .fill-blank {
+            display: inline-block;
+            min-width: 100px;
+            border-bottom: 3px solid #d6d3d1;
+            text-align: center;
+            cursor: pointer;
+            padding: 4px 10px;
+            color: #5b21b6;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all .2s;
+        }
+
+        .fill-blank:hover {
+            border-color: #7c3aed;
+        }
+
+        .fill-blank.filled {
+            border-color: #7c3aed;
+            background: #ede9fe;
+            border-radius: 8px;
+        }
+
+        .fill-blank.correct {
+            border-color: #22c55e;
+            background: #dcfce7;
+            border-radius: 8px;
+            color: #16a34a;
+        }
+
+        .fill-blank.wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+            border-radius: 8px;
+            color: #dc2626;
+        }
+
+        .word-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all .15s;
+            border: 2px solid #d6d3d1;
+            background: #fff;
+            color: #44403c;
+            user-select: none;
+        }
+
+        .word-chip:hover {
+            border-color: #a78bfa;
+            background: #f5f3ff;
+        }
+
+        .word-chip.used {
+            opacity: .3;
+            pointer-events: none;
+            border-style: dashed;
+        }
+
+        /* Reorder game */
+        .reorder-word {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all .15s;
+            border: 2px solid #d6d3d1;
+            background: #fff;
+            color: #44403c;
+            user-select: none;
+        }
+
+        .reorder-word:hover {
+            border-color: #a78bfa;
+            background: #f5f3ff;
+        }
+
+        .reorder-word.used {
+            opacity: .3;
+            pointer-events: none;
+            border-style: dashed;
+        }
+
+        .answer-slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all .15s;
+            border: 2px solid #7c3aed;
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .answer-slot:hover {
+            background: #ddd6fe;
+        }
+
+        .answer-zone {
+            min-height: 58px;
+            border: 2px dashed #d6d3d1;
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            background: #fafaf9;
+        }
+
+        .answer-zone.correct {
+            border-color: #22c55e;
+            background: #dcfce7;
+        }
+
+        .answer-zone.wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+            animation: shake .4s;
+        }
+
+        /* Radar chart section */
+        .radar-section {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border: 2px solid #c4b5fd;
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn .5s ease-out forwards;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(124, 58, 237, .3); }
+            50% { box-shadow: 0 0 20px rgba(124, 58, 237, .5); }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes floatUpRed {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+        }
+
+        .huge-check {
+            display: inline-block;
+            font-size: 2rem;
+            color: #10b981;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 min-h-screen">
+    <div class="flex min-h-screen">
+
+        <!-- ===== Sidebar ===== -->
+        <aside class="w-56 bg-white/90 backdrop-blur-sm shadow-xl flex flex-col p-5 fixed h-full overflow-y-auto z-10 border-r border-violet-100">
+            <div class="mb-5">
+                <p class="text-xs font-bold text-violet-500 tracking-widest uppercase">G7S2 · Unit 1 & 2</p>
+                <h1 class="text-lg font-extrabold text-stone-800 leading-snug mt-1">英語測驗<br><span
+                        class="text-violet-600">Unit 1 & 2</span></h1>
+            </div>
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">測驗大題</p>
+            <div id="sidebar-nav" class="flex flex-col gap-1"></div>
+
+            <!-- Radar chart button -->
+            <div class="mt-4">
+                <button id="radar-btn"
+                    class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl pulse-glow">
+                    📊 我的成績分析
+                </button>
+            </div>
+
+            <!-- Score summary -->
+            <div class="mt-auto border-t border-stone-200 pt-4">
+                <p class="text-xs font-bold text-stone-400 mb-2">📊 歷史成績</p>
+                <div id="score-summary" class="flex flex-col gap-2 text-xs"></div>
+                <button id="clear-btn" class="mt-3 text-xs text-red-400 hover:text-red-600 transition-colors">🗑
+                    清除所有成績</button>
+            </div>
+        </aside>
+
+        <!-- ===== Main ===== -->
+        <main class="ml-56 flex-1 p-4 sm:p-8 flex justify-center items-start">
+            <div class="w-full max-w-3xl">
+                <div id="quiz-panel" class="bg-white/90 backdrop-blur-sm p-6 sm:p-10 rounded-2xl shadow-xl border border-violet-100">
+
+                    <!-- Header row -->
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <h2 id="sec-title" class="text-2xl font-extrabold text-violet-700"></h2>
+                            <p id="sec-sub" class="text-sm text-stone-400 mt-1"></p>
+                        </div>
+                        <div class="text-right relative">
+                            <p class="text-sm text-stone-400">本次得分</p>
+                            <p class="text-4xl font-extrabold text-violet-600 relative">
+                                <span id="live-score">0</span><span class="text-stone-300 text-2xl"> / </span><span
+                                    id="live-total" class="text-stone-500 text-2xl">0</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="flex items-center gap-3 my-5">
+                        <div class="flex-1 bg-stone-200 rounded-full h-3">
+                            <div id="prog-bar"
+                                class="bg-gradient-to-r from-violet-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+                                style="width:0%"></div>
+                        </div>
+                        <span id="prog-text" class="text-sm text-stone-400 whitespace-nowrap font-semibold">0 / 0</span>
+                    </div>
+
+                    <div id="q-wrap"></div>
+                    <div id="controls" class="mt-8 text-center"></div>
+                    <div id="score-disp" class="mt-6 text-center hidden"></div>
+                </div>
+
+                <!-- Radar Chart Panel (hidden by default) -->
+                <div id="radar-panel" class="mt-8 hidden fade-in">
+                    <div class="radar-section">
+                        <h3 class="text-xl font-extrabold text-violet-800 mb-2 text-center">📊 學習成效雷達圖</h3>
+                        <p class="text-sm text-violet-600 text-center mb-4">追蹤你在各個大題的學習進度</p>
+                        <div class="flex justify-center">
+                            <div style="max-width: 450px; width: 100%;">
+                                <canvas id="radar-chart"></canvas>
+                            </div>
+                        </div>
+                        <div id="radar-stats" class="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3 text-center"></div>
+                        <div id="history-section" class="mt-6"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Alert modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-30">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="alert-msg" class="text-xl text-gray-800 mb-4"></p>
+            <button id="alert-close"
+                class="bg-violet-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-violet-600 text-lg">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORE = 'g7s2u12_exam_scores';
+            const HISTORY_STORE = 'g7s2u12_exam_history';
+
+            // ---- Quiz Data (combined) ----
+            const DATA = {
+                // From U1 Section A: Matching (emoji → word)
+                A: [
+                    { em: "🎂", word: "cake" },
+                    { em: "🎸", word: "guitar" },
+                    { em: "🪁", word: "kite" }
+                ],
+                // From U1 Section B: Vocabulary MC
+                B: [
+                    {
+                        q: "This book is ______; it has 980 pages.",
+                        opts: ["thin", "thick", "those", "through"], ans: "B"
+                    },
+                    {
+                        q: "There are five people on this ______.",
+                        opts: ["time", "team", "term", "tram"], ans: "B"
+                    },
+                    {
+                        q: "Mr. Depp: Billy, don't talk with your ______ full, please.  Billy: Sorry, Dad.",
+                        opts: ["math", "month", "mouth", "match"], ans: "C"
+                    },
+                    {
+                        q: "Max: What's your ______?  Eva: I'm 175 cm tall.",
+                        opts: ["heat", "heart", "height", "habit"], ans: "C"
+                    },
+                    {
+                        q: "Elephants are very ______ from other animals; they have ______ ears and a really long nose.",
+                        opts: ["different / large", "distant / little", "difficult / long", "direct / loud"], ans: "A"
+                    },
+                    {
+                        q: "Nora: Oliver and I play baseball every Saturday.  Finn: I play baseball, too. Can I ______ you guys?  Nora: Sure.",
+                        opts: ["jump", "join", "just", "jog"], ans: "B"
+                    }
+                ],
+                // From U1 Section F: Reorder Sentences
+                C: [
+                    {
+                        prompt: "A: What can the girl do? 🎹👧",
+                        answer: ["She", "can", "play", "the", "piano."]
+                    },
+                    {
+                        prompt: "A: What does the boy do in his free time? 🪁👦",
+                        answer: ["He", "flies", "a", "kite."]
+                    },
+                    {
+                        prompt: "A: How tall is the baseball player? ⚾🧑 156cm",
+                        answer: ["He", "is", "156", "centimeters", "tall."]
+                    }
+                ],
+                // From U2 Section A: Fill-in-blank (word bank)
+                D: {
+                    wordBank: ["late", "hours", "tired", "shower", "homework"],
+                    questions: [
+                        {
+                            text: "Those police officers often work ten ______ a day.",
+                            answer: "hours"
+                        },
+                        {
+                            text: "My sister seldom takes a ______ in the morning. She usually does that after dinner.",
+                            answer: "shower"
+                        },
+                        {
+                            text: "Sara: What do you do after school? Adam: I play basketball, do my ______, and watch TV.",
+                            answer: "homework"
+                        },
+                        {
+                            text: "Ann: I always go to bed after twelve. Ben: That's very ______.",
+                            answer: "late"
+                        },
+                        {
+                            text: "Tom: Let's play baseball this afternoon. Evan: Sorry, not today. I'm ______. Maybe next time.",
+                            answer: "tired"
+                        }
+                    ]
+                },
+                // From U2 Section D: Frequency MC
+                E: [
+                    {
+                        q: "I brush my teeth before breakfast and after dinner every day.\n→ I brush my teeth ______ a day.",
+                        opts: ["once", "twice", "three times", "four times"], ans: "B"
+                    },
+                    {
+                        q: "Grace plays baseball on Monday, Wednesday, and Friday afternoons.\n→ Grace plays baseball ______ a week.",
+                        opts: ["once", "twice", "three times", "four times"], ans: "C"
+                    },
+                    {
+                        q: "Denny and I go to computer class once a week.\n→ Denny and I go to computer class ______ a month.",
+                        opts: ["once", "twice", "three times", "four/five times"], ans: "D"
+                    }
+                ]
+            };
+
+            const SECINFO = {
+                A: { title: "大題 A", sub: "Look and Match｜看圖配對單字" },
+                B: { title: "大題 B", sub: "Read and Choose｜根據句意選出正確的單字" },
+                C: { title: "大題 C", sub: "Sentence Reorder｜看圖重組句子" },
+                D: { title: "大題 D", sub: "Word Bank｜根據句意填入適當的單字" },
+                E: { title: "大題 E", sub: "Frequency｜選出符合題意的頻率副詞" }
+            };
+
+            let curSec = 'A', curIdx = 0, score = 0;
+            let isDirty = false, sectionFinished = false;
+
+            window.addEventListener('beforeunload', (e) => {
+                if (isDirty && !sectionFinished) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            // --- DOM ---
+            const quizPanel = document.getElementById('quiz-panel');
+            const qWrap = document.getElementById('q-wrap');
+            const controls = document.getElementById('controls');
+            const scoredisp = document.getElementById('score-disp');
+            const progBar = document.getElementById('prog-bar');
+            const progText = document.getElementById('prog-text');
+            const secTitle = document.getElementById('sec-title');
+            const secSub = document.getElementById('sec-sub');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const scoreSummary = document.getElementById('score-summary');
+            const liveScore = document.getElementById('live-score');
+            const liveTotal = document.getElementById('live-total');
+            const alertModal = document.getElementById('alert-modal');
+            const alertMsg = document.getElementById('alert-msg');
+            const alertClose = document.getElementById('alert-close');
+            const clearBtn = document.getElementById('clear-btn');
+            const radarBtn = document.getElementById('radar-btn');
+            const radarPanel = document.getElementById('radar-panel');
+
+            // --- Storage ---
+            function loadScores() { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { return {}; } }
+            function saveScore(sec, sc, tot) {
+                const d = loadScores();
+                d[sec] = { score: sc, total: tot, pct: Math.round(sc / tot * 100), at: (new Date()).toLocaleString('en-US') };
+                localStorage.setItem(STORE, JSON.stringify(d));
+                // Save to history
+                saveHistory(sec, sc, tot);
+            }
+
+            function loadHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_STORE) || '{}'); } catch (e) { return {}; } }
+            function saveHistory(sec, sc, tot) {
+                const history = loadHistory();
+                if (!history[sec]) history[sec] = [];
+                history[sec].push({
+                    score: sc,
+                    total: tot,
+                    pct: Math.round(sc / tot * 100),
+                    at: new Date().toISOString()
+                });
+                // Keep only last 10 attempts
+                if (history[sec].length > 10) history[sec] = history[sec].slice(-10);
+                localStorage.setItem(HISTORY_STORE, JSON.stringify(history));
+            }
+
+            // --- Helpers ---
+            function speak(text) {
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text.replace(/_{2,}/g, '').replace(/[①②③④⑤⑥⑦⑧]/g, '').trim());
+                u.lang = 'en-US'; u.rate = 0.85;
+                window.speechSynthesis.speak(u);
+            }
+
+            function mkSpeaker(txt) {
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("class", "h-6 w-6 text-violet-500 hover:text-violet-700 cursor-pointer flex-shrink-0");
+                svg.setAttribute("viewBox", "0 0 20 20"); svg.setAttribute("fill", "currentColor");
+                svg.setAttribute("title", "朗讀");
+                const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                p.setAttribute("fill-rule", "evenodd");
+                p.setAttribute("d", "M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.016 5.39a.75.75 0 01.016 1.046l-1.04 1.04a.75.75 0 11-1.06-1.06l1.04-1.04a.75.75 0 011.044-.026zM14.07 3.33a.75.75 0 01.016 1.046l-1.04 1.04a.75.75 0 01-1.06-1.06l1.04-1.04a.75.75 0 011.044-.026z");
+                p.setAttribute("clip-rule", "evenodd");
+                svg.appendChild(p);
+                svg.onclick = e => { e.stopPropagation(); speak(txt); };
+                return svg;
+            }
+
+            function secLen(sec) {
+                if (sec === 'D') return DATA.D.questions.length;
+                return DATA[sec].length;
+            }
+
+            function updateLive() {
+                liveScore.textContent = score;
+                liveTotal.textContent = secLen(curSec);
+            }
+
+            function flashCheck() {
+                const check = document.createElement('div');
+                check.className = 'fixed inset-0 flex items-center justify-center z-50 pointer-events-none';
+                check.innerHTML = '<span class="text-[8rem] drop-shadow-2xl" style="animation: popIn 0.5s ease-out forwards; text-shadow: 0 10px 15px rgba(16,185,129,0.3);">✅</span>';
+                document.body.appendChild(check);
+                setTimeout(() => check.remove(), 800);
+            }
+
+            function showDeduction(pts = 1) {
+                const lp = document.querySelector('.text-right .text-4xl');
+                const p = document.createElement('span');
+                p.textContent = `-${pts}`;
+                p.className = 'absolute text-red-500 font-extrabold text-3xl ml-4';
+                p.style.animation = 'floatUpRed 1s forwards';
+                p.style.textShadow = '0 2px 4px rgba(220, 38, 38, 0.3)';
+                lp.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+
+            // --- Render Sidebar ---
+            function renderSidebar() {
+                const scores = loadScores();
+                sidebarNav.innerHTML = '';
+                Object.keys(DATA).forEach(sec => {
+                    const btn = document.createElement('button');
+                    btn.className = 'sb-btn' + (sec === curSec ? ' active' : '');
+                    btn.dataset.sec = sec;
+                    const sc = scores[sec];
+                    const badge = sc
+                        ? `<span class="badge ${sc.pct >= 60 ? 'badge-ok' : 'badge-fail'}">${sc.pct}%</span>`
+                        : `<span class="badge badge-none">—</span>`;
+                    btn.innerHTML = `<span>${SECINFO[sec].title}</span>${badge}`;
+                    btn.onclick = () => switchSection(sec);
+                    sidebarNav.appendChild(btn);
+                });
+
+                scoreSummary.innerHTML = '';
+                const scores2 = loadScores();
+                Object.keys(DATA).forEach(sec => {
+                    const sc = scores2[sec];
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between';
+                    row.innerHTML = sc
+                        ? `<span class="text-stone-500">${SECINFO[sec].title}</span><span class="badge ${sc.pct >= 60 ? 'badge-ok' : 'badge-fail'}">${sc.score}/${sc.total} (${sc.pct}%)</span>`
+                        : `<span class="text-stone-400">${SECINFO[sec].title}</span><span class="badge badge-none">未作答</span>`;
+                    scoreSummary.appendChild(row);
+                });
+            }
+
+            // =============================================
+            // === Section A: Matching Game ===
+            // =============================================
+            function displayMatching() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.A.title;
+                secSub.textContent = SECINFO.A.sub;
+                progBar.style.width = '0%';
+                progText.textContent = `0 / ${DATA.A.length}`;
+                updateLive();
+
+                const pairs = DATA.A;
+                let selected = null;
+                let matched = 0;
+
+                const block = document.createElement('div');
+                block.id = 'qblock';
+
+                const title = document.createElement('p');
+                title.className = 'text-lg text-stone-700 mb-4 font-bold text-center';
+                title.textContent = '點擊圖片，再點擊對應的英文單字';
+                block.appendChild(title);
+
+                const wordOrder = [...pairs.map((p, i) => i)].sort(() => Math.random() - 0.5);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-2 gap-5';
+
+                const leftCol = document.createElement('div');
+                leftCol.className = 'flex flex-col gap-4';
+                const rightCol = document.createElement('div');
+                rightCol.className = 'flex flex-col gap-4';
+
+                pairs.forEach((p, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'match-card match-emoji';
+                    card.textContent = p.em;
+                    card.dataset.type = 'emoji';
+                    card.dataset.idx = i;
+                    card.onclick = () => { isDirty = true; handleMatchClick('emoji', i, card); };
+                    leftCol.appendChild(card);
+                });
+
+                wordOrder.forEach(i => {
+                    const p = pairs[i];
+                    const card = document.createElement('div');
+                    card.className = 'match-card';
+                    card.textContent = p.word;
+                    card.dataset.type = 'word';
+                    card.dataset.idx = i;
+                    card.onclick = () => { isDirty = true; speak(p.word); handleMatchClick('word', i, card); };
+                    rightCol.appendChild(card);
+                });
+
+                grid.appendChild(leftCol); grid.appendChild(rightCol);
+                block.appendChild(grid);
+                qWrap.appendChild(block);
+
+                function handleMatchClick(type, idx, el) {
+                    if (el.classList.contains('matched')) return;
+                    if (!selected) {
+                        selected = { type, idx, el };
+                        el.classList.add('selected');
+                        return;
+                    }
+                    if (selected.type === type) {
+                        selected.el.classList.remove('selected');
+                        selected = { type, idx, el };
+                        el.classList.add('selected');
+                        return;
+                    }
+                    if (selected.idx === idx) {
+                        flashCheck();
+                        score++;
+                        matched++;
+                        selected.el.classList.remove('selected');
+                        selected.el.classList.add('matched');
+                        el.classList.add('matched');
+                        selected = null;
+                        updateLive();
+                        progBar.style.width = (matched / pairs.length * 100) + '%';
+                        progText.textContent = `${matched} / ${pairs.length}`;
+
+                        if (matched === pairs.length) {
+                            setTimeout(() => {
+                                sectionFinished = true;
+                                score = Math.max(0, score);
+                                saveScore('A', score, pairs.length);
+                                progBar.style.width = '100%';
+                                qWrap.innerHTML = '';
+                                const pct = Math.max(0, Math.round(score / pairs.length * 100));
+                                const em2 = pct === 100 ? '🎉' : '👍';
+                                scoredisp.innerHTML = `
+                                    <div class="py-4">
+                                        <p class="text-5xl mb-3">${em2}</p>
+                                        <p class="text-stone-400 mb-1 text-lg">配對完成！</p>
+                                        <p class="text-5xl font-bold text-stone-800 my-3">${score} <span class="text-2xl text-stone-400">/ ${pairs.length}</span></p>
+                                        <p class="text-2xl font-bold ${pct >= 60 ? 'text-green-600' : 'text-red-500'}">${pct}%</p>
+                                        <p class="text-sm text-stone-400 mt-2">✅ 成績已儲存至本地端</p>
+                                    </div>`;
+                                scoredisp.classList.remove('hidden');
+                                const rb = document.createElement('button');
+                                rb.className = 'mt-2 bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 text-lg';
+                                rb.textContent = '看成績分析';
+                                rb.onclick = showRadarChart;
+                                scoredisp.appendChild(rb);
+                                renderSidebar();
+                            }, 400);
+                        }
+                    } else {
+                        score -= 1;
+                        showDeduction(1);
+                        updateLive();
+
+                        selected.el.classList.remove('selected');
+                        el.classList.add('wrong');
+                        selected.el.classList.add('wrong');
+                        const prevEl = selected.el;
+                        selected = null;
+                        setTimeout(() => { el.classList.remove('wrong'); prevEl.classList.remove('wrong'); }, 500);
+                    }
+                }
+            }
+
+            // =============================================
+            // === Section C: Reorder Sentences ===
+            // =============================================
+            function displayReorder(idx) {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                const list = DATA.C;
+                secTitle.textContent = SECINFO.C.title;
+                secSub.textContent = SECINFO.C.sub;
+                progBar.style.width = (idx / list.length * 100) + '%';
+                progText.textContent = `${idx} / ${list.length}`;
+                updateLive();
+
+                const q = list[idx];
+                const block = document.createElement('div');
+                block.id = 'qblock';
+
+                const promptP = document.createElement('p');
+                promptP.className = 'text-lg text-stone-700 mb-2 flex items-start gap-2';
+                promptP.appendChild(mkSpeaker(q.prompt));
+                const pSpan = document.createElement('span');
+                pSpan.innerHTML = `<strong>${idx + 1}.</strong> ${q.prompt}`;
+                promptP.appendChild(pSpan);
+                block.appendChild(promptP);
+
+                const instrP = document.createElement('p');
+                instrP.className = 'text-sm text-stone-400 mb-4';
+                instrP.textContent = '👆 點擊下方單字，按正確順序排成句子（點擊已放入的單字可移除）';
+                block.appendChild(instrP);
+
+                const ansZone = document.createElement('div');
+                ansZone.className = 'answer-zone mb-5';
+                ansZone.id = 'ans-zone';
+                const placeholder = document.createElement('span');
+                placeholder.className = 'text-stone-300 text-base';
+                placeholder.id = 'ans-placeholder';
+                placeholder.textContent = '點擊單字放到這裡...';
+                ansZone.appendChild(placeholder);
+                block.appendChild(ansZone);
+
+                const shuffled = [...q.answer].sort(() => Math.random() - 0.5);
+                const poolDiv = document.createElement('div');
+                poolDiv.className = 'flex flex-wrap gap-3 justify-center mb-5';
+                poolDiv.id = 'word-pool';
+
+                const userAnswer = [];
+
+                shuffled.forEach((word, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'reorder-word';
+                    btn.textContent = word;
+                    btn.dataset.poolIdx = i;
+                    btn.onclick = () => {
+                        if (btn.classList.contains('used')) return;
+                        isDirty = true;
+                        speak(word);
+                        btn.classList.add('used');
+                        userAnswer.push({ word, poolIdx: i });
+                        renderAnswerZone();
+                    };
+                    poolDiv.appendChild(btn);
+                });
+                block.appendChild(poolDiv);
+                qWrap.appendChild(block);
+
+                function renderAnswerZone() {
+                    ansZone.innerHTML = '';
+                    if (userAnswer.length === 0) {
+                        const ph = document.createElement('span');
+                        ph.className = 'text-stone-300 text-base';
+                        ph.textContent = '點擊單字放到這裡...';
+                        ansZone.appendChild(ph);
+                        return;
+                    }
+                    userAnswer.forEach((item, ai) => {
+                        const slot = document.createElement('button');
+                        slot.className = 'answer-slot';
+                        slot.textContent = item.word;
+                        slot.onclick = () => {
+                            userAnswer.splice(ai, 1);
+                            const poolBtns = poolDiv.querySelectorAll('.reorder-word');
+                            poolBtns[item.poolIdx].classList.remove('used');
+                            renderAnswerZone();
+                        };
+                        ansZone.appendChild(slot);
+                    });
+                }
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'w-full sm:w-auto bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 transition-colors text-lg';
+                checkBtn.textContent = '檢查答案';
+                checkBtn.onclick = () => {
+                    if (userAnswer.length !== q.answer.length) {
+                        alertMsg.textContent = '請將所有單字排列完成！';
+                        alertModal.classList.remove('hidden');
+                        return;
+                    }
+                    const isCorrect = userAnswer.every((item, i) => item.word === q.answer[i]);
+                    poolDiv.querySelectorAll('.reorder-word').forEach(b => { b.onclick = null; b.style.cursor = 'default'; });
+                    ansZone.querySelectorAll('.answer-slot').forEach(s => { s.onclick = null; s.style.cursor = 'default'; });
+
+                    if (isCorrect) {
+                        flashCheck();
+                        score++;
+                        ansZone.classList.add('correct');
+                        ansZone.innerHTML += '<span class="huge-check ml-2 flex-shrink-0">✔️</span>';
+                    } else {
+                        score -= 1;
+                        showDeduction(1);
+
+                        ansZone.classList.add('wrong');
+                        const corrP = document.createElement('p');
+                        corrP.className = 'mt-3 text-base text-green-700 bg-green-50 border border-green-200 p-3 rounded-lg';
+                        corrP.innerHTML = `<strong>正確答案：</strong> ${q.answer.join(' ')}`;
+                        block.appendChild(corrP);
+                    }
+                    updateLive();
+
+                    controls.innerHTML = '';
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = 'w-full sm:w-auto bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 transition-colors text-lg';
+                    if (curIdx < list.length - 1) {
+                        nextBtn.textContent = '下一題 →';
+                        nextBtn.onclick = () => { curIdx++; displayReorder(curIdx); };
+                    } else {
+                        nextBtn.textContent = '完成測驗 🎉';
+                        nextBtn.onclick = showScore;
+                    }
+                    controls.appendChild(nextBtn);
+                };
+                controls.appendChild(checkBtn);
+            }
+
+            // =============================================
+            // === Section D: Fill-in-the-blank (word bank) ===
+            // =============================================
+            function displayFillIn() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.D.title;
+                secSub.textContent = SECINFO.D.sub;
+                progBar.style.width = '0%';
+                progText.textContent = `0 / ${DATA.D.questions.length}`;
+                updateLive();
+
+                const { wordBank, questions } = DATA.D;
+                let answered = 0;
+                const filled = new Array(questions.length).fill(null);
+                const usedCount = {};
+                wordBank.forEach(w => usedCount[w] = 0);
+
+                const block = document.createElement('div');
+                block.id = 'qblock';
+
+                // Word bank display
+                const wbDiv = document.createElement('div');
+                wbDiv.className = 'bg-violet-50 border border-violet-200 rounded-xl p-4 mb-6';
+                wbDiv.innerHTML = '<p class="text-sm font-bold text-violet-500 text-center mb-3">📖 Word Bank — 先點擊詞庫單字，再點擊空格填入</p>';
+                const wbChips = document.createElement('div');
+                wbChips.className = 'flex flex-wrap gap-3 justify-center';
+                wordBank.forEach(w => {
+                    const chip = document.createElement('span');
+                    chip.className = 'word-chip';
+                    chip.id = `chip-${w}`;
+                    chip.textContent = w;
+                    chip.dataset.word = w;
+                    chip.onclick = () => handleWordChipClick(w, chip);
+                    wbChips.appendChild(chip);
+                });
+                wbDiv.appendChild(wbChips);
+                block.appendChild(wbDiv);
+
+                let selectedWord = null;
+                let selectedChip = null;
+
+                questions.forEach((q, qi) => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'mb-5 p-5 bg-stone-50 border border-stone-200 rounded-xl';
+
+                    const qRow = document.createElement('div');
+                    qRow.className = 'flex items-start gap-2 mb-2';
+                    qRow.appendChild(mkSpeaker(q.text));
+
+                    const parts = q.text.split('______');
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'text-lg text-stone-700 leading-relaxed';
+
+                    parts.forEach((part, pi) => {
+                        const t = document.createElement('span');
+                        t.textContent = part;
+                        textSpan.appendChild(t);
+                        if (pi < parts.length - 1) {
+                            const blank = document.createElement('span');
+                            blank.className = 'fill-blank';
+                            blank.id = `blank-${qi}`;
+                            blank.textContent = '______';
+                            blank.dataset.qi = qi;
+                            blank.onclick = () => handleBlankClick(qi, blank);
+                            textSpan.appendChild(blank);
+                        }
+                    });
+
+                    qRow.appendChild(textSpan);
+                    qDiv.appendChild(qRow);
+                    block.appendChild(qDiv);
+                });
+
+                qWrap.appendChild(block);
+
+                function handleWordChipClick(word, chip) {
+                    if (selectedWord === word) {
+                        chip.classList.remove('ring-2', 'ring-violet-400', 'bg-violet-100');
+                        selectedWord = null; selectedChip = null;
+                        return;
+                    }
+                    if (selectedChip) selectedChip.classList.remove('ring-2', 'ring-violet-400', 'bg-violet-100');
+                    selectedWord = word; selectedChip = chip;
+                    chip.classList.add('ring-2', 'ring-violet-400', 'bg-violet-100');
+                }
+
+                function handleBlankClick(qi, blank) {
+                    if (!selectedWord) {
+                        alertMsg.textContent = '請先從上方詞庫點選一個單字！';
+                        alertModal.classList.remove('hidden');
+                        return;
+                    }
+                    if (filled[qi]) {
+                        usedCount[filled[qi]]--;
+                        const oldChip = document.getElementById(`chip-${filled[qi]}`);
+                        if (oldChip && usedCount[filled[qi]] === 0) oldChip.classList.remove('used');
+                    }
+                    isDirty = true;
+                    filled[qi] = selectedWord;
+                    usedCount[selectedWord]++;
+                    blank.textContent = selectedWord;
+                    blank.classList.add('filled');
+                    speak(selectedWord);
+
+                    if (usedCount[selectedWord] >= 1) selectedChip.classList.add('used');
+                    selectedChip.classList.remove('ring-2', 'ring-violet-400', 'bg-violet-100');
+                    selectedWord = null; selectedChip = null;
+
+                    answered = filled.filter(f => f !== null).length;
+                    progBar.style.width = (answered / questions.length * 100) + '%';
+                    progText.textContent = `${answered} / ${questions.length}`;
+                }
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'w-full sm:w-auto bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 transition-colors text-lg';
+                checkBtn.textContent = '檢查答案';
+                checkBtn.onclick = () => {
+                    if (filled.some(f => f === null)) {
+                        alertMsg.textContent = '請將所有空格填完！';
+                        alertModal.classList.remove('hidden');
+                        return;
+                    }
+                    // Reset score for this section calculation
+                    score = 0;
+                    let wrongCount = 0;
+                    questions.forEach((q, qi) => {
+                        const blank = document.getElementById(`blank-${qi}`);
+                        blank.classList.remove('filled');
+                        if (filled[qi] === q.answer) {
+                            score++;
+                            blank.classList.add('correct');
+                        } else {
+                            score -= 1;
+                            wrongCount++;
+                            blank.classList.add('wrong');
+                            blank.title = `正確答案：${q.answer}`;
+                        }
+                    });
+                    updateLive();
+                    if (wrongCount > 0) showDeduction(wrongCount);
+                    if (score === questions.length) flashCheck();
+                    
+                    sectionFinished = true;
+                    score = Math.max(0, score);
+                    saveScore('D', score, questions.length);
+                    progBar.style.width = '100%';
+                    controls.innerHTML = '';
+                    const pct = Math.max(0, Math.round(score / questions.length * 100));
+                    const em = pct === 100 ? '🎉' : pct >= 60 ? '👍' : '💪';
+                    scoredisp.innerHTML = `<div class="py-4"><p class="text-5xl mb-3">${em}</p><p class="text-stone-400 mb-1 text-lg">測驗完成！</p><p class="text-5xl font-bold text-stone-800 my-3">${score} <span class="text-2xl text-stone-400">/ ${questions.length}</span></p><p class="text-2xl font-bold ${pct >= 60 ? 'text-green-600' : 'text-red-500'}">${pct}%</p><p class="text-sm text-stone-400 mt-2">✅ 成績已儲存至本地端</p></div>`;
+                    scoredisp.classList.remove('hidden');
+                    const rb = document.createElement('button');
+                    rb.className = 'mt-2 bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 text-lg';
+                    rb.textContent = '看成績分析'; rb.onclick = showRadarChart;
+                    scoredisp.appendChild(rb);
+                    renderSidebar();
+                };
+                controls.appendChild(checkBtn);
+            }
+
+            // =============================================
+            // === Section B, E: Multiple Choice ===
+            // =============================================
+            function displayQ(idx) {
+                if (curSec === 'A') { displayMatching(); return; }
+                if (curSec === 'C') { displayReorder(idx); return; }
+                if (curSec === 'D') { displayFillIn(); return; }
+
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                const list = DATA[curSec];
+                secTitle.textContent = SECINFO[curSec].title;
+                secSub.textContent = SECINFO[curSec].sub;
+                progBar.style.width = (idx / list.length * 100) + '%';
+                progText.textContent = `${idx} / ${list.length}`;
+                updateLive();
+
+                const q = list[idx];
+                const block = document.createElement('div');
+                block.id = 'qblock';
+
+                // Question text
+                const qp = document.createElement('p');
+                qp.className = 'text-lg text-stone-700 mb-5 flex items-start gap-2 whitespace-pre-line';
+                const span = document.createElement('span');
+                span.innerHTML = `<strong>${idx + 1}.</strong> ${q.q}`;
+                qp.appendChild(mkSpeaker(q.q));
+                qp.appendChild(span);
+
+                // Options
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-4';
+                
+                const correctString = q.opts[q.ans.charCodeAt(0) - 65];
+                const shuffledOpts = [...q.opts].sort(() => Math.random() - 0.5);
+
+                shuffledOpts.forEach((opt, i) => {
+                    const ch = String.fromCharCode(65 + i);
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center p-4 border-2 border-stone-200 rounded-xl cursor-pointer hover:bg-violet-50 hover:border-violet-300 transition-all';
+                    const radio = document.createElement('input');
+                    radio.type = 'radio'; radio.id = `q${idx}-${ch}`; radio.name = `q${idx}`; radio.value = opt;
+                    radio.className = 'h-5 w-5 text-violet-600 border-gray-300 flex-shrink-0';
+                    const label = document.createElement('label');
+                    label.htmlFor = `q${idx}-${ch}`;
+                    label.className = 'ml-3 text-lg text-stone-800 flex-1 cursor-pointer';
+                    label.innerHTML = `(${ch}) ${opt}`;
+                    if (opt === correctString) radio.dataset.correct = 'true';
+                    row.onclick = () => { isDirty = true; radio.checked = true; speak(opt); };
+                    row.appendChild(radio); row.appendChild(label);
+                    grid.appendChild(row);
+                });
+
+                block.appendChild(qp); block.appendChild(grid);
+                qWrap.appendChild(block);
+
+                const submitBtn = document.createElement('button');
+                submitBtn.className = 'w-full sm:w-auto bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 transition-colors text-lg';
+                submitBtn.textContent = '檢查答案';
+                submitBtn.onclick = () => checkAns(idx);
+                controls.appendChild(submitBtn);
+            }
+
+            function checkAns(idx) {
+                const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+                if (!sel) { alertMsg.textContent = '請先選擇一個答案！'; alertModal.classList.remove('hidden'); return; }
+                const q = DATA[curSec][idx];
+                const block = document.getElementById('qblock');
+                block.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+                block.querySelectorAll('div.flex.items-center').forEach(d => { d.onclick = null; d.classList.remove('hover:bg-violet-50', 'hover:border-violet-300'); d.style.cursor = 'default'; });
+                
+                const correctRadio = block.querySelector('input[data-correct="true"]');
+                const corrLabel = correctRadio.nextElementSibling;
+                const userLabel = sel.nextElementSibling;
+                
+                if (sel.dataset.correct === 'true') {
+                    flashCheck();
+                    score++;
+                    userLabel.parentElement.classList.add('bg-violet-100', 'border-violet-400', 'ring-2', 'ring-violet-300');
+                    userLabel.innerHTML += ' <span class="huge-check ml-2 flex-shrink-0">✔️</span>';
+                } else {
+                    score -= 1;
+                    showDeduction(1);
+
+                    userLabel.parentElement.classList.add('bg-red-100', 'border-red-400', 'ring-2', 'ring-red-300');
+                    userLabel.innerHTML += ' <span class="text-red-600 font-bold text-xl ml-2 flex-shrink-0">❌</span>';
+                    corrLabel.parentElement.classList.add('bg-violet-100', 'border-violet-400');
+                }
+                updateLive();
+                controls.innerHTML = '';
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'w-full sm:w-auto bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 transition-colors text-lg';
+                const list = DATA[curSec];
+                if (curIdx < list.length - 1) {
+                    nextBtn.textContent = '下一題 →';
+                    nextBtn.onclick = () => { curIdx++; displayQ(curIdx); };
+                } else {
+                    nextBtn.textContent = '完成測驗 🎉';
+                    nextBtn.onclick = showScore;
+                }
+                controls.appendChild(nextBtn);
+            }
+
+            // --- Show Final Score ---
+            function showScore() {
+                sectionFinished = true;
+                const tot = secLen(curSec);
+                score = Math.max(0, score);
+                saveScore(curSec, score, tot);
+                progBar.style.width = '100%'; progText.textContent = `${tot} / ${tot}`;
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                const pct = Math.max(0, Math.round(score / tot * 100));
+                const em = pct === 100 ? '🎉' : pct >= 80 ? '👏' : pct >= 60 ? '👍' : '💪';
+                scoredisp.innerHTML = `
+      <div class="py-4">
+        <p class="text-5xl mb-3">${em}</p>
+        <p class="text-stone-400 mb-1 text-lg">此大題測驗完成！</p>
+        <p class="text-5xl font-bold text-stone-800 my-3">${score} <span class="text-2xl text-stone-400">/ ${tot}</span></p>
+        <p class="text-2xl font-bold ${pct >= 60 ? 'text-green-600' : 'text-red-500'}">${pct}%</p>
+        <p class="text-sm text-stone-400 mt-2">✅ 成績已儲存至本地端</p>
+      </div>`;
+                scoredisp.classList.remove('hidden');
+                const rb = document.createElement('button');
+                rb.className = 'mt-2 bg-violet-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-violet-600 text-lg';
+                rb.textContent = '看成績分析'; rb.onclick = showRadarChart;
+                scoredisp.appendChild(rb);
+                renderSidebar();
+            }
+
+            function switchSection(sec) {
+                if (isDirty && !sectionFinished) {
+                    if (!confirm('目前大題尚未完成，現在切換將會把「當前分數」直接送出並結算！\n確定要放棄並切換嗎？')) return;
+                    score = Math.max(0, score);
+                    saveScore(curSec, score, secLen(curSec));
+                    renderSidebar();
+                }
+                
+                if (sec === curSec && !quizPanel.classList.contains('hidden')) return;
+                
+                curSec = sec; score = 0; curIdx = 0; isDirty = false; sectionFinished = false;
+                scoredisp.classList.add('hidden'); scoredisp.innerHTML = '';
+                radarPanel.classList.add('hidden');
+                quizPanel.classList.remove('hidden');
+                sidebarNav.querySelectorAll('.sb-btn').forEach(b => b.classList.toggle('active', b.dataset.sec === sec));
+                displayQ(0);
+            }
+
+            // =============================================
+            // === Radar Chart ===
+            // =============================================
+            let radarChart = null;
+
+            function showRadarChart() {
+                if (isDirty && !sectionFinished) {
+                    if (!confirm('目前大題尚未完成，前往成績分析將把「當前分數」直接送出並結算！\n確定要放棄當前進度並前往嗎？')) return;
+                    score = Math.max(0, score);
+                    saveScore(curSec, score, secLen(curSec));
+                    renderSidebar();
+                    isDirty = false;
+                    sectionFinished = true;
+                }
+
+                quizPanel.classList.add('hidden');
+                radarPanel.classList.remove('hidden');
+                const scores = loadScores();
+                const history = loadHistory();
+
+                const labels = Object.keys(DATA).map(sec => SECINFO[sec].title);
+                const currentData = Object.keys(DATA).map(sec => scores[sec] ? scores[sec].pct : 0);
+
+                // Calculate previous attempt data (for progress comparison)
+                const prevData = Object.keys(DATA).map(sec => {
+                    if (history[sec] && history[sec].length >= 2) {
+                        return history[sec][history[sec].length - 2].pct;
+                    }
+                    return 0;
+                });
+
+                const hasPrev = prevData.some(v => v > 0);
+
+                const datasets = [
+                    {
+                        label: '本次成績',
+                        data: currentData,
+                        backgroundColor: 'rgba(124, 58, 237, 0.2)',
+                        borderColor: 'rgba(124, 58, 237, 1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: 'rgba(124, 58, 237, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }
+                ];
+
+                if (hasPrev) {
+                    datasets.push({
+                        label: '上次成績',
+                        data: prevData,
+                        backgroundColor: 'rgba(209, 213, 219, 0.15)',
+                        borderColor: 'rgba(156, 163, 175, 0.7)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointBackgroundColor: 'rgba(156, 163, 175, 0.7)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1,
+                        pointRadius: 4
+                    });
+                }
+
+                if (radarChart) radarChart.destroy();
+
+                const ctx = document.getElementById('radar-chart').getContext('2d');
+                radarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20,
+                                    font: { size: 12, weight: '600' },
+                                    backdropColor: 'transparent'
+                                },
+                                grid: {
+                                    color: 'rgba(124, 58, 237, 0.1)'
+                                },
+                                angleLines: {
+                                    color: 'rgba(124, 58, 237, 0.15)'
+                                },
+                                pointLabels: {
+                                    font: { size: 14, weight: '700' },
+                                    color: '#5b21b6'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    font: { size: 13, weight: '600' },
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Stats cards
+                const radarStats = document.getElementById('radar-stats');
+                radarStats.innerHTML = '';
+                Object.keys(DATA).forEach(sec => {
+                    const sc = scores[sec];
+                    const pct = sc ? sc.pct : 0;
+                    const hist = history[sec] || [];
+                    let trend = '';
+                    if (hist.length >= 2) {
+                        const diff = hist[hist.length - 1].pct - hist[hist.length - 2].pct;
+                        if (diff > 0) trend = `<span class="text-green-500 text-xs font-bold">↑ +${diff}%</span>`;
+                        else if (diff < 0) trend = `<span class="text-red-500 text-xs font-bold">↓ ${diff}%</span>`;
+                        else trend = `<span class="text-stone-400 text-xs font-bold">— 0%</span>`;
+                    }
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-xl p-3 border border-violet-100 shadow-sm';
+                    card.innerHTML = `
+                        <p class="font-bold text-sm text-violet-700">${SECINFO[sec].title}</p>
+                        <p class="text-2xl font-extrabold ${pct >= 60 ? 'text-green-600' : pct > 0 ? 'text-red-500' : 'text-stone-300'}">${pct}%</p>
+                        ${trend ? `<div class="mt-1">${trend}</div>` : '<p class="text-xs text-stone-400 mt-1">尚無資料</p>'}
+                    `;
+                    radarStats.appendChild(card);
+                });
+
+                // History section
+                const histSection = document.getElementById('history-section');
+                histSection.innerHTML = '';
+                const allHistory = loadHistory();
+                const hasAnyHistory = Object.values(allHistory).some(h => h && h.length > 0);
+                if (hasAnyHistory) {
+                    histSection.innerHTML = `<h4 class="text-base font-bold text-violet-800 mb-3">📈 歷次答題記錄</h4>`;
+                    Object.keys(DATA).forEach(sec => {
+                        const h = allHistory[sec];
+                        if (!h || h.length === 0) return;
+                        const row = document.createElement('div');
+                        row.className = 'mb-2';
+                        const dots = h.map((entry, i) => {
+                            const color = entry.pct >= 60 ? 'bg-green-400' : 'bg-red-400';
+                            return `<span class="inline-block w-8 h-8 rounded-full ${color} text-white text-xs font-bold flex items-center justify-center" title="第 ${i + 1} 次作答: ${entry.pct}%">${entry.pct}</span>`;
+                        }).join('');
+                        row.innerHTML = `
+                            <p class="text-sm font-bold text-stone-600 mb-1">${SECINFO[sec].title}</p>
+                            <div class="flex gap-2 flex-wrap items-center">${dots}</div>
+                        `;
+                        histSection.appendChild(row);
+                    });
+                }
+            }
+
+            // --- Init ---
+            alertClose.onclick = () => alertModal.classList.add('hidden');
+            clearBtn.onclick = () => {
+                if (confirm('確定要清除所有成績嗎？')) {
+                    localStorage.removeItem(STORE);
+                    localStorage.removeItem(HISTORY_STORE);
+                    renderSidebar();
+                    if (!radarPanel.classList.contains('hidden')) showRadarChart();
+                }
+            };
+            radarBtn.onclick = showRadarChart;
+
+            renderSidebar();
+            displayQ(0);
+        });
+    </script>
+</body>
+
+</html>
