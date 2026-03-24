@@ -20,16 +20,24 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 11px 14px;
+            padding: 11px 12px;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #78716c;
             cursor: pointer;
             transition: all .2s;
             background: transparent;
             border: 2px solid transparent;
             text-align: left;
+            gap: 6px;
+        }
+
+        .sb-btn > span:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1 1 auto;
         }
 
         .sb-btn:hover {
@@ -48,6 +56,8 @@
             border-radius: 999px;
             padding: 2px 8px;
             font-weight: 700;
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         .badge-ok {
@@ -312,7 +322,7 @@
     <div class="flex min-h-screen">
 
         <!-- ===== Sidebar ===== -->
-        <aside class="w-56 bg-white/90 backdrop-blur-sm shadow-xl flex flex-col p-5 fixed h-full overflow-y-auto z-10 border-r border-violet-100">
+        <aside class="w-72 bg-white/90 backdrop-blur-sm shadow-xl flex flex-col p-5 fixed h-full overflow-y-auto z-10 border-r border-violet-100">
             <div class="mb-5">
                 <p class="text-xs font-bold text-violet-500 tracking-widest uppercase">G7S2 · Unit 1 & 2</p>
                 <h1 class="text-lg font-extrabold text-stone-800 leading-snug mt-1">英語測驗<br><span
@@ -339,7 +349,7 @@
         </aside>
 
         <!-- ===== Main ===== -->
-        <main class="ml-56 flex-1 p-4 sm:p-8 flex justify-center items-start">
+        <main class="ml-72 flex-1 p-4 sm:p-8 flex justify-center items-start">
             <div class="w-full max-w-3xl">
                 <div id="quiz-panel" class="bg-white/90 backdrop-blur-sm p-6 sm:p-10 rounded-2xl shadow-xl border border-violet-100">
 
@@ -495,15 +505,75 @@
                         q: "Denny and I go to computer class once a week.\n→ Denny and I go to computer class ______ a month.",
                         opts: ["once", "twice", "three times", "four/five times"], ans: "D"
                     }
+                ],
+                // From U1 文法選擇
+                F: [
+                    {
+                        q: "A: What ______ you love?\nB: I love cats.",
+                        opts: ["are", "can", "do", "is"], ans: "C"
+                    },
+                    {
+                        q: "A: ______ you play the piano every day?\nB: Yes, I ______.",
+                        opts: ["Do; do", "Are; are", "Is; are", "Does; do"], ans: "A"
+                    },
+                    {
+                        q: "A: What ______ your sisters do on Fridays?\nB: They paint on Fridays.",
+                        opts: ["do", "is", "are", "can"], ans: "A"
+                    },
+                    {
+                        q: "A: Do you like his songs?\nB: No, ______.",
+                        opts: ["I do", "I don’t", "I am not", "I am"], ans: "B"
+                    },
+                    {
+                        q: "A: Does your father like Jeremy Lin?\nB: No, ______.",
+                        opts: ["he doesn’t like", "he doesn’t", "he isn’t", "he don’t"], ans: "B"
+                    },
+                    {
+                        q: "A: Does Andy ______ on Sundays? (照妖鏡出現了!)\nB: Yes, he does.",
+                        opts: ["swimming", "swim", "swims", "is swimming"], ans: "B"
+                    },
+                    {
+                        q: "A: Do the boys ______ on Sundays?\nB: Yes, they do.",
+                        opts: ["painting", "paint", "not paint", "don’t paint"], ans: "B"
+                    },
+                    {
+                        q: "A: Do they watch TV after school?\nB: No, they ______.",
+                        opts: ["are", "aren’t", "doesn’t", "don’t"], ans: "D"
+                    },
+                    {
+                        q: "A: ______ Helen study English every day?\nB: Yes, she ______.",
+                        opts: ["Does; does", "Are; are", "Is; are", "Does; do"], ans: "A"
+                    },
+                    {
+                        q: "A: What ______ your sister do on weekends?\nB: She ______ a kite.",
+                        opts: ["do; flies", "does; flies", "is; flies", "can; fly"], ans: "B"
+                    },
+                    {
+                        q: "Joyce ______ long legs.",
+                        opts: ["have", "has", "is", "are"], ans: "B"
+                    },
+                    {
+                        q: "Kevin ______ have small ears.",
+                        opts: ["is", "are", "don’t", "doesn’t"], ans: "D"
+                    },
+                    {
+                        q: "How tall ______ your English teacher?",
+                        opts: ["do", "is", "are", "am"], ans: "B"
+                    },
+                    {
+                        q: "A: How tall is your sister?\nB: She ______ one hundred fifty centimeters.",
+                        opts: ["do", "does", "is", "are"], ans: "C"
+                    }
                 ]
             };
 
             const SECINFO = {
-                A: { title: "大題 A", sub: "Look and Match｜看圖配對單字" },
-                B: { title: "大題 B", sub: "Read and Choose｜根據句意選出正確的單字" },
-                C: { title: "大題 C", sub: "Sentence Reorder｜看圖重組句子" },
-                D: { title: "大題 D", sub: "Word Bank｜根據句意填入適當的單字" },
-                E: { title: "大題 E", sub: "Frequency｜選出符合題意的頻率副詞" }
+                A: { title: "U1 習作 A大題", sub: "Look and Match｜看圖配對單字" },
+                B: { title: "U1 習作 B大題", sub: "Read and Choose｜根據句意選出正確的單字" },
+                C: { title: "U1 習作 F大題", sub: "Sentence Reorder｜看圖重組句子" },
+                D: { title: "U2 習作 A大題", sub: "Word Bank｜根據句意填入適當的單字" },
+                E: { title: "U2 習作 D大題", sub: "Frequency｜選出符合題意的頻率副詞" },
+                F: { title: "U1 文法選擇", sub: "Grammar Choice｜現在簡單式" }
             };
 
             let curSec = 'A', curIdx = 0, score = 0;
@@ -1060,7 +1130,7 @@
             }
 
             // =============================================
-            // === Section B, E: Multiple Choice ===
+            // === Section B, E, F: Multiple Choice ===
             // =============================================
             function displayQ(idx) {
                 if (curSec === 'A') { displayMatching(); return; }
