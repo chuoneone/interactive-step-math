@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7年級數學 二元一次方程式 解與描點</title>
+  <link rel="icon" href="../images/dog.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+      background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+      min-height: 100vh;
+      padding: 24px 16px 80px;
+      color: #1f2937;
+    }
+
+    .page-wrap { max-width: 900px; margin: 0 auto; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #6366f1;
+      font-weight: 700;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* ── 題目卡片 ── */
+    .q-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.09);
+      padding: 26px 22px;
+      margin-bottom: 24px;
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .q-num {
+      background: #4f46e5;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .q-title { font-size: 18px; font-weight: 700; color: #1e3a8a; }
+
+    .problem {
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      color: #1e3a5f;
+    }
+
+    /* ── 工作區（表格 + Canvas）── */
+    .work-area {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .table-section { flex: 0 0 auto; }
+    .section-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+    }
+
+    table { border-collapse: collapse; font-size: 18px; font-weight: 700; }
+    th, td {
+      border: 2px solid #9ca3af;
+      width: 52px;
+      height: 52px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th { background: #e0e7ff; color: #1e40af; font-size: 15px; }
+    td.label-cell { background: #f0f9ff; color: #1e40af; font-size: 14px; font-weight: 800; }
+
+    input.cell-input {
+      width: 44px;
+      height: 40px;
+      border: none;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      background: transparent;
+      color: #1f2937;
+      outline: none;
+    }
+    input.cell-input:focus { background: #fef9c3; border-radius: 4px; }
+    input.cell-input.correct { color: #16a34a; }
+    input.cell-input.wrong   { color: #dc2626; background: #fee2e2; border-radius: 4px; }
+
+    .canvas-section { flex: 1 1 300px; }
+
+    canvas {
+      display: block;
+      border-radius: 10px;
+      cursor: crosshair;
+      max-width: 100%;
+      touch-action: none;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    /* ── 按鈕 ── */
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0,0,0,.15);
+      transition: transform .1s, box-shadow .1s;
+    }
+    .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.15); }
+
+    .btn-check { background: #4f46e5; color: #fff; }
+    .btn-clear { background: #e5e7eb; color: #374151; }
+
+    /* ── 單題結果 ── */
+    .q-result {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      display: none;
+      line-height: 1.6;
+    }
+    .q-result.correct { background: #d1fae5; color: #065f46; border: 2px solid #6ee7b7; }
+    .q-result.error   { background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; }
+
+    /* ── 提交成績 ── */
+    .submit-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.09);
+      padding: 24px 22px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-submit {
+      padding: 14px 28px;
+      background: #059669;
+      color: #fff;
+      border-radius: 12px;
+      border: none;
+      font-size: 18px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #047857;
+      transition: transform .1s, box-shadow .1s;
+    }
+    .btn-submit:active { transform: translateY(3px); box-shadow: 0 1px 0 #047857; }
+
+    #score-display {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1f2937;
+      display: none;
+    }
+    #score-display .score-num { font-size: 36px; color: #4f46e5; }
+  </style>
+</head>
+
+<body>
+<div class="page-wrap">
+
+  <a href="../7.html" class="back-link">← 返回 7年級數學</a>
+
+  <!-- ════════════ 第 1 題 ════════════ -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num">1</div>
+      <div class="q-title">求出 <strong>x + y = 3</strong> 的任意五組解，並在坐標平面上標出這五個點。</div>
+    </div>
+
+    <div class="work-area">
+      <!-- 表格：x 固定 -->
+      <div class="table-section">
+        <div class="section-label">① 填入 y 的值</div>
+        <table>
+          <tr>
+            <th></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th>
+          </tr>
+          <tr>
+            <td class="label-cell">x</td>
+            <td>0</td><td>1</td><td>2</td><td>3</td><td>4</td>
+          </tr>
+          <tr>
+            <td class="label-cell">y</td>
+            <td><input class="cell-input" id="p1y0" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p1y1" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p1y2" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p1y3" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p1y4" type="number" placeholder="?"></td>
+          </tr>
+        </table>
+        <p class="hint">填完後點「描點」，也可以直接點坐標平面</p>
+      </div>
+
+      <!-- Canvas 1 -->
+      <div class="canvas-section">
+        <div class="section-label">② 描點</div>
+        <canvas id="c1" width="360" height="360"></canvas>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-check" onclick="plotFromTable(1)">描點（從表格）</button>
+      <button class="btn btn-clear" onclick="clearAll(1)">清除</button>
+      <button class="btn btn-check" style="background:#0891b2;" onclick="checkQ(1)">檢查第 1 題</button>
+    </div>
+    <div id="q1-result" class="q-result"></div>
+  </div>
+
+  <!-- ════════════ 第 2 題 ════════════ -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-num">2</div>
+      <div class="q-title">求出 <strong>3x + y = 6</strong> 的任意五組解，並在坐標平面上標出這五個點。</div>
+    </div>
+
+    <div class="work-area">
+      <!-- 表格：x y 都自填 -->
+      <div class="table-section">
+        <div class="section-label">① 填入 x 和 y 的值</div>
+        <table>
+          <tr><th>x</th><th>y</th></tr>
+          <tr>
+            <td><input class="cell-input" id="p2x0" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p2y0" type="number" placeholder="?"></td>
+          </tr>
+          <tr>
+            <td><input class="cell-input" id="p2x1" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p2y1" type="number" placeholder="?"></td>
+          </tr>
+          <tr>
+            <td><input class="cell-input" id="p2x2" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p2y2" type="number" placeholder="?"></td>
+          </tr>
+          <tr>
+            <td><input class="cell-input" id="p2x3" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p2y3" type="number" placeholder="?"></td>
+          </tr>
+          <tr>
+            <td><input class="cell-input" id="p2x4" type="number" placeholder="?"></td>
+            <td><input class="cell-input" id="p2y4" type="number" placeholder="?"></td>
+          </tr>
+        </table>
+        <p class="hint">自己決定 x 的值，算出 y</p>
+        <p class="hint">填完後點「描點」，也可直接點坐標平面</p>
+      </div>
+
+      <!-- Canvas 2 -->
+      <div class="canvas-section">
+        <div class="section-label">② 描點</div>
+        <canvas id="c2" width="360" height="440"></canvas>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-check" onclick="plotFromTable(2)">描點（從表格）</button>
+      <button class="btn btn-clear" onclick="clearAll(2)">清除</button>
+      <button class="btn btn-check" style="background:#0891b2;" onclick="checkQ(2)">檢查第 2 題</button>
+    </div>
+    <div id="q2-result" class="q-result"></div>
+  </div>
+
+  <!-- ════════════ 提交成績 ════════════ -->
+  <div class="submit-card">
+    <button class="btn-submit" onclick="submitScore()">✔ 提交成績</button>
+    <div id="score-display">
+      得分：<span class="score-num" id="score-num">0</span> / 20 分
+    </div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// 坐標系設定
+// ═══════════════════════════════════════════════════════════════
+const G = {
+  1: {
+    canvas: null,
+    ML:52, MR:20, MT:20, MB:48,
+    X_MIN:-1, X_MAX:7,
+    Y_MIN:-2, Y_MAX:6,
+    UNIT:38,
+    dots: new Set()
+  },
+  2: {
+    canvas: null,
+    ML:55, MR:20, MT:20, MB:48,
+    X_MIN:-2, X_MAX:5,
+    Y_MIN:-4, Y_MAX:8,
+    UNIT:34,
+    dots: new Set()
+  }
+};
+
+// 答題得分（-1 = 未檢查）
+let scores = { 1: -1, 2: -1 };
+
+// ── 座標轉換 ──────────────────────────────────────────────────
+function toPx(g, x, y) {
+  return {
+    px: g.ML + (x - g.X_MIN) * g.UNIT,
+    py: g.MT + (g.Y_MAX - y) * g.UNIT
+  };
+}
+function toGrid(g, px, py) {
+  return {
+    x: Math.round((px - g.ML) / g.UNIT + g.X_MIN),
+    y: Math.round(g.Y_MAX - (py - g.MT) / g.UNIT)
+  };
+}
+
+// ── 繪圖 ──────────────────────────────────────────────────────
+function drawBase(n) {
+  const g   = G[n];
+  const ctx = g.canvas.getContext('2d');
+  ctx.clearRect(0, 0, g.canvas.width, g.canvas.height);
+
+  const W = (g.X_MAX - g.X_MIN) * g.UNIT;
+  const H = (g.Y_MAX - g.Y_MIN) * g.UNIT;
+
+  // 網格線
+  ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1;
+  for (let x = g.X_MIN; x <= g.X_MAX; x++) {
+    const { px } = toPx(g, x, 0);
+    ctx.beginPath(); ctx.moveTo(px, g.MT); ctx.lineTo(px, g.MT + H); ctx.stroke();
+  }
+  for (let y = g.Y_MIN; y <= g.Y_MAX; y++) {
+    const { py } = toPx(g, 0, y);
+    ctx.beginPath(); ctx.moveTo(g.ML, py); ctx.lineTo(g.ML + W, py); ctx.stroke();
+  }
+
+  const ox = toPx(g, 0, 0);
+  ctx.strokeStyle = '#111827'; ctx.lineWidth = 2.5;
+
+  // x 軸
+  ctx.beginPath(); ctx.moveTo(g.ML, ox.py); ctx.lineTo(g.ML + W, ox.py); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(g.ML+W, ox.py); ctx.lineTo(g.ML+W-8, ox.py-5); ctx.lineTo(g.ML+W-8, ox.py+5);
+  ctx.fillStyle = '#111827'; ctx.fill();
+
+  // y 軸
+  ctx.beginPath(); ctx.moveTo(ox.px, g.MT + H); ctx.lineTo(ox.px, g.MT); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(ox.px, g.MT); ctx.lineTo(ox.px-5, g.MT+8); ctx.lineTo(ox.px+5, g.MT+8);
+  ctx.fill();
+
+  // 刻度數字
+  ctx.font = 'bold 12px Nunito, sans-serif'; ctx.fillStyle = '#374151';
+  ctx.textAlign = 'center';
+  for (let x = g.X_MIN; x <= g.X_MAX; x++) {
+    if (x === 0) continue;
+    const { px, py } = toPx(g, x, 0);
+    ctx.fillText(x, px, py + 17);
+  }
+  ctx.textAlign = 'right';
+  for (let y = g.Y_MIN; y <= g.Y_MAX; y++) {
+    if (y === 0) continue;
+    const { px, py } = toPx(g, 0, y);
+    ctx.fillText(y, px - 5, py + 4);
+  }
+
+  // 軸標籤 & O
+  ctx.font = 'bold 14px Nunito, sans-serif';
+  ctx.textAlign = 'left';  ctx.fillText('x', g.ML+W+5, ox.py+5);
+  ctx.textAlign = 'center'; ctx.fillText('y', ox.px, g.MT-5);
+  ctx.textAlign = 'right';  ctx.fillText('O', ox.px-3, ox.py+16);
+}
+
+function drawDot(n, x, y, color) {
+  const g   = G[n];
+  const ctx = g.canvas.getContext('2d');
+  const { px, py } = toPx(g, x, y);
+  ctx.beginPath();
+  ctx.arc(px, py, 7, 0, Math.PI * 2);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'left';
+  ctx.fillText(`(${x},${y})`, px + 9, py - 3);
+}
+
+function redraw(n, colorFn) {
+  drawBase(n);
+  G[n].dots.forEach(key => {
+    const [x, y] = key.split(',').map(Number);
+    drawDot(n, x, y, colorFn ? colorFn(x, y) : '#4f46e5');
+  });
+}
+
+// ── 點擊 Canvas ───────────────────────────────────────────────
+function handleClick(n, e) {
+  const g    = G[n];
+  const rect = g.canvas.getBoundingClientRect();
+  const scX  = g.canvas.width  / rect.width;
+  const scY  = g.canvas.height / rect.height;
+  const px   = (e.clientX - rect.left) * scX;
+  const py   = (e.clientY - rect.top)  * scY;
+
+  const { x, y } = toGrid(g, px, py);
+  if (x < g.X_MIN || x > g.X_MAX || y < g.Y_MIN || y > g.Y_MAX) return;
+
+  const snap = toPx(g, x, y);
+  if (Math.hypot(px - snap.px, py - snap.py) > g.UNIT * 0.45) return;
+
+  const key = `${x},${y}`;
+  if (g.dots.has(key)) g.dots.delete(key); else g.dots.add(key);
+  redraw(n);
+  document.getElementById('q' + n + '-result').style.display = 'none';
+}
+
+// ── 從表格描點 ────────────────────────────────────────────────
+function plotFromTable(n) {
+  const g = G[n];
+  if (n === 1) {
+    [0,1,2,3,4].forEach(x => {
+      const val = document.getElementById('p1y' + x).value.trim();
+      if (val === '') return;
+      const y = parseInt(val, 10);
+      if (!isNaN(y) && y >= g.Y_MIN && y <= g.Y_MAX) g.dots.add(`${x},${y}`);
+    });
+  } else {
+    [0,1,2,3,4].forEach(i => {
+      const xv = document.getElementById('p2x' + i).value.trim();
+      const yv = document.getElementById('p2y' + i).value.trim();
+      if (xv === '' || yv === '') return;
+      const x = parseInt(xv, 10), y = parseInt(yv, 10);
+      if (!isNaN(x) && !isNaN(y) && x >= g.X_MIN && x <= g.X_MAX && y >= g.Y_MIN && y <= g.Y_MAX)
+        g.dots.add(`${x},${y}`);
+    });
+  }
+  redraw(n);
+  document.getElementById('q' + n + '-result').style.display = 'none';
+}
+
+// ── 清除 ──────────────────────────────────────────────────────
+function clearAll(n) {
+  G[n].dots.clear();
+  if (n === 1) {
+    [0,1,2,3,4].forEach(x => {
+      const el = document.getElementById('p1y' + x);
+      el.value = ''; el.className = 'cell-input';
+    });
+  } else {
+    [0,1,2,3,4].forEach(i => {
+      ['p2x','p2y'].forEach(pre => {
+        const el = document.getElementById(pre + i);
+        el.value = ''; el.className = 'cell-input';
+      });
+    });
+  }
+  document.getElementById('q' + n + '-result').style.display = 'none';
+  scores[n] = -1;
+  redraw(n);
+}
+
+// ── 方程式 ────────────────────────────────────────────────────
+function isCorrect1(x, y) { return x + y === 3; }
+function isCorrect2(x, y) { return 3 * x + y === 6; }
+
+// ── 檢查 ──────────────────────────────────────────────────────
+function checkQ(n) {
+  let tblScore = 0, dotScore = 0;
+  let tblErrors = 0, missingDots = 0, extraDots = 0;
+  const isCorrect = n === 1 ? isCorrect1 : isCorrect2;
+
+  if (n === 1) {
+    const xVals = [0,1,2,3,4];
+    xVals.forEach(x => {
+      const inp = document.getElementById('p1y' + x);
+      const val = inp.value.trim();
+      if (val === '') { inp.className = 'cell-input wrong'; tblErrors++; return; }
+      const y = parseInt(val, 10);
+      if (isCorrect(x, y)) { inp.className = 'cell-input correct'; tblScore++; }
+      else                  { inp.className = 'cell-input wrong';   tblErrors++; }
+    });
+
+    // 要求這五個點都被描上
+    xVals.forEach(x => {
+      const yOk = 3 - x;
+      if (G[1].dots.has(`${x},${yOk}`)) dotScore++;
+      else missingDots++;
+    });
+    G[1].dots.forEach(key => {
+      const [x, y] = key.split(',').map(Number);
+      if (!isCorrect(x, y)) extraDots++;
+    });
+
+  } else {
+    [0,1,2,3,4].forEach(i => {
+      const xEl = document.getElementById('p2x' + i);
+      const yEl = document.getElementById('p2y' + i);
+      const xv  = xEl.value.trim(), yv = yEl.value.trim();
+      if (xv === '' || yv === '') {
+        xEl.className = yEl.className = 'cell-input wrong';
+        tblErrors++; return;
+      }
+      const x = parseInt(xv, 10), y = parseInt(yv, 10);
+      if (isCorrect(x, y)) {
+        xEl.className = yEl.className = 'cell-input correct';
+        tblScore++;
+      } else {
+        xEl.className = yEl.className = 'cell-input wrong';
+        tblErrors++;
+      }
+    });
+
+    // Canvas：每個正確的解算 1 分（最多 5 分）
+    let correctDots = 0;
+    G[2].dots.forEach(key => {
+      const [x, y] = key.split(',').map(Number);
+      if (isCorrect(x, y)) correctDots++; else extraDots++;
+    });
+    missingDots = Math.max(0, 5 - correctDots);
+    dotScore    = Math.min(5, correctDots);
+  }
+
+  // 重繪 Canvas 標色
+  redraw(n, (x, y) => isCorrect(x, y) ? '#16a34a' : '#dc2626');
+
+  // 記錄此題得分
+  scores[n] = tblScore + dotScore;
+
+  // 顯示結果
+  const el = document.getElementById('q' + n + '-result');
+  const total = tblScore + dotScore;
+  if (tblErrors === 0 && missingDots === 0 && extraDots === 0) {
+    el.className = 'q-result correct';
+    el.innerHTML = `🎉 完全正確！得 <strong>${total}</strong> / 10 分`;
+  } else {
+    let msg = `得 <strong>${total}</strong> / 10 分　`;
+    if (tblErrors  > 0) msg += `・表格 ${tblErrors} 個錯 `;
+    if (missingDots > 0) msg += `・還差 ${missingDots} 個點 `;
+    if (extraDots   > 0) msg += `・${extraDots} 個點描錯`;
+    el.className = 'q-result error';
+    el.innerHTML = msg;
+  }
+  el.style.display = 'block';
+}
+
+// ── 提交成績 ──────────────────────────────────────────────────
+function submitScore() {
+  // 未檢查的題目先跑一次
+  if (scores[1] < 0) checkQ(1);
+  if (scores[2] < 0) checkQ(2);
+
+  const got = scores[1] + scores[2];
+  document.getElementById('score-num').textContent = got;
+  document.getElementById('score-display').style.display = 'block';
+
+  // 交由 quiz-kit 統一存檔（若已載入），否則自行存
+  if (window.quizKit) {
+    window.quizKit.submit(got, 20);
+  } else if (window.spedProgress) {
+    window.spedProgress.recordExercise(got, 20, '二元一次方程式 解與描點');
+  }
+}
+
+// ── 初始化 ────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function () {
+  [1, 2].forEach(n => {
+    G[n].canvas = document.getElementById('c' + n);
+    drawBase(n);
+
+    G[n].canvas.addEventListener('click', e => handleClick(n, e));
+    G[n].canvas.addEventListener('touchend', function (e) {
+      e.preventDefault();
+      handleClick(n, e.changedTouches[0]);
+    }, { passive: false });
+  });
+});
+</script>
+
+<script src="../progress.js"></script>
+  <script>window.quizKitConfig = { total: 20, label: '二元一次方程式 解與描點' };</script>
+  <script src="../quiz-kit.js"></script>
+</body>
+</html>
