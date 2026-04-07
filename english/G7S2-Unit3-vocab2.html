@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佳音翰林 國中英語 7年級下學期 Unit 3 單字測驗卷 (14-26)</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F0FFFF; }
+        .main-container { background-color: white; border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        .option-btn { background-color: #afeeee; color: #1e3a8a; border: 3px solid transparent; transition: all 0.3s; }
+        .option-btn.selected { border-color: #3b82f6; background-color: #98e0e0; }
+        .correct { background-color: #22c55e !important; color: white !important; }
+        .incorrect-reveal { background-color: #ef4444 !important; color: white !important; }
+        .speaker-btn { background-color: #f0f9ff; color: #2563eb; border-radius: 50%; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 9999px; overflow: hidden; }
+        .progress-bar { height: 1rem; background-color: #2dd4bf; width: 0%; transition: width 0.5s; }
+        .word-preview-item { background-color: #f0f8ff; border-radius: 0.75rem; padding: 0.75rem; text-align: center; cursor: pointer; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 relative">
+    <div class="w-full max-w-2xl mx-auto mt-10">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-teal-800">佳音翰林 國中英語</h1>
+            <h2 class="text-2xl font-semibold text-teal-600">7年級 下學期 Unit 3 單字測驗卷 (14-26)</h2>
+        </div>
+        <div id="preview-container" class="main-container p-6 md:p-8">
+             <div class="flex justify-between items-center mb-6">
+                 <div></div><h2 class="text-3xl font-bold text-center text-teal-700">本單元單字預覽</h2>
+                 <button id="show-leaderboard-btn" class="bg-amber-400 text-amber-900 font-bold py-2 px-4 rounded-full">🏆 排行榜</button>
+             </div>
+             <div id="word-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8"></div>
+             <div class="text-center flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="start-quiz-btn" class="bg-teal-500 text-white font-bold py-4 px-10 text-xl rounded-full shadow-xl hover:scale-110">開始測驗</button>
+                <button id="download-btn" class="bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:scale-105">下載測驗卷 (PDF)</button>
+             </div>
+        </div>
+        <div id="quiz-container" class="hidden main-container p-6 md:p-8">
+            <div class="mb-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <div class="text-lg font-bold text-rose-500 bg-rose-100 py-1 px-4 rounded-full">⏱️ <span id="timer-display">07:00</span></div>
+                <div class="flex gap-2">
+                    <button id="quiz-leaderboard-btn" class="bg-amber-400 text-amber-900 font-bold py-1 px-3 rounded-full text-sm shadow">🏆 排行榜</button>
+                    <div class="text-lg font-bold text-indigo-600 bg-indigo-50 py-1 px-4 rounded-full">👤 <span id="current-player-display"></span></div>
+                </div>
+            </div>
+            <div class="mb-6"><div id="question-counter" class="text-lg font-semibold text-gray-600"></div><div id="score-counter" class="text-lg font-bold text-teal-600">答對: 0</div><div class="progress-bar-container"><div id="progress-bar" class="progress-bar"></div></div></div>
+            <div class="w-full flex flex-col items-center">
+                <div class="flex items-center gap-4 mb-8"><h3 id="question-text" class="text-4xl md:text-5xl font-bold text-gray-800"></h3><button id="speak-question-btn" class="speaker-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button></div>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md"></div>
+                <div id="control-buttons" class="mt-8 text-center"><button id="check-answer-btn" class="bg-blue-500 text-white font-bold py-3 px-8 rounded-full">檢核答案</button><button id="next-question-btn" class="hidden bg-teal-500 text-white font-bold py-3 px-8 rounded-full">下一題</button></div>
+            </div>
+        </div>
+        <div id="result-container" class="hidden text-center main-container p-8 relative">
+            <button id="result-leaderboard-btn" class="absolute top-4 right-4 bg-amber-400 text-amber-900 font-bold py-2 px-4 rounded-full shadow hover:bg-amber-500">🏆 排行榜</button>
+            <h2 class="text-4xl font-bold text-teal-700 mb-4">測驗完成！</h2>
+            <p class="text-xl text-gray-600 mb-2">答對題數：<span id="correct-count" class="font-bold"></span></p>
+            <p class="text-xl text-gray-600 mb-2">剩餘時間：<span id="time-left-display" class="font-bold"></span></p>
+            <p id="final-score" class="text-6xl font-extrabold text-teal-500 mb-8"></p>
+            <div id="result-buttons" class="flex flex-col sm:flex-row justify-center items-center gap-4"></div>
+        </div>
+    </div>
+    <div id="player-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold text-teal-800 mb-4">即將開始挑戰！</h2>
+            <p class="text-gray-600 mb-6">你有 7 分鐘的時間。<br>分數計算：答對一題得一分</p>
+            <input type="text" id="player-name-input" placeholder="請輸入名字" class="w-full border-2 border-teal-300 rounded-xl p-3 text-lg mb-6 text-center" maxlength="15">
+            <div class="flex gap-4 justify-center"><button id="cancel-start-btn" class="bg-gray-300 py-3 px-6 rounded-xl">取消</button><button id="confirm-start-btn" class="bg-teal-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg">開始計時</button></div>
+        </div>
+    </div>
+    <div id="leaderboard-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 relative">
+            <button id="close-leaderboard-btn" class="absolute top-4 right-4 text-3xl">&times;</button>
+            <h2 class="text-3xl font-bold text-amber-500 text-center mb-6">🏆 本地排行榜</h2>
+            <div class="bg-amber-50 rounded-xl p-4 min-h-[300px]"><table class="w-full text-left"><thead><tr><th class="py-2 pl-2">名次</th><th class="py-2">玩家</th><th class="py-2 text-right pr-2">分數</th></tr></thead><tbody id="leaderboard-body"></tbody></table><p id="no-record-msg" class="text-center text-gray-500 mt-10 hidden">尚無紀錄</p></div>
+            <div class="mt-6 text-center"><button id="clear-leaderboard-btn" class="text-sm text-gray-400 hover:text-red-500 underline">清除紀錄</button></div>
+        </div>
+    </div>
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"><div class="bg-white p-8 rounded-lg shadow-xl text-center"><p id="export-status" class="text-lg font-semibold text-gray-800">產生 PDF...</p></div></div>
+    <div id="export-render-container" style="position: absolute; left: -9999px; top: -9999px;"></div>
+    <script>
+        const vocabulary = [
+            { chinese: '其他', english: 'else' }, { chinese: '請客；款待', english: 'treat' }, { chinese: '甜美的；甜的', english: 'sweet' }, { chinese: '熱的', english: 'hot' }, { chinese: '巧克力', english: 'chocolate' }, { chinese: '元', english: 'dollar' }, { chinese: '內用', english: 'for here' }, { chinese: '外帶', english: 'to go' }, { chinese: '給你。', english: 'Here you are.' }, { chinese: '鮮豔的；明亮的', english: 'bright' }, { chinese: '黑的；暗的', english: 'dark' }, { chinese: '美術；藝術', english: 'art' }, { chinese: '牛奶', english: 'milk' }
+        ];
+        const previewContainer = document.getElementById('preview-container'); const wordList = document.getElementById('word-list'); const startQuizBtn = document.getElementById('start-quiz-btn'); const quizContainer = document.getElementById('quiz-container'); const resultContainer = document.getElementById('result-container'); const questionCounter = document.getElementById('question-counter'); const scoreCounter = document.getElementById('score-counter'); const questionText = document.getElementById('question-text'); const optionsContainer = document.getElementById('options-container'); const checkAnswerBtn = document.getElementById('check-answer-btn'); const nextQuestionBtn = document.getElementById('next-question-btn'); const speakQuestionBtn = document.getElementById('speak-question-btn'); const finalScore = document.getElementById('final-score'); const progressBar = document.getElementById('progress-bar'); const resultButtonsContainer = document.getElementById('result-buttons'); const loadingOverlay = document.getElementById('loading-overlay'); const exportStatus = document.getElementById('export-status'); const playerModal = document.getElementById('player-modal'); const playerNameInput = document.getElementById('player-name-input'); const confirmStartBtn = document.getElementById('confirm-start-btn'); const cancelStartBtn = document.getElementById('cancel-start-btn'); const currentPlayerDisplay = document.getElementById('current-player-display'); const timerDisplay = document.getElementById('timer-display'); const leaderboardModal = document.getElementById('leaderboard-modal'); const showLeaderboardBtn = document.getElementById('show-leaderboard-btn'); const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn'); const leaderboardBody = document.getElementById('leaderboard-body'); const noRecordMsg = document.getElementById('no-record-msg'); const clearLeaderboardBtn = document.getElementById('clear-leaderboard-btn'); const correctCountDisplay = document.getElementById('correct-count'); const timeLeftDisplay = document.getElementById('time-left-display');
+        const LEADERBOARD_KEY = 'vocab_leaderboard_G7S2U3_2'; const TIME_LIMIT = 7 * 60;
+        let shuffledQuestions = []; let currentQuestionIndex = 0; let score = 0; let attempts = 0; let selectedButton = null; let synth = window.speechSynthesis; let incorrectlyAnswered = []; let quizWords = []; let timeRemaining = TIME_LIMIT; let timerInterval; let currentPlayerName = ''; let currentQuizMode = 'all';
+        function speak(text, lang) { if (synth.speaking) synth.cancel(); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = lang; utterance.rate = 0.9; synth.speak(utterance); }
+        function shuffleArray(array) { return array.sort(() => Math.random() - 0.5); }
+        function formatTime(seconds) { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); return `${m}:${s}`; }
+        function updateTimerDisplay() { timerDisplay.textContent = formatTime(timeRemaining); if (timeRemaining <= 60) { timerDisplay.parentElement.classList.add('bg-red-500', 'text-white', 'animate-pulse'); } else { timerDisplay.parentElement.classList.add('bg-rose-100', 'text-rose-500'); } }
+        function startTimer() { clearInterval(timerInterval); timeRemaining = TIME_LIMIT; updateTimerDisplay(); timerInterval = setInterval(() => { timeRemaining--; updateTimerDisplay(); if (timeRemaining <= 0) { clearInterval(timerInterval); showResults(); } }, 1000); }
+        function stopTimer() { clearInterval(timerInterval); }
+        function getLeaderboard() { const data = localStorage.getItem(LEADERBOARD_KEY); return data ? JSON.parse(data) : []; }
+        function saveToLeaderboard(name, totalScore) { const leaderboard = getLeaderboard(); const timestamp = new Date().toLocaleString('zh-TW'); leaderboard.push({ name, score: totalScore, date: timestamp }); leaderboard.sort((a, b) => b.score - a.score); const top10 = leaderboard.slice(0, 10); localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(top10)); }
+        function renderLeaderboard() { const leaderboard = getLeaderboard(); leaderboardBody.innerHTML = ''; if (leaderboard.length === 0) noRecordMsg.classList.remove('hidden'); else { noRecordMsg.classList.add('hidden'); leaderboard.forEach((entry, index) => { const tr = document.createElement('tr'); tr.className = 'border-b border-amber-100 hover:bg-amber-100 transition-colors'; let medal = index + 1; if (index === 0) medal = '🥇'; else if (index === 1) medal = '🥈'; else if (index === 2) medal = '🥉'; tr.innerHTML = `<td class="py-3 pl-2 font-bold">${medal}</td><td class="py-3 font-semibold">${entry.name}</td><td class="py-3 text-right pr-2 font-bold text-teal-600">${entry.score}</td>`; leaderboardBody.appendChild(tr); }); } }
+        function showLeaderboard() { renderLeaderboard(); leaderboardModal.classList.remove('hidden'); }
+        function hideLeaderboard() { leaderboardModal.classList.add('hidden'); }
+        function showPreview() { previewContainer.classList.remove('hidden'); quizContainer.classList.add('hidden'); resultContainer.classList.add('hidden'); wordList.innerHTML = ''; quizWords = [...vocabulary]; quizWords.forEach(word => { const item = document.createElement('div'); item.className = 'word-preview-item'; item.innerHTML = `<p class="font-bold text-lg text-teal-800">${word.english}</p><p class="text-gray-600">${word.chinese}</p>`; item.addEventListener('click', () => { const utteranceEn = new SpeechSynthesisUtterance(word.english); utteranceEn.lang = 'en-US'; const utteranceZh = new SpeechSynthesisUtterance(word.chinese); utteranceZh.lang = 'zh-TW'; utteranceEn.onend = () => { setTimeout(() => synth.speak(utteranceZh), 200); }; synth.cancel(); synth.speak(utteranceEn); }); wordList.appendChild(item); }); }
+        function promptPlayerName(mode = 'all') { currentQuizMode = mode; playerModal.classList.remove('hidden'); playerNameInput.value = localStorage.getItem('vocab_last_player') || ''; playerNameInput.focus(); }
+        function beginQuizSequence() { const name = playerNameInput.value.trim() || '無名英雄'; currentPlayerName = name; localStorage.setItem('vocab_last_player', name); currentPlayerDisplay.textContent = name; playerModal.classList.add('hidden'); startQuiz(currentQuizMode); }
+        function startQuiz(mode) { previewContainer.classList.add('hidden'); quizContainer.classList.remove('hidden'); resultContainer.classList.add('hidden'); if (mode === 'incorrect' && incorrectlyAnswered.length > 0) shuffledQuestions = shuffleArray([...incorrectlyAnswered]); else shuffledQuestions = shuffleArray([...quizWords]); score = 0; incorrectlyAnswered = []; currentQuestionIndex = 0; scoreCounter.textContent = `答對: ${score}`; startTimer(); loadQuestion(); }
+        function loadQuestion() { attempts = 0; selectedButton = null; optionsContainer.innerHTML = ''; checkAnswerBtn.classList.remove('hidden'); nextQuestionBtn.classList.add('hidden'); if (currentQuestionIndex >= shuffledQuestions.length) { showResults(); return; } const progressPercentage = (currentQuestionIndex / shuffledQuestions.length) * 100; progressBar.style.width = `${progressPercentage}%`; const currentQuestion = shuffledQuestions[currentQuestionIndex]; questionCounter.textContent = `問題 ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`; questionText.textContent = currentQuestion.chinese; speak(currentQuestion.chinese, 'zh-TW'); let options = [{...currentQuestion}]; let tempVocab = [...vocabulary].filter(v => v.english !== currentQuestion.english); while (options.length < 4 && tempVocab.length > 0) { const randomIndex = Math.floor(Math.random() * tempVocab.length); options.push(tempVocab[randomIndex]); tempVocab.splice(randomIndex, 1); } shuffleArray(options).forEach(opt => { const button = document.createElement('button'); button.classList.add('option-btn', 'p-4', 'text-lg', 'font-semibold', 'rounded-xl', 'w-full'); button.textContent = opt.english; button.onclick = () => { if (button.disabled) return; document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected')); button.classList.add('selected'); selectedButton = button; }; optionsContainer.appendChild(button); }); }
+        function checkAnswer() { if (!selectedButton) return; attempts++; const allButtons = Array.from(optionsContainer.children); const currentQuestion = shuffledQuestions[currentQuestionIndex]; const correctAnswer = currentQuestion.english; if (selectedButton.textContent === correctAnswer) { if (attempts === 1) { score++; scoreCounter.textContent = `答對: ${score}`; } selectedButton.classList.add('correct'); speak('Correct', 'en-US'); allButtons.forEach(btn => btn.disabled = true); checkAnswerBtn.classList.add('hidden'); nextQuestionBtn.classList.remove('hidden'); } else { if (attempts === 1) { selectedButton.style.visibility = 'hidden'; if (!incorrectlyAnswered.some(q => q.english === currentQuestion.english)) incorrectlyAnswered.push(currentQuestion); speak('Try again', 'en-US'); selectedButton = null; } else { selectedButton.classList.add('incorrect-reveal'); allButtons.forEach(btn => { btn.disabled = true; if (btn.textContent === correctAnswer) btn.classList.add('correct'); }); checkAnswerBtn.classList.add('hidden'); nextQuestionBtn.classList.remove('hidden'); } } }
+        function showResults() {
+            stopTimer();
+            progressBar.style.width = `100%`;
+            const totalQuestions = shuffledQuestions.length;
+            const finalScoreValue = score;
+            if (currentQuizMode === 'all') saveToLeaderboard(currentPlayerName, finalScoreValue);
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            correctCountDisplay.textContent = `${score} / ${totalQuestions}`;
+            timeLeftDisplay.textContent = `${timeRemaining} 秒`;
+            finalScore.textContent = finalScoreValue.toLocaleString();
+            resultButtonsContainer.innerHTML = '';
+            if (incorrectlyAnswered.length > 0) {
+                const redoBtn = document.createElement('button');
+                redoBtn.className = 'bg-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-lg';
+                redoBtn.textContent = `重做錯題 (${incorrectlyAnswered.length})`;
+                redoBtn.onclick = () => promptPlayerName('incorrect');
+                resultButtonsContainer.appendChild(redoBtn);
+            }
+            const restartBtn = document.createElement('button');
+            restartBtn.className = 'bg-teal-500 text-white font-bold py-3 px-8 rounded-full shadow-lg';
+            restartBtn.textContent = '全部重測';
+            restartBtn.onclick = () => promptPlayerName('all');
+            const backBtn = document.createElement('button');
+            backBtn.className = 'bg-gray-200 text-gray-700 font-bold py-3 px-8 rounded-full shadow-lg';
+            backBtn.textContent = '返回預覽';
+            backBtn.onclick = showPreview;
+            resultButtonsContainer.appendChild(restartBtn);
+            resultButtonsContainer.appendChild(backBtn);
+        }
+        function nextQuestion() { currentQuestionIndex++; loadQuestion(); }
+        startQuizBtn.onclick = () => promptPlayerName('all'); 
+        checkAnswerBtn.onclick = checkAnswer; 
+        nextQuestionBtn.onclick = nextQuestion; 
+        cancelStartBtn.onclick = () => playerModal.classList.add('hidden'); 
+        confirmStartBtn.onclick = beginQuizSequence; 
+        showLeaderboardBtn.onclick = showLeaderboard; 
+        document.getElementById('quiz-leaderboard-btn').onclick = showLeaderboard;
+        resultLeaderboardBtn.onclick = showLeaderboard;
+        closeLeaderboardBtn.onclick = hideLeaderboard;
+        clearLeaderboardBtn.onclick = () => {
+            if (confirm('確定要清除所有排行榜紀錄嗎？無法復原喔！')) {
+                localStorage.removeItem(LEADERBOARD_KEY);
+                renderLeaderboard();
+            }
+        };
+        document.addEventListener('DOMContentLoaded', showPreview);
+    </script>
+</body>
+</html>
