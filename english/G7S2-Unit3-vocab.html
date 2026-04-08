@@ -190,7 +190,32 @@
             resultButtonsContainer.appendChild(backBtn);
         }
         function nextQuestion() { currentQuestionIndex++; loadQuestion(); }
-        async function handleDownload() { loadingOverlay.classList.remove('hidden'); setTimeout(async () => { try { const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4'); doc.text(document.title, 105, 15, { align: 'center' }); doc.save('G7S2-Unit3-Vocab-Quiz-1.pdf'); } catch (e) { exportStatus.textContent = '產生失敗!'; } finally { loadingOverlay.classList.add('hidden'); } }, 100); }
+        async function handleDownload() {
+            loadingOverlay.classList.remove('hidden');
+            exportStatus.textContent = '產生 PDF...';
+            setTimeout(async () => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const pageW = doc.internal.pageSize.getWidth();
+                    const pageH = doc.internal.pageSize.getHeight();
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Unit 3 Vocabulary Quiz (1-13)', pageW / 2, 15, { align: 'center' });
+                    const canvas = await html2canvas(wordList, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgW = pageW - 20;
+                    const imgH = (canvas.height * imgW) / canvas.width;
+                    doc.addImage(imgData, 'PNG', 10, 22, imgW, Math.min(imgH, pageH - 30));
+                    doc.save('G7S2-Unit3-Vocab-Quiz-1.pdf');
+                } catch (e) {
+                    exportStatus.textContent = '產生失敗! ' + e.message;
+                    setTimeout(() => loadingOverlay.classList.add('hidden'), 2000);
+                    return;
+                }
+                loadingOverlay.classList.add('hidden');
+            }, 200);
+        }
         startQuizBtn.onclick = () => promptPlayerName('all'); 
         downloadBtn.onclick = handleDownload; 
         checkAnswerBtn.onclick = checkAnswer; 

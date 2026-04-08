@@ -36,6 +36,7 @@
              <div id="word-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8"></div>
              <div class="text-center flex flex-col sm:flex-row gap-4 justify-center">
                 <button id="start-quiz-btn" class="bg-teal-500 text-white font-bold py-4 px-10 text-xl rounded-full shadow-xl hover:scale-110">開始測驗</button>
+                 <button id="download-btn" class="bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:scale-105">下載測驗卷 (PDF)</button>
              </div>
         </div>
         <div id="quiz-container" class="hidden main-container p-6 md:p-8">
@@ -78,11 +79,13 @@
             <div class="mt-6 text-center"><button id="clear-leaderboard-btn" class="text-sm text-gray-400 hover:text-red-500 underline">清除紀錄</button></div>
         </div>
     </div>
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"><div class="bg-white p-8 rounded-lg shadow-xl text-center"><p id="export-status" class="text-lg font-semibold text-gray-800">產生 PDF...</p></div></div>
+    <div id="export-render-container" style="position: absolute; left: -9999px; top: -9999px;"></div>
     <script>
         const vocabulary = [
             { chinese: '漢堡', english: 'hamburger' }, { chinese: '雞肉飯', english: 'chicken rice' }, { chinese: '茶', english: 'tea' }, { chinese: '冰淇淋', english: 'ice cream' }, { chinese: '湯', english: 'soup' }, { chinese: '三明治', english: 'sandwich' }, { chinese: '作品', english: 'work' }, { chinese: '表現；秀出', english: 'show' }, { chinese: '部分', english: 'part' }, { chinese: '天空', english: 'sky' }, { chinese: '街道', english: 'street' }, { chinese: '被；由', english: 'by' }
         ];
-        const previewContainer = document.getElementById('preview-container'); const wordList = document.getElementById('word-list'); const startQuizBtn = document.getElementById('start-quiz-btn'); const quizContainer = document.getElementById('quiz-container'); const resultContainer = document.getElementById('result-container'); const questionCounter = document.getElementById('question-counter'); const scoreCounter = document.getElementById('score-counter'); const questionText = document.getElementById('question-text'); const optionsContainer = document.getElementById('options-container'); const checkAnswerBtn = document.getElementById('check-answer-btn'); const nextQuestionBtn = document.getElementById('next-question-btn'); const speakQuestionBtn = document.getElementById('speak-question-btn'); const finalScore = document.getElementById('final-score'); const progressBar = document.getElementById('progress-bar'); const resultButtonsContainer = document.getElementById('result-buttons'); const playerModal = document.getElementById('player-modal'); const playerNameInput = document.getElementById('player-name-input'); const confirmStartBtn = document.getElementById('confirm-start-btn'); const cancelStartBtn = document.getElementById('cancel-start-btn'); const currentPlayerDisplay = document.getElementById('current-player-display'); const timerDisplay = document.getElementById('timer-display'); const leaderboardModal = document.getElementById('leaderboard-modal'); const showLeaderboardBtn = document.getElementById('show-leaderboard-btn'); const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn'); const leaderboardBody = document.getElementById('leaderboard-body'); const noRecordMsg = document.getElementById('no-record-msg'); const clearLeaderboardBtn = document.getElementById('clear-leaderboard-btn'); const correctCountDisplay = document.getElementById('correct-count'); const timeLeftDisplay = document.getElementById('time-left-display');
+        const previewContainer = document.getElementById('preview-container'); const wordList = document.getElementById('word-list'); const startQuizBtn = document.getElementById('start-quiz-btn'); const downloadBtn = document.getElementById('download-btn'); const quizContainer = document.getElementById('quiz-container'); const resultContainer = document.getElementById('result-container'); const questionCounter = document.getElementById('question-counter'); const scoreCounter = document.getElementById('score-counter'); const questionText = document.getElementById('question-text'); const optionsContainer = document.getElementById('options-container'); const checkAnswerBtn = document.getElementById('check-answer-btn'); const nextQuestionBtn = document.getElementById('next-question-btn'); const speakQuestionBtn = document.getElementById('speak-question-btn'); const finalScore = document.getElementById('final-score'); const progressBar = document.getElementById('progress-bar'); const resultButtonsContainer = document.getElementById('result-buttons'); const loadingOverlay = document.getElementById('loading-overlay'); const exportStatus = document.getElementById('export-status'); const playerModal = document.getElementById('player-modal'); const playerNameInput = document.getElementById('player-name-input'); const confirmStartBtn = document.getElementById('confirm-start-btn'); const cancelStartBtn = document.getElementById('cancel-start-btn'); const currentPlayerDisplay = document.getElementById('current-player-display'); const timerDisplay = document.getElementById('timer-display'); const leaderboardModal = document.getElementById('leaderboard-modal'); const showLeaderboardBtn = document.getElementById('show-leaderboard-btn'); const resultLeaderboardBtn = document.getElementById('result-leaderboard-btn'); const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn'); const leaderboardBody = document.getElementById('leaderboard-body'); const noRecordMsg = document.getElementById('no-record-msg'); const clearLeaderboardBtn = document.getElementById('clear-leaderboard-btn'); const correctCountDisplay = document.getElementById('correct-count'); const timeLeftDisplay = document.getElementById('time-left-display');
         const LEADERBOARD_KEY = 'vocab_leaderboard_G7S2U3_3'; const TIME_LIMIT = 7 * 60;
         let shuffledQuestions = []; let currentQuestionIndex = 0; let score = 0; let attempts = 0; let selectedButton = null; let synth = window.speechSynthesis; let incorrectlyAnswered = []; let quizWords = []; let timeRemaining = TIME_LIMIT; let timerInterval; let currentPlayerName = ''; let currentQuizMode = 'all';
         function speak(text, lang) { if (synth.speaking) synth.cancel(); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = lang; utterance.rate = 0.9; synth.speak(utterance); }
@@ -126,10 +129,41 @@
             restartBtn.textContent = '全部重測';
             restartBtn.onclick = () => promptPlayerName('all');
             resultButtonsContainer.appendChild(restartBtn);
-            const quizLeaderboardBtn = document.getElementById('quiz-leaderboard-btn');
+            const backBtn = document.createElement('button');
+            backBtn.className = 'bg-gray-200 text-gray-700 font-bold py-3 px-8 rounded-full shadow-lg';
+            backBtn.textContent = '返回預覽';
+            backBtn.onclick = showPreview;
+            resultButtonsContainer.appendChild(backBtn);
         }
         function nextQuestion() { currentQuestionIndex++; loadQuestion(); }
-        startQuizBtn.onclick = () => promptPlayerName('all'); 
+        async function handleDownload() {
+            loadingOverlay.classList.remove('hidden');
+            exportStatus.textContent = '產生 PDF...';
+            setTimeout(async () => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const pageW = doc.internal.pageSize.getWidth();
+                    const pageH = doc.internal.pageSize.getHeight();
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Unit 3 Vocabulary Quiz (27-38)', pageW / 2, 15, { align: 'center' });
+                    const canvas = await html2canvas(wordList, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgW = pageW - 20;
+                    const imgH = (canvas.height * imgW) / canvas.width;
+                    doc.addImage(imgData, 'PNG', 10, 22, imgW, Math.min(imgH, pageH - 30));
+                    doc.save('G7S2-Unit3-Vocab-Quiz-3.pdf');
+                } catch (e) {
+                    exportStatus.textContent = '產生失敗! ' + e.message;
+                    setTimeout(() => loadingOverlay.classList.add('hidden'), 2000);
+                    return;
+                }
+                loadingOverlay.classList.add('hidden');
+            }, 200);
+        }
+        startQuizBtn.onclick = () => promptPlayerName('all');
+        downloadBtn.onclick = handleDownload;
         checkAnswerBtn.onclick = checkAnswer; 
         nextQuestionBtn.onclick = () => { currentQuestionIndex++; loadQuestion(); }; 
         cancelStartBtn.onclick = () => playerModal.classList.add('hidden'); 

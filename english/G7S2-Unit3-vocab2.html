@@ -85,7 +85,7 @@
         const vocabulary = [
             { chinese: '其他', english: 'else' }, { chinese: '請客；款待', english: 'treat' }, { chinese: '甜美的；甜的', english: 'sweet' }, { chinese: '熱的', english: 'hot' }, { chinese: '巧克力', english: 'chocolate' }, { chinese: '元', english: 'dollar' }, { chinese: '內用', english: 'for here' }, { chinese: '外帶', english: 'to go' }, { chinese: '給你。', english: 'Here you are.' }, { chinese: '鮮豔的；明亮的', english: 'bright' }, { chinese: '黑的；暗的', english: 'dark' }, { chinese: '美術；藝術', english: 'art' }, { chinese: '牛奶', english: 'milk' }
         ];
-        const previewContainer = document.getElementById('preview-container'); const wordList = document.getElementById('word-list'); const startQuizBtn = document.getElementById('start-quiz-btn'); const quizContainer = document.getElementById('quiz-container'); const resultContainer = document.getElementById('result-container'); const questionCounter = document.getElementById('question-counter'); const scoreCounter = document.getElementById('score-counter'); const questionText = document.getElementById('question-text'); const optionsContainer = document.getElementById('options-container'); const checkAnswerBtn = document.getElementById('check-answer-btn'); const nextQuestionBtn = document.getElementById('next-question-btn'); const speakQuestionBtn = document.getElementById('speak-question-btn'); const finalScore = document.getElementById('final-score'); const progressBar = document.getElementById('progress-bar'); const resultButtonsContainer = document.getElementById('result-buttons'); const loadingOverlay = document.getElementById('loading-overlay'); const exportStatus = document.getElementById('export-status'); const playerModal = document.getElementById('player-modal'); const playerNameInput = document.getElementById('player-name-input'); const confirmStartBtn = document.getElementById('confirm-start-btn'); const cancelStartBtn = document.getElementById('cancel-start-btn'); const currentPlayerDisplay = document.getElementById('current-player-display'); const timerDisplay = document.getElementById('timer-display'); const leaderboardModal = document.getElementById('leaderboard-modal'); const showLeaderboardBtn = document.getElementById('show-leaderboard-btn'); const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn'); const leaderboardBody = document.getElementById('leaderboard-body'); const noRecordMsg = document.getElementById('no-record-msg'); const clearLeaderboardBtn = document.getElementById('clear-leaderboard-btn'); const correctCountDisplay = document.getElementById('correct-count'); const timeLeftDisplay = document.getElementById('time-left-display');
+        const previewContainer = document.getElementById('preview-container'); const wordList = document.getElementById('word-list'); const startQuizBtn = document.getElementById('start-quiz-btn'); const downloadBtn = document.getElementById('download-btn'); const quizContainer = document.getElementById('quiz-container'); const resultContainer = document.getElementById('result-container'); const questionCounter = document.getElementById('question-counter'); const scoreCounter = document.getElementById('score-counter'); const questionText = document.getElementById('question-text'); const optionsContainer = document.getElementById('options-container'); const checkAnswerBtn = document.getElementById('check-answer-btn'); const nextQuestionBtn = document.getElementById('next-question-btn'); const speakQuestionBtn = document.getElementById('speak-question-btn'); const finalScore = document.getElementById('final-score'); const progressBar = document.getElementById('progress-bar'); const resultButtonsContainer = document.getElementById('result-buttons'); const loadingOverlay = document.getElementById('loading-overlay'); const exportStatus = document.getElementById('export-status'); const playerModal = document.getElementById('player-modal'); const playerNameInput = document.getElementById('player-name-input'); const confirmStartBtn = document.getElementById('confirm-start-btn'); const cancelStartBtn = document.getElementById('cancel-start-btn'); const currentPlayerDisplay = document.getElementById('current-player-display'); const timerDisplay = document.getElementById('timer-display'); const leaderboardModal = document.getElementById('leaderboard-modal'); const showLeaderboardBtn = document.getElementById('show-leaderboard-btn'); const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn'); const leaderboardBody = document.getElementById('leaderboard-body'); const noRecordMsg = document.getElementById('no-record-msg'); const clearLeaderboardBtn = document.getElementById('clear-leaderboard-btn'); const correctCountDisplay = document.getElementById('correct-count'); const timeLeftDisplay = document.getElementById('time-left-display');
         const LEADERBOARD_KEY = 'vocab_leaderboard_G7S2U3_2'; const TIME_LIMIT = 7 * 60;
         let shuffledQuestions = []; let currentQuestionIndex = 0; let score = 0; let attempts = 0; let selectedButton = null; let synth = window.speechSynthesis; let incorrectlyAnswered = []; let quizWords = []; let timeRemaining = TIME_LIMIT; let timerInterval; let currentPlayerName = ''; let currentQuizMode = 'all';
         function speak(text, lang) { if (synth.speaking) synth.cancel(); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = lang; utterance.rate = 0.9; synth.speak(utterance); }
@@ -136,7 +136,34 @@
             resultButtonsContainer.appendChild(backBtn);
         }
         function nextQuestion() { currentQuestionIndex++; loadQuestion(); }
-        startQuizBtn.onclick = () => promptPlayerName('all'); 
+        async function handleDownload() {
+            loadingOverlay.classList.remove('hidden');
+            exportStatus.textContent = '產生 PDF...';
+            setTimeout(async () => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const pageW = doc.internal.pageSize.getWidth();
+                    const pageH = doc.internal.pageSize.getHeight();
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Unit 3 Vocabulary Quiz (14-26)', pageW / 2, 15, { align: 'center' });
+                    const canvas = await html2canvas(wordList, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgW = pageW - 20;
+                    const imgH = (canvas.height * imgW) / canvas.width;
+                    doc.addImage(imgData, 'PNG', 10, 22, imgW, Math.min(imgH, pageH - 30));
+                    doc.save('G7S2-Unit3-Vocab-Quiz-2.pdf');
+                } catch (e) {
+                    exportStatus.textContent = '產生失敗! ' + e.message;
+                    setTimeout(() => loadingOverlay.classList.add('hidden'), 2000);
+                    return;
+                }
+                loadingOverlay.classList.add('hidden');
+            }, 200);
+        }
+        startQuizBtn.onclick = () => promptPlayerName('all');
+        downloadBtn.onclick = handleDownload;
         checkAnswerBtn.onclick = checkAnswer; 
         nextQuestionBtn.onclick = nextQuestion; 
         cancelStartBtn.onclick = () => playerModal.classList.add('hidden'); 
