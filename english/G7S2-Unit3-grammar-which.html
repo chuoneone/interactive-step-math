@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G7S2 Unit 3 Grammar Focus - Which 問句</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #3b82f6;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+        body {
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #1f2937;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .exercise-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .word-item {
+            display: inline-block;
+            font-family: 'Nunito', sans-serif;
+            padding: 0.4rem 1rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            color: #374151;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 0 #e5e7eb;
+            font-size: 1.1rem;
+            margin: 4px;
+            touch-action: manipulation;
+        }
+        .word-item:active { transform: translateY(2px); box-shadow: none; background-color: #eff6ff; }
+        .word-item:hover { border-color: var(--secondary-color); color: var(--secondary-color); }
+        
+        .static-word {
+            display: inline-flex;
+            align-items: center;
+            font-size: 1.25rem;
+            margin: 2px 4px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .blank-slot {
+            display: inline-flex;
+            min-width: 60px;
+            height: 48px;
+            margin: 4px;
+            background-color: #f8fafc;
+            border: 2px dashed #94a3b8;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .blank-slot.has-item {
+            border-style: solid;
+            border-color: var(--secondary-color);
+            background-color: #eff6ff;
+        }
+        
+        .word-item.in-slot {
+            margin: 0;
+            padding: 0.2rem 0.5rem;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        .word-item.in-slot:hover {
+            color: var(--secondary-color);
+        }
+        .word-item.in-slot:active {
+            transform: none;
+        }
+
+        .btn-action { transition: all 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
+        .speaker-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 50%;
+            background-color: #e0e7ff; color: var(--primary-color);
+            margin-left: 8px; cursor: pointer; vertical-align: middle;
+        }
+        .speaker-btn:hover { background-color: var(--primary-color); color: white; }
+        #tooltip {
+            position: fixed; pointer-events: none; z-index: 1000;
+            background: #1f2937; color: white; padding: 6px 12px;
+            border-radius: 6px; font-size: 0.875rem; display: none;
+            transform: translate(-50%, -120%); white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #tooltip::after {
+            content: ''; position: absolute; top: 100%; left: 50%;
+            margin-left: -5px; border-width: 5px; border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        .checkmark-wrapper { width: 120px; height: 120px; margin: 0 auto; }
+        .checkmark {
+            width: 120px; height: 120px; border-radius: 50%; display: block;
+            stroke-width: 4; stroke: #fff; stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #10b981;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        .checkmark__check {
+            transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 80px #10b981; } }
+        .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: confetti-fall 3s linear forwards; }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Local confetti for card */
+        @keyframes local-confetti {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(720deg); opacity: 0; }
+        }
+        .local-confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 pb-12">
+
+    <div id="tooltip"></div>
+
+    <div id="completion-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-500">
+        <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl text-center transform scale-90 transition-transform duration-500 max-w-md w-full mx-4 relative overflow-hidden" id="completion-modal">
+            <div class="checkmark-wrapper mb-6">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-2 animate-bounce">太棒了！</h2>
+            <p class="text-gray-600 text-lg mb-8">你已經完成了所有的練習題！</p>
+            <div class="flex gap-4">
+                <button onclick="closeOverlay()" class="w-full bg-indigo-600 text-white text-lg px-4 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg transform hover:scale-105 active:scale-95">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-2">
+        <header class="text-center mb-10 mt-6">
+            <div class="inline-block p-1 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 mb-4">
+                <div class="bg-white rounded-full px-6 py-2">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-600 font-bold tracking-wide uppercase text-sm">Grammar Fill-in</span>
+                </div>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">Unit 3 Grammar Focus</h1>
+            <p class="text-lg text-gray-600 font-medium">Which問句 拖曳填空練習 (搭配課本 p.53-54)</p>
+            
+            <div class="mt-6 max-w-xs mx-auto">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-500 ease-out" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 text-center" id="progress-text">完成進度: 0/0</p>
+            </div>
+        </header>
+
+        <!-- 解題秘笈 -->
+        <div class="bg-amber-50 border-l-4 border-amber-400 p-5 rounded-xl shadow-sm mb-8">
+            <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                解題秘笈：這格要填什麼？
+            </h3>
+            <ul class="space-y-4 text-gray-700 font-medium text-sm sm:text-base">
+                <li class="flex items-start gap-3">
+                    <span class="bg-amber-200 text-amber-800 rounded-full px-2.5 py-0.5 font-bold mt-0.5">1</span>
+                    <div>
+                        <strong class="text-indigo-600 font-extrabold text-lg">do / does</strong> 要加在哪？<br>
+                        放在主詞 (例如 Henry, you) 的<span class="text-red-500 font-bold mx-1">前面</span>！<br>
+                        <span class="text-gray-500 text-sm">👉 遇到 單數/三單 (Henry / Sherry) 時要用 <strong class="text-indigo-500">does</strong>，遇到 you / 複數 時用 <strong class="text-indigo-500">do</strong>。</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="bg-amber-200 text-amber-800 rounded-full px-2.5 py-0.5 font-bold mt-0.5">2</span>
+                    <div>
+                        <strong class="text-indigo-600 font-extrabold text-lg">逗號 ( , )</strong> 要加在哪？<br>
+                        放在<span class="text-red-500 font-bold mx-1">第一個選項的前面</span>！<br>
+                        <span class="text-gray-500 text-sm">👉 例如選出喜歡的飲料，要在開始選擇的第一個選項 coffee 前面加逗號（<strong class="text-indigo-500">,</strong> coffee or juice）。</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="bg-amber-200 text-amber-800 rounded-full px-2.5 py-0.5 font-bold mt-0.5">3</span>
+                    <div>
+                        <strong class="text-indigo-600 font-extrabold text-lg">or</strong> 要加在哪？<br>
+                        放在<span class="text-red-500 font-bold mx-1">最後兩個選項之間</span>！<br>
+                        <span class="text-gray-500 text-sm">👉 例如：A or B？ / A, B or C？ (coffee <strong class="text-indigo-500">or</strong> juice)</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 區塊渲染區 -->
+        <div id="exercise-sections">
+            <div id="section-1-wrapper" class="mb-12 hidden">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">1</span>
+                    <h2 class="text-xl font-bold text-gray-800" id="section-1-title">依提示完成造句 (點擊下方提示詞填空)</h2>
+                </div>
+                <!-- 例句 -->
+                <div class="bg-indigo-50 p-4 sm:p-6 rounded-xl mb-6 shadow-sm border border-indigo-100 relative">
+                    <span class="absolute top-0 right-0 bg-indigo-200 text-indigo-800 text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl">例題提示</span>
+                    <div class="font-bold text-indigo-700 text-lg mb-2">Which / you / like / chicken / fish</div>
+                    <div class="text-gray-800 font-bold text-lg flex flex-wrap items-center gap-2">
+                        ➔ Which <span class="bg-yellow-200 px-1 border-b-2 border-indigo-500 rounded">do</span> you like<span class="bg-yellow-200 px-1 border-b-2 border-indigo-500 rounded">,</span> chicken <span class="bg-yellow-200 px-1 border-b-2 border-indigo-500 rounded">or</span> fish?
+                    </div>
+                </div>
+                <div id="container-section-1" class="space-y-6"></div>
+            </div>
+
+            <div id="section-2-wrapper" class="mb-12 hidden">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">2</span>
+                    <h2 class="text-xl font-bold text-gray-800" id="section-2-title">請依提示作答 (點擊下方提示詞填空)</h2>
+                </div>
+                <div id="container-section-2" class="space-y-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dictionary = {
+            'Which': '哪一個', 'does': '助動詞', 'Henry': '亨利', 'want': '想要',
+            'coffee': '咖啡', 'or': '或', 'juice': '果汁', 'Sherry': '雪莉',
+            'like': '喜歡', 'to': '去', 'play': '玩/彈奏', 'the': '這/那', 'piano': '鋼琴',
+            'guitar': '吉他', 'painting': '畫作', 'do': '助動詞', 'you': '你',
+            'Sunflowers': '向日葵', 'The': '這/那', 'Mona': '蒙娜', 'Lisa': '麗莎',
+            'food': '食物', 'Gina': '吉娜', 'and': '和', 'Gary': '蓋瑞',
+            'sandwiches': '三明治', 'hamburgers': '漢堡', 'hot': '熱的', 'dogs': '狗(在此指熱狗)',
+            'Kelly': '凱莉', 'likes': '喜歡', 'tea': '茶', 'I': '我', 'have': '吃/有',
+            'a': '一個', 'hamburger': '漢堡', 'coke': '可樂', 'for': '當作', 'dinner': '晚餐',
+            ',': '，', '.': '。', '?': '？'
+        };
+
+        const exercises = [
+            {
+                id: 's1q1', section: 1,
+                prompt: '1. Which / Henry / want / coffee / juice',
+                sentence: 'Which [does] Henry want [,] coffee [or] juice ?'
+            },
+            {
+                id: 's1q2', section: 1,
+                prompt: '2. Which / Sherry / like to play / the piano / the guitar?',
+                sentence: 'Which [does] Sherry like to play [,] the piano [or] the guitar ?'
+            },
+            {
+                id: 's1q3', section: 1,
+                prompt: '3. Which painting / you / like / Sunflowers / The Mona Lisa?',
+                sentence: 'Which painting [do] you like [,] Sunflowers [or] The Mona Lisa ?'
+            },
+            {
+                id: 's1q4', section: 1,
+                prompt: '4. Which food / Gina and Gary / like / sandwiches / hamburgers / hot dogs?',
+                sentence: 'Which food [do] Gina and Gary like [,] sandwiches [,] hamburgers [or] hot dogs ?'
+            },
+            {
+                id: 's2q1', section: 2,
+                prompt: '1. Which does Kelly like, tea or coffee?（以coffee回答）',
+                sentence: '[Kelly] [likes] [coffee] [.]'
+            },
+            {
+                id: 's2q2', section: 2,
+                prompt: '2. What do you have for dinner? （以a hamburger and coke回答）',
+                sentence: '[I] [have] [a] [hamburger] [and] [coke] [for] [dinner] [.]'
+            }
+        ];
+
+        let completedCount = 0;
+        const totalCount = exercises.length;
+        const synth = window.speechSynthesis;
+
+        function speak(text, rate = 0.9) {
+            if (!text) return;
+            synth.cancel();
+            const cleanText = text.replace(/[.?]/g, '').replace(/(\d+)\s?a\.m\./gi, '$1 A M').replace(/(\d+)\s?p\.m\./gi, '$1 P M');
+            const utterThis = new SpeechSynthesisUtterance(cleanText);
+            utterThis.lang = 'en-US';
+            utterThis.rate = rate;
+            synth.speak(utterThis);
+        }
+
+        function renderApp() {
+            const hasS1 = exercises.some(ex => ex.section === 1);
+            const hasS2 = exercises.some(ex => ex.section === 2);
+            
+            if (hasS1) document.getElementById('section-1-wrapper').classList.remove('hidden');
+            if (hasS2) document.getElementById('section-2-wrapper').classList.remove('hidden');
+
+            const s1El = document.getElementById('container-section-1');
+            const s2El = document.getElementById('container-section-2');
+
+            document.getElementById('progress-text').innerText = `完成進度: 0/${totalCount}`;
+
+            exercises.forEach((ex) => {
+                const card = document.createElement('div');
+                card.className = 'exercise-card p-5 sm:p-6';
+                card.id = `card-${ex.id}`;
+                card.dataset.id = ex.id;
+
+                let promptHtml = `<span class="text-xl font-bold text-gray-800">${ex.prompt}</span>`;
+                
+                const speechText = ex.prompt.split('（')[0].split('(')[0].trim().replace(/\//g, ' ');
+                promptHtml += `
+                    <button class="speaker-btn speak-prompt" data-text="${speechText.replace(/"/g, '&quot;')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 pointer-events-none">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                        </svg>
+                    </button>`;
+
+                // Parse sentence into static words and blanks
+                const regex = /\[(.*?)\]/g;
+                let staticHtml = '';
+                const blanksList = [];
+                let match;
+                let lastIdx = 0;
+                let blankId = 0;
+
+                while ((match = regex.exec(ex.sentence)) !== null) {
+                    const beforeText = ex.sentence.substring(lastIdx, match.index).trim();
+                    if (beforeText) {
+                        beforeText.split(' ').forEach(w => {
+                            if(w) staticHtml += `<span class="static-word">${w}</span>`;
+                        });
+                    }
+                    blanksList.push(match[1]);
+                    staticHtml += `<div class="blank-slot" data-expected="${match[1]}" data-id="slot-${ex.id}-${blankId}"></div>`;
+                    blankId++;
+                    lastIdx = match.index + match[0].length;
+                }
+                const afterText = ex.sentence.substring(lastIdx).trim();
+                if (afterText) {
+                    afterText.split(' ').forEach(w => {
+                        if(w) staticHtml += `<span class="static-word">${w}</span>`;
+                    });
+                }
+                
+                const shuffledWords = [...blanksList].sort(() => Math.random() - 0.5);
+                const fullSentenceForHint = ex.sentence.replace(/\[|\]/g, '').replace(/\s+/g, ' ');
+
+                card.innerHTML = `
+                    <div class="mb-5 flex items-center flex-wrap">${promptHtml}</div>
+                    <div class="mb-4 sentence-zone flex flex-wrap items-center">
+                        ${staticHtml}
+                    </div>
+                    <div class="word-bank flex flex-wrap gap-2 mb-4 p-4 bg-gray-100 rounded-xl min-h-[72px]" id="bank-${ex.id}">
+                        ${shuffledWords.map(word => `<div class="word-item">${word}</div>`).join('')}
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 mt-4">
+                        <button class="btn-action check-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl shadow transition-colors text-sm sm:text-base flex-grow sm:flex-grow-0" data-id="${ex.id}">檢查答案</button>
+                        <button class="btn-action reset-btn bg-white hover:bg-gray-50 text-gray-600 border border-gray-300 font-bold py-2.5 px-4 rounded-xl transition-colors text-sm sm:text-base" data-id="${ex.id}">重置</button>
+                        <button class="btn-action hint-btn bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2.5 px-4 rounded-xl transition-colors flex items-center gap-2 text-sm sm:text-base ml-auto" data-text="${fullSentenceForHint.replace(/"/g, '&quot;')}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                            提示聽力
+                        </button>
+                    </div>
+                    <div class="feedback mt-3 h-8 text-base font-bold flex items-center"></div>
+                `;
+
+                if (ex.section === 1) s1El.appendChild(card);
+                else s2El.appendChild(card);
+            });
+        }
+
+        document.body.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('word-item')) {
+                const card = target.closest('.exercise-card');
+                if (!card) return;
+                const exId = card.dataset.id;
+                const bank = document.getElementById(`bank-${exId}`);
+
+                speak(target.innerText, 1.0);
+
+                if (target.parentElement === bank) {
+                    // Find first empty slot
+                    const emptySlot = card.querySelector('.blank-slot:not(.has-item)');
+                    if (emptySlot) {
+                        emptySlot.appendChild(target);
+                        emptySlot.classList.add('has-item');
+                        target.classList.add('in-slot');
+                    }
+                } else {
+                    // Move it back to bank
+                    const slot = target.parentElement;
+                    bank.appendChild(target);
+                    slot.classList.remove('has-item');
+                    target.classList.remove('in-slot');
+                }
+
+                // Clear feedback on word interaction
+                const feedbackEl = card.querySelector('.feedback');
+                feedbackEl.textContent = '';
+                card.classList.remove('bg-green-50', 'border-green-400', 'shadow-lg', 'scale-[1.01]');
+                return;
+            }
+            if (target.classList.contains('blank-slot')) {
+                // If clicked an empty slot, ignore. If it has a child, move it back.
+                const child = target.querySelector('.word-item');
+                if (child) {
+                    const card = target.closest('.exercise-card');
+                    const exId = card.dataset.id;
+                    const bank = document.getElementById(`bank-${exId}`);
+                    bank.appendChild(child);
+                    target.classList.remove('has-item');
+                    child.classList.remove('in-slot');
+                    card.querySelector('.feedback').textContent = '';
+                }
+                return;
+            }
+            if (target.classList.contains('check-btn')) { checkAnswer(target.dataset.id); return; }
+            if (target.classList.contains('reset-btn')) { resetQuestion(target.dataset.id); return; }
+            if (target.closest('.hint-btn')) { speak(target.closest('.hint-btn').dataset.text, 0.8); return; }
+            if (target.closest('.speak-prompt')) { speak(target.closest('.speak-prompt').dataset.text, 0.9); return; }
+        });
+
+        function shootLocalConfetti(parentEl) {
+            for(let i=0; i<20; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('local-confetti');
+                const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.style.top = '70%';
+                confetti.style.left = '50%';
+                
+                const tx = (Math.random() - 0.5) * 400;
+                const ty = (Math.random() - 1.0) * 300;
+                
+                confetti.style.setProperty('--tx', `${tx}px`);
+                confetti.style.setProperty('--ty', `${ty}px`);
+                
+                confetti.style.animation = `local-confetti ${0.6 + Math.random() * 0.4}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+                
+                parentEl.appendChild(confetti);
+                
+                setTimeout(() => {
+                    if (confetti.parentNode) confetti.remove();
+                }, 1000);
+            }
+        }
+
+        function showOverlay() {
+            const overlay = document.getElementById('completion-overlay');
+            const modal = document.getElementById('completion-modal');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modal.classList.remove('scale-90');
+                modal.classList.add('scale-100');
+                for(let i=0; i<50; i++) { createConfetti(overlay); }
+            }, 10);
+        }
+
+        window.closeOverlay = function() {
+            const overlay = document.getElementById('completion-overlay');
+            const modal = document.getElementById('completion-modal');
+            overlay.classList.add('opacity-0');
+            modal.classList.remove('scale-100');
+            modal.classList.add('scale-90');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                document.querySelectorAll('.confetti').forEach(c => c.remove());
+            }, 500);
+        }
+
+        function createConfetti(container) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            let durationFloat = parseFloat(confetti.style.animationDuration);
+            confetti.style.opacity = Math.random();
+            container.appendChild(confetti);
+            setTimeout(() => {
+                if (confetti.parentElement) confetti.remove();
+            }, durationFloat * 1000);
+        }
+
+        function checkAnswer(id) {
+            const card = document.getElementById(`card-${id}`);
+            const feedbackEl = card.querySelector('.feedback');
+            const slots = card.querySelectorAll('.blank-slot');
+            
+            let allCorrect = true;
+            let allFilled = true;
+
+            slots.forEach(slot => {
+                const item = slot.querySelector('.word-item');
+                if (!item) {
+                    allFilled = false;
+                    allCorrect = false;
+                    return;
+                }
+                const expected = slot.dataset.expected;
+                if (item.innerText !== expected) {
+                    allCorrect = false;
+                }
+            });
+
+            if (!allFilled) {
+                feedbackEl.innerHTML = '🤔 <span class="ml-2 text-amber-500 font-bold">還沒有排完喔！</span>';
+                return;
+            }
+
+            if (allCorrect) {
+                feedbackEl.innerHTML = '🎉 <span class="animate-pulse ml-2 text-green-600 font-extrabold text-lg">答對了！太棒了！</span>';
+                
+                card.classList.add('bg-green-50', 'border-green-400', 'shadow-lg', 'scale-[1.01]');
+                shootLocalConfetti(card);
+                
+                if (!card.dataset.completed) {
+                    card.dataset.completed = 'true';
+                    updateProgress(1);
+                }
+            } else {
+                feedbackEl.innerHTML = '🤔 <span class="ml-2 text-red-500 font-bold">似乎哪裡排錯了，點擊空格內的字可以退回。</span>';
+                setTimeout(() => card.classList.remove('bg-green-50', 'border-green-400', 'shadow-lg', 'scale-[1.01]'), 500);
+            }
+        }
+
+        function resetQuestion(id) {
+            const card = document.getElementById(`card-${id}`);
+            const bank = document.getElementById(`bank-${id}`);
+            const slots = card.querySelectorAll('.blank-slot');
+            
+            slots.forEach(slot => {
+                const item = slot.querySelector('.word-item');
+                if (item) {
+                    bank.appendChild(item);
+                    item.classList.remove('in-slot');
+                    slot.classList.remove('has-item');
+                }
+            });
+
+            const words = Array.from(bank.children);
+            words.sort(() => Math.random() - 0.5);
+            words.forEach(w => bank.appendChild(w));
+
+            const feedbackEl = card.querySelector('.feedback');
+            feedbackEl.textContent = '';
+            card.classList.remove('bg-green-50', 'border-green-400', 'shadow-lg', 'scale-[1.01]');
+            
+            if (card.dataset.completed) {
+                delete card.dataset.completed;
+                updateProgress(-1);
+            }
+        }
+
+        function updateProgress(change) {
+            completedCount += change;
+            completedCount = Math.max(0, Math.min(completedCount, totalCount));
+            const percentage = Math.round((completedCount / totalCount) * 100);
+            const bar = document.getElementById('progress-bar');
+            const text = document.getElementById('progress-text');
+            bar.style.width = `${percentage}%`;
+            text.textContent = `完成進度: ${completedCount}/${totalCount}`;
+
+            if (completedCount === totalCount) {
+                bar.classList.remove('from-indigo-500', 'to-blue-500');
+                bar.classList.add('from-green-400', 'to-emerald-500');
+                showOverlay();
+            } else if (completedCount < totalCount) {
+                bar.classList.add('from-indigo-500', 'to-blue-500');
+                bar.classList.remove('from-green-400', 'to-emerald-500');
+            }
+        }
+
+        const tooltip = document.getElementById('tooltip');
+        document.body.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('word-item')) {
+                const text = e.target.innerText.replace(/[.,?]/g, '').trim();
+                const translation = dictionary[text] || dictionary[text.toLowerCase()];
+                if (translation) {
+                    tooltip.textContent = translation;
+                    tooltip.style.display = 'block';
+                    const rect = e.target.getBoundingClientRect();
+                    tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                    tooltip.style.top = `${rect.top}px`;
+                }
+            }
+        });
+        document.body.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('word-item')) {
+                tooltip.style.display = 'none';
+            }
+        });
+
+        renderApp();
+    </script>
+</body>
+</html>
