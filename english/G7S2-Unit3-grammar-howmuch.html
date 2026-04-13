@@ -403,7 +403,7 @@
 
             // --- FUNCTIONS ---
 
-            function speak(text, rate = 0.9) {
+            function speak(text, rate = 0.7) {
                 if (!text) return;
                 synth.cancel();
                 const cleanText = text.replace(/[.?]/g, '')
@@ -493,7 +493,7 @@
                     const zone = document.getElementById(`zone-${subId}`);
                     const card = target.closest('.exercise-card');
 
-                    speak(target.innerText, 1.0);
+                    speak(target.innerText, 0.7);
 
                     if (target.parentElement === bank) {
                         zone.appendChild(target);
@@ -528,7 +528,7 @@
                 if (target.closest('.hint-btn')) {
                     const btn = target.closest('.hint-btn');
                     const text = btn.dataset.text;
-                    speak(text, 0.5);
+                    speak(text, 0.7);
                     return;
                 }
 
@@ -536,7 +536,7 @@
                 if (target.closest('.speak-prompt')) {
                     const btn = target.closest('.speak-prompt');
                     const text = btn.dataset.text;
-                    speak(text, 0.9);
+                    speak(text, 0.7);
                     return;
                 }
 
@@ -544,7 +544,7 @@
                 if (target.closest('.speak-q')) {
                     const btn = target.closest('.speak-q');
                     const text = btn.dataset.text;
-                    speak(text, 0.85);
+                    speak(text, 0.7);
                     return;
                 }
 
@@ -552,7 +552,7 @@
                 if (target.closest('.speak-a')) {
                     const btn = target.closest('.speak-a');
                     const text = btn.dataset.text;
-                    speak(text, 0.85);
+                    speak(text, 0.7);
                     return;
                 }
             });
