@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 3 互動測驗：Which & How Much</title>
+    <title>Unit 3 互動測驗：Which &amp; How Much</title>
     <link rel="icon" href="../images/dog.png" type="image/png">
 
     <style>
@@ -53,6 +53,28 @@
             margin-top: 5px;
         }
 
+        /* 進度條 */
+        .progress-bar-wrap {
+            background: #e0e6ef;
+            border-radius: 20px;
+            height: 10px;
+            margin: 10px 0 0;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #2ecc71);
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-label {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            text-align: right;
+            margin-top: 4px;
+        }
+
         .section-header {
             background: var(--primary);
             color: white;
@@ -97,9 +119,13 @@
             transition: 0.2s;
         }
 
-        .option-label:hover {
+        .option-label:hover:not(.disabled-label) {
             background-color: #f0f7ff;
             border-color: var(--primary);
+        }
+
+        .disabled-label {
+            cursor: default;
         }
 
         input[type="radio"] {
@@ -120,26 +146,57 @@
             color: #721c24;
         }
 
-        .footer {
-            margin-top: 40px;
-            text-align: center;
+        /* 逐題確認按鈕 */
+        .check-btn-wrap {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        #submit-btn {
+        .check-btn {
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.2em;
-            border-radius: 30px;
+            padding: 8px 22px;
+            font-size: 1em;
+            border-radius: 20px;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            transition: 0.25s;
+            box-shadow: 0 3px 10px rgba(74, 144, 226, 0.25);
         }
 
-        #submit-btn:hover {
+        .check-btn:hover {
             background-color: #357abd;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
+        }
+
+        .check-btn:disabled {
+            background-color: #b0c4de;
+            cursor: default;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback-inline {
+            font-size: 1em;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feedback-inline.show {
+            opacity: 1;
+        }
+
+        .feedback-inline.ok  { color: #27ae60; }
+        .feedback-inline.bad { color: #c0392b; }
+
+        /* 底部整體結果 */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
         }
 
         #result-display {
@@ -167,16 +224,27 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        #finish-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            font-size: 1.15em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            display: none;
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        #finish-btn:hover {
+            background-color: #1e8449;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -186,7 +254,11 @@
     <div class="quiz-container">
         <header>
             <h1>七下英文 Unit 3 文法挑戰</h1>
-            <p class="subtitle">範圍：Which 選擇問句 & How Much 價錢問句</p>
+            <p class="subtitle">範圍：Which 選擇問句 &amp; How Much 價錢問句</p>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-label" id="progress-label">0 / 20 題已確認</div>
         </header>
 
         <div id="quiz-form">
@@ -194,7 +266,7 @@
         </div>
 
         <div class="footer">
-            <button id="submit-btn" onclick="calculateScore()">交卷並結算分數</button>
+            <button id="finish-btn" onclick="showFinalResult()">查看總成績</button>
 
             <div id="result-display">
                 <h2>測驗結果</h2>
@@ -230,12 +302,16 @@
             { q: "____ is the box? It is ninety dollars.", options: ["What", "Which", "How much", "How many"], ans: 2 }
         ];
 
+        let confirmedCount = 0;
+        let totalScore = 0;
+        const TOTAL = quizData.length;
+
         function initQuiz() {
             const form = document.getElementById('quiz-form');
             let html = '';
 
             quizData.forEach((item, index) => {
-                if (index === 0) html += '<div class="section-header">第一部分：Which 選擇問句</div>';
+                if (index === 0)  html += '<div class="section-header">第一部分：Which 選擇問句</div>';
                 if (index === 10) html += '<div class="section-header">第二部分：How Much 價錢問句</div>';
 
                 html += `
@@ -249,63 +325,85 @@
                             </label>
                         `).join('')}
                     </div>
+                    <div class="check-btn-wrap">
+                        <button class="check-btn" id="check-btn-${index}" onclick="checkOne(${index})">確認</button>
+                        <span class="feedback-inline" id="feedback-${index}"></span>
+                    </div>
                 </div>
             `;
             });
             form.innerHTML = html;
         }
 
-        function calculateScore() {
-            let score = 0;
-            let unanswered = false;
+        function checkOne(index) {
+            const item = quizData[index];
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const btn = document.getElementById(`check-btn-${index}`);
+            const fb  = document.getElementById(`feedback-${index}`);
 
-            quizData.forEach((item, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (!selected) {
+                fb.textContent = '⚠️ 請先選擇一個答案！';
+                fb.className = 'feedback-inline show bad';
+                return;
+            }
 
-                // 標示正確答案
-                const correctLabel = document.getElementById(`label-${index}-${item.ans}`);
-                correctLabel.classList.add('correct');
-
-                if (selected) {
-                    const userAns = parseInt(selected.value);
-                    if (userAns === item.ans) {
-                        score += 5;
-                    } else {
-                        // 標示選錯的答案
-                        const wrongLabel = document.getElementById(`label-${index}-${userAns}`);
-                        wrongLabel.classList.add('wrong');
-                    }
-                } else {
-                    unanswered = true;
-                }
+            // 鎖定這題所有選項
+            const allLabels = document.querySelectorAll(`[id^="label-${index}-"]`);
+            allLabels.forEach(lbl => {
+                lbl.classList.add('disabled-label');
+                lbl.querySelector('input').disabled = true;
             });
+            btn.disabled = true;
 
-            // 顯示結果
+            // 標示正確答案
+            document.getElementById(`label-${index}-${item.ans}`).classList.add('correct');
+
+            const userAns = parseInt(selected.value);
+            if (userAns === item.ans) {
+                totalScore += 5;
+                fb.textContent = '✅ 答對了！';
+                fb.className = 'feedback-inline show ok';
+            } else {
+                document.getElementById(`label-${index}-${userAns}`).classList.add('wrong');
+                fb.textContent = '❌ 答錯了，看看正確答案吧！';
+                fb.className = 'feedback-inline show bad';
+            }
+
+            confirmedCount++;
+            updateProgress();
+
+            if (confirmedCount === TOTAL) {
+                document.getElementById('finish-btn').style.display = 'inline-block';
+                document.getElementById('finish-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function updateProgress() {
+            const pct = Math.round((confirmedCount / TOTAL) * 100);
+            document.getElementById('progress-fill').style.width = pct + '%';
+            document.getElementById('progress-label').textContent = `${confirmedCount} / ${TOTAL} 題已確認`;
+        }
+
+        function showFinalResult() {
             const resultDisplay = document.getElementById('result-display');
-            const scoreText = document.getElementById('score-text');
-            const feedbackMsg = document.getElementById('feedback-msg');
-            const submitBtn = document.getElementById('submit-btn');
+            const scoreText     = document.getElementById('score-text');
+            const feedbackMsg   = document.getElementById('feedback-msg');
 
-            scoreText.innerText = score;
+            scoreText.innerText = totalScore;
             resultDisplay.style.display = 'block';
-            submitBtn.style.display = 'none';
+            document.getElementById('finish-btn').style.display = 'none';
 
-            if (score === 100) {
+            if (totalScore === 100) {
                 feedbackMsg.innerHTML = "太棒了！你完美掌握了 Unit 3 的文法！🌟";
-            } else if (score >= 80) {
+            } else if (totalScore >= 80) {
                 feedbackMsg.innerHTML = "表現優異！離滿分不遠了喔！💪";
-            } else if (score >= 60) {
+            } else if (totalScore >= 60) {
                 feedbackMsg.innerHTML = "及格了！記得看看紅色的題目訂正一下。✍️";
             } else {
                 feedbackMsg.innerHTML = "別灰心！再看一次「重點速記表」，多練習幾次就會進步！🔥";
             }
 
-            // 捲動到結果區
             resultDisplay.scrollIntoView({ behavior: 'smooth' });
-
-            // 禁用所有 Radio 按鈕防止更改
-            const allRadios = document.querySelectorAll('input[type="radio"]');
-            allRadios.forEach(r => r.disabled = true);
         }
 
         // 初始化測驗
