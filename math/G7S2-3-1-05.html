@@ -1,18 +1,491 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3-1 最簡整數比</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>比的化簡互動解題</title>
     <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .math {
+            font-size: 28px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+            vertical-align: middle;
+        }
+
+        .fraction span:first-child {
+            border-bottom: 2px solid #000;
+            padding: 0 4px;
+        }
+
+        .mixed {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 8px;
+            margin: 0 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .slot.filled {
+            border-style: solid;
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .slot.correct {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #15803d;
+        }
+
+        .slot.error-filled {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .option-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-3deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.1) rotate(3deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.1) rotate(-3deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .animate-tada {
+            animation: tada 0.6s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .animate-shake {
+            animation: shake 0.2s ease-in-out 2;
+        }
+
+        .nav-item.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-slate-50">
-    <div class="text-center p-12">
-        <div class="text-6xl mb-6">🚧</div>
-        <h1 class="text-3xl font-bold text-slate-700 mb-3">3-1 最簡整數比</h1>
-        <p class="text-slate-500 text-lg">此頁面正在建置中，敬請期待！</p>
-        <a href="../7.html" class="mt-8 inline-block px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">← 返回</a>
+
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="flex items-center justify-between px-4 py-2 max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 overflow-x-auto no-scrollbar whitespace-nowrap">
+                <span class="font-bold text-blue-600 text-lg">比的化簡單元</span>
+                <div id="nav-btns" class="flex gap-2"></div>
+            </div>
+            <div class="flex items-center gap-4 font-mono">
+                <div class="bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                    分數: <span id="global-score" class="font-bold text-blue-700">0</span>
+                </div>
+                <div class="bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                    <span id="timer" class="font-bold text-red-600">07:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full">
+        <aside class="w-full md:w-1/3 p-6 md:sticky md:top-14 h-auto md:h-[calc(100vh-56px)] bg-white border-r">
+            <div id="problem-content" class="space-y-6"></div>
+        </aside>
+
+        <section id="steps-area" class="w-full md:w-2/3 p-6 space-y-8 bg-gray-50 pb-32">
+            <!-- 步驟動態生成 -->
+        </section>
+    </main>
+
+    <div id="finish-modal" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-tada">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">練習結束</h2>
+            <p class="text-gray-600 mb-6">最終得分：<span id="final-score" class="text-2xl font-bold text-blue-600">0</span>
+            </p>
+            <div class="flex flex-col gap-3">
+                <button onclick="resetApp()"
+                    class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">再做一次</button>
+                <button onclick="closeModal()"
+                    class="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300 transition">查看結果</button>
+            </div>
+        </div>
     </div>
+
+    <script>
+        const PROBLEMS = [
+            {
+                id: 1,
+                title: "第 1 題：整數比化簡",
+                desc: "化簡 <mark class='bg-yellow-200 px-1'>24 : 56</mark>",
+                steps: [
+                    { text: "找出 24 和 56 的公因數。我們用 8 來除：", display: "24 ÷ 8 = [ ] , 56 ÷ 8 = [ ]", answer: ["3", "7"], options: ["3", "7", "8", "6"] },
+                    { text: "寫出最簡單整數比：", display: "結果為 [ ] : [ ]", answer: ["3", "7"], options: ["3", "7", "1", "2"] }
+                ]
+            },
+            {
+                id: 2,
+                title: "第 2 題：小數比化簡",
+                desc: "化簡小數： <mark class='bg-yellow-200 px-1'>0.12 : 0.3</mark>",
+                steps: [
+                    { text: "同時乘以 100 消去小數：", display: "0.12 × 100 = [ ] , 0.3 × 100 = [ ]", answer: ["12", "30"], options: ["12", "3", "30", "1.2"] },
+                    { text: "現在是 12 : 30，用 6 來約分：", display: "12 ÷ 6 = [ ] , 30 ÷ 6 = [ ]", answer: ["2", "5"], options: ["2", "5", "6", "3"] },
+                    { text: "寫出最後答案：", display: "最簡單整數比為 [ ] : [ ]", answer: ["2", "5"], options: ["2", "5", "1", "4"] }
+                ]
+            },
+            {
+                id: 3,
+                title: "第 3 題：小數比化簡",
+                desc: "化簡小數： <mark class='bg-yellow-200 px-1'>1.5 : 3.5</mark>",
+                steps: [
+                    { text: "同時乘以 10，變整數：", display: "1.5 × 10 = [ ] , 3.5 × 10 = [ ]", answer: ["15", "35"], options: ["15", "35", "150", "350"] },
+                    { text: "現在是 15 : 35，用公因數 5 來約分：", display: "15 ÷ 5 = [ ] , 35 ÷ 5 = [ ]", answer: ["3", "7"], options: ["3", "7", "5", "1"] }
+                ]
+            },
+            {
+                id: 4,
+                title: "第 4 題：分數比化簡",
+                desc: "化簡分數： <div class='math'><div class='fraction'><span>1</span><span>3</span></div> : <div class='fraction'><span>1</span><span>6</span></div></div>",
+                steps: [
+                    { text: "同乘分母的最小公倍數(6)：", display: "<div class='math'><div class='fraction'><span>1</span><span>3</span></div> × 6 = [ ] , <div class='fraction'><span>1</span><span>6</span></div> × 6 = [ ]</div>", answer: ["2", "1"], options: ["2", "1", "3", "6"] },
+                    { text: "最後結果：", display: "結果為 [ ] : [ ]", answer: ["2", "1"], options: ["2", "1", "3", "4"] }
+                ]
+            },
+            {
+                id: 5,
+                title: "第 5 題：帶分數比化簡",
+                desc: "化簡帶分數： <div class='math'><div class='mixed'>1<div class='fraction'><span>3</span><span>4</span></div></div> : <div class='fraction'><span>7</span><span>12</span></div></div>",
+                steps: [
+                    { text: "先將帶分數化為假分數：", display: "<div class='math'>1<div class='fraction'><span>3</span><span>4</span></div> = <div class='fraction'><span>[ ]</span><span>4</span></div></div>", answer: ["7"], options: ["7", "4", "3", "12"] },
+                    { text: "同乘 12，去掉分母：", display: "<div class='math'><div class='fraction'><span>7</span><span>4</span></div> × 12 = [ ] , <div class='fraction'><span>7</span><span>12</span></div> × 12 = [ ]</div>", answer: ["21", "7"], options: ["21", "7", "12", "14"] },
+                    { text: "最後用 7 約分，得到：", display: "結果為 [ ] : [ ]", answer: ["3", "1"], options: ["3", "1", "7", "2"] }
+                ]
+            }
+        ];
+
+        let currentProblemIdx = 0;
+        let score = 0;
+        let timeLeft = 420;
+        let timerId = null;
+
+        // 核心狀態追蹤
+        // 結構：problemStates[pIdx][sIdx] = { isCorrect: bool, hasError: bool, isScored: bool }
+        let problemStates = PROBLEMS.map(p => p.steps.map(() => ({
+            isCorrect: false,
+            hasError: false,
+            isScored: false
+        })));
+
+        function init() {
+            renderNav();
+            loadProblem(0);
+            startTimer();
+        }
+
+        function renderNav() {
+            const container = document.getElementById('nav-btns');
+            container.innerHTML = '';
+            PROBLEMS.forEach((p, i) => {
+                const btn = document.createElement('button');
+                const isDone = problemStates[i].every(s => s.isCorrect);
+                btn.className = `nav-item px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${i === currentProblemIdx ? 'active' : 'bg-white text-gray-600 hover:bg-gray-100'} ${isDone ? 'ring-2 ring-green-400' : ''}`;
+                btn.innerText = `題目 ${i + 1}${isDone ? ' ✓' : ''}`;
+                btn.onclick = () => loadProblem(i);
+                container.appendChild(btn);
+            });
+        }
+
+        function loadProblem(index) {
+            currentProblemIdx = index;
+            renderNav();
+
+            const prob = PROBLEMS[index];
+            document.getElementById('problem-content').innerHTML = `
+                <div class="bg-blue-600 text-white p-4 rounded-xl shadow-md">
+                    <h2 class="text-xl font-bold">${prob.title}</h2>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-2 border-blue-100 shadow-sm">
+                    <p class="text-gray-500 mb-2 font-bold">題目：</p>
+                    <div class="text-2xl leading-relaxed">${prob.desc}</div>
+                </div>
+            `;
+
+            const stepsArea = document.getElementById('steps-area');
+            stepsArea.innerHTML = '';
+
+            // 邏輯：顯示所有已正確的步驟 + 第一個未正確的步驟
+            let foundIncomplete = false;
+            prob.steps.forEach((step, sIdx) => {
+                if (!foundIncomplete) {
+                    renderStep(sIdx);
+                    if (!problemStates[index][sIdx].isCorrect) foundIncomplete = true;
+                }
+            });
+        }
+
+        function renderStep(stepIdx) {
+            const prob = PROBLEMS[currentProblemIdx];
+            const step = prob.steps[stepIdx];
+            const state = problemStates[currentProblemIdx][stepIdx];
+
+            const stepDiv = document.createElement('div');
+            stepDiv.className = `step-container bg-white p-6 rounded-2xl shadow-sm border-l-8 ${state.isCorrect ? 'border-green-500' : 'border-blue-500'} relative mb-6`;
+            stepDiv.id = `step-box-${stepIdx}`;
+
+            let displayHtml = step.display.replace(/\[ \]/g, () => `<div class="slot" data-step="${stepIdx}"></div>`);
+
+            stepDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg text-gray-800">${state.isCorrect ? '✅ 步驟完成' : '👉 進行中：步驟 ' + (stepIdx + 1)}</h3>
+                    ${state.hasError && !state.isCorrect ? '<span class="text-red-500 font-bold text-sm">此步已失分</span>' : ''}
+                </div>
+                <p class="text-lg text-gray-700 mb-4">${step.text}</p>
+                <div class="flex flex-wrap items-center gap-2 mb-6 bg-gray-50 p-4 rounded-xl border border-dashed border-gray-200">
+                    ${displayHtml}
+                </div>
+                ${!state.isCorrect ? `
+                    <div class="options-grid flex flex-wrap gap-3 mb-6">
+                        ${step.options.map(opt => `
+                            <button class="option-btn px-6 py-3 bg-white border-2 border-blue-200 rounded-xl font-bold text-xl text-blue-700 shadow-sm hover:border-blue-500 hover:bg-blue-50" 
+                                onclick="handleOptionClick('${opt}', ${stepIdx})">${opt}</button>
+                        `).join('')}
+                    </div>
+                    <button onclick="checkStep(${stepIdx})" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-xl shadow-lg hover:bg-blue-700 active:scale-95 transition">檢查答案</button>
+                    <p id="msg-${stepIdx}" class="mt-3 text-red-500 font-bold text-center hidden"></p>
+                ` : ''}
+            `;
+
+            document.getElementById('steps-area').appendChild(stepDiv);
+
+            const slots = stepDiv.querySelectorAll('.slot');
+            slots.forEach(slot => {
+                if (!state.isCorrect) {
+                    slot.onclick = () => clearSlot(slot);
+                } else {
+                    // 填回正確答案
+                    const ansIndex = Array.from(slots).indexOf(slot);
+                    slot.innerText = step.answer[ansIndex];
+                    slot.classList.add('correct');
+                    slot.style.cursor = 'default';
+                }
+            });
+        }
+
+        function handleOptionClick(val, stepIdx) {
+            const stepBox = document.getElementById(`step-box-${stepIdx}`);
+            const slots = Array.from(stepBox.querySelectorAll('.slot'));
+            const emptySlot = slots.find(s => !s.innerText);
+
+            if (emptySlot) {
+                emptySlot.innerText = val;
+                emptySlot.classList.add('filled');
+                emptySlot.classList.remove('error-filled');
+
+                const btns = Array.from(stepBox.querySelectorAll('.option-btn'));
+                const clickedBtn = btns.find(b => b.innerText === val && !b.disabled);
+                if (clickedBtn) clickedBtn.disabled = true;
+            }
+        }
+
+        function clearSlot(slot) {
+            const val = slot.innerText;
+            if (!val) return;
+            slot.innerText = '';
+            slot.classList.remove('filled', 'error-filled');
+            const stepBox = slot.closest('.step-container');
+            const btns = Array.from(stepBox.querySelectorAll('.option-btn'));
+            const disabledBtn = btns.find(b => b.innerText === val && b.disabled);
+            if (disabledBtn) disabledBtn.disabled = false;
+        }
+
+        function checkStep(stepIdx) {
+            const prob = PROBLEMS[currentProblemIdx];
+            const step = prob.steps[stepIdx];
+            const state = problemStates[currentProblemIdx][stepIdx];
+            const stepBox = document.getElementById(`step-box-${stepIdx}`);
+            const slots = Array.from(stepBox.querySelectorAll('.slot'));
+            const msg = document.getElementById(`msg-${stepIdx}`);
+
+            // 1. 檢查是否填滿
+            if (slots.some(s => !s.innerText)) {
+                msg.innerText = "⚠️ 請填滿所有空格！";
+                msg.classList.remove('hidden');
+                return;
+            }
+
+            // 2. 判定正確與否
+            const userAnswers = slots.map(s => s.innerText);
+            const isCorrect = JSON.stringify(userAnswers) === JSON.stringify(step.answer);
+
+            if (isCorrect) {
+                // 正確情況
+                state.isCorrect = true;
+
+                // 【計分邏輯】: 只有在「未曾出錯」且「未曾計分」時才加分
+                if (!state.hasError && !state.isScored) {
+                    score++;
+                    state.isScored = true;
+                    updateScoreUI();
+                } else {
+                    // 雖然對了但因為錯過，所以這步不給分
+                    state.isScored = true;
+                }
+
+                // 視覺回饋
+                slots.forEach(s => s.classList.add('correct'));
+                msg.classList.add('hidden');
+                stepBox.classList.add('animate-tada');
+
+                // 延遲載入下一步或檢查結算
+                setTimeout(() => {
+                    loadProblem(currentProblemIdx);
+                    checkAllFinished();
+                }, 800);
+
+            } else {
+                // 錯誤情況
+                state.hasError = true; // 只要錯一次，標記為已失分
+                msg.innerText = "❌ 答案不對哦，再檢查一下！";
+                msg.classList.remove('hidden');
+                stepBox.classList.add('animate-shake');
+                slots.forEach(s => s.classList.add('error-filled'));
+                setTimeout(() => stepBox.classList.remove('animate-shake'), 500);
+            }
+        }
+
+        function updateScoreUI() {
+            document.getElementById('global-score').innerText = score;
+        }
+
+        function startTimer() {
+            if (timerId) clearInterval(timerId);
+            timerId = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    showFinalModal();
+                }
+            }, 1000);
+        }
+
+        function checkAllFinished() {
+            const allDone = problemStates.every(p => p.every(s => s.isCorrect));
+            if (allDone) showFinalModal();
+        }
+
+        function showFinalModal() {
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('finish-modal').classList.remove('hidden');
+            clearInterval(timerId);
+        }
+
+        function resetApp() {
+            score = 0;
+            updateScoreUI();
+            timeLeft = 420;
+            // 重置所有狀態
+            problemStates = PROBLEMS.map(p => p.steps.map(() => ({
+                isCorrect: false,
+                hasError: false,
+                isScored: false
+            })));
+            currentProblemIdx = 0;
+            closeModal();
+            init();
+        }
+
+        function closeModal() {
+            document.getElementById('finish-modal').classList.add('hidden');
+        }
+
+        window.onload = init;
+    </script>
 </body>
+
 </html>
