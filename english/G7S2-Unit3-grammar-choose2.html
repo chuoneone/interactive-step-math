@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 3 互動測驗：Which &amp; How Much</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Microsoft JhengHei";
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--bg);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        /* 進度條 */
+        .progress-bar-wrap {
+            background: #e0e6ef;
+            border-radius: 20px;
+            height: 10px;
+            margin: 10px 0 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #2ecc71);
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-label {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .section-header {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 1.1em;
+        }
+
+        .question-card {
+            margin: 20px 0;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #edeff2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option-label:hover:not(.disabled-label) {
+            background-color: #f0f7ff;
+            border-color: var(--primary);
+        }
+
+        .disabled-label {
+            cursor: default;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        /* 結果樣式 */
+        .correct {
+            background-color: #d4edda !important;
+            border-color: var(--success) !important;
+            color: #155724;
+        }
+
+        .wrong {
+            background-color: #f8d7da !important;
+            border-color: var(--danger) !important;
+            color: #721c24;
+        }
+
+        /* 逐題確認按鈕 */
+        .check-btn-wrap {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .check-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 22px;
+            font-size: 1em;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 3px 10px rgba(74, 144, 226, 0.25);
+        }
+
+        .check-btn:hover {
+            background-color: #357abd;
+            transform: translateY(-1px);
+        }
+
+        .check-btn:disabled {
+            background-color: #b0c4de;
+            cursor: default;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback-inline {
+            font-size: 1em;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feedback-inline.show {
+            opacity: 1;
+        }
+
+        .feedback-inline.ok {
+            color: #27ae60;
+        }
+
+        .feedback-inline.bad {
+            color: #c0392b;
+        }
+
+        /* 底部整體結果 */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        #result-display {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px auto;
+            border: 5px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #finish-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            font-size: 1.15em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            display: none;
+        }
+
+        #finish-btn:hover {
+            background-color: #1e8449;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 歷史紀錄樣式 */
+        .history-section {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #eee;
+            text-align: left;
+        }
+
+        .history-title {
+            font-size: 1.3em;
+            color: var(--text);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .history-table th {
+            background: #f8f9fa;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .score-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .clear-btn {
+            background: none;
+            border: 1px solid #ccc;
+            color: #999;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            float: right;
+        }
+
+        .clear-btn:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="quiz-container">
+        <header>
+            <h1>七下英文 Unit 3 文法挑戰</h1>
+            <p class="subtitle">範圍：Which 選擇問句 &amp; How Much 價錢問句 &amp; one/ones</p>
+
+            <div style="margin: 15px 0; display: flex; gap: 20px; justify-content: center;">
+                <div>班級：<input type="text" id="class-name"
+                        style="border:none; border-bottom:1px solid #ccc; outline:none; width:80px; text-align:center;">
+                </div>
+                <div>姓名：<input type="text" id="user-name"
+                        style="border:none; border-bottom:1px solid #ccc; outline:none; width:120px; text-align:center;">
+                </div>
+            </div>
+
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-label" id="progress-label">0 / 11 題已確認</div>
+        </header>
+
+        <div id="quiz-form">
+            <!-- JS 會在這裡動態生成題目 -->
+        </div>
+
+        <div class="footer">
+            <button id="finish-btn" onclick="showFinalResult()">查看總成績</button>
+            <div id="result-display"
+                style="display: none; margin-top: 30px; padding: 20px; border-radius: 10px; text-align: center; animation: fadeIn 0.5s;">
+                <h2>測驗結果</h2>
+                <div class="score-circle" id="score-text">0</div>
+                <p id="feedback-msg"></p>
+                <button onclick="location.reload()"
+                    style="background:#95a5a6; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">重新挑戰</button>
+            </div>
+
+            <!-- 進步歷程區塊 -->
+            <div class="history-section" id="history-section" style="display: none;">
+                <button class="clear-btn" onclick="clearHistory()">清空紀錄</button>
+                <div class="history-title">📈 進步歷程 (本機紀錄)</div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>班級</th>
+                            <th>姓名</th>
+                            <th>分數</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- JS 動態插入 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // Group 1: Which
+            {
+                q: "A: ______ do you like, apples or bananas?<br>B: I like apples.",
+                options: ["What", "Which", "How", "When"],
+                ans: 1,
+                hint: "解析：這是在兩者 (apples or bananas) 之間做選擇，疑問詞要用 Which。"
+            },
+            {
+                q: "A: ______ does your sister like, green tea or coffee?<br>B: She likes coffee.",
+                options: ["Which", "What", "Where", "When"],
+                ans: 0,
+                hint: "解析：兩者擇一的選擇問句，使用 Which。"
+            },
+            {
+                q: "A: ______ do you like, dogs or cats?<br>B: I like dogs.",
+                options: ["Where", "What", "Which", "When"],
+                ans: 2,
+                hint: "解析：兩者擇一的選擇問句，使用 Which。"
+            },
+            {
+                q: "Chris: Which _____ looks better on me? (會考題)<br>Penny: I think pink is better. You look great in pink.",
+                options: ["color", "grade", "shape", "size"],
+                ans: 0,
+                hint: "解析：下文提到 pink (粉紅色)，所以是在問 Which color (哪個顏色)。"
+            },
+            // Group 2: How much
+            {
+                q: "A: ______ is the pencil box?<br>B: It’s 15 dollars.",
+                options: ["How tall", "How many", "How often", "How much"],
+                ans: 3,
+                hint: "解析：回答是價錢 (15 dollars)，所以問句要用 How much 詢問價錢。"
+            },
+            {
+                q: "A: How ______ are these bags? I would like to buy.",
+                options: ["X", "much", "often", "tall"],
+                ans: 1,
+                hint: "解析：詢問價錢的固定句型是 How much。"
+            },
+            {
+                q: "A: How much are the flowers?<br>B: ____________.",
+                options: ["They are very tall.", "It is thirty dollars.", "It is very cute.", "They are one hundred dollars."],
+                ans: 3,
+                hint: "解析：flowers 是複數，回答要用 They are，且問 How much 是問價錢。"
+            },
+            // Group 3: one/ones
+            {
+                q: "A: I need a new coat, Mom.<br>B: OK. Let’s go get ______.",
+                options: ["one", "X", "ones", "them"],
+                ans: 0,
+                hint: "解析：前面提到 a new coat (單數、泛指)，後文代名詞用 one。"
+            },
+            {
+                q: "A: Which cup do you want?<br>B: I want the white ______.",
+                options: ["X", "it", "one", "that"],
+                ans: 2,
+                hint: "解析：前面提到 cup (單數)，避免重複使用相同的名詞，用 one 代替。"
+            },
+            {
+                q: "A: Do you need a pen? <br>B: Yes, please give me ______.",
+                options: ["that", "it", "ones", "one"],
+                ans: 3,
+                hint: "解析：前面提到 a pen (單數、泛指)，用 one 代替。"
+            },
+            {
+                q: "A: Which cups do you like, the blue cups or the black cups?<br>B: I like the black ______.",
+                options: ["it", "ones", "one", "that"],
+                ans: 1,
+                hint: "解析：前面提到 cups (複數)，複數不定代名詞用 ones。"
+            }
+        ];
+
+        let confirmedCount = 0;
+        let correctCount = 0;
+        const TOTAL = quizData.length;
+
+        function initQuiz() {
+            const form = document.getElementById('quiz-form');
+            let html = '';
+
+            quizData.forEach((item, index) => {
+                if (index === 0) html += '<div class="section-header">第一部分：Which 疑問句</div>';
+                if (index === 4) html += '<div class="section-header">第二部分：How much 詢問價錢</div>';
+                if (index === 7) html += '<div class="section-header">第三部分：代名詞 one/ones</div>';
+
+                // 隨機打亂選項順序並追蹤正確答案的新位置
+                const shuffled = item.options
+                    .map((text, i) => ({ text, isCorrect: i === item.ans }))
+                    .sort(() => Math.random() - 0.5);
+
+                item.currentOptions = shuffled.map(s => s.text);
+                item.currentAns = shuffled.findIndex(s => s.isCorrect);
+
+                html += `
+                <div class="question-card" id="q-card-${index}">
+                    <div class="question-text">${index + 1}. ${item.q}</div>
+                    <div class="options">
+                        ${item.currentOptions.map((opt, i) => `
+                            <label class="option-label" id="label-${index}-${i}">
+                                <input type="radio" name="q${index}" value="${i}">
+                                ( ${String.fromCharCode(65 + i)} ) ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="check-btn-wrap">
+                        <button class="check-btn" id="check-btn-${index}" onclick="checkOne(${index})">確認</button>
+                        <span class="feedback-inline" id="feedback-${index}"></span>
+                    </div>
+                    <div id="hint-${index}" style="display:none; margin-top:10px; padding:10px; background:#f8f9fa; border-left:4px solid var(--primary); font-size:0.95em; color:#555;">
+                        ${item.hint}
+                    </div>
+                </div>
+            `;
+            });
+            form.innerHTML = html;
+        }
+
+        function checkOne(index) {
+            const item = quizData[index];
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const btn = document.getElementById(`check-btn-${index}`);
+            const fb = document.getElementById(`feedback-${index}`);
+            const hintBox = document.getElementById(`hint-${index}`);
+
+            if (!selected) {
+                fb.textContent = '⚠️ 請先選擇一個答案！';
+                fb.className = 'feedback-inline show bad';
+                return;
+            }
+
+            // 鎖定這題所有選項
+            const allLabels = document.querySelectorAll(`[id^="label-${index}-"]`);
+            allLabels.forEach(lbl => {
+                lbl.classList.add('disabled-label');
+                lbl.querySelector('input').disabled = true;
+            });
+            btn.disabled = true;
+
+            // 標示正確答案 (使用隨機化後的位置 currentAns)
+            document.getElementById(`label-${index}-${item.currentAns}`).classList.add('correct');
+
+            const userAns = parseInt(selected.value);
+            if (userAns === item.currentAns) {
+                correctCount++;
+                fb.textContent = '✅ 答對了！';
+                fb.className = 'feedback-inline show ok';
+            } else {
+                document.getElementById(`label-${index}-${userAns}`).classList.add('wrong');
+                fb.textContent = '❌ 答錯了！';
+                fb.className = 'feedback-inline show bad';
+            }
+
+            // 顯示解析
+            hintBox.style.display = 'block';
+
+            confirmedCount++;
+            updateProgress();
+
+            // 存檔當前狀態
+            saveCurrentState();
+
+            if (confirmedCount === TOTAL) {
+                document.getElementById('finish-btn').style.display = 'inline-block';
+                document.getElementById('finish-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function updateProgress() {
+            const pct = Math.round((confirmedCount / TOTAL) * 100);
+            document.getElementById('progress-fill').style.width = pct + '%';
+            document.getElementById('progress-label').textContent = `${confirmedCount} / ${TOTAL} 題已確認`;
+        }
+
+        function showFinalResult() {
+            const resultDisplay = document.getElementById('result-display');
+            const scoreText = document.getElementById('score-text');
+            const feedbackMsg = document.getElementById('feedback-msg');
+
+            const finalScore = Math.round((correctCount / TOTAL) * 100);
+            scoreText.innerText = finalScore;
+            resultDisplay.style.display = 'block';
+            document.getElementById('finish-btn').style.display = 'none';
+
+            if (finalScore === 100) {
+                feedbackMsg.innerHTML = "太棒了！你完美掌握了 Unit 3 的文法！🌟";
+            } else if (finalScore >= 80) {
+                feedbackMsg.innerHTML = "表現優異！離滿分不遠了喔！💪";
+            } else if (finalScore >= 60) {
+                feedbackMsg.innerHTML = "及格了！記得看看紅色的題目訂正一下。✍️";
+            } else {
+                feedbackMsg.innerHTML = "別灰心！再多練習幾次就會進步！🔥";
+            }
+
+            // 儲存紀錄
+            saveRecord(finalScore);
+
+            resultDisplay.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- 紀錄管理系統 ---
+        const STORAGE_KEY = 'G7S2-Unit3-Grammar-Scores';
+        const STATE_KEY = 'G7S2-Unit3-Grammar-State';
+
+        function saveRecord(score) {
+            const className = document.getElementById('class-name').value || '未填寫';
+            const userName = document.getElementById('user-name').value || '未填寫';
+            const now = new Date();
+            const dateStr = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            records.unshift({ date: dateStr, class: className, name: userName, score: score });
+
+            if (records.length > 10) records.pop();
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+            // 完卷後清除當前作答狀態
+            localStorage.removeItem(STATE_KEY);
+            displayHistory();
+        }
+
+        // 儲存當前作答進度
+        function saveCurrentState() {
+            const state = {
+                className: document.getElementById('class-name').value,
+                userName: document.getElementById('user-name').value,
+                answers: quizData.map((item, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    return {
+                        answered: !!document.getElementById(`check-btn-${idx}`).disabled,
+                        selectedIndex: selected ? selected.value : null,
+                        currentOptions: item.currentOptions,
+                        currentAns: item.currentAns
+                    };
+                }),
+                confirmedCount,
+                correctCount
+            };
+            localStorage.setItem(STATE_KEY, JSON.stringify(state));
+        }
+
+        // 載入作答進度
+        function loadCurrentState() {
+            const saved = localStorage.getItem(STATE_KEY);
+            if (!saved) return false;
+
+            const state = JSON.parse(saved);
+            document.getElementById('class-name').value = state.className || '';
+            document.getElementById('user-name').value = state.userName || '';
+
+            confirmedCount = state.confirmedCount;
+            correctCount = state.correctCount;
+
+            state.answers.forEach((ans, idx) => {
+                if (ans.currentOptions) {
+                    quizData[idx].currentOptions = ans.currentOptions;
+                    quizData[idx].currentAns = ans.currentAns;
+                }
+
+                if (ans.answered) {
+                    const selectedInput = document.querySelector(`input[name="q${idx}"][value="${ans.selectedIndex}"]`);
+                    if (selectedInput) selectedInput.checked = true;
+
+                    // 執行鎖定與顯示邏輯，但不重新計分
+                    renderLockedQuestion(idx, ans.selectedIndex);
+                }
+            });
+
+            updateProgress();
+            if (confirmedCount === TOTAL) {
+                document.getElementById('finish-btn').style.display = 'inline-block';
+            }
+            return true;
+        }
+
+        function renderLockedQuestion(index, userAnsIndex) {
+            const item = quizData[index];
+            const btn = document.getElementById(`check-btn-${index}`);
+            const fb = document.getElementById(`feedback-${index}`);
+            const hintBox = document.getElementById(`hint-${index}`);
+
+            const allLabels = document.querySelectorAll(`[id^="label-${index}-"]`);
+            allLabels.forEach(lbl => {
+                lbl.classList.add('disabled-label');
+                lbl.querySelector('input').disabled = true;
+            });
+            btn.disabled = true;
+
+            document.getElementById(`label-${index}-${item.currentAns}`).classList.add('correct');
+
+            if (userAnsIndex !== null) {
+                const uIdx = parseInt(userAnsIndex);
+                if (uIdx === item.currentAns) {
+                    fb.textContent = '✅ 答對了！';
+                    fb.className = 'feedback-inline show ok';
+                } else {
+                    document.getElementById(`label-${index}-${uIdx}`).classList.add('wrong');
+                    fb.textContent = '❌ 答錯了！';
+                    fb.className = 'feedback-inline show bad';
+                }
+            }
+            hintBox.style.display = 'block';
+        }
+
+        function displayHistory() {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const section = document.getElementById('history-section');
+            const body = document.getElementById('history-body');
+
+            if (records.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            body.innerHTML = records.map(r => {
+                let color = '#e74c3c';
+                if (r.score >= 90) color = '#27ae60';
+                else if (r.score >= 60) color = '#4a90e2';
+
+                return `
+                    <tr>
+                        <td>${r.date}</td>
+                        <td>${r.class}</td>
+                        <td>${r.name}</td>
+                        <td><span class="score-badge" style="background:${color}">${r.score}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function clearHistory() {
+            if (confirm('確定要清空所有進步歷程紀錄嗎？')) {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(STATE_KEY);
+                displayHistory();
+            }
+        }
+
+        // 初始化
+        window.onload = () => {
+            initQuiz();
+            const hasSavedState = loadCurrentState();
+            displayHistory();
+
+            // 如果沒有舊狀態，才隨機化所有題目（loadCurrentState 會處理已有的隨機順序）
+            if (!hasSavedState) {
+                // initQuiz 已經處理了初始隨機，這裡不需要額外動作
+            }
+
+            // 監聽輸入變化以儲存班級姓名
+            document.getElementById('class-name').addEventListener('change', saveCurrentState);
+            document.getElementById('user-name').addEventListener('change', saveCurrentState);
+        };
+
+        // 離開網頁提醒
+        window.onbeforeunload = function () {
+            if (confirmedCount > 0 && confirmedCount < TOTAL) {
+                return "測驗尚未完成，確認要離開嗎？（進度將被保留，需完成後才能結算）";
+            }
+        };
+    </script>
+
+</body>
+
+</html>
