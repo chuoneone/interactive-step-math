@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基礎 GO 2下：尺規作圖互動練習</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes drawArc {
+            from {
+                stroke-dasharray: 0 150;
+                stroke-dashoffset: 75;
+            }
+
+            to {
+                stroke-dasharray: 150 0;
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .animate-draw {
+            animation: drawArc 0.4s ease-out forwards;
+        }
+
+        .source-segment:active {
+            transform: scale(0.95);
+        }
+
+        .ray-area {
+            cursor: crosshair;
+            touch-action: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b p-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
+        <div>
+            <h1 class="text-xl font-bold text-blue-700">尺規作圖互動學習單</h1>
+            <p class="text-xs text-slate-500">概念 ① 等線段作圖 (特教優化版)</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="undo()" id="undoBtn"
+                class="flex items-center gap-1 px-3 py-2 rounded-lg bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100 disabled:opacity-30 font-bold transition-all">
+                <span>↩ 復原</span>
+            </button>
+            <button onclick="resetLevel()"
+                class="flex items-center gap-1 px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold transition-all">
+                <span>🔄 重來</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 p-4 max-w-4xl mx-auto w-full">
+        <!-- Progress Navigation -->
+        <div class="flex justify-between items-center mb-6">
+            <button onclick="prevLevel()" id="prevBtn"
+                class="px-4 py-2 rounded-xl bg-white border shadow-sm disabled:opacity-30">← 上一題</button>
+            <div id="levelIndicator" class="font-bold text-slate-600 bg-white px-4 py-1 rounded-full border">題目 1 / 8
+            </div>
+            <button onclick="nextLevel()" id="nextBtn"
+                class="px-4 py-2 rounded-xl bg-white border shadow-sm disabled:opacity-30">下一題 →</button>
+        </div>
+
+        <!-- Task Card -->
+        <div class="bg-white rounded-2xl shadow-lg border-2 border-slate-100 p-6 mb-6">
+            <h2 id="taskTitle" class="text-lg font-bold text-slate-900 mb-2">1. 等線段作圖</h2>
+            <div
+                class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500 flex flex-col md:flex-row justify-between md:items-center gap-3">
+                <p id="taskInstruction" class="text-slate-700">已知線段 AB，利用尺規作圖作一線段等於 AB。</p>
+                <div class="shrink-0">
+                    <span class="text-xs font-bold text-slate-400 block mb-1">要求長度</span>
+                    <span id="taskGoal"
+                        class="font-black text-xl text-red-600 bg-white px-3 py-1 rounded-lg border-2 border-red-100">PQ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Source Segments (The Compass) -->
+        <div class="bg-slate-100 rounded-2xl p-6 mb-6 border-2 border-dashed border-slate-200">
+            <p class="text-sm font-bold text-slate-500 mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+                第一步：點擊選取需要的長度
+            </p>
+            <div id="sourceContainer" class="flex flex-wrap gap-4 justify-around">
+                <!-- Sources will be injected here -->
+            </div>
+        </div>
+
+        <!-- Drawing Canvas -->
+        <div class="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden relative shadow-inner">
+            <p class="absolute top-4 left-4 text-sm font-bold text-slate-400 pointer-events-none">
+                第二步：在橫線上點擊「畫弧標記」
+            </p>
+
+            <svg id="canvas" viewBox="0 0 600 250" class="w-full h-auto ray-area" onmousemove="handleMouseMove(event)"
+                onclick="handleRayClick(event)">
+                <!-- Base Ray -->
+                <line x1="50" y1="150" x2="550" y2="150" stroke="#475569" stroke-width="3" />
+                <polygon points="550,140 565,150 550,160" fill="#475569" />
+
+                <!-- Dynamic Elements -->
+                <g id="marksGroup"></g>
+                <g id="previewGroup"></g>
+            </svg>
+
+            <!-- Selection Overlay Hint -->
+            <div id="selectionHint"
+                class="absolute inset-0 flex items-center justify-center bg-white/60 pointer-events-none transition-opacity duration-300">
+                <div
+                    class="bg-white px-6 py-3 rounded-full shadow-xl border-2 border-blue-300 text-blue-600 font-black animate-bounce">
+                    請先選取上方的已知線段
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successPanel" class="hidden mt-8 animate-in zoom-in duration-300">
+            <div class="bg-green-100 border-4 border-green-200 p-8 rounded-3xl flex flex-col items-center shadow-xl">
+                <span class="text-6xl mb-4">🎉</span>
+                <h3 class="text-2xl font-black text-green-700">太棒了！作圖正確</h3>
+                <button onclick="nextLevel()"
+                    class="mt-6 px-10 py-3 bg-green-600 text-white rounded-2xl font-black text-xl hover:bg-green-700 shadow-lg transform active:scale-95 transition-all">挑戰下一題</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const levels = [
+            { id: 1, title: "1. 等線段作圖", instruction: "已知線段 AB，利用尺規作圖作一線段等於 AB。", target: "PQ", sources: [{ id: 'ab', val: 150, label: 'A————B' }], goal: 150, points: ['P', 'Q'] },
+            { id: 2, title: "2. 線段的倍數", instruction: "已知線段 CD，利用尺規作圖作一線段等於 CD 的 2 倍。", target: "PR", sources: [{ id: 'cd', val: 100, label: 'C———D' }], goal: 200, points: ['P', 'Q', 'R'] },
+            { id: 3, title: "3. 線段的和 (a + b)", instruction: "已知兩線段 a、b，利用尺規作圖作一線段等於 a + b。", target: "PR", sources: [{ id: 'a', val: 120, label: 'a' }, { id: 'b', val: 80, label: 'b' }], goal: 200, points: ['P', 'Q', 'R'] },
+            { id: 4, title: "4. 線段的和 (2c + d)", instruction: "已知兩線段 c、d，利用尺規作圖作一線段等於 2c + d。", target: "PS", sources: [{ id: 'c', val: 80, label: 'c' }, { id: 'd', val: 100, label: 'd' }], goal: 260, points: ['P', 'Q', 'R', 'S'] },
+            { id: 5, title: "5. 線段的差 (a - b)", instruction: "已知兩線段 a、b，利用尺規作圖作一線段等於 a - b。", target: "PR", sources: [{ id: 'a', val: 180, label: 'a' }, { id: 'b', val: 80, label: 'b' }], goal: 100, points: ['P', 'Q', 'R'] },
+            { id: 6, title: "6. 線段的混合 (3c - d)", instruction: "已知兩線段 c、d，利用尺規作圖作一線段等於 3c - d。", target: "PT", sources: [{ id: 'c', val: 70, label: 'c' }, { id: 'd', val: 60, label: 'd' }], goal: 150, points: ['P', 'Q', 'R', 'S', 'T'] },
+            { id: 7, title: "7. 線段的混合 (e - 2f)", instruction: "已知兩線段 e、f，利用尺規作圖作一線段等於 e - 2f。", target: "PS", sources: [{ id: 'e', val: 200, label: 'e' }, { id: 'f', val: 60, label: 'f' }], goal: 80, points: ['P', 'Q', 'R', 'S'] },
+            { id: 8, title: "8. 單位線段複製", instruction: "已知 EF = 1，利用尺規作圖作一個長度為 4 的線段。", target: "PT", sources: [{ id: 'ef', val: 50, label: 'E—F (1)' }], goal: 200, points: ['P', 'Q', 'R', 'S', 'T'] }
+        ];
+
+        let currentLevelIdx = 0;
+        let marks = [];
+        let selectedLength = null;
+        let isSuccess = false;
+        const startX = 50;
+        const rayY = 150;
+
+        // Initialize App
+        function init() {
+            renderLevel();
+        }
+
+        function renderLevel() {
+            const level = levels[currentLevelIdx];
+            document.getElementById('taskTitle').innerText = level.title;
+            document.getElementById('taskInstruction').innerText = level.instruction;
+            document.getElementById('taskGoal').innerText = level.target;
+            document.getElementById('levelIndicator').innerText = `題目 ${currentLevelIdx + 1} / ${levels.length}`;
+
+            // Buttons State
+            document.getElementById('prevBtn').disabled = currentLevelIdx === 0;
+            document.getElementById('nextBtn').disabled = currentLevelIdx === levels.length - 1;
+
+            // Render Sources
+            const container = document.getElementById('sourceContainer');
+            container.innerHTML = '';
+            level.sources.forEach(src => {
+                const div = document.createElement('div');
+                div.className = `source-segment cursor-pointer transition-all p-4 rounded-xl flex flex-col items-center min-w-[120px] bg-white border-2 ${selectedLength?.id === src.id ? 'border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-200' : 'border-slate-200 hover:border-blue-300'}`;
+                div.onclick = (e) => {
+                    e.stopPropagation();
+                    selectSource(src);
+                };
+
+                div.innerHTML = `
+                    <div class="h-6 flex items-center mb-2">
+                        <div class="h-1 rounded-full bg-slate-800" style="width: ${src.val}px"></div>
+                    </div>
+                    <span class="text-sm font-black text-slate-600">線段 ${src.id.toUpperCase()}</span>
+                `;
+                container.appendChild(div);
+            });
+
+            resetState();
+        }
+
+        function resetState() {
+            const level = levels[currentLevelIdx];
+            marks = [{ x: startX, label: level.points[0] }];
+            selectedLength = null;
+            isSuccess = false;
+            document.getElementById('successPanel').classList.add('hidden');
+            document.getElementById('selectionHint').style.opacity = '1';
+            updateMarks();
+            updateUndoBtn();
+        }
+
+        function selectSource(src) {
+            selectedLength = src;
+            document.getElementById('selectionHint').style.opacity = '0';
+            renderLevel(); // Refresh visuals
+        }
+
+        function handleRayClick(e) {
+            if (!selectedLength || isSuccess) return;
+
+            const rect = document.getElementById('canvas').getBoundingClientRect();
+            const scaleX = 600 / rect.width;
+            const clickX = (e.clientX - rect.left) * scaleX;
+
+            const lastMark = marks[marks.length - 1];
+            const isSubtract = clickX < lastMark.x;
+            const newX = isSubtract ? lastMark.x - selectedLength.val : lastMark.x + selectedLength.val;
+
+            if (newX < startX || newX > 580) return;
+
+            const level = levels[currentLevelIdx];
+            const nextLabel = level.points[marks.length];
+            if (!nextLabel) return;
+
+            marks.push({ x: newX, label: nextLabel });
+            updateMarks();
+            updateUndoBtn();
+            checkWin();
+        }
+
+        function handleMouseMove(e) {
+            if (!selectedLength || isSuccess) return;
+
+            const rect = document.getElementById('canvas').getBoundingClientRect();
+            const scaleX = 600 / rect.width;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+
+            const lastMark = marks[marks.length - 1];
+            const isSubtract = mouseX < lastMark.x;
+            const previewX = isSubtract ? lastMark.x - selectedLength.val : lastMark.x + selectedLength.val;
+
+            const previewGroup = document.getElementById('previewGroup');
+            if (previewX < startX || previewX > 580) {
+                previewGroup.innerHTML = '';
+                return;
+            }
+
+            previewGroup.innerHTML = `
+                <path d="M ${previewX} ${rayY - 40} A 50 50 0 0 1 ${previewX} ${rayY + 40}" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4 2" opacity="0.5" />
+                <text x="${previewX}" y="${rayY - 50}" text-anchor="middle" class="text-[10px] font-bold fill-blue-500">預覽標記點</text>
+            `;
+        }
+
+        function updateMarks() {
+            const group = document.getElementById('marksGroup');
+            group.innerHTML = '';
+            marks.forEach((m, i) => {
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+                // Arc
+                if (i > 0) {
+                    const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    arc.setAttribute("d", `M ${m.x} ${rayY - 40} A 50 50 0 0 1 ${m.x} ${rayY + 40}`);
+                    arc.setAttribute("fill", "none");
+                    arc.setAttribute("stroke", "#ef4444");
+                    arc.setAttribute("stroke-width", "3");
+                    arc.setAttribute("class", "animate-draw");
+                    g.appendChild(arc);
+                }
+
+                // Point
+                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                dot.setAttribute("cx", m.x);
+                dot.setAttribute("cy", rayY);
+                dot.setAttribute("r", "5");
+                dot.setAttribute("fill", "#ef4444");
+                dot.setAttribute("stroke", "white");
+                dot.setAttribute("stroke-width", "2");
+                g.appendChild(dot);
+
+                // Label
+                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txt.setAttribute("x", m.x);
+                txt.setAttribute("y", rayY + 35);
+                txt.setAttribute("text-anchor", "middle");
+                txt.setAttribute("class", "text-lg font-black fill-red-700");
+                txt.textContent = m.label;
+                g.appendChild(txt);
+
+                group.appendChild(g);
+            });
+        }
+
+        function checkWin() {
+            const level = levels[currentLevelIdx];
+            const finalMark = marks[marks.length - 1];
+            const currentDist = Math.abs(finalMark.x - startX);
+
+            if (marks.length === level.points.length && Math.abs(currentDist - level.goal) < 2) {
+                isSuccess = true;
+                document.getElementById('successPanel').classList.remove('hidden');
+                document.getElementById('previewGroup').innerHTML = '';
+                updateUndoBtn();
+            }
+        }
+
+        function undo() {
+            if (marks.length > 1 && !isSuccess) {
+                marks.pop();
+                updateMarks();
+                updateUndoBtn();
+            }
+        }
+
+        function updateUndoBtn() {
+            document.getElementById('undoBtn').disabled = marks.length <= 1 || isSuccess;
+        }
+
+        function resetLevel() {
+            resetState();
+        }
+
+        function prevLevel() {
+            if (currentLevelIdx > 0) {
+                currentLevelIdx--;
+                renderLevel();
+            }
+        }
+
+        function nextLevel() {
+            if (currentLevelIdx < levels.length - 1) {
+                currentLevelIdx++;
+                renderLevel();
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
