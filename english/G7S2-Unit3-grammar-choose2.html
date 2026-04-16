@@ -469,13 +469,9 @@
                 if (index === 4) html += '<div class="section-header">第二部分：How much 詢問價錢</div>';
                 if (index === 7) html += '<div class="section-header">第三部分：代名詞 one/ones</div>';
 
-                // 隨機打亂選項順序並追蹤正確答案的新位置
-                const shuffled = item.options
-                    .map((text, i) => ({ text, isCorrect: i === item.ans }))
-                    .sort(() => Math.random() - 0.5);
-
-                item.currentOptions = shuffled.map(s => s.text);
-                item.currentAns = shuffled.findIndex(s => s.isCorrect);
+                // 保持原本選項順序，不進行隨機打亂
+                item.currentOptions = item.options;
+                item.currentAns = item.ans;
 
                 html += `
                 <div class="question-card" id="q-card-${index}">
