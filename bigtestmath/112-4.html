@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學 - 根式化簡 (圈圈練習)</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0fdf4;
+            /* 淺綠色背景 */
+        }
+
+        /* 數學與短除法樣式 */
+        .math {
+            font-size: 28px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 填答格樣式 */
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 55px;
+            height: 55px;
+            border: 3px dashed #9ca3af;
+            border-radius: 12px;
+            margin: 0 6px;
+            cursor: pointer;
+            background-color: #fff;
+            transition: all 0.2s;
+            font-weight: 900;
+            font-size: 24px;
+        }
+
+        .slot.filled {
+            border-style: solid;
+            border-color: #10b981;
+            color: #047857;
+            background-color: #ecfdf5;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .slot.correct {
+            border-color: #22c55e;
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        /* 按鈕樣式 */
+        .option-btn {
+            background-color: #fff;
+            border: 2px solid #d1d5db;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 22px;
+            font-weight: 900;
+            color: #374151;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #10b981;
+            color: #10b981;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            background-color: #f3f4f6;
+            border-style: dashed;
+            transform: translateY(0);
+        }
+
+        /* 動畫 */
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-3deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.1) rotate(3deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.1) rotate(-3deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .tada {
+            animation: tada 0.6s;
+        }
+
+        .step-locked {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(0.8);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 根號樣式，配合字體調整 */
+        .sqrt-symbol {
+            font-size: 38px;
+            font-weight: 400;
+            line-height: 1;
+            transform: translateY(2px);
+            margin-right: -2px;
+        }
+
+        .sqrt-content {
+            border-top: 3px solid #000;
+            padding-top: 4px;
+            padding-left: 2px;
+            padding-right: 4px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b-2 border-emerald-100 shadow-sm z-30">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-4 overflow-hidden">
+                <span class="font-black text-emerald-700 shrink-0 hidden sm:inline text-lg">根式化簡練習</span>
+                <nav id="nav-tabs" class="flex gap-2 overflow-x-auto no-scrollbar py-2">
+                    <!-- Tabs generated here -->
+                </nav>
+            </div>
+            <div class="flex items-center gap-4 shrink-0 font-bold ml-4">
+                <div class="text-emerald-700 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-200">得分: <span
+                        id="total-score">0</span></div>
+                <div class="text-gray-600 bg-gray-100 px-4 py-1.5 rounded-full border border-gray-200">⏳ <span
+                        id="timer">07:00</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+
+        <!-- 左側：題目區 (固定) -->
+        <aside id="problem-side"
+            class="w-full md:w-2/5 bg-emerald-50 p-6 md:p-8 border-r-4 border-emerald-100 overflow-y-auto">
+            <div class="sticky top-0">
+                <div
+                    class="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-1.5 rounded-full text-sm font-bold mb-6 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                    當前題目
+                </div>
+
+                <!-- 題目文字 -->
+                <div id="problem-text" class="text-3xl font-black text-slate-800 leading-relaxed mb-6">
+                    <!-- Text -->
+                </div>
+
+                <!-- 短除法展示區 -->
+                <div class="bg-white p-6 rounded-3xl border-2 border-emerald-100 shadow-sm mb-6 flex justify-center">
+                    <div id="short-division" class="font-mono text-3xl font-black text-slate-800 tracking-wider">
+                        <!-- Short Division Injected Here -->
+                    </div>
+                </div>
+
+                <!-- 圈圈視覺提示區 -->
+                <div class="p-6 bg-amber-50 rounded-3xl border-2 border-amber-200 shadow-sm">
+                    <p class="text-sm text-amber-600 mb-3 font-black tracking-widest">👀 視覺提示：圈起來的數字</p>
+                    <div id="problem-hints" class="flex flex-wrap items-center gap-2 text-2xl font-black">
+                        <!-- Hints injected here -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 右側：填答區 (捲動) -->
+        <section id="step-side" class="flex-1 p-6 md:p-10 overflow-y-auto bg-white">
+            <div id="steps-container" class="max-w-2xl mx-auto space-y-8 pb-40">
+                <!-- Steps generated here -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 完成視窗 -->
+    <div id="modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-[40px] p-10 max-w-md w-full text-center shadow-2xl border-4 border-emerald-100">
+            <div class="text-8xl mb-6">🎉</div>
+            <h2 class="text-3xl font-black text-slate-800 mb-2">化簡完成！</h2>
+            <p class="text-slate-500 text-lg mb-8 font-medium">你非常棒，數字找得很精準！</p>
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="restartApp()"
+                    class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200">再練習一次</button>
+                <button onclick="closeModal()"
+                    class="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-black text-xl hover:bg-slate-200 transition-all">關閉視窗檢視</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PROBLEMS = [
+            {
+                id: 1,
+                title: "第一題",
+                text: "化簡 <span class='text-4xl'>√<span class='sqrt-content'>135</span></span>",
+                division: [
+                    { div: 3, val: 135 },
+                    { div: 3, val: 45 },
+                    { div: 3, val: 15 },
+                    { div: null, val: 5 }
+                ],
+                pairs: [[3, 3]],
+                singles: [3, 5],
+                steps: [
+                    {
+                        title: "寫出最後答案",
+                        template: "答案： <span class='slot' data-ans='3'></span><span class='sqrt-symbol'>√</span><span class='sqrt-content'><span class='slot rounded-none !border-0 bg-transparent !h-auto !w-auto !m-0 !p-0 min-w-[30px]' data-ans='15'></span></span>",
+                        options: ["3", "15", "5", "9"]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "第二題",
+                text: "化簡 <span class='text-4xl'>√<span class='sqrt-content'>150</span></span>",
+                division: [
+                    { div: 2, val: 150 },
+                    { div: 3, val: 75 },
+                    { div: 5, val: 25 },
+                    { div: null, val: 5 }
+                ],
+                pairs: [[5, 5]],
+                singles: [2, 3],
+                steps: [
+                    {
+                        title: "寫出最後答案",
+                        template: "答案： <span class='slot' data-ans='5'></span><span class='sqrt-symbol'>√</span><span class='sqrt-content'><span class='slot rounded-none !border-0 bg-transparent !h-auto !w-auto !m-0 !p-0 min-w-[30px]' data-ans='6'></span></span>",
+                        options: ["5", "6", "2", "10"]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "第三題",
+                text: "化簡 <span class='text-4xl'>√<span class='sqrt-content'>108</span></span>",
+                division: [
+                    { div: 2, val: 108 },
+                    { div: 2, val: 54 },
+                    { div: 3, val: 27 },
+                    { div: 3, val: 9 },
+                    { div: null, val: 3 }
+                ],
+                pairs: [[2, 2], [3, 3]],
+                singles: [3],
+                steps: [
+                    {
+                        title: "寫出最後答案",
+                        template: "答案： <span class='slot' data-ans='6'></span><span class='sqrt-symbol'>√</span><span class='sqrt-content'><span class='slot rounded-none !border-0 bg-transparent !h-auto !w-auto !m-0 !p-0 min-w-[30px]' data-ans='3'></span></span>",
+                        options: ["6", "3", "9", "2"]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "第四題",
+                text: "化簡 <span class='text-4xl'>√<span class='sqrt-content'>98</span></span>",
+                division: [
+                    { div: 2, val: 98 },
+                    { div: 7, val: 49 },
+                    { div: null, val: 7 }
+                ],
+                pairs: [[7, 7]],
+                singles: [2],
+                steps: [
+                    {
+                        title: "寫出最後答案",
+                        template: "答案： <span class='slot' data-ans='7'></span><span class='sqrt-symbol'>√</span><span class='sqrt-content'><span class='slot rounded-none !border-0 bg-transparent !h-auto !w-auto !m-0 !p-0 min-w-[30px]' data-ans='2'></span></span>",
+                        options: ["7", "2", "14", "49"]
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "第五題",
+                text: "化簡 <span class='text-4xl'>√<span class='sqrt-content'>72</span></span>",
+                division: [
+                    { div: 2, val: 72 },
+                    { div: 2, val: 36 },
+                    { div: 2, val: 18 },
+                    { div: 3, val: 9 },
+                    { div: null, val: 3 }
+                ],
+                pairs: [[2, 2], [3, 3]],
+                singles: [2],
+                steps: [
+                    {
+                        title: "寫出最後答案",
+                        template: "答案： <span class='slot' data-ans='6'></span><span class='sqrt-symbol'>√</span><span class='sqrt-content'><span class='slot rounded-none !border-0 bg-transparent !h-auto !w-auto !m-0 !p-0 min-w-[30px]' data-ans='2'></span></span>",
+                        options: ["6", "2", "3", "12"]
+                    }
+                ]
+            }
+        ];
+
+        let currentIdx = 0;
+        let unlockedStepIdx = 0;
+        let score = 0;
+        let timeLeft = 420;
+        let timerInterval;
+
+        window.onload = () => {
+            initTabs();
+            loadProblem(0);
+            startTimer();
+        };
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function initTabs() {
+            const nav = document.getElementById('nav-tabs');
+            nav.innerHTML = '';
+            PROBLEMS.forEach((p, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `tab-${idx}`;
+                btn.className = `tab-btn shrink-0 px-6 py-2 rounded-full border-2 transition-all font-black text-sm shadow-sm ${idx === 0 ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-400 border-slate-200 hover:border-emerald-300'}`;
+                btn.innerText = p.title;
+                btn.onclick = () => switchProblem(idx);
+                nav.appendChild(btn);
+            });
+        }
+
+        function switchProblem(idx) {
+            currentIdx = idx;
+            unlockedStepIdx = 0;
+            document.querySelectorAll('.tab-btn').forEach((b, i) => {
+                if (i === idx) {
+                    b.classList.replace('bg-white', 'bg-emerald-600');
+                    b.classList.replace('text-slate-400', 'text-white');
+                    b.classList.replace('border-slate-200', 'border-emerald-600');
+                } else {
+                    b.classList.add('bg-white', 'text-slate-400', 'border-slate-200');
+                    b.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600', 'hover:border-emerald-300');
+                }
+            });
+            loadProblem(idx);
+        }
+
+        function loadProblem(idx) {
+            const prob = PROBLEMS[idx];
+            document.getElementById('problem-text').innerHTML = prob.text;
+
+            // 繪製短除法
+            let divHtml = '<div class="flex flex-col ml-4">';
+            prob.division.forEach((row, i) => {
+                const marginLeft = i * 2; // rem
+                if (row.div) {
+                    divHtml += `
+                    <div class="flex items-end" style="margin-left: ${marginLeft}rem">
+                        <span class="text-red-500 w-8 text-right mr-3">${row.div}</span>
+                        <div class="border-b-4 border-l-4 border-slate-800 pl-3 pb-1 min-w-[4rem] text-left">${row.val}</div>
+                    </div>`;
+                } else {
+                    divHtml += `
+                    <div class="flex items-end" style="margin-left: ${marginLeft}rem">
+                        <span class="w-8 mr-3"></span>
+                        <div class="pl-3 pt-2 min-w-[4rem] text-red-500 text-left">${row.val}</div>
+                    </div>`;
+                }
+            });
+            divHtml += '</div>';
+            document.getElementById('short-division').innerHTML = divHtml;
+
+            // 繪製圈圈提示
+            const hintsContainer = document.getElementById('problem-hints');
+            hintsContainer.innerHTML = '';
+
+            prob.pairs.forEach(pair => {
+                const span = document.createElement('span');
+                span.className = 'border-4 border-red-500 rounded-full px-4 py-1 text-red-600 bg-red-50';
+                span.innerText = pair.join(', ');
+                hintsContainer.appendChild(span);
+            });
+
+            prob.singles.forEach(single => {
+                const span = document.createElement('span');
+                span.className = 'px-4 py-1 text-red-600';
+                span.innerText = single;
+                hintsContainer.appendChild(span);
+            });
+
+            renderSteps(idx);
+        }
+
+        function renderSteps(probIdx) {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            const prob = PROBLEMS[probIdx];
+
+            prob.steps.forEach((step, sIdx) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.id = `step-card-${sIdx}`;
+                stepDiv.className = `bg-white rounded-[32px] p-6 md:p-8 transition-all duration-500 border-2 ${sIdx > unlockedStepIdx ? 'step-locked border-transparent' : 'border-white shadow-xl shadow-slate-200/50'}`;
+
+                const titleHtml = `
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <span class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl">${sIdx + 1}</span>
+                            <h3 class="font-black text-slate-800 text-xl md:text-2xl">${step.title}</h3>
+                        </div>
+                        <div id="check-icon-${sIdx}" class="hidden flex items-center gap-2 text-green-500 font-black">
+                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+                            </div>
+                            <span class="hidden sm:inline">完成</span>
+                        </div>
+                    </div>
+                `;
+
+                const contentHtml = `<div class="mb-8 py-6 px-4 bg-slate-50/70 rounded-2xl border-2 border-slate-100 text-2xl font-bold text-slate-700 flex items-center flex-wrap gap-y-4">${step.template}</div>`;
+
+                const optionsHtml = `
+                    <div id="options-wrap-${sIdx}" class="flex flex-wrap items-center gap-3 pt-6 border-t-2 border-slate-100 border-dashed">
+                        <div class="w-full text-sm font-black text-slate-400 uppercase tracking-widest mb-2">點選下方數字填入</div>
+                        ${step.options.map((opt, optIdx) => `<button class="option-btn" onclick="fillSlot('${opt}', ${sIdx}, this, ${optIdx})">${opt}</button>`).join('')}
+                        <button onclick="checkStep(${sIdx})" class="ml-auto bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200">檢查</button>
+                    </div>
+                `;
+
+                stepDiv.innerHTML = titleHtml + contentHtml + optionsHtml;
+                container.appendChild(stepDiv);
+
+                stepDiv.querySelectorAll('.slot').forEach(slot => {
+                    slot.onclick = () => clearSlot(slot, sIdx);
+                });
+            });
+        }
+
+        function fillSlot(val, stepIdx, btn, optIdx) {
+            const stepCard = document.getElementById(`step-card-${stepIdx}`);
+            const slots = stepCard.querySelectorAll('.slot');
+            for (let s of slots) {
+                if (!s.innerText) {
+                    s.innerText = val;
+                    s.classList.add('filled');
+                    s.dataset.btnIndex = optIdx;
+                    btn.disabled = true;
+                    btn.classList.add('scale-95');
+                    break;
+                }
+            }
+        }
+
+        function clearSlot(slot, stepIdx) {
+            if (!slot.innerText || slot.classList.contains('correct')) return;
+            const optIdx = slot.dataset.btnIndex;
+            slot.innerText = '';
+            slot.classList.remove('filled');
+
+            const optionsWrap = document.getElementById(`options-wrap-${stepIdx}`);
+            const btns = optionsWrap.querySelectorAll('.option-btn');
+            if (btns[optIdx]) {
+                btns[optIdx].disabled = false;
+                btns[optIdx].classList.remove('scale-95');
+            }
+        }
+
+        function checkStep(sIdx) {
+            const stepCard = document.getElementById(`step-card-${sIdx}`);
+            const slots = stepCard.querySelectorAll('.slot');
+            let allFilled = true;
+            let allCorrect = true;
+
+            slots.forEach(slot => {
+                if (!slot.innerText) allFilled = false;
+                if (slot.innerText !== slot.dataset.ans) allCorrect = false;
+            });
+
+            if (!allFilled) {
+                showToast("還有空格沒填完喔！", "orange");
+                return;
+            }
+
+            if (allCorrect) {
+                slots.forEach(s => s.classList.add('correct'));
+                document.getElementById(`check-icon-${sIdx}`).classList.remove('hidden');
+                document.getElementById(`options-wrap-${sIdx}`).classList.add('hidden');
+                stepCard.classList.add('tada', 'border-green-200');
+
+                score += 1;
+                document.getElementById('total-score').innerText = score;
+
+                if (sIdx < PROBLEMS[currentIdx].steps.length - 1) {
+                    unlockedStepIdx = sIdx + 1;
+                    setTimeout(() => {
+                        const nextStep = document.getElementById(`step-card-${unlockedStepIdx}`);
+                        nextStep.classList.remove('step-locked');
+                        nextStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 600);
+                } else {
+                    if (currentIdx === PROBLEMS.length - 1) {
+                        setTimeout(() => document.getElementById('modal').classList.remove('hidden'), 1000);
+                    } else {
+                        showToast("太厲害了！本題完成，繼續下一題！", "green");
+                    }
+                }
+            } else {
+                showToast("再想想看，放錯位置了喔！", "red");
+            }
+        }
+
+        function showToast(text, color) {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-24 left-1/2 -translate-x-1/2 px-8 py-4 rounded-3xl text-white font-black text-lg shadow-2xl z-50 transition-all duration-300`;
+            const bg = { green: 'bg-emerald-600', red: 'bg-rose-500', orange: 'bg-amber-500' };
+            toast.classList.add(bg[color]);
+            toast.innerText = text;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        function restartApp() {
+            location.reload();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>
