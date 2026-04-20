@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
+        html { font-size: 120%; }
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
 
         .word { position: relative; cursor: pointer; border-bottom: 1px dotted #a8a29e; transition: color .2s; }
@@ -206,15 +207,7 @@
                 // Section H
                 "seventy": "七十", "nine": "九", "three": "三",
                 "fifty": "五十", "two": "二", "hundred": "百",
-                "it": "它", "they're": "他們是/它們是",
-                // Section I
-                "liam": "里亞姆", "flora": "芙羅拉",
-                "cousin": "堂/表兄弟姊妹", "taste": "品味/口味",
-                "lines": "線條(複數)", "art": "藝術",
-                "stand": "代表/站立", "something": "某事物",
-                "special": "特別的", "only": "只有", "see": "看見",
-                "work": "作品/工作", "use": "使用/用法",
-                "color": "顏色", "pink": "粉紅色", "sky": "天空"
+                "it": "它", "they're": "他們是/它們是"
             };
 
             // ---- Quiz Data ----
@@ -289,17 +282,17 @@
                 // Section G: Make sentences (reorder) (15%, 每題5分)
                 G: [
                     {
-                        prompt: "例句：Which do you like, apples or oranges?\n仿例造句：which / you / want for lunch / sandwiches / hamburgers",
+                        prompt: "which / you / want for lunch / sandwiches / hamburgers",
                         answer: ["Which", "do", "you", "want", "for", "lunch,", "sandwiches", "or", "hamburgers?"],
                         hint: "主詞是 you，助動詞用 do；Which ___ do you ___?"
                     },
                     {
-                        prompt: "仿例造句：which color / she / like / green / purple",
+                        prompt: "which color / she / like / green / purple",
                         answer: ["Which", "color", "does", "she", "like,", "green", "or", "purple?"],
                         hint: "主詞是 she（第三人稱單數），助動詞將改變。"
                     },
                     {
-                        prompt: "仿例造句：which sport / he / play / baseball / basketball",
+                        prompt: "which sport / he / play / baseball / basketball",
                         answer: ["Which", "sport", "does", "he", "play,", "baseball", "or", "basketball?"],
                         hint: "主詞是 he（第三人稱單數），助動詞將改變。"
                     }
@@ -326,10 +319,10 @@
   <rect x="145" y="115" width="64" height="26" fill="#f59e0b" rx="7"/>
   <text x="177" y="133" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="white" text-anchor="middle">$79</text>
 </svg>`,
-                        given: `斥 B: It is seventy-nine dollars.　<span class="text-xs text-stone-400">(已給)</span>`,
-                        q: "A: ______（選出正確問句）",
-                        opts: ["How much is the chocolate?", "How much are the chocolates?", "How much is the cookie?", "What is the chocolate?"],
-                        ans: "A", hint: "巧克力是單數——用 is 還是 are？B 回答用 It is，問句最前的助動詞是哪一個？"
+                        given: `B: It is seventy-nine dollars.　<span class="text-xs text-stone-400">(已給)</span>`,
+                        prompt: "依對話內容重組問句：how / much / is / the / chocolate",
+                        answer: ["How", "much", "is", "the", "chocolate?"],
+                        hint: "巧克力是單數——用 is 還是 are？B 回答用 It is，問句最前的助動詞是哪一個？"
                     },
                     {
                         svgHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 158" style="width:100%;max-width:220px;display:block;margin:auto">
@@ -367,10 +360,10 @@
   <rect x="128" y="128" width="80" height="26" fill="#4ade80" rx="7"/>
   <text x="168" y="146" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#14532d" text-anchor="middle">$350</text>
 </svg>`,
-                        given: `斥 A: How much are the cookies?　<span class="text-xs text-stone-400">(已給)</span>`,
-                        q: "B: ______（選出正確答句）",
-                        opts: ["They're three hundred and fifty dollars.", "It's three hundred and fifty dollars.", "They're thirty-five dollars.", "They're five hundred and thirty dollars."],
-                        ans: "A", hint: "cookies 是複數——用 They're 還是 It's？350 怎麼念？"
+                        given: `A: How much are the cookies?　<span class="text-xs text-stone-400">(已給)</span>`,
+                        prompt: "依對話內容重組答句：they're / three / hundred / and / fifty / dollars",
+                        answer: ["They're", "three", "hundred", "and", "fifty", "dollars."],
+                        hint: "cookies 是複數——用 They're 還是 It's？350 怎麼念？"
                     },
                     {
                         svgHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 155" style="width:100%;max-width:220px;display:block;margin:auto">
@@ -403,38 +396,12 @@
   <rect x="145" y="120" width="68" height="26" fill="#c084fc" rx="7"/>
   <text x="179" y="138" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#4a044e" text-anchor="middle">$200</text>
 </svg>`,
-                        given: `斥 B: They're two hundred dollars.　<span class="text-xs text-stone-400">(已給)</span>`,
-                        q: "A: ______（選出正確問句）",
-                        opts: ["How much is the sandwich?", "How much are the cookies?", "How much are the sandwiches?", "What are the sandwiches?"],
-                        ans: "C", hint: "sandwiches 是複數——B 的答句用了 They're，問句的主詞就同樣是複數。"
+                        given: `B: They're two hundred dollars.　<span class="text-xs text-stone-400">(已給)</span>`,
+                        prompt: "依對話內容重組問句：how / much / are / the / sandwiches",
+                        answer: ["How", "much", "are", "the", "sandwiches?"],
+                        hint: "sandwiches 是複數——B 的答句用了 They're，問句的主詞就同樣是複數。"
                     }
-                ],
-                // Section I: Read and choose (6%, 每題3分)
-                I: {
-                    passage: `<p class="mb-2 leading-relaxed">Liam and his sister go to Milo Museum. They see many paintings there. Liam does not like abstract paintings. "I <strong>only</strong> see <span class="font-bold text-amber-600">lines</span> in them. That is not <span class="font-bold text-amber-600">art</span>," he says. His sister loves the bright colors in abstract paintings. She thinks they <span class="font-bold text-amber-600">stand for</span> <span class="font-bold text-amber-600">something</span> special.</p><p class="text-xs text-stone-400 mt-2">💡 <strong>line</strong> 線條 &nbsp;｜&nbsp; <strong>hat</strong> 帽子 &nbsp;｜&nbsp; <strong>either</strong> 也不 &nbsp;｜&nbsp; <strong>stand for</strong> 代表 &nbsp;｜&nbsp; <strong>something</strong> 某事物</p>`,
-                    questions: [
-                        {
-                            q: "Which is most likely an abstract painting?　（most likely 最有可能地）",
-                            opts: [
-                                "🌸 一幅描繪花園裡盛開花朵的寫實畫作",
-                                "🎨 一幅只有線條與形狀、看不出具體事物的畫作",
-                                "🏔️ 一幅描繪山脈與湖泊的風景畫",
-                                "👤 一幅人物肖像畫"
-                            ],
-                            ans: "B", hint: "文中說 Liam 「只看到線條，這不是藝術」——抽象畫的特徵是什麼？"
-                        },
-                        {
-                            q: "Flora is Liam's cousin. Her taste in paintings is like Liam's. What may Flora say about an abstract painting?　（taste 愛好）",
-                            opts: [
-                                "This is not art. I only see lines in the painting.",
-                                "I don't like this painting. It's only black and white.",
-                                "Does the color pink in the work stand for the sky? Wow!",
-                                "This painting is my favorite. The use of colors is really special."
-                            ],
-                            ans: "A", hint: "Flora 的口味和 Liam 一樣——Liam 對抽象畫的看法是什麼？"
-                        }
-                    ]
-                }
+                ]
             };
 
             const SECINFO = {
@@ -445,8 +412,7 @@
                 E: { title: "大題 E", sub: "Choose｜選出正確的答案 (15%，每題3分)" },
                 F: { title: "大題 F", sub: "Fill in the Blanks｜填入 one 或 ones (7%，每格1分)" },
                 G: { title: "大題 G", sub: "Make Sentences｜仿例句依提示字造問句 (15%，每題5分)" },
-                H: { title: "大題 H", sub: "Look and Write｜看圖寫出問句或答句 (15%，每題5分)" },
-                I: { title: "大題 I", sub: "Read and Choose｜閱讀文章選出正確的答案 (6%，每題3分)" }
+                H: { title: "大題 H", sub: "Look and Write｜看圖重組問句或答句 (15%，每題5分)" }
             };
 
             let curSec = 'A', curIdx = 0, score = 0;
@@ -509,7 +475,6 @@
                 if (sec === 'B') return DATA.B.answers.length;
                 if (sec === 'F') return DATA.F.questions.reduce((s, q) => s + q.blanks, 0);
                 if (sec === 'G') return DATA.G.length;
-                if (sec === 'I') return DATA.I.questions.length;
                 return DATA[sec].length;
             }
 
@@ -838,13 +803,13 @@
             }
 
             // ===============================================
-            // Section G: Reorder sentences
+            // Section G & H: Reorder sentences
             // ===============================================
             function displayReorder(idx) {
                 qWrap.innerHTML = ''; controls.innerHTML = '';
-                const list = DATA.G;
-                secTitle.textContent = SECINFO.G.title;
-                secSub.textContent = SECINFO.G.sub;
+                const list = DATA[curSec];
+                secTitle.textContent = SECINFO[curSec].title;
+                secSub.textContent = SECINFO[curSec].sub;
                 const answeredCnt = Object.keys(secState).filter(k=>secState[k] && secState[k].answered).length;
                 progBar.style.width = (answeredCnt/list.length*100) + '%';
                 progText.textContent = `${answeredCnt} / ${list.length}`;
@@ -852,11 +817,21 @@
                 const q = list[idx];
                 const block = document.createElement('div'); block.id = 'qblock';
 
-                // Example box
-                const exBox = document.createElement('div');
-                exBox.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-xs text-stone-600';
-                exBox.innerHTML = '<p class="font-bold text-amber-700 mb-1">📝 例句</p><p>which / you / like / apple / orange</p><p class="mt-1 font-bold text-amber-800">→ Which do you like, apples or oranges?</p>';
-                block.appendChild(exBox);
+                // G section example box
+                if (curSec === 'G') {
+                    const exBox = document.createElement('div');
+                    exBox.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-xs text-stone-600';
+                    exBox.innerHTML = '<p class="font-bold text-amber-700 mb-1">📝 例句</p><p>which / you / like / apple / orange</p><p class="mt-1 font-bold text-amber-800">→ Which do you like, apples or oranges?</p>';
+                    block.appendChild(exBox);
+                }
+
+                // H section Context box (SVG illustration)
+                if (curSec === 'H' && q.svgHtml) {
+                    const ctx = document.createElement('div');
+                    ctx.className = 'mb-4 rounded-xl border border-stone-200 overflow-hidden bg-stone-50';
+                    ctx.innerHTML = `<div class="flex flex-col items-center gap-2 py-3 px-4">${q.svgHtml || ''}<p class="text-sm text-stone-600 text-center">${q.given || ''}</p></div>`;
+                    block.appendChild(ctx);
+                }
 
                 const promptP = document.createElement('p');
                 promptP.className = 'text-sm text-stone-700 mb-2 flex items-start gap-2 whitespace-pre-line';
@@ -876,14 +851,16 @@
                 const ph = document.createElement('span'); ph.className = 'text-stone-300 text-sm'; ph.textContent = '點擊單字放到這裡...';
                 ansZone.appendChild(ph); block.appendChild(ansZone);
 
-                if (!secState[idx]) secState[idx] = { answered: false, userAnswer: [] };
+                if (!secState[idx]) {
+                    secState[idx] = { answered: false, userAnswer: [], shuffled: [...q.answer].sort(() => Math.random() - 0.5) };
+                }
                 const myState = secState[idx];
                 const userAnswer = myState.userAnswer;
 
                 const poolDiv = document.createElement('div');
                 poolDiv.className = 'flex flex-wrap gap-2 justify-center mb-4'; poolDiv.id = 'word-pool';
 
-                shuffled.forEach((word, i) => {
+                myState.shuffled.forEach((word, i) => {
                     const btn = document.createElement('button');
                     btn.className = 'reorder-word'; btn.textContent = word; btn.dataset.poolIdx = i;
                     if (userAnswer.some(u => u.poolIdx === i)) btn.classList.add('used');
@@ -961,78 +938,13 @@
             }
 
             // ===============================================
-            // Section I: Reading + MC (all questions at once)
-            // ===============================================
-            function displayReadingSection() {
-                qWrap.innerHTML = ''; controls.innerHTML = '';
-                secTitle.textContent = SECINFO.I.title;
-                secSub.textContent = SECINFO.I.sub;
-                const questions = DATA.I.questions;
-                progBar.style.width = '0%'; progText.textContent = `0 / ${questions.length}`; updateLive();
-                const block = document.createElement('div'); block.id = 'qblock';
-
-                const passDiv = document.createElement('div');
-                passDiv.className = 'bg-stone-50 border border-stone-300 rounded-xl p-4 mb-5 text-sm text-stone-700';
-                passDiv.innerHTML = DATA.I.passage;
-                block.appendChild(passDiv);
-
-                let submitted = false;
-                questions.forEach((q, qi) => {
-                    const qDiv = document.createElement('div');
-                    qDiv.className = 'mb-4 p-3 bg-stone-50 border border-stone-200 rounded-xl';
-                    const qp = document.createElement('p');
-                    qp.className = 'text-sm font-bold text-stone-700 mb-2';
-                    qp.textContent = q.q;
-                    qDiv.appendChild(qp);
-                    const optDiv = document.createElement('div'); optDiv.className = 'grid grid-cols-1 gap-2';
-                    q.opts.forEach((opt, oi) => {
-                        const ch = String.fromCharCode(65+oi);
-                        const row = document.createElement('div');
-                        row.className = 'flex items-center p-2 border border-stone-300 rounded-lg cursor-pointer hover:bg-amber-50 transition-all';
-                        const radio = document.createElement('input');
-                        radio.type='radio'; radio.id=`iq${qi}-${ch}`; radio.name=`iq${qi}`; radio.value=ch;
-                        radio.className='h-4 w-4 text-amber-600 flex-shrink-0';
-                        const label = document.createElement('label');
-                        label.htmlFor=`iq${qi}-${ch}`; label.className='ml-2 text-sm text-stone-800 flex-1 cursor-pointer';
-                        label.textContent=`(${ch}) ${opt}`;
-                        row.onclick=()=>{ if(!submitted){radio.checked=true;} };
-                        row.appendChild(radio); row.appendChild(label); optDiv.appendChild(row);
-                    });
-                    qDiv.appendChild(optDiv);
-                    block.appendChild(qDiv);
-                });
-                qWrap.appendChild(block);
-
-                const checkBtn = document.createElement('button');
-                checkBtn.className = 'w-full sm:w-auto bg-amber-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-amber-600 transition-colors';
-                checkBtn.textContent = '檢查答案';
-                checkBtn.onclick = () => {
-                    if (submitted) return;
-                    const missing = questions.some((_,qi)=>!document.querySelector(`input[name="iq${qi}"]:checked`));
-                    if (missing) { alertMsg.textContent='請完成所有題目！'; alertModal.classList.remove('hidden'); return; }
-                    submitted=true; score=0;
-                    questions.forEach((q,qi) => {
-                        const sel=document.querySelector(`input[name="iq${qi}"]:checked`);
-                        const corrLabel=document.querySelector(`label[for="iq${qi}-${q.ans}"]`);
-                        const userLabel=sel.nextElementSibling;
-                        document.querySelectorAll(`input[name="iq${qi}"]`).forEach(r=>r.disabled=true);
-                        if (sel.value===q.ans) { score++; userLabel.parentElement.classList.add('bg-yellow-100','border-yellow-400','ring-2','ring-yellow-300'); userLabel.innerHTML+=' <span class="text-green-600 font-bold">✔️</span>'; }
-                        else { userLabel.parentElement.classList.add('bg-red-100','border-red-400','ring-2','ring-red-300'); userLabel.innerHTML+=' <span class="text-red-600 font-bold">❌</span>'; corrLabel.parentElement.classList.add('bg-yellow-100','border-yellow-400'); }
-                    });
-                    renderScoreResult(score, questions.length, 'I');
-                };
-                controls.appendChild(checkBtn);
-            }
-
-            // ===============================================
-            // C, D, E, H: Standard individual MC
+            // C, D, E: Standard individual MC
             // ===============================================
             function displayQ(idx) {
                 if (curSec==='A') { displayFillIn(); return; }
                 if (curSec==='B') { displayDialogueFillIn(); return; }
                 if (curSec==='F') { displayOneOnes(); return; }
-                if (curSec==='G') { displayReorder(idx); return; }
-                if (curSec==='I') { displayReadingSection(); return; }
+                if (curSec==='G' || curSec==='H') { displayReorder(idx); return; }
 
                 qWrap.innerHTML = ''; controls.innerHTML = '';
                 const list = DATA[curSec];
@@ -1045,14 +957,6 @@
 
                 const q = list[idx];
                 const block = document.createElement('div'); block.id = 'qblock';
-
-                // Context box for H (SVG illustration)
-                if (curSec==='H') {
-                    const ctx = document.createElement('div');
-                    ctx.className = 'mb-4 rounded-xl border border-stone-200 overflow-hidden bg-stone-50';
-                    ctx.innerHTML = `<div class="flex flex-col items-center gap-2 py-3 px-4">${q.svgHtml || ''}<p class="text-sm text-stone-600 text-center">${q.given || ''}</p></div>`;
-                    block.appendChild(ctx);
-                }
 
                 const qp = document.createElement('p');
                 qp.className = 'text-base text-stone-700 mb-4 flex items-start gap-2 whitespace-pre-line';
