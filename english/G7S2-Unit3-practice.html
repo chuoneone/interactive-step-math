@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G7S2 UNIT 3 習作</title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
+
+        .word { position: relative; cursor: pointer; border-bottom: 1px dotted #a8a29e; transition: color .2s; }
+        .word:hover { color: #d97706; }
+        .word .tooltip {
+            visibility: hidden; width: max-content; max-width: 160px;
+            background: #1f2937; color: #fff; text-align: center;
+            border-radius: 6px; padding: 4px 8px; position: absolute;
+            z-index: 20; bottom: 130%; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: opacity .3s; pointer-events: none; font-size: .75rem;
+        }
+        .word:hover .tooltip { visibility: visible; opacity: 1; }
+
+        .sb-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 9px 12px; border-radius: 10px; font-weight: 700;
+            font-size: .875rem; color: #78716c; cursor: pointer; transition: all .2s;
+            background: transparent; border: 2px solid transparent; text-align: left;
+        }
+        .sb-btn:hover { background: #fef3c7; color: #92400e; }
+        .sb-btn.active { background: #fde68a; color: #92400e; border-color: #fcd34d; }
+
+        .badge { font-size: .65rem; border-radius: 999px; padding: 2px 7px; font-weight: 700; }
+        .badge-ok { background: #dcfce7; color: #16a34a; }
+        .badge-fail { background: #fee2e2; color: #dc2626; }
+        .badge-none { background: #f5f5f4; color: #a8a29e; }
+
+        .fill-blank {
+            display: inline-block; min-width: 80px; border-bottom: 2px solid #d6d3d1;
+            text-align: center; cursor: pointer; padding: 2px 8px;
+            color: #92400e; font-weight: 700; transition: all .2s;
+        }
+        .fill-blank:hover { border-color: #f59e0b; }
+        .fill-blank.filled { border-color: #f59e0b; background: #fef3c7; border-radius: 6px; }
+        .fill-blank.correct { border-color: #22c55e; background: #dcfce7; border-radius: 6px; color: #16a34a; }
+        .fill-blank.wrong { border-color: #ef4444; background: #fee2e2; border-radius: 6px; color: #dc2626; }
+
+        .word-chip {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 6px 16px; border-radius: 10px; cursor: pointer; font-weight: 600;
+            font-size: .95rem; transition: all .15s; border: 2px solid #d6d3d1;
+            background: #fff; color: #44403c; user-select: none;
+        }
+        .word-chip:hover { border-color: #fbbf24; background: #fefce8; }
+        .word-chip.used { opacity: .3; pointer-events: none; border-style: dashed; }
+
+        .reorder-word {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
+            font-size: .9rem; transition: all .15s; border: 2px solid #d6d3d1;
+            background: #fff; color: #44403c; user-select: none;
+        }
+        .reorder-word:hover { border-color: #fbbf24; background: #fefce8; }
+        .reorder-word.used { opacity: .3; pointer-events: none; border-style: dashed; }
+        .answer-slot {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
+            font-size: .9rem; transition: all .15s; border: 2px solid #f59e0b;
+            background: #fef3c7; color: #92400e;
+        }
+        .answer-slot:hover { background: #fde68a; }
+        .answer-zone {
+            min-height: 52px; border: 2px dashed #d6d3d1; border-radius: 12px;
+            padding: 10px; display: flex; flex-wrap: wrap; gap: 8px;
+            align-items: center; background: #fafaf9;
+        }
+        .answer-zone.correct { border-color: #22c55e; background: #dcfce7; }
+        .answer-zone.wrong { border-color: #ef4444; background: #fee2e2; animation: shake .4s; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) }
+            25% { transform: translateX(-6px) }
+            75% { transform: translateX(6px) }
+        }
+    </style>
+</head>
+
+<body class="bg-amber-50 min-h-screen">
+    <div class="flex min-h-screen">
+
+        <!-- ===== Sidebar ===== -->
+        <aside class="w-52 bg-white shadow-lg flex flex-col p-4 fixed h-full overflow-y-auto z-10">
+            <div class="mb-5">
+                <p class="text-xs font-bold text-amber-500 tracking-widest uppercase">G7S2 · Unit 3</p>
+                <h1 class="text-base font-bold text-stone-800 leading-snug mt-1">英語習作<br><span
+                        class="text-amber-600">Which Painting<br>Do You Like?</span></h1>
+            </div>
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">選擇大題</p>
+            <div id="sidebar-nav" class="flex flex-col gap-1"></div>
+
+            <div class="mt-auto border-t border-stone-200 pt-4">
+                <p class="text-xs font-bold text-stone-400 mb-2">📊 歷史成績</p>
+                <div id="score-summary" class="flex flex-col gap-2 text-xs"></div>
+                <button id="clear-btn" class="mt-3 text-xs text-red-400 hover:text-red-600 transition-colors">🗑 清除所有成績</button>
+            </div>
+        </aside>
+
+        <!-- ===== Main ===== -->
+        <main class="ml-52 flex-1 p-4 sm:p-8 flex justify-center items-start">
+            <div class="w-full max-w-2xl">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                    <div class="flex items-start justify-between mb-1">
+                        <div>
+                            <h2 id="sec-title" class="text-xl font-bold text-amber-700"></h2>
+                            <p id="sec-sub" class="text-xs text-stone-400 mt-0.5"></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-stone-400">本次得分</p>
+                            <p class="text-3xl font-bold text-amber-600">
+                                <span id="live-score">0</span><span class="text-stone-300 text-xl"> / </span><span id="live-total" class="text-stone-500 text-xl">0</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 my-4">
+                        <div class="flex-1 bg-stone-200 rounded-full h-2">
+                            <div id="prog-bar" class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width:0%"></div>
+                        </div>
+                        <span id="prog-text" class="text-xs text-stone-400 whitespace-nowrap">0 / 0</span>
+                    </div>
+                    <div id="q-wrap"></div>
+                    <div id="controls" class="mt-8 text-center"></div>
+                    <div id="score-disp" class="mt-6 text-center hidden"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Alert modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-30">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="alert-msg" class="text-lg text-gray-800 mb-4"></p>
+            <button id="alert-close" class="bg-amber-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-amber-600">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORE = 'g7s2u3_scores';
+
+            const tr = {
+                // Unit 3 vocab
+                "the": "這個/那個", "room": "房間", "is": "是", "too": "太",
+                "dark": "黑暗的", "i": "我", "can't": "不能", "see": "看見",
+                "anything": "任何東西", "there": "那裡/有", "a": "一個",
+                "big": "大的", "kite": "風箏", "in": "在...裡", "sky": "天空",
+                "don't": "不要", "play": "玩", "ball": "球", "on": "在",
+                "street": "街道", "that's": "那是", "very": "非常",
+                "dangerous": "危險的", "maggie": "瑪姬", "usually": "通常",
+                "has": "有/吃(三單)", "hamburger": "漢堡", "for": "為了",
+                "breakfast": "早餐", "flowers": "花朵", "are": "是",
+                "many": "許多", "park": "公園", "some": "一些",
+                "red": "紅色的", "and": "和", "white": "白色的",
+                "jenny": "珍妮", "eats": "吃(三單)", "chocolate": "巧克力",
+                "sandwich": "三明治", "every": "每個", "day": "天",
+                "soup": "湯", "kitchen": "廚房", "hungry": "餓的",
+                "hot": "熱的", "dog": "熱狗/狗", "cookies": "餅乾",
+                "have": "有/吃", "bananas": "香蕉", "milk": "牛奶",
+                "let's": "讓我們", "make": "製作", "banana": "香蕉",
+                "lily": "莉莉", "wants": "想要(三單)", "coffee": "咖啡",
+                "with": "和/搭配", "her": "她的", "cake": "蛋糕",
+                "thirsty": "口渴的", "sweet": "甜的",
+                "how": "多少/如何", "much": "多少", "of": "的",
+                "course": "當然", "here": "這裡", "you": "你",
+                "go": "去/拿去", "not": "不", "really": "真的",
+                "like": "喜歡", "which": "哪一個", "painting": "畫/繪畫",
+                "do": "做", "from": "從", "to": "到/對",
+                // Section B
+                "want": "想要", "tea": "茶", "juice": "果汁", "or": "或者",
+                "black": "黑色的", "please": "請", "orange": "柳橙/橘色",
+                "oranges": "柳橙(複數)", "about": "關於", "dad": "爸爸",
+                "mom": "媽媽", "eric": "艾瑞克", "linda": "琳達",
+                // Section E
+                "clerk": "店員", "hi": "嗨", "isaac": "以撒",
+                "ice": "冰", "cream": "奶油/冰淇淋",
+                "david": "大衛", "hundred": "百", "dollars": "元",
+                "john": "約翰", "stella": "史黛拉", "beautiful": "美麗的",
+                "ava": "艾娃", "leo": "里歐", "great": "很棒的",
+                "second": "第二", "part": "部分",
+                "ella": "艾拉", "blue": "藍色的", "bag": "袋子", "sure": "當然",
+                "paintings": "畫作(複數)", "abstract": "抽象的",
+                "museum": "博物館", "colors": "顏色(複數)", "bright": "明亮的",
+                // Section F
+                "marker": "麥克筆", "green": "綠色的", "clean": "乾淨的",
+                "bags": "袋子(複數)", "dirty": "髒的", "small": "小的",
+                "pencil": "鉛筆", "cases": "盒子(複數)",
+                "case": "盒子", "he": "他", "likes": "喜歡(三單)",
+                "dogs": "狗(複數)", "big": "大的",
+                // Section G
+                "lunch": "午餐", "sandwiches": "三明治(複數)", "hamburgers": "漢堡(複數)",
+                "color": "顏色", "purple": "紫色的", "sport": "運動",
+                "baseball": "棒球", "basketball": "籃球",
+                "she": "她", "does": "做(三單)",
+                // Section H
+                "seventy": "七十", "nine": "九", "three": "三",
+                "fifty": "五十", "two": "二", "hundred": "百",
+                "it": "它", "they're": "他們是/它們是",
+                // Section I
+                "liam": "里亞姆", "flora": "芙羅拉",
+                "cousin": "堂/表兄弟姊妹", "taste": "品味/口味",
+                "lines": "線條(複數)", "art": "藝術",
+                "stand": "代表/站立", "something": "某事物",
+                "special": "特別的", "only": "只有", "see": "看見",
+                "work": "作品/工作", "use": "使用/用法",
+                "color": "顏色", "pink": "粉紅色", "sky": "天空"
+            };
+
+            // ---- Quiz Data ----
+            const DATA = {
+                // Section A: Fill in blanks with word bank (10%)
+                A: {
+                    wordBank: ["street", "sky", "hamburger", "dark", "flowers"],
+                    questions: [
+                        { text: "The room is too ______. I can't see anything.", answer: "dark", hint: "房間太「黑暗了」，看不見任何東西 = dark" },
+                        { text: "There is a big kite in the ______.", answer: "sky", hint: "風箏飛在「天空」中 = sky" },
+                        { text: "Don't play ball on the ______. That's very dangerous.", answer: "street", hint: "不要在「街道」上打球，那很危險 = street" },
+                        { text: "Maggie usually has a ______ for breakfast.", answer: "hamburger", hint: "Maggie 通常早餐吃「漢堡」= hamburger" },
+                        { text: "There are many ______ in the park. Some are red, and some are white.", answer: "flowers", hint: "公園裡有許多「花朵」= flowers" }
+                    ]
+                },
+                // Section B: Look and fill in the dialogue (10%, 每格2分)
+                B: {
+                    wordBank: ["Which", "or", "tea", "juice", "milk"],
+                    answers: ["Which", "or", "tea", "juice", "milk"],
+                    dialogue: [
+                        { speaker: "Dad", segments: [
+                            {type:"blank",idx:0},{type:"text",text:" do you want, tea, juice, milk, "},
+                            {type:"blank",idx:1},{type:"text",text:" coffee?"}
+                        ]},
+                        { speaker: "Mom", segments: [
+                            {type:"text",text:"Hot black "},{type:"blank",idx:2},{type:"text",text:", please."}
+                        ]},
+                        { speaker: "Eric", segments: [
+                            {type:"text",text:"I want orange "},{type:"blank",idx:3},{type:"text",text:". I like oranges."}
+                        ]},
+                        { speaker: "Linda", segments: [
+                            {type:"text",text:"I want "},{type:"blank",idx:4},{type:"text",text:", please. How about you, Dad?"}
+                        ]},
+                        { speaker: "Dad", segments: [
+                            {type:"text",text:"I want hot coffee."}
+                        ]}
+                    ]
+                },
+                // Section C: Fill in with a or some (14%, 每格2分)
+                C: [
+                    { q: "Jenny eats ______ chocolate sandwich every day.", opts: ["a", "some"], ans: "A", hint: "sandwich 是可數名詞單數，前面用 a（一個）。" },
+                    { q: "There is ______ soup in the kitchen.", opts: ["a", "some"], ans: "B", hint: "soup 是不可數名詞，前面用 some（一些）。" },
+                    { q: "I'm hungry. Can I have ______ hot dog and ______ cookies?", opts: ["a … some", "some … a", "a … a", "some … some"], ans: "A", hint: "hot dog 可數單數用 a；cookies 複數用 some。" },
+                    { q: "I have ______ bananas and ______ milk. Let's make banana milk.", opts: ["some … some", "a … some", "some … a", "a … a"], ans: "A", hint: "bananas 可數複數用 some；milk 不可數名詞用 some。" },
+                    { q: "Lily wants ______ coffee with her cake.", opts: ["a", "some"], ans: "B", hint: "coffee 是不可數名詞，前面用 some（一些）。" }
+                ],
+                // Section D: Read and choose (8%, 每題2分)
+                D: [
+                    { q: "A: May I help you?\n   B: I'm ______, please.", opts: ["hungry", "dark", "thirsty", "sweet"], ans: "C", hint: "B 要表達的狀態是「口渴」還是「颢」？" },
+                    { q: "A: Can I have some water?\n   B: ______", opts: ["How much?", "Of course.", "Here you go.", "Not really."], ans: "B", hint: "A 已經請求，B 應該真心同意，選一個最自然的回應。" },
+                    { q: "A: Do you ______ this painting?\n   B: Yes, I do. It's very beautiful.", opts: ["have", "like", "see", "how"], ans: "B", hint: "用哪個動詞問對方對畫作的感受？" },
+                    { q: "A: Which painting do you like?\n   B: I like this picture ______ the street.", opts: ["to", "with", "of", "from"], ans: "C", hint: "表達「關於某物」用哪個介詞？" }
+                ],
+                // Section E: Choose (15%, 每題3分)
+                E: [
+                    { q: "Clerk: Hi. ______ Isaac: I want some ice cream, please.", opts: ["May I help you?", "Can you help me?", "For here or to go?", "Can I have some sweet food?"], ans: "A", hint: "店員主動上前服務，通常第一句會問顧客什麼？" },
+                    { q: "David: ______ Clerk: They're one hundred dollars.", opts: ["Where are the flowers?", "What are these flowers?", "Who are these flowers for?", "How much are these flowers?"], ans: "D", hint: "店員回答了金額，那 David 問的是哪一類問句？" },
+                    { q: "John: How do you like the painting? Stella: ______", opts: ["It's very beautiful.", "It's a painting by Milo.", "Yes. I like bright colors.", "You can see it in Milo Museum."], ans: "A", hint: "How do you like...? 是問感受如何，Stella 應該表達自己對畫的看法。" },
+                    { q: "Ava: This book is great. Leo: It is. ______ What about you? Ava: Me too.", opts: ["I can show you.", "Who is the writer?", "I like the second part.", "Which is your favorite book?"], ans: "C", hint: "Leo 先說自己的想法，再問 Ava；空格應表達 Leo 自己喜歡什麼。" },
+                    { q: "Ella: Can I have a look at that blue bag, please? Clerk: Sure. ______", opts: ["Here you go.", "See you later.", "That's nice of you.", "Thank you and have a good day."], ans: "A", hint: "店員把商品遞給顧客，會說什麼？" }
+                ],
+                // Section F: Fill in one or ones (7%, 每格1分)
+                F: {
+                    wordBank: ["one", "ones"],
+                    questions: [
+                        { text: "Which is your marker, the blue ______ or the green ______?", blanks: 2, answers: ["one", "one"], hint: "blue ___ 和 green ___ 各指其中一個，是單數還是複數？" },
+                        { text: "These bags are too dirty. I want clean ______.", blanks: 1, answers: ["ones"], extra: "（dirty 髒的）", hint: "clean ___ 指之前說的那類、但是乾淨、複數的包包。" },
+                        { text: "A: Does he like big dogs or small dogs?\nB: He likes big ______.", blanks: 1, answers: ["ones"], hint: "big ___ 是指 'big dogs'，是複數概念。" },
+                        { text: "A: How much are the pencil cases?\nB: The white ______ is NT$200, the red ______ is NT$150, and the blue ______ is NT$100.", blanks: 3, answers: ["one", "one", "one"], hint: "white/red/blue ___ 各指一個筆盒，是單數還是複數？" }
+                    ]
+                },
+                // Section G: Make sentences (reorder) (15%, 每題5分)
+                G: [
+                    {
+                        prompt: "例句：Which do you like, apples or oranges?\n仿例造句：which / you / want for lunch / sandwiches / hamburgers",
+                        answer: ["Which", "do", "you", "want", "for", "lunch,", "sandwiches", "or", "hamburgers?"],
+                        hint: "主詞是 you，助動詞用 do；Which ___ do you ___?"
+                    },
+                    {
+                        prompt: "仿例造句：which color / she / like / green / purple",
+                        answer: ["Which", "color", "does", "she", "like,", "green", "or", "purple?"],
+                        hint: "主詞是 she（第三人稱單數），助動詞將改變。"
+                    },
+                    {
+                        prompt: "仿例造句：which sport / he / play / baseball / basketball",
+                        answer: ["Which", "sport", "does", "he", "play,", "baseball", "or", "basketball?"],
+                        hint: "主詞是 he（第三人稱單數），助動詞將改變。"
+                    }
+                ],
+                // Section H: Look and write → MC (15%, 每題5分)
+                H: [
+                    {
+                        svgHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 150" style="width:100%;max-width:220px;display:block;margin:auto">
+  <rect width="220" height="150" fill="#f8f5f0" rx="10"/>
+  <rect x="20" y="22" width="180" height="106" fill="#d0d0d0" rx="8"/>
+  <line x1="40" y1="22" x2="25" y2="128" stroke="#e8e8e8" stroke-width="4" opacity="0.7"/>
+  <line x1="75" y1="22" x2="60" y2="128" stroke="#e8e8e8" stroke-width="2" opacity="0.4"/>
+  <rect x="20" y="28" width="118" height="100" fill="#6b3a2a" rx="5"/>
+  <line x1="22" y1="61" x2="136" y2="61" stroke="#4a2519" stroke-width="2"/>
+  <line x1="22" y1="94" x2="136" y2="94" stroke="#4a2519" stroke-width="2"/>
+  <line x1="50" y1="30" x2="50" y2="126" stroke="#4a2519" stroke-width="2"/>
+  <line x1="79" y1="30" x2="79" y2="126" stroke="#4a2519" stroke-width="2"/>
+  <line x1="108" y1="30" x2="108" y2="126" stroke="#4a2519" stroke-width="2"/>
+  <polygon points="20,105 52,105 20,126" fill="#8b4e37" opacity="0.9"/>
+  <path d="M138,28 Q143,38 138,48 Q145,58 138,68 Q145,78 138,88 Q145,98 138,108 Q143,118 138,128 L140,128 L140,28Z" fill="#b8b8b8"/>
+  <rect x="141" y="22" width="59" height="106" fill="#c4c4c4" rx="5"/>
+  <line x1="155" y1="22" x2="155" y2="128" stroke="#d8d8d8" stroke-width="2" opacity="0.6"/>
+  <line x1="172" y1="22" x2="172" y2="128" stroke="#d8d8d8" stroke-width="1.5" opacity="0.4"/>
+  <rect x="145" y="115" width="64" height="26" fill="#f59e0b" rx="7"/>
+  <text x="177" y="133" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="white" text-anchor="middle">$79</text>
+</svg>`,
+                        given: `斥 B: It is seventy-nine dollars.　<span class="text-xs text-stone-400">(已給)</span>`,
+                        q: "A: ______（選出正確問句）",
+                        opts: ["How much is the chocolate?", "How much are the chocolates?", "How much is the cookie?", "What is the chocolate?"],
+                        ans: "A", hint: "巧克力是單數——用 is 還是 are？B 回答用 It is，問句最前的助動詞是哪一個？"
+                    },
+                    {
+                        svgHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 158" style="width:100%;max-width:220px;display:block;margin:auto">
+  <rect width="220" height="158" fill="#f8f5f0" rx="10"/>
+  <rect x="14" y="68" width="56" height="72" fill="#fce7f3" rx="5"/>
+  <circle cx="26" cy="82" r="5" fill="white" opacity="0.7"/><circle cx="44" cy="77" r="5" fill="white" opacity="0.7"/>
+  <circle cx="60" cy="88" r="5" fill="white" opacity="0.7"/><circle cx="23" cy="97" r="5" fill="white" opacity="0.7"/>
+  <circle cx="52" cy="101" r="5" fill="white" opacity="0.7"/><circle cx="36" cy="112" r="5" fill="white" opacity="0.7"/>
+  <circle cx="35" cy="70" r="18" fill="#c8a26a"/><circle cx="52" cy="66" r="14" fill="#d4ab74"/>
+  <circle cx="30" cy="67" r="2.5" fill="#5c3317"/><circle cx="40" cy="62" r="2.5" fill="#5c3317"/>
+  <circle cx="34" cy="76" r="2" fill="#5c3317"/><circle cx="49" cy="65" r="2" fill="#5c3317"/>
+  <ellipse cx="42" cy="56" rx="13" ry="7" fill="#f472b6" transform="rotate(-25 42 56)"/>
+  <ellipse cx="42" cy="56" rx="13" ry="7" fill="#ec4899" transform="rotate(25 42 56)"/>
+  <circle cx="42" cy="56" r="5" fill="#f9a8d4"/>
+  <rect x="82" y="60" width="56" height="80" fill="#fce7f3" rx="5"/>
+  <circle cx="94" cy="74" r="5" fill="white" opacity="0.7"/><circle cx="113" cy="69" r="5" fill="white" opacity="0.7"/>
+  <circle cx="128" cy="81" r="5" fill="white" opacity="0.7"/><circle cx="91" cy="93" r="5" fill="white" opacity="0.7"/>
+  <circle cx="120" cy="97" r="5" fill="white" opacity="0.7"/><circle cx="106" cy="116" r="5" fill="white" opacity="0.7"/>
+  <circle cx="102" cy="62" r="20" fill="#c8a26a"/><circle cx="120" cy="58" r="15" fill="#d4ab74"/>
+  <circle cx="96" cy="60" r="2.5" fill="#5c3317"/><circle cx="107" cy="55" r="2.5" fill="#5c3317"/>
+  <circle cx="100" cy="70" r="2" fill="#5c3317"/><circle cx="117" cy="59" r="2" fill="#5c3317"/>
+  <ellipse cx="110" cy="48" rx="15" ry="8" fill="#f472b6" transform="rotate(-25 110 48)"/>
+  <ellipse cx="110" cy="48" rx="15" ry="8" fill="#ec4899" transform="rotate(25 110 48)"/>
+  <circle cx="110" cy="48" r="6" fill="#f9a8d4"/>
+  <rect x="150" y="68" width="56" height="72" fill="#fce7f3" rx="5"/>
+  <circle cx="162" cy="82" r="5" fill="white" opacity="0.7"/><circle cx="180" cy="77" r="5" fill="white" opacity="0.7"/>
+  <circle cx="196" cy="88" r="5" fill="white" opacity="0.7"/><circle cx="158" cy="97" r="5" fill="white" opacity="0.7"/>
+  <circle cx="187" cy="101" r="5" fill="white" opacity="0.7"/><circle cx="172" cy="112" r="5" fill="white" opacity="0.7"/>
+  <circle cx="171" cy="70" r="18" fill="#c8a26a"/><circle cx="188" cy="66" r="14" fill="#d4ab74"/>
+  <circle cx="166" cy="67" r="2.5" fill="#5c3317"/><circle cx="176" cy="62" r="2.5" fill="#5c3317"/>
+  <circle cx="169" cy="76" r="2" fill="#5c3317"/><circle cx="185" cy="65" r="2" fill="#5c3317"/>
+  <ellipse cx="178" cy="56" rx="13" ry="7" fill="#f472b6" transform="rotate(-25 178 56)"/>
+  <ellipse cx="178" cy="56" rx="13" ry="7" fill="#ec4899" transform="rotate(25 178 56)"/>
+  <circle cx="178" cy="56" r="5" fill="#f9a8d4"/>
+  <rect x="128" y="128" width="80" height="26" fill="#4ade80" rx="7"/>
+  <text x="168" y="146" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#14532d" text-anchor="middle">$350</text>
+</svg>`,
+                        given: `斥 A: How much are the cookies?　<span class="text-xs text-stone-400">(已給)</span>`,
+                        q: "B: ______（選出正確答句）",
+                        opts: ["They're three hundred and fifty dollars.", "It's three hundred and fifty dollars.", "They're thirty-five dollars.", "They're five hundred and thirty dollars."],
+                        ans: "A", hint: "cookies 是複數——用 They're 還是 It's？350 怎麼念？"
+                    },
+                    {
+                        svgHtml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 155" style="width:100%;max-width:220px;display:block;margin:auto">
+  <rect width="220" height="155" fill="#f8f5f0" rx="10"/>
+  <path d="M55,140 Q80,130 110,135 Q140,130 165,140 Q140,148 110,146 Q80,148 55,140Z" fill="#86efac" opacity="0.8"/>
+  <polygon points="18,138 88,138 53,95" fill="#d4a76a"/>
+  <polygon points="21,136 85,136 53,98" fill="#86efac"/>
+  <polygon points="24,131 82,131 53,102" fill="#f87171"/>
+  <polygon points="27,126 79,126 53,106" fill="#fde68a"/>
+  <polygon points="30,122 76,122 53,109" fill="#e8c49a"/>
+  <polygon points="32,120 74,120 53,111" fill="#c49040"/>
+  <line x1="53" y1="95" x2="53" y2="74" stroke="#92400e" stroke-width="2.5"/>
+  <polygon points="53,72 59,80 47,80" fill="#fbbf24"/>
+  <polygon points="72,132 152,132 112,84" fill="#d4a76a"/>
+  <polygon points="75,130 149,130 112,87" fill="#86efac"/>
+  <polygon points="78,125 146,125 112,91" fill="#f87171"/>
+  <polygon points="81,120 143,120 112,95" fill="#fde68a"/>
+  <polygon points="84,116 140,116 112,98" fill="#e8c49a"/>
+  <polygon points="87,113 137,113 112,101" fill="#c49040"/>
+  <line x1="112" y1="84" x2="112" y2="62" stroke="#92400e" stroke-width="2.5"/>
+  <polygon points="112,60 118,68 106,68" fill="#fbbf24"/>
+  <polygon points="132,138 202,138 167,95" fill="#d4a76a"/>
+  <polygon points="135,136 199,136 167,98" fill="#86efac"/>
+  <polygon points="138,131 196,131 167,102" fill="#f87171"/>
+  <polygon points="141,126 193,126 167,106" fill="#fde68a"/>
+  <polygon points="144,122 190,122 167,109" fill="#e8c49a"/>
+  <polygon points="147,120 187,120 167,111" fill="#c49040"/>
+  <line x1="167" y1="95" x2="167" y2="74" stroke="#92400e" stroke-width="2.5"/>
+  <polygon points="167,72 173,80 161,80" fill="#fbbf24"/>
+  <rect x="145" y="120" width="68" height="26" fill="#c084fc" rx="7"/>
+  <text x="179" y="138" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="bold" fill="#4a044e" text-anchor="middle">$200</text>
+</svg>`,
+                        given: `斥 B: They're two hundred dollars.　<span class="text-xs text-stone-400">(已給)</span>`,
+                        q: "A: ______（選出正確問句）",
+                        opts: ["How much is the sandwich?", "How much are the cookies?", "How much are the sandwiches?", "What are the sandwiches?"],
+                        ans: "C", hint: "sandwiches 是複數——B 的答句用了 They're，問句的主詞就同樣是複數。"
+                    }
+                ],
+                // Section I: Read and choose (6%, 每題3分)
+                I: {
+                    passage: `<p class="mb-2 leading-relaxed">Liam and his sister go to Milo Museum. They see many paintings there. Liam does not like abstract paintings. "I <strong>only</strong> see <span class="font-bold text-amber-600">lines</span> in them. That is not <span class="font-bold text-amber-600">art</span>," he says. His sister loves the bright colors in abstract paintings. She thinks they <span class="font-bold text-amber-600">stand for</span> <span class="font-bold text-amber-600">something</span> special.</p><p class="text-xs text-stone-400 mt-2">💡 <strong>line</strong> 線條 &nbsp;｜&nbsp; <strong>hat</strong> 帽子 &nbsp;｜&nbsp; <strong>either</strong> 也不 &nbsp;｜&nbsp; <strong>stand for</strong> 代表 &nbsp;｜&nbsp; <strong>something</strong> 某事物</p>`,
+                    questions: [
+                        {
+                            q: "Which is most likely an abstract painting?　（most likely 最有可能地）",
+                            opts: [
+                                "🌸 一幅描繪花園裡盛開花朵的寫實畫作",
+                                "🎨 一幅只有線條與形狀、看不出具體事物的畫作",
+                                "🏔️ 一幅描繪山脈與湖泊的風景畫",
+                                "👤 一幅人物肖像畫"
+                            ],
+                            ans: "B", hint: "文中說 Liam 「只看到線條，這不是藝術」——抽象畫的特徵是什麼？"
+                        },
+                        {
+                            q: "Flora is Liam's cousin. Her taste in paintings is like Liam's. What may Flora say about an abstract painting?　（taste 愛好）",
+                            opts: [
+                                "This is not art. I only see lines in the painting.",
+                                "I don't like this painting. It's only black and white.",
+                                "Does the color pink in the work stand for the sky? Wow!",
+                                "This painting is my favorite. The use of colors is really special."
+                            ],
+                            ans: "A", hint: "Flora 的口味和 Liam 一樣——Liam 對抽象畫的看法是什麼？"
+                        }
+                    ]
+                }
+            };
+
+            const SECINFO = {
+                A: { title: "大題 A", sub: "Read and Write｜根據句意填入適當的單字 (10%，每題2分)" },
+                B: { title: "大題 B", sub: "Look and Fill｜看圖完成對話 (10%，每格2分)" },
+                C: { title: "大題 C", sub: "Fill in the Blanks｜填入 a 或 some (14%，每格2分)" },
+                D: { title: "大題 D", sub: "Read and Choose｜選出正確的答案 (8%，每題2分)" },
+                E: { title: "大題 E", sub: "Choose｜選出正確的答案 (15%，每題3分)" },
+                F: { title: "大題 F", sub: "Fill in the Blanks｜填入 one 或 ones (7%，每格1分)" },
+                G: { title: "大題 G", sub: "Make Sentences｜仿例句依提示字造問句 (15%，每題5分)" },
+                H: { title: "大題 H", sub: "Look and Write｜看圖寫出問句或答句 (15%，每題5分)" },
+                I: { title: "大題 I", sub: "Read and Choose｜閱讀文章選出正確的答案 (6%，每題3分)" }
+            };
+
+            let curSec = 'A', curIdx = 0, score = 0;
+            let secState = {};
+
+            const qWrap = document.getElementById('q-wrap');
+            const controls = document.getElementById('controls');
+            const scoredisp = document.getElementById('score-disp');
+            const progBar = document.getElementById('prog-bar');
+            const progText = document.getElementById('prog-text');
+            const secTitle = document.getElementById('sec-title');
+            const secSub = document.getElementById('sec-sub');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const scoreSummary = document.getElementById('score-summary');
+            const liveScore = document.getElementById('live-score');
+            const liveTotal = document.getElementById('live-total');
+            const alertModal = document.getElementById('alert-modal');
+            const alertMsg = document.getElementById('alert-msg');
+            const alertClose = document.getElementById('alert-close');
+            const clearBtn = document.getElementById('clear-btn');
+
+            function loadScores() { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { return {}; } }
+            function saveScore(sec, sc, tot) {
+                const d = loadScores();
+                d[sec] = { score: sc, total: tot, pct: Math.round(sc / tot * 100), at: (new Date()).toLocaleString('zh-TW') };
+                localStorage.setItem(STORE, JSON.stringify(d));
+            }
+
+            function mkInteractive(text) {
+                return text.split(/([a-zA-Z''.,!?]+)/).map(p => {
+                    const k = p.toLowerCase().replace(/'/g, "'").replace(/[.,!?]/g, '');
+                    return tr[k] ? `<span class="word">${p}<span class="tooltip">${tr[k]}</span></span>` : p;
+                }).join('');
+            }
+
+            function speak(text) {
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text.replace(/_{2,}/g, '').replace(/[①②③④⑤⑥○❶❷]/g, '').trim());
+                u.lang = 'en-US'; u.rate = 0.9;
+                window.speechSynthesis.speak(u);
+            }
+
+            function mkSpeaker(txt) {
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("class", "h-5 w-5 text-amber-500 hover:text-amber-700 cursor-pointer flex-shrink-0");
+                svg.setAttribute("viewBox", "0 0 20 20"); svg.setAttribute("fill", "currentColor");
+                svg.setAttribute("title", "朗讀");
+                const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                p.setAttribute("fill-rule", "evenodd");
+                p.setAttribute("d", "M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.016 5.39a.75.75 0 01.016 1.046l-1.04 1.04a.75.75 0 11-1.06-1.06l1.04-1.04a.75.75 0 011.044-.026zM14.07 3.33a.75.75 0 01.016 1.046l-1.04 1.04a.75.75 0 01-1.06-1.06l1.04-1.04a.75.75 0 011.044-.026z");
+                p.setAttribute("clip-rule", "evenodd");
+                svg.appendChild(p);
+                svg.onclick = e => { e.stopPropagation(); speak(txt); };
+                return svg;
+            }
+
+            function secLen(sec) {
+                if (sec === 'A') return DATA.A.questions.length;
+                if (sec === 'B') return DATA.B.answers.length;
+                if (sec === 'F') return DATA.F.questions.reduce((s, q) => s + q.blanks, 0);
+                if (sec === 'G') return DATA.G.length;
+                if (sec === 'I') return DATA.I.questions.length;
+                return DATA[sec].length;
+            }
+
+            function updateLive() {
+                liveScore.textContent = score;
+                liveTotal.textContent = secLen(curSec);
+            }
+
+            function renderScoreResult(sc, tot, saveKey) {
+                updateLive();
+                saveScore(saveKey, sc, tot);
+                progBar.style.width = '100%';
+                progText.textContent = `${tot} / ${tot}`;
+                controls.innerHTML = '';
+                const pct = Math.round(sc / tot * 100);
+                const em = pct === 100 ? '🎉' : pct >= 80 ? '👏' : pct >= 60 ? '👍' : '💪';
+                scoredisp.innerHTML = `<div class="py-4"><p class="text-5xl mb-3">${em}</p><p class="text-stone-400 mb-1">測驗完成！</p><p class="text-5xl font-bold text-stone-800 my-3">${sc} <span class="text-2xl text-stone-400">/ ${tot}</span></p><p class="text-2xl font-bold ${pct >= 60 ? 'text-green-600' : 'text-red-500'}">${pct}%</p><p class="text-xs text-stone-400 mt-2">✅ 成績已儲存至本地端</p></div>`;
+                scoredisp.classList.remove('hidden');
+                const rb = document.createElement('button');
+                rb.className = 'mt-2 bg-amber-500 text-white font-bold py-2 px-6 rounded-xl hover:bg-amber-600';
+                rb.textContent = '重新練習此大題'; rb.onclick = restart;
+                scoredisp.appendChild(rb);
+                renderSidebar();
+            }
+
+            // --- Render Sidebar ---
+            function renderSidebar() {
+                const scores = loadScores();
+                sidebarNav.innerHTML = '';
+                Object.keys(DATA).forEach(sec => {
+                    const btn = document.createElement('button');
+                    btn.className = 'sb-btn' + (sec === curSec ? ' active' : '');
+                    btn.dataset.sec = sec;
+                    const sc = scores[sec];
+                    const badge = sc ? `<span class="badge ${sc.pct >= 60 ? 'badge-ok' : 'badge-fail'}">${sc.pct}%</span>` : `<span class="badge badge-none">—</span>`;
+                    btn.innerHTML = `<span>${SECINFO[sec].title}</span>${badge}`;
+                    btn.onclick = () => switchSection(sec);
+                    sidebarNav.appendChild(btn);
+                });
+                scoreSummary.innerHTML = '';
+                Object.keys(DATA).forEach(sec => {
+                    const sc = scores[sec];
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between';
+                    row.innerHTML = sc
+                        ? `<span class="text-stone-500">${SECINFO[sec].title}</span><span class="badge ${sc.pct >= 60 ? 'badge-ok' : 'badge-fail'}">${sc.score}/${sc.total} (${sc.pct}%)</span>`
+                        : `<span class="text-stone-400">${SECINFO[sec].title}</span><span class="badge badge-none">未作答</span>`;
+                    scoreSummary.appendChild(row);
+                });
+            }
+
+            // ===============================================
+            // Section A: Word-bank fill-in
+            // ===============================================
+            function displayFillIn() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.A.title;
+                secSub.textContent = SECINFO.A.sub;
+                progBar.style.width = '0%';
+                const { wordBank, questions } = DATA.A;
+                progText.textContent = `0 / ${questions.length}`;
+                updateLive();
+                const filled = new Array(questions.length).fill(null);
+                const usedCount = {}; wordBank.forEach(w => usedCount[w] = 0);
+                let selectedWord = null, selectedChip = null;
+                const block = document.createElement('div'); block.id = 'qblock';
+
+                const wbDiv = document.createElement('div');
+                wbDiv.className = 'bg-blue-50 border border-blue-200 rounded-xl p-3 mb-5';
+                wbDiv.innerHTML = '<p class="text-xs font-bold text-blue-500 text-center mb-2">📖 Word Bank（點選單字填入空格）</p>';
+                const wbChips = document.createElement('div');
+                wbChips.className = 'flex flex-wrap gap-2 justify-center';
+                wordBank.forEach(w => {
+                    const chip = document.createElement('span');
+                    chip.className = 'word-chip'; chip.id = `chip-${w}`; chip.textContent = w;
+                    chip.onclick = () => {
+                        if (selectedWord === w) { chip.classList.remove('ring-2','ring-amber-400','bg-amber-100'); selectedWord=null; selectedChip=null; return; }
+                        if (selectedChip) selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                        selectedWord = w; selectedChip = chip;
+                        chip.classList.add('ring-2','ring-amber-400','bg-amber-100');
+                    };
+                    wbChips.appendChild(chip);
+                });
+                wbDiv.appendChild(wbChips); block.appendChild(wbDiv);
+
+                const vocabDiv = document.createElement('div');
+                vocabDiv.className = 'bg-stone-50 border border-stone-200 rounded-xl p-3 mb-5 text-xs text-stone-500';
+                vocabDiv.innerHTML = '<p class="font-bold text-stone-400 mb-1">💡 參考單字</p><p>dangerous 危險的</p>';
+                block.appendChild(vocabDiv);
+
+                questions.forEach((q, qi) => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'mb-5 p-4 bg-stone-50 border border-stone-200 rounded-xl';
+                    const qRow = document.createElement('div');
+                    qRow.className = 'flex items-start gap-2 mb-2';
+                    qRow.appendChild(mkSpeaker(q.text));
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'text-sm text-stone-700 leading-relaxed';
+                    const numSpan = document.createElement('span');
+                    numSpan.className = 'text-amber-600 font-bold mr-1';
+                    numSpan.textContent = `${qi+1}.`;
+                    textSpan.appendChild(numSpan);
+                    q.text.split('______').forEach((part, pi, arr) => {
+                        const t = document.createElement('span'); t.innerHTML = mkInteractive(part);
+                        textSpan.appendChild(t);
+                        if (pi < arr.length-1) {
+                            const blank = document.createElement('span');
+                            blank.className = 'fill-blank'; blank.id = `ablank-${qi}`; blank.textContent = '______';
+                            blank.onclick = () => {
+                                if (!selectedWord) { alertMsg.textContent='請先從詞庫點選一個單字！'; alertModal.classList.remove('hidden'); return; }
+                                if (filled[qi]) { usedCount[filled[qi]]--; const o=document.getElementById(`chip-${filled[qi]}`); if(o&&usedCount[filled[qi]]===0)o.classList.remove('used'); }
+                                filled[qi]=selectedWord; usedCount[selectedWord]++;
+                                blank.textContent=selectedWord; blank.classList.add('filled'); speak(selectedWord);
+                                if (usedCount[selectedWord]>=1) selectedChip.classList.add('used');
+                                selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                                selectedWord=null; selectedChip=null;
+                                const done=filled.filter(f=>f!==null).length;
+                                progBar.style.width=(done/questions.length*100)+'%';
+                                progText.textContent=`${done} / ${questions.length}`;
+                            };
+                            textSpan.appendChild(blank);
+                        }
+                    });
+                    qRow.appendChild(textSpan); qDiv.appendChild(qRow);
+                    block.appendChild(qDiv);
+                });
+                qWrap.appendChild(block);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'w-full sm:w-auto bg-amber-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-amber-600 transition-colors';
+                checkBtn.textContent = '檢查答案';
+                checkBtn.onclick = () => {
+                    if (filled.some(f=>f===null)) { alertMsg.textContent='請填寫所有空格！'; alertModal.classList.remove('hidden'); return; }
+                    score = 0;
+                    questions.forEach((q,qi) => {
+                        const blank=document.getElementById(`ablank-${qi}`);
+                        blank.classList.remove('filled');
+                        if (filled[qi]===q.answer) { score++; blank.classList.add('correct'); }
+                        else { blank.classList.add('wrong'); blank.title=`正確答案：${q.answer}`; }
+                    });
+                    renderScoreResult(score, questions.length, 'A');
+                };
+                controls.appendChild(checkBtn);
+            }
+
+            // ===============================================
+            // Section B: Dialogue fill-in
+            // ===============================================
+            function displayDialogueFillIn() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.B.title;
+                secSub.textContent = SECINFO.B.sub;
+                const { wordBank, answers, dialogue } = DATA.B;
+                const totalBlanks = answers.length;
+                progBar.style.width = '0%'; progText.textContent = `0 / ${totalBlanks}`; updateLive();
+                const filled = new Array(totalBlanks).fill(null);
+                const usedCount = {}; wordBank.forEach(w => usedCount[w] = 0);
+                let selectedWord = null, selectedChip = null;
+                const block = document.createElement('div'); block.id = 'qblock';
+
+                const wbDiv = document.createElement('div');
+                wbDiv.className = 'bg-blue-50 border border-blue-200 rounded-xl p-3 mb-5';
+                wbDiv.innerHTML = '<p class="text-xs font-bold text-blue-500 text-center mb-2">📖 Word Bank（點選單字，再點空格填入）</p>';
+                const wbChips = document.createElement('div'); wbChips.className = 'flex flex-wrap gap-2 justify-center';
+                wordBank.forEach(w => {
+                    const chip = document.createElement('span');
+                    chip.className = 'word-chip'; chip.id = `bchip-${w}`; chip.textContent = w;
+                    chip.onclick = () => {
+                        if (selectedWord===w) { chip.classList.remove('ring-2','ring-amber-400','bg-amber-100'); selectedWord=null; selectedChip=null; return; }
+                        if (selectedChip) selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                        selectedWord=w; selectedChip=chip; chip.classList.add('ring-2','ring-amber-400','bg-amber-100');
+                    };
+                    wbChips.appendChild(chip);
+                });
+                wbDiv.appendChild(wbChips); block.appendChild(wbDiv);
+
+                const imgNote = document.createElement('p');
+                imgNote.className = 'text-xs text-stone-400 text-center mb-3';
+                imgNote.textContent = '📷 情境圖：一家人坐在餐桌旁，各自說出想要的飲料';
+                block.appendChild(imgNote);
+
+                const dialogDiv = document.createElement('div');
+                dialogDiv.className = 'bg-stone-50 border border-stone-200 rounded-xl p-4';
+
+                dialogue.forEach(line => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'flex items-start gap-2 mb-3';
+                    const sp = document.createElement('span');
+                    sp.className = 'font-bold text-stone-700 text-sm w-14 flex-shrink-0 text-right';
+                    sp.textContent = line.speaker + ':';
+                    lineDiv.appendChild(sp);
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'text-sm text-stone-700 leading-relaxed flex flex-wrap items-center gap-0.5';
+                    line.segments.forEach(seg => {
+                        if (seg.type === 'text') {
+                            const t = document.createElement('span'); t.innerHTML = mkInteractive(seg.text);
+                            textSpan.appendChild(t);
+                        } else if (seg.type === 'num') {
+                            const n = document.createElement('span');
+                            n.className = 'text-amber-600 font-bold text-xs mx-0.5'; n.textContent = seg.text;
+                            textSpan.appendChild(n);
+                        } else if (seg.type === 'blank') {
+                            const idx = seg.idx;
+                            const blank = document.createElement('span');
+                            blank.className = 'fill-blank'; blank.id = `bblank-${idx}`; blank.textContent = '______';
+                            blank.style.minWidth = '70px';
+                            blank.onclick = () => {
+                                if (!selectedWord) { alertMsg.textContent='請先從上方詞庫點選一個單字！'; alertModal.classList.remove('hidden'); return; }
+                                if (filled[idx]) { usedCount[filled[idx]]--; const o=document.getElementById(`bchip-${filled[idx]}`); if(o&&usedCount[filled[idx]]===0)o.classList.remove('used'); }
+                                filled[idx]=selectedWord; usedCount[selectedWord]++;
+                                blank.textContent=selectedWord; blank.classList.add('filled'); speak(selectedWord);
+                                if (usedCount[selectedWord]>=1) selectedChip.classList.add('used');
+                                selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                                selectedWord=null; selectedChip=null;
+                                const done=filled.filter(f=>f!==null).length;
+                                progBar.style.width=(done/totalBlanks*100)+'%';
+                                progText.textContent=`${done} / ${totalBlanks}`;
+                            };
+                            textSpan.appendChild(blank);
+                        }
+                    });
+                    lineDiv.appendChild(textSpan); dialogDiv.appendChild(lineDiv);
+                });
+                block.appendChild(dialogDiv); qWrap.appendChild(block);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'w-full sm:w-auto bg-amber-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-amber-600 transition-colors';
+                checkBtn.textContent = '檢查答案';
+                checkBtn.onclick = () => {
+                    if (filled.some(f=>f===null)) { alertMsg.textContent='請填寫所有空格！'; alertModal.classList.remove('hidden'); return; }
+                    score = 0;
+                    answers.forEach((ans,i) => {
+                        const blank=document.getElementById(`bblank-${i}`); blank.classList.remove('filled');
+                        if (filled[i]===ans) { score++; blank.classList.add('correct'); }
+                        else { blank.classList.add('wrong'); blank.title=`正確答案：${ans}`; }
+                    });
+                    renderScoreResult(score, totalBlanks, 'B');
+                };
+                controls.appendChild(checkBtn);
+            }
+
+            // ===============================================
+            // Section F: One / Ones fill-in
+            // ===============================================
+            function displayOneOnes() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.F.title;
+                secSub.textContent = SECINFO.F.sub;
+                const { wordBank, questions } = DATA.F;
+                const totalBlanks = questions.reduce((s,q) => s+q.blanks, 0);
+                progBar.style.width = '0%'; progText.textContent = `0 / ${totalBlanks}`; updateLive();
+                const filled = new Array(totalBlanks).fill(null);
+                // Build flat blank list
+                const allBlanks = [];
+                questions.forEach((q,qi) => {
+                    for (let bi=0; bi<q.blanks; bi++) allBlanks.push({ qi, bi, answer: q.answers[bi] });
+                });
+                let selectedWord = null, selectedChip = null;
+                const block = document.createElement('div'); block.id = 'qblock';
+
+                const wbDiv = document.createElement('div');
+                wbDiv.className = 'bg-blue-50 border border-blue-200 rounded-xl p-3 mb-5';
+                wbDiv.innerHTML = '<p class="text-xs font-bold text-blue-500 text-center mb-2">📖 點選 <strong>one</strong> 或 <strong>ones</strong>，再點空格填入（可重複使用）</p>';
+                const wbChips = document.createElement('div'); wbChips.className = 'flex flex-wrap gap-3 justify-center';
+                wordBank.forEach(w => {
+                    const chip = document.createElement('span');
+                    chip.className = 'word-chip px-8 text-lg'; chip.id = `fchip-${w}`; chip.textContent = w;
+                    chip.onclick = () => {
+                        if (selectedWord===w) { chip.classList.remove('ring-2','ring-amber-400','bg-amber-100'); selectedWord=null; selectedChip=null; return; }
+                        if (selectedChip) selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                        selectedWord=w; selectedChip=chip; chip.classList.add('ring-2','ring-amber-400','bg-amber-100');
+                    };
+                    wbChips.appendChild(chip);
+                });
+                wbDiv.appendChild(wbChips); block.appendChild(wbDiv);
+
+                let globalIdx = 0;
+                questions.forEach((q, qi) => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'mb-5 p-4 bg-stone-50 border border-stone-200 rounded-xl';
+                    const numP = document.createElement('p');
+                    numP.className = 'text-xs font-bold text-amber-600 mb-2'; numP.textContent = `${qi+1}.`;
+                    qDiv.appendChild(numP);
+                    const container = document.createElement('div');
+                    container.className = 'text-sm text-stone-700 leading-loose whitespace-pre-line';
+                    q.text.split('______').forEach((part, pi, arr) => {
+                        const t = document.createElement('span'); t.innerHTML = mkInteractive(part);
+                        container.appendChild(t);
+                        if (pi < arr.length-1) {
+                            const bIdx = globalIdx++;
+                            const blank = document.createElement('span');
+                            blank.className = 'fill-blank mx-1'; blank.id = `fblank-${bIdx}`;
+                            blank.textContent = '______'; blank.style.minWidth='60px';
+                            blank.onclick = () => {
+                                if (!selectedWord) { alertMsg.textContent='請先點選 one 或 ones！'; alertModal.classList.remove('hidden'); return; }
+                                filled[bIdx]=selectedWord;
+                                blank.textContent=selectedWord; blank.classList.remove('wrong');
+                                blank.classList.add('filled'); speak(selectedWord);
+                                const done=filled.filter(f=>f!==null).length;
+                                progBar.style.width=(done/totalBlanks*100)+'%';
+                                progText.textContent=`${done} / ${totalBlanks}`;
+                            };
+                            container.appendChild(blank);
+                        }
+                    });
+                    if (q.extra) { const ex=document.createElement('span'); ex.className='text-xs text-stone-400 ml-1'; ex.textContent=q.extra; container.appendChild(ex); }
+                    qDiv.appendChild(container);
+                    block.appendChild(qDiv);
+                });
+                qWrap.appendChild(block);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'w-full sm:w-auto bg-amber-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-amber-600 transition-colors';
+                checkBtn.textContent = '檢查答案';
+                checkBtn.onclick = () => {
+                    if (filled.some(f=>f===null)) { alertMsg.textContent='請填寫所有空格！'; alertModal.classList.remove('hidden'); return; }
+                    score = 0;
+                    allBlanks.forEach((bl,i) => {
+                        const blank=document.getElementById(`fblank-${i}`); blank.classList.remove('filled');
+                        if (filled[i]===bl.answer) { score++; blank.classList.add('correct'); }
+                        else { blank.classList.add('wrong'); blank.title=`正確答案：${bl.answer}`; }
+                    });
+                    renderScoreResult(score, totalBlanks, 'F');
+                };
+                controls.appendChild(checkBtn);
+            }
+
+            // ===============================================
+            // Section G: Reorder sentences
+            // ===============================================
+            function displayReorder(idx) {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                const list = DATA.G;
+                secTitle.textContent = SECINFO.G.title;
+                secSub.textContent = SECINFO.G.sub;
+                const answeredCnt = Object.keys(secState).filter(k=>secState[k] && secState[k].answered).length;
+                progBar.style.width = (answeredCnt/list.length*100) + '%';
+                progText.textContent = `${answeredCnt} / ${list.length}`;
+                updateLive();
+                const q = list[idx];
+                const block = document.createElement('div'); block.id = 'qblock';
+
+                // Example box
+                const exBox = document.createElement('div');
+                exBox.className = 'bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-xs text-stone-600';
+                exBox.innerHTML = '<p class="font-bold text-amber-700 mb-1">📝 例句</p><p>which / you / like / apple / orange</p><p class="mt-1 font-bold text-amber-800">→ Which do you like, apples or oranges?</p>';
+                block.appendChild(exBox);
+
+                const promptP = document.createElement('p');
+                promptP.className = 'text-sm text-stone-700 mb-2 flex items-start gap-2 whitespace-pre-line';
+                promptP.appendChild(mkSpeaker(q.hint));
+                const pSpan = document.createElement('span');
+                pSpan.innerHTML = `<strong>${idx+1}.</strong> ${mkInteractive(q.prompt)}`;
+                promptP.appendChild(pSpan);
+                block.appendChild(promptP);
+
+                const instrP = document.createElement('p');
+                instrP.className = 'text-xs text-stone-400 mb-3';
+                instrP.textContent = '👆 點擊下方單字，按正確順序排成句子（點擊已放入的單字可移除）';
+                block.appendChild(instrP);
+
+                const ansZone = document.createElement('div');
+                ansZone.className = 'answer-zone mb-4'; ansZone.id = 'ans-zone';
+                const ph = document.createElement('span'); ph.className = 'text-stone-300 text-sm'; ph.textContent = '點擊單字放到這裡...';
+                ansZone.appendChild(ph); block.appendChild(ansZone);
+
+                if (!secState[idx]) secState[idx] = { answered: false, userAnswer: [] };
+                const myState = secState[idx];
+                const userAnswer = myState.userAnswer;
+
+                const poolDiv = document.createElement('div');
+                poolDiv.className = 'flex flex-wrap gap-2 justify-center mb-4'; poolDiv.id = 'word-pool';
+
+                shuffled.forEach((word, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'reorder-word'; btn.textContent = word; btn.dataset.poolIdx = i;
+                    if (userAnswer.some(u => u.poolIdx === i)) btn.classList.add('used');
+                    btn.onclick = () => {
+                        if (btn.classList.contains('used') || myState.answered) return;
+                        speak(word); btn.classList.add('used');
+                        userAnswer.push({ word, poolIdx: i }); renderAZ();
+                    };
+                    poolDiv.appendChild(btn);
+                });
+                block.appendChild(poolDiv);
+
+                qWrap.appendChild(block);
+
+                function renderAZ() {
+                    ansZone.innerHTML = '';
+                    if (userAnswer.length===0) { const p2=document.createElement('span'); p2.className='text-stone-300 text-sm'; p2.textContent='點擊單字放到這裡...'; ansZone.appendChild(p2); return; }
+                    userAnswer.forEach((item, ai) => {
+                        const slot = document.createElement('button');
+                        slot.className = 'answer-slot'; slot.textContent = item.word;
+                        slot.onclick = () => {
+                            if (myState.answered) return;
+                            userAnswer.splice(ai,1); poolDiv.querySelectorAll('.reorder-word')[item.poolIdx].classList.remove('used'); renderAZ(); 
+                        };
+                        ansZone.appendChild(slot);
+                    });
+                }
+                renderAZ();
+
+                const navWrap = document.createElement('div');
+                navWrap.className = 'flex justify-between items-center w-full gap-3 mt-6';
+                
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'flex-1 py-3 px-2 bg-stone-200 text-stone-700 font-bold rounded-xl transition-colors hover:bg-stone-300 ' + (idx > 0 ? '' : 'invisible pointer-events-none');
+                prevBtn.innerHTML = '←<span class="hidden sm:inline"> 上一題</span>';
+                prevBtn.onclick = () => { curIdx--; displayReorder(curIdx); };
+                navWrap.appendChild(prevBtn);
+
+                const mainBtn = document.createElement('button');
+                mainBtn.className = 'flex-[2] py-3 px-4 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors';
+                navWrap.appendChild(mainBtn);
+                
+                controls.appendChild(navWrap);
+
+                if (myState.answered) {
+                    poolDiv.querySelectorAll('.reorder-word').forEach(b => { b.onclick=null; b.style.cursor='default'; });
+                    ansZone.querySelectorAll('.answer-slot').forEach(s => { s.onclick=null; s.style.cursor='default'; });
+                    if (myState.isCorrect) { 
+                        ansZone.classList.add('correct'); 
+                        if (!ansZone.innerHTML.includes('✔️')) ansZone.innerHTML += '<span class="text-green-600 font-bold text-lg ml-2">✔️</span>'; 
+                    } else {
+                        ansZone.classList.add('wrong');
+                        const corrP = document.createElement('p');
+                        corrP.className = 'mt-2 text-sm text-green-700 bg-green-50 border border-green-200 p-2 rounded-md';
+                        corrP.innerHTML = `<strong>正確答案：</strong>${q.answer.join(' ')}`;
+                        block.appendChild(corrP);
+                    }
+                    if (idx === list.length - 1) {
+                        mainBtn.textContent = '完成測驗 🎉';
+                        mainBtn.onclick = showScore;
+                    } else {
+                        mainBtn.textContent = '下一題 →';
+                        mainBtn.onclick = () => { curIdx++; displayReorder(curIdx); };
+                    }
+                } else {
+                    mainBtn.textContent = '檢查答案';
+                    mainBtn.onclick = () => {
+                        if (userAnswer.length !== q.answer.length) { alertMsg.textContent='請將所有單字排列完成！'; alertModal.classList.remove('hidden'); return; }
+                        myState.answered = true;
+                        myState.isCorrect = userAnswer.every((item,i) => item.word === q.answer[i]);
+                        if (myState.isCorrect) score++;
+                        displayReorder(curIdx);
+                    };
+                }
+            }
+
+            // ===============================================
+            // Section I: Reading + MC (all questions at once)
+            // ===============================================
+            function displayReadingSection() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.I.title;
+                secSub.textContent = SECINFO.I.sub;
+                const questions = DATA.I.questions;
+                progBar.style.width = '0%'; progText.textContent = `0 / ${questions.length}`; updateLive();
+                const block = document.createElement('div'); block.id = 'qblock';
+
+                const passDiv = document.createElement('div');
+                passDiv.className = 'bg-stone-50 border border-stone-300 rounded-xl p-4 mb-5 text-sm text-stone-700';
+                passDiv.innerHTML = DATA.I.passage;
+                block.appendChild(passDiv);
+
+                let submitted = false;
+                questions.forEach((q, qi) => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'mb-4 p-3 bg-stone-50 border border-stone-200 rounded-xl';
+                    const qp = document.createElement('p');
+                    qp.className = 'text-sm font-bold text-stone-700 mb-2';
+                    qp.textContent = q.q;
+                    qDiv.appendChild(qp);
+                    const optDiv = document.createElement('div'); optDiv.className = 'grid grid-cols-1 gap-2';
+                    q.opts.forEach((opt, oi) => {
+                        const ch = String.fromCharCode(65+oi);
+                        const row = document.createElement('div');
+                        row.className = 'flex items-center p-2 border border-stone-300 rounded-lg cursor-pointer hover:bg-amber-50 transition-all';
+                        const radio = document.createElement('input');
+                        radio.type='radio'; radio.id=`iq${qi}-${ch}`; radio.name=`iq${qi}`; radio.value=ch;
+                        radio.className='h-4 w-4 text-amber-600 flex-shrink-0';
+                        const label = document.createElement('label');
+                        label.htmlFor=`iq${qi}-${ch}`; label.className='ml-2 text-sm text-stone-800 flex-1 cursor-pointer';
+                        label.textContent=`(${ch}) ${opt}`;
+                        row.onclick=()=>{ if(!submitted){radio.checked=true;} };
+                        row.appendChild(radio); row.appendChild(label); optDiv.appendChild(row);
+                    });
+                    qDiv.appendChild(optDiv);
+                    block.appendChild(qDiv);
+                });
+                qWrap.appendChild(block);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'w-full sm:w-auto bg-amber-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-amber-600 transition-colors';
+                checkBtn.textContent = '檢查答案';
+                checkBtn.onclick = () => {
+                    if (submitted) return;
+                    const missing = questions.some((_,qi)=>!document.querySelector(`input[name="iq${qi}"]:checked`));
+                    if (missing) { alertMsg.textContent='請完成所有題目！'; alertModal.classList.remove('hidden'); return; }
+                    submitted=true; score=0;
+                    questions.forEach((q,qi) => {
+                        const sel=document.querySelector(`input[name="iq${qi}"]:checked`);
+                        const corrLabel=document.querySelector(`label[for="iq${qi}-${q.ans}"]`);
+                        const userLabel=sel.nextElementSibling;
+                        document.querySelectorAll(`input[name="iq${qi}"]`).forEach(r=>r.disabled=true);
+                        if (sel.value===q.ans) { score++; userLabel.parentElement.classList.add('bg-yellow-100','border-yellow-400','ring-2','ring-yellow-300'); userLabel.innerHTML+=' <span class="text-green-600 font-bold">✔️</span>'; }
+                        else { userLabel.parentElement.classList.add('bg-red-100','border-red-400','ring-2','ring-red-300'); userLabel.innerHTML+=' <span class="text-red-600 font-bold">❌</span>'; corrLabel.parentElement.classList.add('bg-yellow-100','border-yellow-400'); }
+                    });
+                    renderScoreResult(score, questions.length, 'I');
+                };
+                controls.appendChild(checkBtn);
+            }
+
+            // ===============================================
+            // C, D, E, H: Standard individual MC
+            // ===============================================
+            function displayQ(idx) {
+                if (curSec==='A') { displayFillIn(); return; }
+                if (curSec==='B') { displayDialogueFillIn(); return; }
+                if (curSec==='F') { displayOneOnes(); return; }
+                if (curSec==='G') { displayReorder(idx); return; }
+                if (curSec==='I') { displayReadingSection(); return; }
+
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                const list = DATA[curSec];
+                secTitle.textContent = SECINFO[curSec].title;
+                secSub.textContent = SECINFO[curSec].sub;
+                const answeredCnt = Object.keys(secState).filter(k=>secState[k] && secState[k].answered).length;
+                progBar.style.width = (answeredCnt/list.length*100) + '%';
+                progText.textContent = `${answeredCnt} / ${list.length}`;
+                updateLive();
+
+                const q = list[idx];
+                const block = document.createElement('div'); block.id = 'qblock';
+
+                // Context box for H (SVG illustration)
+                if (curSec==='H') {
+                    const ctx = document.createElement('div');
+                    ctx.className = 'mb-4 rounded-xl border border-stone-200 overflow-hidden bg-stone-50';
+                    ctx.innerHTML = `<div class="flex flex-col items-center gap-2 py-3 px-4">${q.svgHtml || ''}<p class="text-sm text-stone-600 text-center">${q.given || ''}</p></div>`;
+                    block.appendChild(ctx);
+                }
+
+                const qp = document.createElement('p');
+                qp.className = 'text-base text-stone-700 mb-4 flex items-start gap-2 whitespace-pre-line';
+                const span = document.createElement('span');
+                span.innerHTML = `<strong>${idx+1}.</strong> ${mkInteractive(q.q)}`;
+                qp.appendChild(mkSpeaker(q.q)); qp.appendChild(span);
+
+                const colCount = q.opts.some(o => o.length > 25) ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2';
+                const grid = document.createElement('div'); grid.className = `grid ${colCount} gap-3`;
+                q.opts.forEach((opt, i) => {
+                    const ch = String.fromCharCode(65+i);
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center p-3 border border-stone-300 rounded-lg cursor-pointer hover:bg-amber-50 transition-all';
+                    const radio = document.createElement('input');
+                    radio.type='radio'; radio.id=`q${idx}-${ch}`; radio.name=`q${idx}`; radio.value=ch;
+                    radio.className='h-4 w-4 text-amber-600 border-gray-300 flex-shrink-0';
+                    if (secState[idx] && secState[idx].selected === ch) radio.checked = true;
+                    const label = document.createElement('label');
+                    label.htmlFor=`q${idx}-${ch}`; label.className='ml-3 text-sm text-stone-800 flex-1 cursor-pointer';
+                    label.innerHTML=`(${ch}) ${mkInteractive(opt)}`;
+                    row.onclick=()=>{ radio.checked=true; speak(opt); if(!secState[idx] || !secState[idx].answered) secState[idx] = { answered: false, selected: ch }; };
+                    row.appendChild(radio); row.appendChild(label); grid.appendChild(row);
+                });
+
+                block.appendChild(qp); block.appendChild(grid);
+                qWrap.appendChild(block);
+
+                const navWrap = document.createElement('div');
+                navWrap.className = 'flex justify-between items-center w-full gap-3 mt-6';
+                
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'flex-1 py-3 px-2 bg-stone-200 text-stone-700 font-bold rounded-xl transition-colors hover:bg-stone-300 ' + (idx > 0 ? '' : 'invisible pointer-events-none');
+                prevBtn.innerHTML = '←<span class="hidden sm:inline"> 上一題</span>';
+                prevBtn.onclick = () => { curIdx--; displayQ(curIdx); };
+                navWrap.appendChild(prevBtn);
+
+                const mainBtn = document.createElement('button');
+                mainBtn.className = 'flex-[2] py-3 px-4 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors';
+                navWrap.appendChild(mainBtn);
+                
+                controls.appendChild(navWrap);
+
+                if (secState[idx] && secState[idx].answered) {
+                    block.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+                    block.querySelectorAll('div.flex.items-center').forEach(d => { d.onclick=null; d.classList.remove('hover:bg-amber-50'); d.style.cursor='default'; });
+                    
+                    const selVal = secState[idx].selected;
+                    const selLabel = document.querySelector(`label[for="q${idx}-${selVal}"]`);
+                    const corrLabel = document.querySelector(`label[for="q${idx}-${q.ans}"]`);
+                    
+                    if (selVal === q.ans) {
+                        selLabel.parentElement.classList.add('bg-yellow-100','border-yellow-400','ring-2','ring-yellow-300');
+                        if (!selLabel.innerHTML.includes('✔️')) selLabel.innerHTML += ' <span class="text-green-600 font-bold">✔️</span>';
+                    } else {
+                        selLabel.parentElement.classList.add('bg-red-100','border-red-400','ring-2','ring-red-300');
+                        if (!selLabel.innerHTML.includes('❌')) selLabel.innerHTML += ' <span class="text-red-600 font-bold">❌</span>';
+                        if (corrLabel) corrLabel.parentElement.classList.add('bg-yellow-100','border-yellow-400');
+                    }
+                    
+                    if (idx === list.length - 1) {
+                        mainBtn.textContent = '完成測驗 🎉';
+                        mainBtn.onclick = showScore;
+                    } else {
+                        mainBtn.textContent = '下一題 →';
+                        mainBtn.onclick = () => { curIdx++; displayQ(curIdx); };
+                    }
+                } else {
+                    mainBtn.textContent = '檢查答案';
+                    mainBtn.onclick = () => {
+                        const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+                        if (!sel) { alertMsg.textContent='請先選擇一個答案！'; alertModal.classList.remove('hidden'); return; }
+                        
+                        let isCorrect = (sel.value === q.ans);
+                        secState[idx] = { answered: true, selected: sel.value, isCorrect: isCorrect };
+                        if (isCorrect) score++;
+                        displayQ(idx);
+                    };
+                    block.querySelectorAll('input[type="radio"]').forEach(r => {
+                        r.addEventListener('change', (e) => {
+                            if(!secState[idx] || !secState[idx].answered) secState[idx] = { answered: false, selected: e.target.value };
+                        });
+                    });
+                }
+            }
+
+            function showScore() {
+                const tot=secLen(curSec);
+                renderScoreResult(score, tot, curSec);
+            }
+
+            function restart() {
+                score=0; curIdx=0; secState={};
+                scoredisp.classList.add('hidden'); scoredisp.innerHTML='';
+                displayQ(0);
+            }
+
+            function switchSection(sec) {
+                curSec=sec; score=0; curIdx=0;
+                secState={};
+                scoredisp.classList.add('hidden'); scoredisp.innerHTML='';
+                sidebarNav.querySelectorAll('.sb-btn').forEach(b=>b.classList.toggle('active',b.dataset.sec===sec));
+                displayQ(0);
+            }
+
+            alertClose.onclick=()=>alertModal.classList.add('hidden');
+            clearBtn.onclick=()=>{ if(confirm('確定要清除所有大題的成績嗎？')){ localStorage.removeItem(STORE); renderSidebar(); } };
+
+            renderSidebar();
+            displayQ(0);
+        });
+    </script>
+<script src="../progress.js"></script>
+</body>
+
+</html>
