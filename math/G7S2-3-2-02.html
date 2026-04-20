@@ -4,127 +4,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正比關係互動解題</title>
-
+    <title>正比例關係互動解題</title>
     <link rel="icon" href="../images/dog.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- KaTeX CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-    <!-- KaTeX JS -->
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f1f5f9;
-            color: #1e293b;
+            background-color: #f8fafc;
+            overflow: hidden;
         }
 
-        /* 填答格優化 */
-        .slot {
+        .math {
+            font-size: 28px;
+            font-weight: 600;
             display: inline-flex;
-            justify-content: center;
             align-items: center;
-            min-width: 48px;
-            height: 48px;
+            gap: 8px;
+        }
+
+        .slot {
+            width: 80px;
+            height: 50px;
             border: 3px solid #cbd5e1;
-            border-radius: 10px;
-            margin: 0 4px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            transition: all 0.3s;
             background-color: white;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #2563eb;
-            vertical-align: middle;
+        }
+
+        .slot:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
         }
 
         .slot.active {
             border-color: #3b82f6;
             background-color: #eff6ff;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-            animation: pulse-active 2s infinite;
+            animation: pulse-blue 1.5s infinite;
         }
 
-        @keyframes pulse-active {
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.4);
+            }
 
-            0%,
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
             100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.02);
+                box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
             }
         }
 
-        .slot.filled {
-            border-color: #94a3b8;
-            background-color: #f8fafc;
-        }
-
-        .slot.correct {
-            border-color: #22c55e;
-            background-color: #f0fdf4;
-            color: #15803d;
-            cursor: default;
-        }
-
-        /* 數學列對齊優化 */
-        .math-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 2px;
-            min-height: 54px;
-        }
-
-        .katex {
-            font-size: 1.3em !important;
-            line-height: 1;
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
+        .step-container {
+            transition: all 0.5s ease-out;
+            opacity: 0;
+            transform: translateY(20px);
             display: none;
         }
 
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        .step-container.unlocked {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
         }
 
-        .tada {
-            animation: tada 0.8s ease-in-out;
+        .check-mark {
+            display: none;
+            color: #22c55e;
+            animation: scale-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes tada {
-            0% {
+        @keyframes scale-in {
+            from {
+                transform: scale(0);
+            }
+
+            to {
                 transform: scale(1);
             }
+        }
 
-            10%,
-            20% {
-                transform: scale(0.95) rotate(-1deg);
-            }
+        /* 自定義捲軸 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
 
-            30%,
-            50%,
-            70%,
-            90% {
-                transform: scale(1.02) rotate(1deg);
-            }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
 
-            40%,
-            60%,
-            80% {
-                transform: scale(1.02) rotate(-1deg);
-            }
-
-            100% {
-                transform: scale(1) rotate(0);
-            }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -132,371 +111,326 @@
 <body class="h-screen flex flex-col">
 
     <!-- 導覽列 -->
-    <nav class="bg-white border-b shadow-sm sticky top-0 z-50 flex items-center px-4 py-2 overflow-x-auto no-scrollbar">
-        <div class="flex-shrink-0 font-black text-blue-600 mr-6 text-lg">🔢 正比關係點擊填入</div>
-        <div id="tab-container" class="flex gap-2"></div>
-        <div class="ml-auto flex items-center gap-4 flex-shrink-0">
-            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl font-bold text-slate-600 text-sm">
-                <span>⏱️</span><span id="timer" class="font-mono">07:00</span>
+    <nav class="bg-white border-b px-6 py-3 flex justify-between items-center shadow-sm z-10">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold text-blue-700">二、正比例關係</span>
+            <div class="flex gap-2 ml-4">
+                <button onclick="switchProblem(0)" id="btn-p0"
+                    class="px-4 py-1 rounded-full border-2 border-blue-200 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition">第
+                    1 題</button>
+                <button onclick="switchProblem(1)" id="btn-p1"
+                    class="px-4 py-1 rounded-full border-2 border-transparent text-gray-500 font-medium hover:bg-gray-100 transition">第
+                    2 題</button>
+                <button onclick="switchProblem(2)" id="btn-p2"
+                    class="px-4 py-1 rounded-full border-2 border-transparent text-gray-500 font-medium hover:bg-gray-100 transition">第
+                    3 題</button>
             </div>
-            <div class="bg-blue-600 text-white px-4 py-1.5 rounded-xl font-bold text-sm shadow-sm">
-                得分：<span id="score">0</span>
+        </div>
+        <div class="flex items-center gap-8">
+            <div class="text-lg font-bold text-slate-600">
+                得分：<span id="score-display" class="text-blue-600">0</span>
+            </div>
+            <div class="text-lg font-bold text-red-500 bg-red-50 px-4 py-1 rounded-lg border border-red-100">
+                ⏱ 剩餘時間：<span id="timer-display">07:00</span>
             </div>
         </div>
     </nav>
 
-    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
-
-        <!-- 左側：題目卡片 -->
-        <aside class="w-full md:w-1/3 bg-white p-6 border-r overflow-y-auto sticky top-0 h-auto md:h-full">
-            <div class="space-y-4">
-                <div
-                    class="inline-block bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-widest">
-                    任務內容</div>
-                <div id="problem-content" class="text-xl text-gray-800 leading-relaxed font-medium"></div>
-                <hr class="border-gray-100">
-                <div id="tip-box" class="p-4 bg-amber-50 border border-amber-100 rounded-xl shadow-sm">
-                    <p class="text-amber-800 font-bold flex items-center gap-2 mb-1">
-                        <span>💡</span> 重點提醒
-                    </p>
-                    <p class="text-sm text-amber-700 leading-relaxed">
-                        修正正比關係式：$y = kx$<br>
-                        代入數字算出 $k$ 即可解題。
-                    </p>
+    <!-- 主要內容區 -->
+    <main class="flex-1 flex overflow-hidden">
+        <!-- 左側：題目顯示 -->
+        <div class="w-1/3 bg-slate-50 border-r p-8 flex flex-col justify-center">
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <div class="text-sm font-bold text-blue-500 mb-2" id="prob-num-label">QUESTION 01</div>
+                <h2 id="prob-text" class="text-3xl font-bold text-slate-800 leading-relaxed mb-6">
+                    已知 y 和 x 成正比，且 x = 3 時，y = -18。
+                </h2>
+                <div class="space-y-4 text-xl text-slate-600">
+                    <p class="flex items-center gap-2"><span
+                            class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                        求 x、y 的關係式。</p>
+                    <p class="flex items-center gap-2"><span
+                            class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                        當 x = 12 時，y 是多少？</p>
                 </div>
             </div>
-        </aside>
+        </div>
 
-        <!-- 右側：作答區 (緊湊版) -->
-        <section id="step-area" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-slate-50 pb-40">
-            <!-- Steps Generated by JS -->
-        </section>
-
+        <!-- 右側：步驟解題區 -->
+        <div id="workspace" class="flex-1 p-10 overflow-y-auto custom-scroll bg-white">
+            <div id="steps-container" class="max-w-2xl mx-auto space-y-12">
+                <!-- 步驟內容由 JS 動態生成 -->
+            </div>
+        </div>
     </main>
 
-    <!-- 完成視窗 -->
-    <div id="finish-modal"
-        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-2 border-blue-500">
-            <div class="text-6xl mb-4">🏆</div>
-            <h3 class="text-2xl font-black text-gray-800 mb-2">挑戰成功！</h3>
-            <div id="final-stats" class="bg-slate-50 p-3 rounded-xl mb-6 font-bold text-blue-600"></div>
-            <button onclick="location.reload()"
-                class="w-full py-3 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 transition-all">再玩一次</button>
+    <!-- 結算視窗 -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-bold mb-2">完成練習！</h2>
+            <p id="final-stats" class="text-xl text-slate-600 mb-8 font-medium">總得分：0 分 | 用時：00:00</p>
+            <div class="flex gap-4">
+                <button onclick="location.reload()"
+                    class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-xl hover:bg-blue-700 transition shadow-lg">再做一次</button>
+                <button onclick="document.getElementById('modal-overlay').style.display='none'"
+                    class="flex-1 py-4 bg-slate-200 text-slate-700 rounded-2xl font-bold text-xl hover:bg-slate-300 transition">關閉</button>
+            </div>
         </div>
     </div>
 
-    <div id="toast"
-        class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-xl opacity-0 pointer-events-none transition-all duration-300 z-[110] shadow-xl font-bold text-sm">
-        請填滿所有空格
-    </div>
-
     <script>
-        const QUESTIONS = [
+        const problems = [
             {
-                id: 1,
-                text: "已知 <mark>$y$ 和 $x$ 成正比</mark>，且當 <mark>$x = 3$</mark> 時，<mark>$y = -18$</mark>。求：<br>① $x、y$ 的關係式；<br>② 當 $x = 12$ 時，$y$ 是多少？",
+                id: 0,
+                text: "已知 y 和 x 成正比，且 x = 3 時，y = -18。",
+                sub1: "求 x、y 的關係式。",
+                sub2: "當 x = 12 時，y 是多少？",
                 steps: [
                     {
-                        instruction: "寫出正比關係式：",
-                        template: "$y = kx$",
-                        answers: [],
-                        autoUnlock: true
+                        title: "步驟 1：設正比關係式",
+                        html: `因為 y 與 x 成正比，設 <span class="math">y = kx</span><br>將 x = 3, y = -18 代入：<br><span class="math"><input type="text" class="slot" data-ans="-18"> = k × <input type="text" class="slot" data-ans="3"></span>`,
                     },
                     {
-                        instruction: "代入數字 $x = 3, y = -18$：",
-                        template: "[ ] = k \\cdot [ ]",
-                        answers: ["-18", "3"],
-                        options: ["-18", "-6", "3", "12", "18"]
+                        title: "步驟 2：求出常數 k",
+                        html: `<span class="math">k = <input type="text" class="slot" data-ans="-6"></span>`,
                     },
                     {
-                        instruction: "算出 $k$ 的值：",
-                        template: "k = [ ]",
-                        answers: ["-6"],
-                        options: ["-6", "-5", "6", "3"]
+                        title: "步驟 3：寫出關係式",
+                        html: `關係式為：<span class="math">y = <input type="text" class="slot" data-ans="-6"> x</span>`,
                     },
                     {
-                        instruction: "得出完整的關係式：",
-                        template: "y = [ ] x",
-                        answers: ["-6"],
-                        options: ["-18", "-6", "3", "12"]
+                        title: "步驟 4：代入求值",
+                        html: `將 x = 12 代入關係式：<br><span class="math">y = -6 × <input type="text" class="slot" data-ans="12"></span><br><span class="math">y = <input type="text" class="slot" data-ans="-72"></span>`,
+                    }
+                ]
+            },
+            {
+                id: 1,
+                text: "已知 y 和 x 成正比，且 x = 5 時，y = 15。",
+                sub1: "求 x、y 的關係式。",
+                sub2: "當 x = -4 時，y 是多少？",
+                steps: [
+                    {
+                        title: "步驟 1：設正比關係式",
+                        html: `設 <span class="math">y = kx</span><br>將 x = 5, y = 15 代入：<br><span class="math"><input type="text" class="slot" data-ans="15"> = k × <input type="text" class="slot" data-ans="5"></span>`,
                     },
                     {
-                        instruction: "求當 $x = 12$ 時，$y$ 的值：",
-                        template: "y = -6 \\cdot [ ] = [ ]",
-                        answers: ["12", "-72"],
-                        options: ["12", "-18", "-6", "-72"]
+                        title: "步驟 2：求出常數 k",
+                        html: `<span class="math">k = <input type="text" class="slot" data-ans="3"></span>`,
+                    },
+                    {
+                        title: "步驟 3：寫出關係式",
+                        html: `關係式為：<span class="math">y = <input type="text" class="slot" data-ans="3"> x</span>`,
+                    },
+                    {
+                        title: "步驟 4：代入求值",
+                        html: `將 x = -4 代入：<br><span class="math">y = 3 × (<input type="text" class="slot" data-ans="-4">)</span><br><span class="math">y = <input type="text" class="slot" data-ans="-12"></span>`,
                     }
                 ]
             },
             {
                 id: 2,
-                text: "已知 <mark>$y$ 和 $x$ 成正比</mark>，且當 <mark>$x = 5$</mark> 時，<mark>$y = 15$</mark>。求：<br>① $x、y$ 的關係式；<br>② 當 $x = -4$ 時，$y$ 是多少？",
+                text: "已知 y 和 x 成正比，且 x = -4 時，y = 18。",
+                sub1: "求 x、y 的關係式。",
+                sub2: "當 x = 1 時，y 是多少？",
                 steps: [
                     {
-                        instruction: "代入數字到 $y = kx$：",
-                        template: "[ ] = k \\cdot [ ]",
-                        answers: ["15", "5"],
-                        options: ["15", "5", "3", "-4"]
+                        title: "步驟 1：設正比關係式",
+                        html: `設 <span class="math">y = kx</span><br>將 x = -4, y = 18 代入：<br><span class="math"><input type="text" class="slot" data-ans="18"> = k × (<input type="text" class="slot" data-ans="-4">)</span>`,
                     },
                     {
-                        instruction: "算出 $k$ 的值：",
-                        template: "k = [ ]",
-                        answers: ["3"],
-                        options: ["1", "3", "5", "15"]
+                        title: "步驟 2：求出常數 k",
+                        html: `<span class="math">k = <input type="text" class="slot" data-ans="-4.5"></span> (可用小數表示)`,
                     },
                     {
-                        instruction: "完成關係式：",
-                        template: "y = [ ] x",
-                        answers: ["3"],
-                        options: ["5", "15", "3", "-4"]
+                        title: "步驟 3：寫出關係式",
+                        html: `關係式為：<span class="math">y = <input type="text" class="slot" data-ans="-4.5"> x</span>`,
                     },
                     {
-                        instruction: "當 $x = -4$ 時，求 $y$：",
-                        template: "y = 3 \\cdot [ ] = [ ]",
-                        answers: ["-4", "-12"],
-                        options: ["-4", "4", "-12", "12"]
-                    }
-                ]
-            },
-            {
-                id: 3,
-                text: "已知 <mark>$y$ 和 $x$ 成正比</mark>，且當 <mark>$x = -4$</mark> 時，<mark>$y = 18$</mark>。求：<br>① $x、y$ 的關係式；<br>② 當 $x = 1$ 時，$y$ 是多少？",
-                steps: [
-                    {
-                        instruction: "代入數字 $x = -4, y = 18$：",
-                        template: "[ ] = k \\cdot [ ]",
-                        answers: ["18", "-4"],
-                        options: ["18", "-4", "1", "4"]
-                    },
-                    {
-                        instruction: "算出 $k$ 的值 ($18 \\div -4$)：",
-                        template: "k = [ ] [ ] [ ] [ ]",
-                        answers: ["-", "4", ".", "5"],
-                        options: ["-", "4", ".", "5", "1", "8"]
-                    },
-                    {
-                        instruction: "寫出 $x$ 和 $y$ 的關係式：",
-                        template: "y = [ ] [ ] [ ] [ ] x",
-                        answers: ["-", "4", ".", "5"],
-                        options: ["-", "4", ".", "5", "1", "8"]
-                    },
-                    {
-                        instruction: "當 $x = 1$ 時，求 $y$：",
-                        template: "y = -4.5 \\cdot [ ] = [ ] [ ] [ ] [ ]",
-                        answers: ["1", "-", "4", ".", "5"],
-                        options: ["-", "4", ".", "5", "1", "0"]
+                        title: "步驟 4：代入求值",
+                        html: `將 x = 1 代入：<br><span class="math">y = -4.5 × <input type="text" class="slot" data-ans="1"></span><br><span class="math">y = <input type="text" class="slot" data-ans="-4.5"></span>`,
                     }
                 ]
             }
         ];
 
-        let currentQIdx = 0;
-        let scores = Array(QUESTIONS.length).fill(0);
-        let completedSteps = Array(QUESTIONS.length).fill(0);
-        let timeLeft = 420;
-        let timerId = null;
+        let currentProbIndex = 0;
+        let score = 0;
+        let totalStepsSolved = 0;
+        let timeRemaining = 420; // 7 minutes
+        let timerId;
 
-        const renderMath = (el) => {
-            if (window.renderMathInElement) {
-                renderMathInElement(el, {
-                    delimiters: [
-                        { left: '$$', right: '$$', display: true },
-                        { left: '$', right: '$', display: false }
-                    ],
-                    throwOnError: false
-                });
-            }
-        };
-
-        window.onload = () => {
-            renderTabs();
-            loadQuestion(0);
-            startTimer();
-        };
+        const scoreDisplay = document.getElementById('score-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const stepsContainer = document.getElementById('steps-container');
+        const probText = document.getElementById('prob-text');
+        const probNumLabel = document.getElementById('prob-num-label');
 
         function startTimer() {
             timerId = setInterval(() => {
-                timeLeft--;
-                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                const s = (timeLeft % 60).toString().padStart(2, '0');
-                document.getElementById('timer').innerText = `${m}:${s}`;
-                if (timeLeft <= 0) { clearInterval(timerId); showFinishModal(); }
+                timeRemaining--;
+                const mins = Math.floor(timeRemaining / 60);
+                const secs = timeRemaining % 60;
+                timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerId);
+                    endGame();
+                }
             }, 1000);
         }
 
-        function renderTabs() {
-            const container = document.getElementById('tab-container');
-            container.innerHTML = QUESTIONS.map((q, idx) => `
-                <button onclick="loadQuestion(${idx})" class="px-4 py-1.5 rounded-xl font-bold text-sm transition-all ${currentQIdx === idx ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-200'}">
-                    題目 ${idx + 1}
-                </button>
-            `).join('');
+        function switchProblem(index) {
+            currentProbIndex = index;
+            // 更新按鈕樣式
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById(`btn-p${i}`);
+                if (i === index) {
+                    btn.classList.add('border-blue-200', 'bg-blue-50', 'text-blue-700');
+                    btn.classList.remove('border-transparent', 'text-gray-500');
+                } else {
+                    btn.classList.remove('border-blue-200', 'bg-blue-50', 'text-blue-700');
+                    btn.classList.add('border-transparent', 'text-gray-500');
+                }
+            }
+
+            probNumLabel.innerText = `QUESTION 0${index + 1}`;
+            probText.innerText = problems[index].text;
+            renderSteps(index);
         }
 
-        function loadQuestion(idx) {
-            currentQIdx = idx;
-            renderTabs();
-            const pContent = document.getElementById('problem-content');
-            pContent.innerHTML = QUESTIONS[idx].text;
-            renderMath(pContent);
-            // 重新渲染提示區，確保 KaTeX 正確
-            renderMath(document.getElementById('tip-box'));
-            document.getElementById('step-area').innerHTML = '';
-            renderSteps(idx);
-        }
+        function renderSteps(probIdx) {
+            stepsContainer.innerHTML = '';
+            problems[probIdx].steps.forEach((step, sIdx) => {
+                const div = document.createElement('div');
+                div.id = `step-${sIdx}`;
+                div.className = `step-container bg-slate-50 p-6 rounded-2xl border border-slate-100 ${sIdx === 0 ? 'unlocked' : ''}`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-blue-600 font-bold text-xl">${step.title}</h3>
+                        <div id="check-${sIdx}" class="check-mark">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    </div>
+                    <div class="leading-relaxed text-slate-700 text-2xl">
+                        ${step.html}
+                    </div>
+                `;
+                stepsContainer.appendChild(div);
+            });
 
-        function renderSteps(qIdx) {
-            const stepArea = document.getElementById('step-area');
-            const question = QUESTIONS[qIdx];
+            // 綁定輸入邏輯
+            const allSlots = stepsContainer.querySelectorAll('.slot');
+            allSlots.forEach((slot, idx) => {
+                slot.inputMode = "decimal";
 
-            for (let i = 0; i <= completedSteps[qIdx]; i++) {
-                if (i >= question.steps.length) break;
-                if (document.getElementById(`step-${qIdx}-${i}`)) continue;
-
-                const step = question.steps[i];
-                const stepDiv = document.createElement('div');
-                stepDiv.id = `step-${qIdx}-${i}`;
-                stepDiv.className = `step-container bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all duration-500 ${i < completedSteps[qIdx] ? 'border-green-400 opacity-90' : 'border-blue-500'}`;
-
-                let parts = step.template.split('[ ]');
-                let mathHtml = '';
-                parts.forEach((p, pIdx) => {
-                    let text = p.trim();
-                    if (text) {
-                        let finalMath = text.includes('$') ? text : `$${text}$`;
-                        mathHtml += `<span class="math-fragment">${finalMath}</span>`;
-                    }
-                    if (pIdx < parts.length - 1) {
-                        mathHtml += `<span class="slot" onclick="clearSlot(this)"></span>`;
-                    }
+                slot.addEventListener('click', () => {
+                    slot.value = '';
+                    updateHighlight();
                 });
 
-                stepDiv.innerHTML = `
-                    <div class="flex items-center justify-between mb-1 text-[10px] font-black text-blue-400 tracking-widest uppercase">
-                        <span>Step ${i + 1}</span>
-                        ${i < completedSteps[qIdx] ? '<span class="text-green-500">Done</span>' : ''}
-                    </div>
-                    <p class="text-lg text-slate-700 font-bold mb-3 step-instruction">${step.instruction}</p>
-                    <div class="math-row mb-4">
-                        ${mathHtml}
-                    </div>
-                    ${i === completedSteps[qIdx] && !step.autoUnlock ? `
-                        <div class="option-bank border-t border-slate-50 pt-4">
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                ${step.options ? step.options.map(opt => `
-                                    <button onclick="fillSlot('${qIdx}', '${i}', '${opt}')" class="min-w-[50px] h-[50px] bg-white border-2 border-slate-100 rounded-xl font-black text-xl hover:border-blue-400 hover:text-blue-500 transition-all active:scale-90 shadow-sm">
-                                        ${opt}
-                                    </button>
-                                `).join('') : ''}
-                            </div>
-                            <button onclick="checkAnswer(${qIdx}, ${i})" class="w-full py-3 bg-blue-600 text-white rounded-xl font-black text-lg hover:bg-blue-700 shadow shadow-blue-100 transition-all">
-                                檢查答案
-                            </button>
-                        </div>
-                    ` : ''}
-                `;
+                slot.addEventListener('input', (e) => {
+                    // 只允許數字、負號、小數點
+                    slot.value = slot.value.replace(/[^0-9.-]/g, '');
 
-                stepArea.appendChild(stepDiv);
-                renderMath(stepDiv.querySelector('.step-instruction'));
-                stepDiv.querySelectorAll('.math-fragment').forEach(frag => renderMath(frag));
-                updateActiveSlot(qIdx, i);
+                    // 檢查本步驟所有空格
+                    const currentStepDiv = slot.closest('.step-container');
+                    const stepSlots = currentStepDiv.querySelectorAll('.slot');
+                    const allFilled = Array.from(stepSlots).every(s => s.value.trim() !== '');
 
-                if (step.autoUnlock) {
-                    setTimeout(() => {
-                        completedSteps[qIdx]++;
-                        renderSteps(qIdx);
-                    }, 1000);
-                }
-            }
+                    if (allFilled) {
+                        checkStep(currentStepDiv);
+                    } else if (slot.value.length >= slot.dataset.ans.length) {
+                        // 自動跳轉下一個空格
+                        const nextSlot = allSlots[idx + 1];
+                        if (nextSlot && nextSlot.closest('.step-container').classList.contains('unlocked')) {
+                            nextSlot.focus();
+                        }
+                    }
+                });
+            });
 
-            const lastStep = document.getElementById(`step-${qIdx}-${completedSteps[qIdx]}`);
-            if (lastStep) lastStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            updateHighlight();
         }
 
-        function updateActiveSlot(qIdx, stepIdx) {
-            const container = document.getElementById(`step-${qIdx}-${stepIdx}`);
-            if (!container) return;
-            const slots = container.querySelectorAll('.slot');
-            slots.forEach(s => s.classList.remove('active'));
-            for (let s of slots) { if (!s.innerText) { s.classList.add('active'); break; } }
-        }
-
-        function fillSlot(qIdx, stepIdx, value) {
-            const container = document.getElementById(`step-${qIdx}-${stepIdx}`);
-            const slots = container.querySelectorAll('.slot');
-            for (let s of slots) {
-                if (!s.innerText) {
-                    s.innerText = value;
-                    s.classList.add('filled');
-                    updateActiveSlot(qIdx, stepIdx);
-                    break;
-                }
-            }
-        }
-
-        function clearSlot(el) {
-            if (el.classList.contains('correct')) return;
-            el.innerText = '';
-            el.classList.remove('filled');
-            const parts = el.closest('.step-container').id.split('-');
-            updateActiveSlot(parts[1], parts[2]);
-        }
-
-        function checkAnswer(qIdx, stepIdx) {
-            const container = document.getElementById(`step-${qIdx}-${stepIdx}`);
-            const slots = container.querySelectorAll('.slot');
-            const answers = QUESTIONS[qIdx].steps[stepIdx].answers;
-
-            let hasEmpty = false;
-            slots.forEach(s => { if (!s.innerText) hasEmpty = true; });
-            if (hasEmpty) { showToast("還有空格沒填喔！"); return; }
-
+        function checkStep(stepDiv) {
+            const slots = stepDiv.querySelectorAll('.slot');
+            const stepIdx = parseInt(stepDiv.id.split('-')[1]);
             let isCorrect = true;
-            slots.forEach((s, idx) => { if (s.innerText !== answers[idx]) isCorrect = false; });
+
+            slots.forEach(slot => {
+                if (slot.value.trim() !== slot.dataset.ans) {
+                    isCorrect = false;
+                }
+            });
 
             if (isCorrect) {
-                slots.forEach(s => { s.classList.add('correct'); s.onclick = null; });
-                const bank = container.querySelector('.option-bank');
-                if (bank) bank.classList.add('hidden');
+                // 答對了
+                if (!stepDiv.dataset.solved) {
+                    score++;
+                    scoreDisplay.innerText = score;
+                    stepDiv.dataset.solved = "true";
+                }
 
-                if (completedSteps[qIdx] === stepIdx) {
-                    scores[qIdx]++;
-                    updateScoreDisplay();
-                    completedSteps[qIdx]++;
-                    container.classList.add('tada');
-                    container.classList.replace('border-blue-500', 'border-green-400');
-                    if (completedSteps[qIdx] < QUESTIONS[qIdx].steps.length) setTimeout(() => renderSteps(qIdx), 800);
-                    else checkAllComplete();
+                stepDiv.classList.add('bg-green-50', 'border-green-200');
+                stepDiv.querySelector('.check-mark').style.display = 'block';
+                slots.forEach(s => {
+                    s.disabled = true;
+                    s.classList.remove('active');
+                });
+
+                // 解鎖下一步
+                const nextStep = document.getElementById(`step-${stepIdx + 1}`);
+                if (nextStep) {
+                    nextStep.classList.add('unlocked');
+                    setTimeout(() => {
+                        const firstSlot = nextStep.querySelector('.slot');
+                        if (firstSlot) firstSlot.focus();
+                        updateHighlight();
+                    }, 500);
+                } else {
+                    // 本題完成，延遲切換下一題或結束
+                    if (currentProbIndex < problems.length - 1) {
+                        setTimeout(() => switchProblem(currentProbIndex + 1), 1500);
+                    } else {
+                        setTimeout(endGame, 1000);
+                    }
                 }
             } else {
-                showToast("再檢查一下喔！");
+                // 有錯不提示，讓學生自己檢查或提示再想想
+                // 這裡可以加一個震動效果
             }
         }
 
-        function updateScoreDisplay() {
-            document.getElementById('score').innerText = scores.reduce((a, b) => a + b, 0);
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.opacity = '1';
-            setTimeout(() => { t.style.opacity = '0'; }, 2000);
-        }
-
-        function checkAllComplete() {
-            if (completedSteps.every((v, i) => v >= QUESTIONS[i].steps.length)) {
-                clearInterval(timerId);
-                setTimeout(showFinishModal, 1000);
+        function updateHighlight() {
+            // 清除所有高亮
+            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+            // 找到第一個未填寫且解鎖的格子
+            const allUnlockedSlots = Array.from(document.querySelectorAll('.step-container.unlocked .slot:not([disabled])'));
+            const firstEmpty = allUnlockedSlots.find(s => s.value === '');
+            if (firstEmpty) {
+                firstEmpty.classList.add('active');
+                firstEmpty.focus();
             }
         }
 
-        function showFinishModal() {
-            const time = 420 - timeLeft;
-            document.getElementById('final-stats').innerText = `得分：${document.getElementById('score').innerText} 分 | 用時：${Math.floor(time / 60)}分${time % 60}秒`;
-            document.getElementById('finish-modal').classList.remove('hidden');
+        function endGame() {
+            clearInterval(timerId);
+            const modal = document.getElementById('modal-overlay');
+            const finalStats = document.getElementById('final-stats');
+            const timeUsed = 420 - timeRemaining;
+            const mins = Math.floor(timeUsed / 60);
+            const secs = timeUsed % 60;
+
+            finalStats.innerText = `總得分：${score} 分 | 用時：${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            modal.style.display = 'flex';
         }
+
+        window.onload = () => {
+            switchProblem(0);
+            startTimer();
+        };
     </script>
 </body>
 
