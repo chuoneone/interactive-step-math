@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正比關係的應用</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .math {
+            font-size: 26px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 填答格基礎樣式 */
+        .slot {
+            display: inline-block;
+            min-width: 60px;
+            height: 44px;
+            border-bottom: 4px solid #cbd5e1;
+            margin: 0 4px;
+            text-align: center;
+            vertical-align: bottom;
+            font-weight: bold;
+            color: #1d4ed8;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            line-height: 40px;
+        }
+
+        /* 當前目標格的高亮動畫 */
+        @keyframes pulse-blue {
+
+            0%,
+            100% {
+                border-color: #3b82f6;
+                background-color: #eff6ff;
+            }
+
+            50% {
+                border-color: #60a5fa;
+                background-color: #dbeafe;
+            }
+        }
+
+        .slot-active {
+            animation: pulse-blue 1.5s infinite;
+            border-bottom-width: 5px;
+        }
+
+        .slot.filled {
+            border-bottom-color: #10b981;
+            background-color: #f0fdf4;
+            color: #059669;
+        }
+
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .option-btn:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            background-color: #f0f9ff;
+        }
+
+        .step-row {
+            border-left: 6px solid #e2e8f0;
+            padding: 1rem 1.5rem;
+            transition: all 0.5s;
+            background: white;
+        }
+
+        .step-active {
+            border-left-color: #3b82f6;
+            background-color: #ffffff;
+        }
+
+        .step-done {
+            border-left-color: #10b981;
+            opacity: 0.95;
+        }
+
+        .step-label {
+            display: inline-block;
+            padding: 2px 10px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sticky-side {
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes fadeInRow {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-row {
+            animation: fadeInRow 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- 導覽列 -->
+    <header
+        class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b">
+        <div class="flex items-center gap-4 overflow-x-auto no-scrollbar max-w-[65%]">
+            <span class="font-bold text-blue-600 whitespace-nowrap border-r-2 pr-4">正比關係的應用</span>
+            <div id="nav-buttons" class="flex gap-2"></div>
+        </div>
+        <div class="flex items-center gap-4 font-bold">
+            <div class="text-orange-500 flex items-center gap-1">
+                <span id="timer">07:00</span>
+            </div>
+            <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                得分：<span id="score">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto mt-24 p-4 md:flex md:gap-6">
+        <!-- 左側：題目描述 (固定) -->
+        <section class="md:w-1/3 mb-4 md:mb-0">
+            <div class="bg-white rounded-2xl shadow-lg p-6 sticky-side border-t-4 border-blue-500">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-700">
+                    <span
+                        class="bg-blue-500 text-white w-8 h-8 rounded flex items-center justify-center shadow">Q</span>
+                    題目說明
+                </h2>
+                <div id="question-content" class="text-lg leading-relaxed space-y-4 text-slate-600"></div>
+            </div>
+        </section>
+
+        <!-- 右側：連貫計算區 -->
+        <section class="md:w-2/3">
+            <div id="steps-container" class="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+                <!-- 算式步驟會在這裡連續生成 -->
+            </div>
+            <div class="mt-32"></div> <!-- 底部留白 -->
+        </section>
+    </main>
+
+    <!-- 完成視窗 -->
+    <div id="finish-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/80 flex items-center justify-center p-4">
+        <div
+            class="bg-white rounded-[32px] p-8 max-w-md w-full text-center shadow-2xl animate__animated animate__zoomIn">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-3xl font-extrabold text-slate-800 mb-2">太強了！完成練習</h2>
+            <p class="text-slate-500 mb-6 text-lg">
+                總分：<span id="final-score" class="text-blue-600 font-black">0</span> 分<br>
+                時間：<span id="final-time" class="text-orange-600 font-black">0</span>
+            </p>
+            <div class="flex flex-col gap-3">
+                <button onclick="location.reload()"
+                    class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 shadow-md">再做一次</button>
+                <button onclick="document.getElementById('finish-modal').classList.add('hidden')"
+                    class="w-full py-3 bg-slate-100 text-slate-500 rounded-xl font-bold text-base hover:bg-slate-200 transition-all">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                id: 0,
+                name: "蔓越莓果凍",
+                description: `🥤 <mark class="bg-blue-100 px-1 rounded">600 c.c.</mark> 的果汁需加 <mark class="bg-yellow-100 px-1 rounded">40 公克</mark> 的粉。<br>如果要維持相同口感，<span class="text-blue-600 font-bold">900 c.c.</span> 的果汁要加多少粉？`,
+                steps: [
+                    {
+                        label: "步驟 1 列式",
+                        instruction: "根據題意寫出比例式：",
+                        content: `<div class="math">600 : <span class="slot" data-ans="40" onclick="clearThisSlot(this, 0, 0)"></span> = 900 : <span class="slot" data-ans="x" onclick="clearThisSlot(this, 0, 0)"></span></div>`,
+                        options: ["40", "600", "900", "x"]
+                    },
+                    {
+                        label: "步驟 2 內內＝外外",
+                        instruction: "利用比例性質進行計算：",
+                        content: `<div class="math">600x = 900 × <span class="slot" data-ans="40" onclick="clearThisSlot(this, 0, 1)"></span></div>`,
+                        options: ["40", "600", "900", "36000"]
+                    },
+                    {
+                        label: "步驟 3 化簡",
+                        instruction: "解出 x 的數值：",
+                        content: `<div class="math">600x = <span class="slot" data-ans="36000" onclick="clearThisSlot(this, 0, 2)"></span></div>
+                                  <div class="math mt-2">x = <span class="slot" data-ans="60" onclick="clearThisSlot(this, 0, 2)"></span></div>`,
+                        options: ["36000", "60", "15", "40"]
+                    }
+                ]
+            },
+            {
+                id: 1,
+                name: "消暑蜂蜜水",
+                description: `🍯 <mark class="bg-blue-100 px-1 rounded">200 c.c.</mark> 的水加 <mark class="bg-yellow-100 px-1 rounded">2 匙</mark> 蜂蜜。<br>如果要維持相同甜度，<span class="text-blue-600 font-bold">500 c.c.</span> 的水要加幾匙？`,
+                steps: [
+                    {
+                        label: "步驟 1 列式",
+                        instruction: "寫出水與蜂蜜的比例式：",
+                        content: `<div class="math">200 : <span class="slot" data-ans="2" onclick="clearThisSlot(this, 1, 0)"></span> = 500 : <span class="slot" data-ans="x" onclick="clearThisSlot(this, 1, 0)"></span></div>`,
+                        options: ["2", "200", "500", "x"]
+                    },
+                    {
+                        label: "步驟 2 內內＝外外",
+                        instruction: "計算兩側的乘積：",
+                        content: `<div class="math">200x = 500 × <span class="slot" data-ans="2" onclick="clearThisSlot(this, 1, 1)"></span></div>`,
+                        options: ["2", "500", "1000", "200"]
+                    },
+                    {
+                        label: "步驟 3 化簡",
+                        instruction: "算出最後的匙數：",
+                        content: `<div class="math">200x = <span class="slot" data-ans="1000" onclick="clearThisSlot(this, 1, 2)"></span></div>
+                                  <div class="math mt-2">x = <span class="slot" data-ans="5" onclick="clearThisSlot(this, 1, 2)"></span></div>`,
+                        options: ["1000", "5", "10", "2"]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "銅塊重量",
+                description: `⚖️ 銅塊重量與體積成正比：<br>體積 <mark class="bg-blue-100 px-1 rounded">100</mark> 時重量 <mark class="bg-yellow-100 px-1 rounded">896</mark>。<br>當體積變為 <span class="text-blue-600 font-bold">25</span> 時，重量是多少？`,
+                steps: [
+                    {
+                        label: "步驟 1 列式",
+                        instruction: "寫出體積與重量的比例式：",
+                        content: `<div class="math">100 : <span class="slot" data-ans="896" onclick="clearThisSlot(this, 2, 0)"></span> = 25 : <span class="slot" data-ans="x" onclick="clearThisSlot(this, 2, 0)"></span></div>`,
+                        options: ["896", "100", "25", "x"]
+                    },
+                    {
+                        label: "步驟 2 內內＝外外",
+                        instruction: "進行交叉相乘：",
+                        content: `<div class="math">100x = 25 × <span class="slot" data-ans="896" onclick="clearThisSlot(this, 2, 1)"></span></div>`,
+                        options: ["896", "25", "22400", "100"]
+                    },
+                    {
+                        label: "步驟 3 化簡",
+                        instruction: "算出重量是多少公克：",
+                        content: `<div class="math">100x = <span class="slot" data-ans="22400" onclick="clearThisSlot(this, 2, 2)"></span></div>
+                                  <div class="math mt-2">x = <span class="slot" data-ans="224" onclick="clearThisSlot(this, 2, 2)"></span></div>`,
+                        options: ["22400", "224", "100", "8.96"]
+                    }
+                ]
+            }
+        ];
+
+        let currentQuizIdx = 0;
+        let currentStepIdx = 0;
+        let score = 0;
+        let timeLeft = 420;
+        let timerInterval;
+
+        function init() {
+            renderNav();
+            loadQuiz(0);
+            startTimer();
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('nav-buttons');
+            nav.innerHTML = '';
+            quizData.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `px-5 py-1.5 rounded-lg border-2 font-bold transition-all whitespace-nowrap ${idx === currentQuizIdx ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300'}`;
+                btn.textContent = q.name;
+                btn.onclick = () => loadQuiz(idx);
+                nav.appendChild(btn);
+            });
+        }
+
+        function loadQuiz(index) {
+            currentQuizIdx = index;
+            currentStepIdx = 0;
+            renderNav();
+            document.getElementById('question-content').innerHTML = quizData[index].description;
+            document.getElementById('steps-container').innerHTML = '';
+            renderNextStep();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderNextStep() {
+            const quiz = quizData[currentQuizIdx];
+            if (currentStepIdx >= quiz.steps.length) return;
+
+            const step = quiz.steps[currentStepIdx];
+            const container = document.getElementById('steps-container');
+
+            const stepDiv = document.createElement('div');
+            stepDiv.id = `step-row-${currentStepIdx}`;
+            stepDiv.className = `step-row step-active animate-row`;
+            stepDiv.innerHTML = `
+                <div class="step-label">${step.label}</div>
+                <p class="text-slate-500 mb-2">${step.instruction}</p>
+                <div class="flex flex-col gap-2 p-4 bg-slate-50 rounded-xl items-center border border-slate-100 shadow-inner">
+                    ${step.content}
+                </div>
+                <div class="interaction-area mt-4">
+                    <div class="flex flex-wrap gap-2 justify-center mb-4">
+                        ${step.options.map(opt => `<button class="option-btn" onclick="fillSlot(this, '${opt}')">${opt}</button>`).join('')}
+                    </div>
+                    <div class="flex justify-center gap-3">
+                        <button onclick="checkStep()" class="px-10 py-2 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">檢查答案</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(stepDiv);
+            updateActiveSlot();
+        }
+
+        function updateActiveSlot() {
+            const stepDiv = document.getElementById(`step-row-${currentStepIdx}`);
+            if (!stepDiv) return;
+            const slots = stepDiv.querySelectorAll('.slot');
+            slots.forEach(s => s.classList.remove('slot-active'));
+            for (let slot of slots) {
+                if (slot.textContent === '') {
+                    slot.classList.add('slot-active');
+                    break;
+                }
+            }
+        }
+
+        window.fillSlot = function (btn, value) {
+            const stepDiv = document.getElementById(`step-row-${currentStepIdx}`);
+            const slots = stepDiv.querySelectorAll('.slot');
+            for (let slot of slots) {
+                if (slot.textContent === '') {
+                    slot.textContent = value;
+                    slot.classList.add('filled');
+                    break;
+                }
+            }
+            updateActiveSlot();
+        };
+
+        window.clearThisSlot = function (slot, qIdx, sIdx) {
+            if (slot.textContent !== '') {
+                slot.textContent = '';
+                slot.classList.remove('filled', 'slot-active');
+                updateActiveSlot();
+            }
+        };
+
+        window.checkStep = function () {
+            const stepDiv = document.getElementById(`step-row-${currentStepIdx}`);
+            const slots = stepDiv.querySelectorAll('.slot');
+            let allFilled = true, allCorrect = true;
+
+            slots.forEach(slot => {
+                if (slot.textContent === '') allFilled = false;
+                if (slot.textContent !== slot.dataset.ans) allCorrect = false;
+            });
+
+            if (!allFilled) { showToast("還有空格沒填喔！", "warning"); return; }
+
+            if (allCorrect) {
+                score += 1;
+                updateScoreDisplay();
+                stepDiv.classList.replace('step-active', 'step-done');
+                stepDiv.querySelector('.interaction-area').classList.add('hidden');
+                stepDiv.querySelectorAll('.slot').forEach(s => s.classList.remove('slot-active'));
+
+                showToast("正確！繼續推導", "success");
+
+                currentStepIdx++;
+                if (currentStepIdx < quizData[currentQuizIdx].steps.length) {
+                    setTimeout(() => {
+                        renderNextStep();
+                        window.scrollBy({ top: 150, behavior: 'smooth' });
+                    }, 600);
+                } else {
+                    handleQuizComplete();
+                }
+            } else {
+                showToast("計算有點小錯誤，再檢查看看", "error");
+            }
+        };
+
+        function handleQuizComplete() {
+            if (currentQuizIdx < quizData.length - 1) {
+                setTimeout(() => {
+                    if (confirm("這題完成了！推導過程很連貫喔，要挑戰下一題嗎？")) {
+                        loadQuiz(currentQuizIdx + 1);
+                    }
+                }, 800);
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function showToast(msg, type) {
+            const toast = document.createElement('div');
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-orange-500' };
+            toast.className = `fixed top-20 left-1/2 -translate-x-1/2 ${colors[type]} text-white px-8 py-3 rounded-2xl shadow-xl font-bold text-lg animate__animated animate__bounceIn z-[200]`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.classList.replace('animate__bounceIn', 'animate__fadeOutUp'); setTimeout(() => toast.remove(), 1000); }, 2000);
+        }
+
+        function updateScoreDisplay() { document.getElementById('score').textContent = score; }
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60), secs = timeLeft % 60;
+                document.getElementById('timer').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(); }
+            }, 1000);
+        }
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            const usedTime = 420 - timeLeft, m = Math.floor(usedTime / 60), s = usedTime % 60;
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-time').textContent = `${m} 分 ${s} 秒`;
+            document.getElementById('finish-modal').classList.remove('hidden');
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>

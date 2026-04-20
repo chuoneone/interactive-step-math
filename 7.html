@@ -259,9 +259,17 @@
         <div id="s2-chapter3" class="section-content">
             <div class="social-container">
                 <div class="single-row">
+
+                    <!-- 3-1 比例式 (Tab 切換) -->
                     <div class="social-group">
                         <h3 style="text-align: center;">3-1 比例式</h3>
-                        <div class="btn-group">
+                        <div class="level-tabs" style="display:flex;justify-content:center;gap:8px;margin-bottom:10px;">
+                            <button class="level-tab-btn active" onclick="switchTab('s2-3-1','normal',this)"
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#C84C0C;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
+                            <button class="level-tab-btn" onclick="switchTab('s2-3-1','basic',this)"
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#fff;color:#C84C0C;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
+                        </div>
+                        <div id="s2-3-1-normal" class="btn-group level-panel">
                             <a href="math/G7S2-3-1-01.html" class="btn" target="_blank">01 比值與倍數關係</a>
                             <a href="math/G7S2-3-1-02.html" class="btn" target="_blank">02 求比值</a>
                             <a href="math/G7S2-3-1-03.html" class="btn" target="_blank">03 比值的比較大小</a>
@@ -273,34 +281,42 @@
                             <a href="https://gemini.google.com/share/a5122e4aa9ca" class="btn"
                                 target="_blank">複習-盲盒搜集</a>
                         </div>
-                    </div>
-                    <div class="social-group">
-                        <h3 style="text-align: center;">3-2 正比與反比</h3>
-                        <div class="btn-group">
-                            <a href="#" class="btn" target="_blank">關係判別</a>
-                            <a href="#" class="btn" target="_blank">正比與反比應用</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="single-row">
-                    <div class="social-group">
-                        <h3 style="text-align: center;">3-1基礎題</h3>
-                        <div class="btn-group">
+                        <div id="s2-3-1-basic" class="btn-group level-panel" style="display:none;">
                             <a href="math/G7S2-3-1-01L.html" class="btn" target="_blank">01 比值與倍數關係</a>
                             <a href="math/G7S2-3-1-02L.html" class="btn" target="_blank">02 求比值</a>
                             <a href="math/G7S2-3-1-03L.html" class="btn" target="_blank">03 比值的比較大小</a>
                             <a href="math/G7S2-3-1-04L.html" class="btn" target="_blank">04 相等的比</a>
                             <a href="math/G7S2-3-1-05L.html" class="btn" target="_blank">05 最簡整數比</a>
                             <a href="math/G7S2-3-1-06.html" class="btn" target="_blank">06 外乘外＝內乘內</a>
+
                         </div>
                     </div>
+
+                    <!-- 3-2 正比與反比 (Tab 切換) -->
                     <div class="social-group">
-                        <h3 style="text-align: center;">3-2基礎題</h3>
-                        <div class="btn-group">
-                            <a href="math/G7S2-3-2-01L.html" class="btn" target="_blank">關係判別</a>
-                            <a href="math/G7S2-3-2-02L.html" class="btn" target="_blank">正比與反比應用</a>
+                        <h3 style="text-align: center;">3-2 正比與反比</h3>
+                        <div class="level-tabs" style="display:flex;justify-content:center;gap:8px;margin-bottom:10px;">
+                            <button class="level-tab-btn active" onclick="switchTab('s2-3-2','normal',this)"
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#C84C0C;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
+                            <button class="level-tab-btn" onclick="switchTab('s2-3-2','basic',this)"
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#fff;color:#C84C0C;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
+                        </div>
+                        <div id="s2-3-2-normal" class="btn-group level-panel">
+                            <a href="math/G7S2-3-2-01.html" class="btn" target="_blank">01 正比的判別</a>
+                            <a href="math/G7S2-3-2-02.html" class="btn" target="_blank">02 正比關係</a>
+                            <a href="math/G7S2-3-2-03.html" class="btn" target="_blank">03 正比關係的應用</a>
+                            <a href="math/G7S2-3-2-04.html" class="btn" target="_blank">04 反比的判別</a>
+                            <a href="math/G7S2-3-2-05.html" class="btn" target="_blank">05 反比關係</a>
+                            <a href="math/G7S2-3-2-06.html" class="btn" target="_blank">06 反比關係的應用</a>
+                            <a href="https://gemini.google.com/share/bf917436ada9" class="btn"
+                                target="_blank">複習-荒野神槍手</a>
+                        </div>
+                        <div id="s2-3-2-basic" class="btn-group level-panel" style="display:none;">
+                            <a href="math/G7S2-3-2-01L.html" class="btn" target="_blank">01 關係判別</a>
+                            <a href="math/G7S2-3-2-02L.html" class="btn" target="_blank">02 正比與反比應用</a>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -390,6 +406,20 @@
         otherBtn.onclick = () => modal.style.display = "block";
         closeSpan.onclick = () => modal.style.display = "none";
         window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
+
+        function switchTab(groupId, level, clickedBtn) {
+            // 切換面板顯示
+            document.getElementById(groupId + '-normal').style.display = (level === 'normal') ? '' : 'none';
+            document.getElementById(groupId + '-basic').style.display = (level === 'basic') ? '' : 'none';
+            // 更新按鈕樣式
+            const tabs = clickedBtn.closest('.level-tabs').querySelectorAll('.level-tab-btn');
+            tabs.forEach(btn => {
+                btn.style.background = '#fff';
+                btn.style.color = '#C84C0C';
+            });
+            clickedBtn.style.background = '#C84C0C';
+            clickedBtn.style.color = '#fff';
+        }
     </script>
     <script src="progress.js"></script>
 </body>
