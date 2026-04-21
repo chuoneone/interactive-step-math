@@ -15,7 +15,7 @@ body {
     background-attachment: fixed;
     color: #ffffff;
     margin: 0;
-    padding: 20px 20px 120px 20px;
+    padding: 20px 20px 80px 20px;
     padding-top: 70px;
     font-family: "Chiron GoRound TC", "Noto Sans TC", sans-serif;
     font-weight: 500;
@@ -369,19 +369,29 @@ footer,
 }
 
 /* ========================================= */
-/* 手機版頁尾專用設定 (文字等比縮放 + 絕對不換行) */
+/* 手機版頁尾專用設定 (適應窄螢幕) */
+/* ========================================= */
+
+/* ========================================= */
+/* 手機版頁尾專用設定 (精簡版) */
+/* ========================================= */
+
+
+/* ========================================= */
+/* 手機版頁尾專用設定 (單行列佈局) */
 /* ========================================= */
 @media (max-width: 768px) {
 
     footer,
     .sticky-footer {
+        display: flex !important;
         flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        padding: 0 5px;
-        justify-content: space-between;
-        align-items: center;
-        min-height: 60px;
+        padding: 5px 10px;
+        min-height: 40px;
         gap: 5px;
+        align-items: center;
+        justify-content: space-between;
+        white-space: nowrap;
     }
 
     .footer-left,
@@ -389,26 +399,63 @@ footer,
     .footer-right {
         flex: 0 1 auto;
         min-width: 0;
-        /* 防止外框被文字撐破 */
-        display: flex;
-        align-items: center;
+        text-align: center;
     }
 
-    /* 👇 將三個元件群組起來，強制套用完全相同的字體大小與不換行規則 👇 */
-    .footer-left .countdown-wrapper,
-    .footer-center,
-    .footer-right .footer-btn {
-        /* 字體會在 11px 到 15px 之間，跟著螢幕寬度(3vw)等比縮放 */
-        font-size: clamp(11px, 3vw, 15px) !important;
-        white-space: nowrap !important;
-        margin: 0;
+    /* 暑假倒數縮小文字 */
+    .footer-left .countdown-wrapper {
+        font-size: 10px !important;
+        padding: 3px 6px !important;
+        white-space: nowrap;
     }
 
-    /* 👇 統一倒數框與按鈕的內邊距與邊框粗細，讓視覺高度也一致 👇 */
-    .footer-left .countdown-wrapper,
+    /* 中間版權文字縮小 */
+    .footer-center {
+        font-size: 9px !important;
+        white-space: nowrap;
+        opacity: 0.9;
+    }
+
+    /* 按鈕縮小 */
     .footer-right .footer-btn {
-        padding: 4px 8px !important;
+        font-size: 11px !important;
+        padding: 3px 8px !important;
+        white-space: nowrap;
         border-width: 2px !important;
+    }
+
+    /* 隱藏倒數圖示省空間 */
+    .footer-left .countdown-wrapper i {
+        display: none;
+    }
+
+    /* 手機版水管縮小 */
+    .pipe-decoration {
+        width: 40px !important;
+        height: 50px !important;
+        bottom: 40px !important;
+    }
+
+    .pipe-decoration::before {
+        width: 50px !important;
+        height: 18px !important;
+        top: -18px !important;
+        left: -5px !important;
+    }
+
+    .pipe-decoration.right {
+        height: 40px !important;
+    }
+
+    /* 手機版方塊同步縮小 */
+    .pipe-blocks {
+        top: -60px !important;
+    }
+
+    .block {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 16px !important;
     }
 }
 
@@ -777,10 +824,7 @@ a.btn[href=""] {
     animation: float 3s ease-in-out infinite;
 }
 
-.pipe-decoration:not(.right) .pipe-blocks {
-    left: 0;
-    transform: none;
-}
+
 
 .block {
     width: 45px;

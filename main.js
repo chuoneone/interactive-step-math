@@ -47,7 +47,7 @@ const FOOTER_TEMPLATE = `
   <div class="footer-left">
     <div class="countdown-wrapper"><i class="fas fa-sun"></i> 暑假倒數：<span id="days">00</span> 天</div>
   </div>
-  <div class="footer-center" style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.4;">© 2026 SPEDMIX 米克師<br>本作品採用 CC BY-NC-SA 4.0 創用CC授權。</div>
+  <div class="footer-center" style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.4;">© 2026 SPEDMIX 米克師</div>
   <div class="footer-right">
     <button id="other-btn" class="footer-btn">其它 <i class="fas fa-caret-up"></i></button>
   </div>
