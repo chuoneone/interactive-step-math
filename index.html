@@ -26,30 +26,12 @@
 </head>
 
 <body>
-  <div id="title-screen">
-    <div class="block-container">
-      <div class="block brick"></div>
-      <div class="block question-box">?</div>
-      <div class="block brick"></div>
-      <div class="block brick"></div>
-      <div class="block question-box">?</div>
-      <div class="block brick"></div>
-    </div>
-    <h1 class="game-title">SPEDMIX學習平台</h1>
-    <button id="start-btn" class="start-btn" data-track-cat="system" data-track-lbl="enter_site">點我開始</button>
-    <div class="pipe-decoration"></div>
-    <div class="pipe-decoration right"></div>
-    <div class="ground-decoration"></div>
-    <div class="copyright">by spedmix</div>
-  </div>
-
-  <div id="main-view" class="hidden">
-    <header class="navbar">
-    </header>
-
-    <div class="intro-text">請選擇科目......</div>
+  <div id="main-view">
+    <header class="navbar"></header>
 
     <main class="button-section">
+      <div class="intro-text">請選擇科目......</div>
+
       <div class="grade-row">
         <a href="7ch.html" class="big-button"><i class="fas fa-book"></i> 7年級國文</a>
         <a href="7.html" class="big-button"><i class="fas fa-calculator"></i> 7年級數學</a>
@@ -66,9 +48,23 @@
         <a href="9eng.html" class="big-button"><i class="fas fa-language"></i> 9年級英文</a>
       </div>
 
-
       <footer class="sticky-footer"></footer>
     </main>
+
+    <!-- 頁面背景與裝飾 -->
+    <div class="pipe-decoration">
+      <div class="pipe-blocks">
+        <div class="block brick"></div>
+        <div class="block question-box">?</div>
+      </div>
+    </div>
+    <div class="pipe-decoration right">
+      <div class="pipe-blocks">
+        <div class="block question-box">?</div>
+        <div class="block brick"></div>
+      </div>
+    </div>
+  </div>
   </div>
 
   <div id="other-modal" class="modal"></div>
@@ -86,27 +82,8 @@
       });
     }
 
-    // Title Screen Logic
-    const startBtn = document.getElementById('start-btn');
-    const titleScreen = document.getElementById('title-screen');
-    const mainView = document.getElementById('main-view');
-
-    function startGame() {
-      localStorage.setItem('spedmix_visited', '1');
-      if (titleScreen) titleScreen.style.display = 'none';
-      if (mainView) mainView.classList.remove('hidden');
-      window.dispatchEvent(new Event('resize'));
-    }
-
-    // 回訪者直接跳過 title screen
-    if (localStorage.getItem('spedmix_visited')) {
-      startGame();
-    }
-
-    if (startBtn) startBtn.addEventListener('click', startGame);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && titleScreen && titleScreen.style.display !== 'none') startGame();
-    });
+    // 當前直接進入主畫面，不需要額外邏輯
+    window.dispatchEvent(new Event('resize'));
   </script>
 
 </body>

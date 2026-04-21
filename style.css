@@ -16,7 +16,7 @@ body {
     color: #ffffff;
     margin: 0;
     padding: 20px 20px 120px 20px;
-    padding-top: 100px;
+    padding-top: 70px;
     font-family: "Chiron GoRound TC", "Noto Sans TC", sans-serif;
     font-weight: 500;
     min-height: 100vh;
@@ -62,7 +62,7 @@ body {
     color: #fff;
     text-shadow: 2px 2px 0px #C84C0C, 4px 4px 0px rgba(0, 0, 0, 0.2);
     letter-spacing: 2px;
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: inherit;
     text-decoration: none;
 }
 
@@ -300,8 +300,8 @@ footer,
     left: 0;
     width: 100%;
     min-height: 70px;
-    background: #333;
-    border-top: 5px solid #222;
+    background: #8b5e34;
+    border-top: 5px solid #606c38;
     color: #fff;
     display: flex;
     align-items: center;
@@ -421,7 +421,7 @@ footer,
 
     font-weight: 900;
     text-align: center;
-    margin: 40px auto 30px;
+    margin: 5px auto 10px;
     color: #FFEB3B;
     text-shadow: 3px 3px 0px #F57F17, 6px 6px 0px rgba(0, 0, 0, 0.2);
     letter-spacing: 2px;
@@ -531,7 +531,7 @@ footer,
     flex-direction: column;
     align-items: center;
     gap: 40px;
-    margin-top: 40px;
+    margin-top: 10px;
     padding: 20px;
 }
 
@@ -558,16 +558,13 @@ footer,
     box-shadow: 0 10px 0 #558B2F;
     letter-spacing: 2px;
     font-weight: 900;
-
-    /* 👇 主要修改這三行 👇 */
     width: 100%;
     max-width: 300px;
-    /* 限制最大寬度，覺得太寬或太窄可以調整這個數值（例如 250px 或 350px） */
     margin: 0 auto;
-    /* 讓按鈕在網格中保持置中 */
-
     transition: all 0.1s;
     animation: scaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    z-index: 10;
 }
 
 .big-button:hover {
@@ -730,7 +727,6 @@ a.btn[href=""] {
     align-items: center;
     gap: 8px;
     transition: all 0.1s;
-    font-family: 'Noto Sans TC', sans-serif;
 }
 
 #floating-toggle:hover {
@@ -768,41 +764,34 @@ a.btn[href=""] {
 /* ========================================= */
 /* 8. 遊戲啟動畫面 (Title Screen)專用樣式 */
 /* ========================================= */
-#title-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-family: 'Noto Sans TC', sans-serif;
-    overflow: hidden;
-}
+
 
 /* 磚塊與問號箱容器 */
-.block-container {
+.pipe-blocks {
     display: flex;
-    gap: 15px;
-    margin-bottom: 60px;
+    gap: 8px;
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
     animation: float 3s ease-in-out infinite;
 }
 
+.pipe-decoration:not(.right) .pipe-blocks {
+    left: 0;
+    transform: none;
+}
+
 .block {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    border: 3px solid #333;
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+    width: 45px;
+    height: 45px;
+    border-radius: 6px;
+    border: 2px solid #333;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: bold;
     color: #fff;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
@@ -832,58 +821,38 @@ a.btn[href=""] {
 /* 水管裝飾 */
 .pipe-decoration {
     position: absolute;
-    bottom: 60px;
-    left: 10%;
-    width: 100px;
-    height: 140px;
+    bottom: 70px;
+    left: 7%;
+    width: 60px;
+    height: 80px;
     background: linear-gradient(90deg, #2d6a4f 0%, #52b788 50%, #2d6a4f 100%);
     border: 3px solid #1b4332;
-    border-radius: 8px 8px 0 0;
-    z-index: 1;
+    border-radius: 6px 6px 0 0;
+    z-index: 0;
 }
 
 .pipe-decoration::before {
     content: '';
     position: absolute;
-    top: -40px;
-    left: -10px;
-    width: 120px;
-    height: 40px;
+    top: -24px;
+    left: -7px;
+    width: 74px;
+    height: 24px;
     background: linear-gradient(90deg, #2d6a4f 0%, #52b788 50%, #2d6a4f 100%);
     border: 3px solid #1b4332;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
 .pipe-decoration.right {
     left: auto;
-    right: 10%;
-    height: 100px;
-}
-
-/* 地面 */
-.ground-decoration {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    right: 7%;
     height: 60px;
-    background: #8b5e34;
-    border-top: 5px solid #606c38;
-    z-index: 2;
+    bottom: 70px;
 }
 
-/* 遊戲標題 */
-.game-title {
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    color: #ffffff;
-    text-shadow: 4px 4px 0px #264653, 8px 8px 20px rgba(0, 0, 0, 0.3);
-    margin-bottom: 80px;
-    line-height: 1.1;
-    letter-spacing: 4px;
-    z-index: 5;
-    font-weight: 900;
-    text-align: center;
-}
+
+
+
 
 /* 開始按鈕 */
 .start-btn {

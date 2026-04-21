@@ -5,7 +5,7 @@
 
 // 1. 定義共用的導覽列 HTML 模板
 const NAVBAR_TEMPLATE = `
-  <a href="/" class="logo">SPEDMIX</a>
+  <a href="/" class="logo">SPEDMIX學習平台</a>
   <nav>
     <ul class="nav-links">
       <li><a href="/">HOME</a></li>
