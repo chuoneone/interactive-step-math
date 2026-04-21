@@ -789,7 +789,7 @@ a.btn[href=""] {
 .block-container {
     display: flex;
     gap: 15px;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
     animation: float 3s ease-in-out infinite;
 }
 
@@ -877,11 +877,12 @@ a.btn[href=""] {
     font-size: clamp(2.5rem, 6vw, 5rem);
     color: #ffffff;
     text-shadow: 4px 4px 0px #264653, 8px 8px 20px rgba(0, 0, 0, 0.3);
-    margin-bottom: 60px;
+    margin-bottom: 80px;
     line-height: 1.1;
     letter-spacing: 4px;
     z-index: 5;
     font-weight: 900;
+    text-align: center;
 }
 
 /* 開始按鈕 */
