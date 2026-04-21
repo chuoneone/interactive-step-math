@@ -1,6 +1,6 @@
 {
-  "name": "特教數位學習網｜SPEDMIX",
-  "short_name": "SPED學習網",
+  "name": "SPEDMIX 學習平台",
+  "short_name": "SPEDMIX",
   "description": "國中特教生專用數位學習系統",
   "start_url": "/",
   "display": "standalone",

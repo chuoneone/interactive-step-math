@@ -5,7 +5,7 @@
 
 // 1. 定義共用的導覽列 HTML 模板
 const NAVBAR_TEMPLATE = `
-  <a href="/" class="logo">SPED</a>
+  <a href="/" class="logo">SPEDMIX</a>
   <nav>
     <ul class="nav-links">
       <li><a href="/">HOME</a></li>
@@ -33,18 +33,52 @@ const NAVBAR_TEMPLATE = `
           <a href="9eng.html">九年級</a>
         </div>
       </li>
-      <li class="dropdown">
-        <a href="javascript:void(0)" class="dropbtn" style="color: #FFD700;">特需課程 <i class="fas fa-star"></i></a>
-        <div class="dropdown-content">
-          <a href="socialskill.html"><i class="fas fa-user-group"></i> 社會技巧</a>
-          <a href="learningstrategy.html"><i class="fas fa-lightbulb"></i> 學習策略</a>
-          <a href="bigtest.html"><i class="fas fa-pen-alt"></i> 會考專區</a>
-        </div>
-      </li>
+      <li><a href="bigtest.html" style="color: #FFD700;"><i class="fas fa-pen-alt"></i> 會考專區</a></li>
+      <li><a href="https://emotionrecording.pages.dev/" target="_blank"><i class="fas fa-face-smile"></i> 情緒紀錄</a></li>
     </ul>
   </nav>
   <div class="menu-toggle">
     <i class="fas fa-bars"></i>
+  </div>
+`;
+
+// 2. 定義共用的頁尾 HTML 模板
+const FOOTER_TEMPLATE = `
+  <div class="footer-left">
+    <div class="countdown-wrapper"><i class="fas fa-sun"></i> 暑假倒數：<span id="days">00</span> 天</div>
+  </div>
+  <div class="footer-center" style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.4;">© 2026 SPEDMIX 米克師<br>本作品採用 CC BY-NC-SA 4.0 創用CC授權。</div>
+  <div class="footer-right">
+    <button id="other-btn" class="footer-btn">其它 <i class="fas fa-caret-up"></i></button>
+  </div>
+`;
+
+// 3. 定義共用的「其它」視窗模板
+const OTHER_MODAL_TEMPLATE = `
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h2 style="text-align: center; color: #C84C0C; margin-bottom: 20px;">其它資源</h2>
+    <div class="modal-grid">
+      <div class="modal-group">
+        <h3><i class="fas fa-cogs"></i> 小工具</h3>
+        <a href="https://play.blooket.com/play" target="_blank" class="btn">Blooket</a>
+        <a href="https://www.gimkit.com/join?class=60a1e3ba9eaadc0022adafb6" target="_blank" class="btn">Gimkit</a>
+        <a href="https://sites.google.com/view/spedmixtool/time" target="_blank" class="btn">計時器</a>
+      </div>
+      <div class="modal-group">
+        <h3><i class="fas fa-running"></i> 基本練功</h3>
+        <a href="https://sites.google.com/view/specialchu/home?authuser=0" target="_blank" class="btn">舊網</a>
+        <a href="other/test2.html" target="_blank" class="btn">加減法</a>
+        <a href="other/test.html" target="_blank" class="btn">99乘法</a>
+        <a href="math/game1.html" target="_blank" class="btn">正負數加減</a>
+        <a href="https://doggame-math.pages.dev/" target="_blank" class="btn">狗子冒險去</a>
+      </div>
+      <div class="modal-group">
+        <h3><i class="fas fa-star"></i> 特需課程</h3>
+        <a href="socialskill.html" class="btn">社會技巧</a>
+        <a href="learningstrategy.html" class="btn">學習策略</a>
+      </div>
+    </div>
   </div>
 `;
 
@@ -59,12 +93,21 @@ document.addEventListener('DOMContentLoaded', () => {
         navbarElement.innerHTML = NAVBAR_TEMPLATE;
     }
 
-    // B. 初始化各項互動功能
+    // B. 注入頁尾
+    const footerElement = document.querySelector('.sticky-footer');
+    if (footerElement) {
+        footerElement.innerHTML = FOOTER_TEMPLATE;
+    }
+
+    // C. 注入並初始化「其它」視窗
+    initOtherModal();
+
+    // D. 初始化各項互動功能
     initMobileMenu();
     initNavbarHighlight();
     initCountdown();
     initTabs();
-    initSemesterLogic(); // 新增：初始化學期切換邏輯
+    initSemesterLogic();
 });
 
 // --- 功能函式定義 ---
@@ -249,6 +292,30 @@ function initCountdown() {
 
     setInterval(updateTimer, 60000);
     updateTimer();
+}
+
+/**
+ * 6. 初始化「其它」資源視窗
+ */
+function initOtherModal() {
+    let modal = document.getElementById("other-modal");
+    if (!modal) return;
+
+    // 注入模板內容
+    modal.innerHTML = OTHER_MODAL_TEMPLATE;
+
+    const otherBtn = document.getElementById("other-btn");
+    const closeSpan = modal.querySelector(".close-modal");
+
+    if (otherBtn) {
+        otherBtn.onclick = () => modal.style.display = "block";
+    }
+    if (closeSpan) {
+        closeSpan.onclick = () => modal.style.display = "none";
+    }
+    window.addEventListener('click', (e) => {
+        if (e.target == modal) modal.style.display = "none";
+    });
 }
 
 

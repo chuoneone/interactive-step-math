@@ -167,84 +167,8 @@
   }
 
   function injectUI() {
-    const footerRight = document.querySelector('.footer-right');
-    if (!footerRight) return;
-    if (document.getElementById('progress-btn')) return;
-
-    // 按鈕
-    const btn = document.createElement('button');
-    btn.id        = 'progress-btn';
-    btn.className = 'footer-btn';
-    btn.style.cssText = 'margin-right:6px;background:#9C27B0;color:#fff;border-color:#6A1B9A;';
-    btn.innerHTML = '紀錄 <i class="fas fa-chart-bar"></i>';
-    footerRight.insertBefore(btn, footerRight.firstChild);
-
-    // modal
-    const overlay = document.createElement('div');
-    overlay.id = 'progress-modal';
-    overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;' +
-      'background:rgba(0,0,0,.5);justify-content:center;align-items:center;';
-    overlay.innerHTML =
-      '<div style="background:#fff;border-radius:12px;padding:20px;width:92%;max-width:520px;' +
-      'max-height:90vh;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.25);">' +
-        '<span id="close-progress" style="position:absolute;top:12px;right:16px;font-size:24px;' +
-        'cursor:pointer;color:#9ca3af;line-height:1;">&times;</span>' +
-        '<h2 style="text-align:center;color:' + BRAND + ';margin:0 0 14px;font-size:17px;">&#x1F4CB; 學習紀錄</h2>' +
-
-        // 分頁按鈕
-        '<div style="display:flex;gap:8px;margin-bottom:12px;">' +
-          '<button class="prog-tab-btn" data-tab="visits" ' +
-          'style="flex:1;padding:7px;border:none;border-radius:8px;cursor:pointer;font-weight:700;' +
-          'font-size:13px;font-family:inherit;background:' + BRAND + ';color:#fff;">' +
-          '&#x1F4CB; 最近造訪</button>' +
-          '<button class="prog-tab-btn" data-tab="ex" ' +
-          'style="flex:1;padding:7px;border:none;border-radius:8px;cursor:pointer;font-weight:700;' +
-          'font-size:13px;font-family:inherit;background:#f3f4f6;color:#374151;">' +
-          '&#x2B50; 練習成績</button>' +
-        '</div>' +
-
-        // 造訪 panel
-        '<div id="prog-panel-visits" style="overflow-y:auto;max-height:340px;">' +
-          '<div id="prog-visits-list"></div>' +
-          '<p id="prog-visits-empty" style="text-align:center;color:#aaa;display:none;margin:24px 0;">' +
-          '還沒有造訪記錄，去學習看看吧！</p>' +
-        '</div>' +
-
-        // 成績 panel
-        '<div id="prog-panel-ex" style="overflow-y:auto;max-height:340px;display:none;">' +
-          '<div id="prog-ex-list"></div>' +
-          '<p id="prog-ex-empty" style="text-align:center;color:#aaa;display:none;margin:24px 0;">' +
-          '還沒有練習成績，完成練習後按「提交成績」吧！</p>' +
-        '</div>' +
-
-        '<div style="text-align:right;margin-top:12px;border-top:1px solid #eee;padding-top:10px;flex-shrink:0;">' +
-          '<button id="prog-clear-btn" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;' +
-          'border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12px;">&#x1F5D1; 清除全部紀錄</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(overlay);
-
-    // 事件
-    btn.addEventListener('click', function () {
-      overlay.style.display = 'flex';
-      switchTab('visits');
-    });
-    document.getElementById('close-progress').addEventListener('click', function () {
-      overlay.style.display = 'none';
-    });
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) overlay.style.display = 'none';
-    });
-    overlay.querySelectorAll('.prog-tab-btn').forEach(function (b) {
-      b.addEventListener('click', function () { switchTab(this.dataset.tab); });
-    });
-    document.getElementById('prog-clear-btn').addEventListener('click', function () {
-      if (confirm('確定要清除全部學習紀錄嗎？此動作無法復原。')) {
-        localStorage.removeItem(STORAGE_KEY);
-        renderVisits();
-        renderExercises();
-      }
-    });
+    // 移除 UI 注入
+    return;
   }
 
   // ── 公開 API ─────────────────────────────────────────────────

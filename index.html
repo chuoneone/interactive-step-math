@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="images/dog.png">
-  <title>特教數位學習網｜SPEDMIX</title>
+  <title>SPEDMIX 學習平台</title>
   <meta name="description" content="專為國中特教生設計的數位學習系統。由米克師製作，提供七八九年級國文、數學、英文數位教材。">
   <meta name="keywords" content="米克師, 國中特教, 數位學習, 特教教材, SPEDMIX, SPED">
 
@@ -35,12 +35,12 @@
       <div class="block question-box">?</div>
       <div class="block brick"></div>
     </div>
-    <h1 class="game-title">SPED LEARNING<br>SYSTEM</h1>
+    <h1 class="game-title">SPEDMIX<br>學習平台</h1>
     <button id="start-btn" class="start-btn" data-track-cat="system" data-track-lbl="enter_site">PRESS START</button>
     <div class="pipe-decoration"></div>
     <div class="pipe-decoration right"></div>
     <div class="ground-decoration"></div>
-    <div class="copyright">© 2026 SPEDMIX - INSERT COIN</div>
+    <div class="copyright">© 2026 SPEDMIX 米克師<br>本作品採用 CC BY-NC-SA 4.0 創用CC授權。</div>
   </div>
 
   <div id="main-view" class="hidden">
@@ -65,52 +65,17 @@
         <a href="9.html" class="big-button"><i class="fas fa-calculator"></i> 9年級數學</a>
         <a href="9eng.html" class="big-button"><i class="fas fa-language"></i> 9年級英文</a>
       </div>
-      <div class="grade-row">
-        <a href="learningstrategy.html" class="big-button"><i class="fas fa-lightbulb"></i> 學習策略</a>
-        <a href="socialskill.html" class="big-button"><i class="fas fa-user-group"></i> 社會技巧</a>
-        <a href="bigtest.html" class="big-button"><i class="fas fa-pen-alt"></i> 會考專區</a>
-      </div>
 
-      <footer class="sticky-footer">
-        <div class="footer-left"><i class="fas fa-sun"></i> 暑假倒數：<span id="days">00</span> 天</div>
-        <div class="footer-center">by spedmix</div>
-        <div class="footer-right">
-          <button id="other-btn" class="footer-btn">其它 <i class="fas fa-caret-up"></i></button>
-        </div>
-      </footer>
+
+      <footer class="sticky-footer"></footer>
     </main>
   </div>
 
-  <div id="other-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal">&times;</span>
-      <h2 style="text-align: center; color: #C84C0C; margin-bottom: 20px;">其它資源</h2>
-      <div class="modal-grid">
-        <div class="modal-group">
-          <h3><i class="fas fa-cogs"></i> 小工具</h3>
-          <a href="https://play.blooket.com/play" target="_blank" class="btn">Blooket</a>
-          <a href="https://www.gimkit.com/join?class=60a1e3ba9eaadc0022adafb6" target="_blank" class="btn">Gimkit</a>
-          <a href="https://sites.google.com/view/spedmixtool/time" target="_blank" class="btn">計時器</a>
-        </div>
-        <div class="modal-group">
-          <h3><i class="fas fa-running"></i> 基本練功</h3>
-          <a href="https://sites.google.com/view/specialchu/home?authuser=0" target="_blank" class="btn">舊網</a>
-          <a href="other/test2.html" target="_blank" class="btn">加減法</a>
-          <a href="other/test.html" target="_blank" class="btn">99乘法</a>
-          <a href="math/game1.html" target="_blank" class="btn">正負數加減</a>
-          <a href="https://five-flamingo-d65.notion.site/1eb4c52ff8d08068abfbdbf7ba7bb48e" target="_blank"
-            class="btn">基礎字練習</a>
-          <a href="https://doggame-math.pages.dev/" target="_blank" class="btn">狗子冒險去</a>
-        </div>
-
-      </div>
-    </div>
-  </div>
+  <div id="other-modal" class="modal"></div>
 
   <script src="main.js"></script>
   <script src="tracking.js"></script>
   <script src="progress.js"></script>
-
   <script>
     // PWA 註冊
     if ('serviceWorker' in navigator) {
@@ -128,8 +93,8 @@
 
     function startGame() {
       localStorage.setItem('spedmix_visited', '1');
-      titleScreen.style.display = 'none';
-      mainView.classList.remove('hidden');
+      if (titleScreen) titleScreen.style.display = 'none';
+      if (mainView) mainView.classList.remove('hidden');
       window.dispatchEvent(new Event('resize'));
     }
 
@@ -138,22 +103,12 @@
       startGame();
     }
 
-    startBtn.addEventListener('click', startGame);
+    if (startBtn) startBtn.addEventListener('click', startGame);
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && titleScreen.style.display !== 'none') startGame();
+      if (e.key === 'Enter' && titleScreen && titleScreen.style.display !== 'none') startGame();
     });
-
-    // Modal Logic (因為 Modal 內容在 HTML 裡，直接寫在這裡最方便)
-    const modal = document.getElementById("other-modal");
-    const otherBtn = document.getElementById("other-btn");
-    const closeSpan = document.querySelector(".close-modal");
-
-    otherBtn.onclick = () => modal.style.display = "block";
-    closeSpan.onclick = () => modal.style.display = "none";
-    window.onclick = (event) => {
-      if (event.target == modal) modal.style.display = "none";
-    }
   </script>
+
 </body>
 
 

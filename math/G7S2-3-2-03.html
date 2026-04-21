@@ -115,8 +115,6 @@
         }
 
         .sticky-side {
-            position: sticky;
-            top: 80px;
             height: fit-content;
         }
 
@@ -151,7 +149,7 @@
 
     <!-- 導覽列 -->
     <header
-        class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b">
+        class="bg-white shadow-sm px-4 py-3 flex items-center justify-between border-b">
         <div class="flex items-center gap-4 overflow-x-auto no-scrollbar max-w-[65%]">
             <span class="font-bold text-blue-600 whitespace-nowrap border-r-2 pr-4">正比關係的應用</span>
             <div id="nav-buttons" class="flex gap-2"></div>
@@ -166,7 +164,7 @@
         </div>
     </header>
 
-    <main class="container mx-auto mt-24 p-4 md:flex md:gap-6">
+    <main class="container mx-auto p-4 md:flex md:gap-6">
         <!-- 左側：題目描述 (固定) -->
         <section class="md:w-1/3 mb-4 md:mb-0">
             <div class="bg-white rounded-2xl shadow-lg p-6 sticky-side border-t-4 border-blue-500">
