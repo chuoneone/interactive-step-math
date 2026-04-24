@@ -120,12 +120,19 @@ function initSemesterLogic() {
     const toggleBtn = document.getElementById('floating-toggle');
     if (!toggleBtn) return; // 如果該頁面沒有切換按鈕就跳過
 
-    // 頁面載入時的初始狀態 (預設下學期)
+    const pageKey = window.location.pathname;
+    const savedSem = sessionStorage.getItem('activeSem_' + pageKey);
+    if (savedSem) {
+        currentSem = parseInt(savedSem, 10);
+    }
+
+    // 頁面載入時的初始狀態
     updateSemesterUI();
 
     // 綁定點擊事件
     toggleBtn.addEventListener('click', () => {
         currentSem = currentSem === 1 ? 2 : 1;
+        sessionStorage.setItem('activeSem_' + pageKey, currentSem);
 
         // 圖示旋轉動畫
         const icon = document.getElementById('toggle-icon');
@@ -237,6 +244,16 @@ function initTabs() {
         });
     }
 
+    const pageKey = window.location.pathname;
+    const savedTabId = sessionStorage.getItem('activeTab_' + pageKey);
+
+    if (!targetBtn && savedTabId) {
+        targetBtn = Array.from(buttons).find(btn => {
+            const attr = btn.getAttribute('onclick');
+            return attr && attr.includes(savedTabId);
+        });
+    }
+
     // 如果沒有 hash 且該頁面還沒有被激活的按鈕，就找預設按鈕
     if (!targetBtn && !document.querySelector('.section-button.active')) {
         // 先看有沒有目前學期的預設按鈕，沒有就選第一個
@@ -251,7 +268,6 @@ function initTabs() {
     }
 }
 
-// 供頁籤使用的全域切換函式
 function showSection(id, clickedBtn) {
     // 取得當前區塊內的內容進行切換
     const parentArea = clickedBtn ? clickedBtn.closest('#semester1-area, #semester2-area') : document;
@@ -264,6 +280,9 @@ function showSection(id, clickedBtn) {
     const target = document.getElementById(id);
     if (target) target.classList.add('active-section');
     if (clickedBtn) clickedBtn.classList.add('active');
+
+    const pageKey = window.location.pathname;
+    sessionStorage.setItem('activeTab_' + pageKey, id);
 }
 
 /**
