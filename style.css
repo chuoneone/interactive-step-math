@@ -30,8 +30,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #004d4d;
-    border-bottom: 3px solid #ffce54;
+    background: #005959;
+    border-bottom: 3px solid #f4c542;
     padding: 10px 30px;
     position: absolute;
     width: 100%;
@@ -59,7 +59,7 @@ body {
 .navbar .logo {
     font-size: 1.8em;
     font-weight: 900;
-    color: #ffce54;
+    color: #f4c542;
     text-shadow: none;
     letter-spacing: 2px;
     font-family: inherit;
@@ -93,15 +93,15 @@ body {
 
 .nav-links a:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #ffce54;
+    color: #f4c542;
     transform: scale(1.1);
     box-shadow: none;
 }
 
 .nav-links a.active {
     background: rgba(255, 255, 255, 0.15);
-    color: #ffce54;
-    border: 1px solid #ffce54;
+    color: #f4c542;
+    border: 1px solid #f4c542;
     box-shadow: none;
 }
 
@@ -156,7 +156,7 @@ body {
 
 .social-group h3 {
     margin-top: -40px;
-    background: #004d4d;
+    background: #005959;
     color: #ffffff;
     padding: 10px 20px;
     border-radius: 12px;
@@ -189,11 +189,11 @@ body {
 
 .btn {
     background: #ffffff;
-    color: #004d4d;
+    color: #005959;
     padding: 12px 20px;
     font-size: 20px;
     border-radius: 12px;
-    border: 3px solid #ffce54;
+    border: 3px solid #f4c542;
     text-decoration: none;
     text-align: left;
     display: block;
@@ -243,10 +243,10 @@ body {
 .chapter-button:hover,
 .section-button:hover {
     background: #ffffff;
-    color: #004d4d;
+    color: #005959;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 77, 77, 0.1);
-    border-color: #ffce54;
+    border-color: #f4c542;
 }
 
 .chapter-button:active,
@@ -257,10 +257,10 @@ body {
 
 .chapter-button.active,
 .section-button.active {
-    background: #004d4d;
+    background: #005959;
     color: #ffffff;
-    border: 2px solid #ffce54;
-    box-shadow: 0 8px 20px rgba(0, 77, 77, 0.3), inset 0 -4px 0 #ffce54;
+    border: 2px solid #f4c542;
+    box-shadow: 0 8px 20px rgba(0, 77, 77, 0.3), inset 0 -4px 0 #f4c542;
     transform: scale(1.05);
 }
 
@@ -304,8 +304,8 @@ footer,
     left: 0;
     width: 100%;
     min-height: 70px;
-    background: #004d4d;
-    border-top: 3px solid #ffce54;
+    background: #005959;
+    border-top: 3px solid #f4c542;
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -352,8 +352,8 @@ footer,
 
 .footer-btn {
     background: #ffffff;
-    color: #004d4d;
-    border: 1px solid #004d4d;
+    color: #005959;
+    border: 1px solid #005959;
     padding: 8px 18px;
     border-radius: 12px;
     font-weight: 800;
@@ -363,7 +363,7 @@ footer,
 }
 
 .footer-btn:hover {
-    background: #ffce54;
+    background: #f4c542;
     color: #000000;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -475,13 +475,13 @@ footer,
     font-weight: 900;
     text-align: center;
     margin: 5px auto 40px;
-    color: #004d4d;
+    color: #005959;
     text-shadow: none;
     letter-spacing: 2px;
     max-width: 90vw;
     padding: 0 10px;
     animation: slowPulse 1.5s ease-in-out infinite;
-    border-bottom: 5px solid #ffce54;
+    border-bottom: 5px solid #f4c542;
     display: inline-block;
     padding-bottom: 5px;
 }
@@ -527,7 +527,7 @@ footer,
 }
 
 .dropdown-content a:hover {
-    background-color: #ffce54;
+    background-color: #f4c542;
     color: #000000 !important;
 }
 
@@ -560,7 +560,7 @@ footer,
     font-weight: 900;
     font-size: clamp(2.5rem, 5vw, 4rem);
     text-align: center;
-    color: #004d4d;
+    color: #005959;
     text-shadow: none;
     margin: 50px auto 30px;
     max-width: 700px;
@@ -608,7 +608,7 @@ footer,
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 77, 77, 0.1);
     border: 1px solid #e2e8f0;
-    border-top: 6px solid #ffce54;
+    border-top: 6px solid #f4c542;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     animation: scaleIn 0.6s backwards;
 }
@@ -619,11 +619,11 @@ footer,
 .grade-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 20px 40px rgba(0, 77, 77, 0.15);
-    border-color: #ffce54;
+    border-color: #f4c542;
 }
 
 .card-header {
-    background: #004d4d;
+    background: #005959;
     color: #ffffff;
     padding: 15px;
     text-align: center;
@@ -666,14 +666,14 @@ footer,
 
 .subject-btn i {
     font-size: 24px;
-    color: #ffce54;
+    color: #f4c542;
 }
 
 .subject-btn:hover {
-    background: #ffce54;
+    background: #f4c542;
     color: #000000;
     transform: translateY(-3px);
-    border-color: #ffce54;
+    border-color: #f4c542;
 }
 
 .subject-btn:hover i {
@@ -683,7 +683,7 @@ footer,
 /* 會考專區特別卡片 */
 .special-card {
     grid-column: span 3;
-    background: #ffce54;
+    background: #f4c542;
     color: #1e293b;
     padding: 25px;
     border-radius: 20px;
@@ -695,7 +695,7 @@ footer,
     align-items: center;
     justify-content: center;
     gap: 15px;
-    box-shadow: 0 10px 20px rgba(255, 206, 84, 0.3);
+    box-shadow: 0 10px 20px rgba(244, 197, 66, 0.3);
     transition: all 0.2s;
     border: 2px solid transparent;
 }
@@ -704,7 +704,7 @@ footer,
     transform: scale(1.02);
     background: #ffdb7d;
     box-shadow: 0 15px 30px rgba(255, 206, 84, 0.4);
-    border-color: #004d4d;
+    border-color: #005959;
 }
 
 @media (max-width: 1000px) {
@@ -792,7 +792,7 @@ footer,
     padding-bottom: 10px;
     border-bottom: 2px dashed #94a3b8;
     text-align: center;
-    color: #004d4d;
+    color: #005959;
     font-size: 24px;
     font-weight: 900;
 }
@@ -800,8 +800,8 @@ footer,
 .modal-group .btn {
     text-align: center;
     background: #ffffff;
-    color: #004d4d;
-    border: 1px solid #004d4d;
+    color: #005959;
+    border: 1px solid #005959;
     font-size: 18px;
     margin-top: 10px;
     border-radius: 12px;
@@ -844,13 +844,13 @@ a.btn[href=""] {
     top: 100px;
     right: 20px;
     background-color: #ffffff;
-    color: #004d4d;
+    color: #005959;
     padding: 10px 20px;
     border-radius: 15px;
     font-size: 1.1rem;
     font-weight: 900;
     cursor: pointer;
-    border: 2px solid #004d4d;
+    border: 2px solid #005959;
     box-shadow: 0 4px 10px rgba(0, 77, 77, 0.1);
     z-index: 999;
     display: flex;
@@ -860,7 +860,7 @@ a.btn[href=""] {
 }
 
 #floating-toggle:hover {
-    background-color: #ffce54;
+    background-color: #f4c542;
     color: #000000;
     box-shadow: 0 6px 15px rgba(5, 150, 105, 0.2);
 }
@@ -904,12 +904,12 @@ a.btn[href=""] {
 
 /* 開始按鈕 */
 .start-btn {
-    background: #ffce54;
+    background: #f4c542;
     color: #000000;
     font-family: 'Noto Sans TC', sans-serif;
     font-size: 1.8rem;
     padding: 15px 50px;
-    border: 2px solid #ffce54;
+    border: 2px solid #f4c542;
     border-radius: 15px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(255, 206, 84, 0.3);
