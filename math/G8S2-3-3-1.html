@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>盲盒大搜集 - 三角形全等性質</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+
     <!-- 引入可愛圓體字型 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1063,8 +1065,7 @@
                 <p style="color: #666; margin-bottom: 20px;">輸入名字來保存你的金幣、代幣和可愛動物進度！</p>
                 <input type="text" id="player-name-input" placeholder="請輸入名字"
                     style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid #eee; font-size: 1.2rem; margin-bottom: 20px; text-align: center; font-family: inherit;">
-                <button id="login-btn" class="btn btn-blue" onclick="loginAndLoad()"
-                    style="width: 100%;">進入遊戲</button>
+                <button id="login-btn" class="btn btn-blue" onclick="loginAndLoad()" style="width: 100%;">進入遊戲</button>
             </div>
         </div>
 
@@ -1281,9 +1282,9 @@
             document.getElementById('player-name-label').innerText = nameInput;
             document.getElementById('player-display').style.display = 'block';
             document.getElementById('login-modal').classList.add('hidden');
-            
+
             const savedDataStr = localStorage.getItem('blindBoxData_G8S2_3_3_1_' + playerName);
-            
+
             if (savedDataStr) {
                 try {
                     const savedData = JSON.parse(savedDataStr);
@@ -1304,7 +1305,7 @@
                 saveProgress();
                 window.showCustomAlert(`歡迎加入，${nameInput}！連對三題可以拿到特殊盲盒代幣喔！`);
             }
-            
+
             initQuiz();
             updateUI();
             window.switchTab('quiz');
