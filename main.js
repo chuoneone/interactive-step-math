@@ -5,7 +5,14 @@
 
 // 1. 定義共用的導覽列 HTML 模板
 const NAVBAR_TEMPLATE = `
-  <a href="/" class="logo">SPEDMIX學習平台</a>
+  <a href="/" class="logo">SPEDMIX</a>
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <input type="text" id="global-search" placeholder="搜尋課程或主題..." autocomplete="off">
+      <i class="fas fa-search search-icon"></i>
+    </div>
+    <div id="search-results" class="search-results-dropdown"></div>
+  </div>
   <nav>
     <ul class="nav-links">
       <li><a href="/">HOME</a></li>
@@ -102,13 +109,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // C. 注入並初始化「其它」視窗
     initOtherModal();
 
-    // D. 初始化各項互動功能
-    initMobileMenu();
-    initNavbarHighlight();
-    initCountdown();
-    initTabs();
     initSemesterLogic();
+    initSearch();
+    initBreadcrumb();
+    handleSearchHighlight();
+    initHistoryState();
+    initCountdown(); // 修正：加入倒數計時初始化
 });
+
+// 監聽瀏覽器上一頁/下一頁
+function initHistoryState() {
+    window.addEventListener('popstate', (event) => {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            // 如果有 Hash，嘗試開啟對應單元 (不隱藏選單的標記由 initTabs 邏輯決定)
+            const buttons = document.querySelectorAll('.section-button');
+            const targetBtn = Array.from(buttons).find(btn => {
+                const attr = btn.getAttribute('onclick');
+                return attr && attr.includes(hash);
+            });
+            if (targetBtn) {
+                showSection(hash, targetBtn, true);
+            }
+        } else {
+            // 如果沒有 Hash，回到選單模式
+            showMenu();
+        }
+    });
+}
+
+// 增加麵包屑容器
+function initBreadcrumb() {
+    const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
+    if (isHomePage) return;
+
+    let bc = document.getElementById('breadcrumb-nav');
+    if (!bc) {
+        bc = document.createElement('div');
+        bc.className = 'breadcrumb-container';
+        bc.id = 'breadcrumb-nav';
+        // 插入到 body 最前面
+        document.body.prepend(bc);
+    }
+    // 初始顯示
+    updateBreadcrumb(null, null);
+}
 
 // --- 功能函式定義 ---
 
@@ -155,18 +200,10 @@ function updateSemesterUI() {
         if (s1Area) s1Area.style.display = 'block';
         if (s2Area) s2Area.style.display = 'none';
         if (toggleText) toggleText.innerText = "切換至 下學期";
-
-        // 自動點擊上學期的預設按鈕
-        const defBtn = document.getElementById('default-s1-btn');
-        if (defBtn) defBtn.click();
     } else {
         if (s1Area) s1Area.style.display = 'none';
         if (s2Area) s2Area.style.display = 'block';
         if (toggleText) toggleText.innerText = "切換至 上學期";
-
-        // 自動點擊下學期的預設按鈕
-        const defBtn = document.getElementById('default-s2-btn');
-        if (defBtn) defBtn.click();
     }
 }
 
@@ -244,45 +281,111 @@ function initTabs() {
         });
     }
 
-    const pageKey = window.location.pathname;
-    const savedTabId = sessionStorage.getItem('activeTab_' + pageKey);
+    // 註解掉儲存頁籤的邏輯，確保每次進入都是乾淨的選單
+    // const pageKey = window.location.pathname;
+    // const savedTabId = sessionStorage.getItem('activeTab_' + pageKey);
 
-    if (!targetBtn && savedTabId) {
-        targetBtn = Array.from(buttons).find(btn => {
-            const attr = btn.getAttribute('onclick');
-            return attr && attr.includes(savedTabId);
-        });
-    }
+    // if (!targetBtn && savedTabId) {
+    //     targetBtn = Array.from(buttons).find(btn => {
+    //         const attr = btn.getAttribute('onclick');
+    //         return attr && attr.includes(savedTabId);
+    //     });
+    // }
 
-    // 如果沒有 hash 且該頁面還沒有被激活的按鈕，就找預設按鈕
-    if (!targetBtn && !document.querySelector('.section-button.active')) {
-        // 先看有沒有目前學期的預設按鈕，沒有就選第一個
-        const defId = currentSem === 1 ? 'default-s1-btn' : 'default-s2-btn';
-        targetBtn = document.getElementById(defId) || buttons[0];
+    // 如果沒有 hash 且該頁面還沒有被激活的按鈕，不自動選取 (除非有儲存的頁籤)
+    // 但使用者希望進來只有按鈕，所以我們甚至可以忽略 savedTabId
+    if (!targetBtn) {
+        // 如果想完全純淨，可以連 savedTabId 都不理會
+        // 這裡我們只在有 Hash 的情況下才自動開啟
     }
 
     if (targetBtn) {
         const onClickAttr = targetBtn.getAttribute('onclick');
         const match = onClickAttr?.match(/showSection\('([^']+)'/);
-        if (match) showSection(match[1], targetBtn);
+        if (match) {
+            // 如果是透過 Hash 進來的，直接進入隱藏選單模式
+            showSection(match[1], targetBtn, !!hash);
+        }
+    } else {
+        // 確保所有內容初始都是隱藏的
+        document.querySelectorAll('.section-content').forEach(sec => {
+            sec.classList.remove('active-section');
+        });
     }
 }
 
-function showSection(id, clickedBtn) {
+function showSection(id, clickedBtn, hideMenu = true) {
     // 取得當前區塊內的內容進行切換
     const parentArea = clickedBtn ? clickedBtn.closest('#semester1-area, #semester2-area') : document;
-    const allContents = parentArea ? parentArea.querySelectorAll('.section-content') : document.querySelectorAll('.section-content');
-    const allButtons = parentArea ? parentArea.querySelectorAll('.section-button') : document.querySelectorAll('.section-button');
-
-    allContents.forEach(sec => sec.classList.remove('active-section'));
-    allButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // 清除所有內容與按鈕狀態 (改為全域搜尋)
+    document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active-section'));
+    document.querySelectorAll('.section-button').forEach(btn => btn.classList.remove('active'));
 
     const target = document.getElementById(id);
-    if (target) target.classList.add('active-section');
+    if (target) {
+        target.classList.add('active-section');
+        
+        if (hideMenu) {
+            document.body.classList.add('menu-hidden');
+            document.body.classList.add('with-breadcrumb');
+            updateBreadcrumb(parentArea, clickedBtn);
+            
+            // 使用 pushState 紀錄歷史，讓上一頁可以回到選單
+            const currentHash = window.location.hash;
+            if (currentHash !== '#' + id) {
+                history.pushState({ sectionId: id }, null, '#' + id);
+            }
+        }
+    }
+    
     if (clickedBtn) clickedBtn.classList.add('active');
+}
 
-    const pageKey = window.location.pathname;
-    sessionStorage.setItem('activeTab_' + pageKey, id);
+function updateBreadcrumb(parentArea, clickedBtn) {
+    const bcNav = document.getElementById('breadcrumb-nav');
+    if (!bcNav) return;
+
+    const subject = document.title.split('｜')[0] || "學習平台";
+    const chapter = clickedBtn ? clickedBtn.innerText.trim() : "";
+
+    let html = `
+        <span class="breadcrumb-item" onclick="window.location.href='/'">HOME</span>
+        <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+    `;
+
+    if (chapter) {
+        html += `
+            <span class="breadcrumb-item" onclick="showMenu()">${subject}</span>
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <span class="breadcrumb-active">${chapter}</span>
+        `;
+    } else {
+        html += `<span class="breadcrumb-active">${subject}</span>`;
+    }
+
+    bcNav.innerHTML = html;
+}
+
+function showMenu() {
+    document.body.classList.remove('menu-hidden');
+    document.body.classList.remove('with-breadcrumb');
+    
+    // 隱藏所有內容區塊
+    document.querySelectorAll('.section-content').forEach(sec => {
+        sec.classList.remove('active-section');
+    });
+    // 清除按鈕高亮
+    document.querySelectorAll('.section-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    // 更新麵包屑回到科目層級
+    updateBreadcrumb(null, null);
+
+    // 清除網址 Hash
+    history.replaceState(null, null, ' ');
+    // 捲動回頂部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -338,3 +441,178 @@ function initOtherModal() {
 }
 
 
+/**
+ * 7. 全域搜尋功能
+ */
+function initSearch() {
+    const searchInput = document.getElementById('global-search');
+    const searchResults = document.getElementById('search-results');
+    if (!searchInput || !searchResults) return;
+
+    // 動力載入搜尋索引 (如果尚未載入)
+    if (typeof window.SEARCH_INDEX === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'search-data.js';
+        document.head.appendChild(script);
+    }
+
+    let selectedIndex = -1;
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        selectedIndex = -1; // 重置選擇
+        if (query.length < 1) {
+            searchResults.style.display = 'none';
+            return;
+        }
+
+        if (typeof window.SEARCH_INDEX === 'undefined') return;
+
+        const matches = window.SEARCH_INDEX.filter(item => 
+            item.title.toLowerCase().includes(query) || 
+            item.keywords.toLowerCase().includes(query)
+        ).slice(0, 8); // 最多顯示 8 筆
+
+        if (matches.length > 0) {
+            searchResults.innerHTML = matches.map((item, idx) => `
+                <div class="search-item" data-index="${idx}" onclick="navigateAndOpen('${item.page}', '${item.section}')">
+                    <div class="search-item-title">${item.title}</div>
+                    <div class="search-item-path">${item.page}</div>
+                </div>
+            `).join('');
+            searchResults.style.display = 'block';
+        } else {
+            searchResults.innerHTML = '<div class="search-no-results">找不到相關課程</div>';
+            searchResults.style.display = 'block';
+        }
+    });
+
+    // 鍵盤導覽
+    searchInput.addEventListener('keydown', (e) => {
+        const items = searchResults.querySelectorAll('.search-item');
+        if (searchResults.style.display === 'none' || items.length === 0) {
+            if (e.key === 'Enter' && searchInput.value.trim().length > 0) {
+                // 如果沒開選單但按 Enter，嘗試跳轉到第一個結果
+                const query = searchInput.value.trim().toLowerCase();
+                const firstMatch = window.SEARCH_INDEX?.find(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    item.keywords.toLowerCase().includes(query)
+                );
+                if (firstMatch) navigateAndOpen(firstMatch.page, firstMatch.section);
+            }
+            return;
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex + 1) % items.length;
+            updateSelection(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+            updateSelection(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedIndex > -1) {
+                items[selectedIndex].click();
+            } else {
+                // 如果沒選中，預設點擊第一個
+                items[0].click();
+            }
+        } else if (e.key === 'Escape') {
+            searchResults.style.display = 'none';
+        }
+    });
+
+    function updateSelection(items) {
+        items.forEach((item, idx) => {
+            if (idx === selectedIndex) {
+                item.classList.add('selected');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
+    // 點擊外部關閉搜尋結果
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+}
+
+// 跳轉並開啟指定區塊
+function navigateAndOpen(page, sectionId) {
+    const targetUrl = page + (sectionId ? '#' + sectionId : '');
+    
+    // 如果已經在該頁面，直接切換頁籤
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    if (currentPath === page && sectionId) {
+        const btn = Array.from(document.querySelectorAll('.section-button')).find(b => {
+            const attr = b.getAttribute('onclick');
+            return attr && attr.includes(sectionId);
+        });
+        if (btn) {
+            // 自動切換學期 (如果目標在隱藏的區域)
+            ensureSemesterVisible(btn);
+            
+            btn.click();
+            document.getElementById('search-results').style.display = 'none';
+            document.getElementById('global-search').value = '';
+            
+            // 捲動並高亮
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.classList.add('search-highlight');
+                setTimeout(() => target.classList.remove('search-highlight'), 3000);
+            }
+        }
+    } else {
+        window.location.href = targetUrl;
+    }
+}
+
+// 確保元素所在的學期區域是顯示的
+function ensureSemesterVisible(el) {
+    const s1 = el.closest('#semester1-area');
+    const s2 = el.closest('#semester2-area');
+    
+    if (s1 && currentSem !== 1) {
+        const toggleBtn = document.getElementById('floating-toggle');
+        if (toggleBtn) toggleBtn.click();
+    } else if (s2 && currentSem !== 2) {
+        const toggleBtn = document.getElementById('floating-toggle');
+        if (toggleBtn) toggleBtn.click();
+    }
+}
+
+/**
+ * 8. 處理從外部連結進來的高亮
+ */
+function handleSearchHighlight() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+        // 延遲一下確保內容已渲染
+        setTimeout(() => {
+            const target = document.getElementById(hash);
+            const btn = Array.from(document.querySelectorAll('.section-button')).find(b => {
+                const attr = b.getAttribute('onclick');
+                return attr && attr.includes(hash);
+            });
+
+            if (btn) {
+                ensureSemesterVisible(btn);
+                btn.click();
+            }
+
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.classList.add('search-highlight');
+                setTimeout(() => target.classList.remove('search-highlight'), 3000);
+            }
+        }, 600);
+    }
+}

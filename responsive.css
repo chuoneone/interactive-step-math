@@ -54,6 +54,12 @@
   .section-title {
     font-size: 2.2rem;
   }
+
+  /* --- Search Bar Tablet --- */
+  .search-container {
+    margin: 0 15px;
+    max-width: 300px;
+  }
 }
 
 
@@ -196,6 +202,41 @@
     z-index: 1000;
     color: #fff;
     font-size: 26px;
+    margin-left: 10px;
+  }
+
+  /* --- Search Bar Mobile --- */
+  .search-container {
+    margin: 0 10px;
+    max-width: none;
+    flex: 1;
+  }
+
+  #global-search {
+    padding: 8px 35px 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .search-results-dropdown {
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* --- Breadcrumb Mobile --- */
+  .breadcrumb-container {
+    top: 52px; /* 手機版導覽列較窄 */
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    z-index: 1100;
+  }
+
+  body.with-breadcrumb {
+    padding-top: 90px;
   }
 
   /* --- 呼吸燈標題與內容區塊 --- */

@@ -34,7 +34,7 @@ body {
     background: #005959;
     border-bottom: 3px solid #f4c542;
     padding: 10px 30px;
-    position: absolute;
+    position: fixed;
     width: 100%;
     top: 0;
     left: 0;
@@ -109,6 +109,227 @@ body {
     box-shadow: none;
 }
 
+/* --- Hero Section --- */
+.hero-section {
+    width: 100%;
+    padding: 60px 20px 40px 20px;
+    background: linear-gradient(135deg, #005959 0%, #008080 100%);
+    color: white;
+    text-align: center;
+    border-radius: 0 0 50px 50px; /* 圓潤底部 */
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: 2px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+    margin: 0 40px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#global-search {
+    width: 100%;
+    padding: 10px 40px 10px 15px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+#global-search::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#global-search:focus {
+    outline: none;
+    background: #fff;
+    color: #1e293b;
+    border-color: #f4c542;
+    box-shadow: 0 0 15px rgba(244, 197, 66, 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #f4c542;
+    pointer-events: none;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 15px;
+    margin-top: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 2000;
+    overflow: hidden;
+    border: 2px solid #005959;
+}
+
+.search-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item:hover, .search-item.selected {
+    background: #f4c542;
+    outline: none;
+}
+
+.search-item-title {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 1rem;
+}
+
+.search-item-path {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* 搜尋跳轉高亮效果 */
+.search-highlight {
+    animation: searchPulse 2s ease-in-out forwards;
+    border: 3px solid #f4c542 !important;
+    box-shadow: 0 0 30px rgba(244, 197, 66, 0.8) !important;
+    z-index: 50;
+    position: relative;
+}
+
+@keyframes searchPulse {
+    0% { transform: scale(1); }
+    10% { transform: scale(1.05); }
+    20% { transform: scale(1); }
+    30% { transform: scale(1.05); }
+    40% { transform: scale(1); }
+    100% { transform: scale(1); border-color: transparent; }
+}
+
+/* 頁籤隱藏模式 (Focus Mode) */
+body.menu-hidden .button-container,
+body.menu-hidden .section-title,
+body.menu-hidden #floating-toggle {
+    display: none !important;
+}
+
+.breadcrumb-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 89, 89, 0.1);
+    font-size: 0.9rem;
+    color: #475569;
+    position: sticky;
+    top: 63px; /* 緊貼 Navbar */
+    width: 100%;
+    z-index: 950;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    height: 45px;
+    box-sizing: border-box;
+}
+
+/* 移除 body padding-top 避免跳動，改用 sticky 佈向 */
+body {
+    padding-top: 63px; /* 只有 Navbar 的高度 */
+}
+
+.breadcrumb-item {
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.breadcrumb-item:hover {
+    color: #005959;
+}
+
+.breadcrumb-separator {
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-active {
+    color: #005959;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.breadcrumb-item {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.breadcrumb-item:hover {
+    color: #005959;
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: #cbd5e1;
+    font-size: 0.8rem;
+}
+
+.breadcrumb-active {
+    color: #005959;
+    font-weight: 700;
+}
+
+/* 移除多餘的 padding 避免跳動 */
+body.with-breadcrumb {
+    padding-top: 63px;
+}
+
 .menu-toggle {
     font-size: 28px;
     cursor: pointer;
@@ -122,13 +343,36 @@ body {
 /* ========================================= */
 /* 3. 資源區排版 (Cards) */
 /* ========================================= */
+.section-content {
+    display: none;
+    width: 100%;
+}
+
+.section-content.active-section {
+    display: block;
+}
+
+/* 專注模式下，將內容區塊垂直居中 */
+body.menu-hidden .section-content.active-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 120px); /* 扣除導覽列與路徑條的高度 */
+    padding: 20px 0;
+}
+
 .social-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     max-width: 1600px;
-    margin: 40px auto;
+    margin: 0 auto; /* 移除固定 margin-top */
+}
+
+/* 專注模式下縮減上方間距 */
+body.menu-hidden .social-container {
+    margin-top: 0;
 }
 
 .single-row {
