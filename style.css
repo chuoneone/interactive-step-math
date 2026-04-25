@@ -1,5 +1,5 @@
 /* ========================================= */
-/* 1. 基礎設定與字體繼承 */
+/* 1. ?��?設�??��?體繼??*/
 /* ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&family=Noto+Sans+TC:wght@400;900&display=swap');
@@ -25,7 +25,7 @@ body {
 }
 
 /* ========================================= */
-/* 2. 導覽列 (Navbar) */
+/* 2. 導覽??(Navbar) */
 /* ========================================= */
 .navbar {
     display: flex;
@@ -116,7 +116,7 @@ body {
     background: linear-gradient(135deg, #005959 0%, #008080 100%);
     color: white;
     text-align: center;
-    border-radius: 0 0 50px 50px; /* 圓潤底部 */
+    border-radius: 0 0 50px 50px; /* ?�潤底部 */
     margin-bottom: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
@@ -229,7 +229,7 @@ body {
     font-style: italic;
 }
 
-/* 搜尋跳轉高亮效果 */
+/* ?��?跳�?高亮?��? */
 .search-highlight {
     animation: searchPulse 2s ease-in-out forwards;
     border: 3px solid #f4c542 !important;
@@ -247,7 +247,7 @@ body {
     100% { transform: scale(1); border-color: transparent; }
 }
 
-/* 頁籤隱藏模式 (Focus Mode) */
+/* ?�籤?��?模�? (Focus Mode) */
 body.menu-hidden .button-container,
 body.menu-hidden .section-title,
 body.menu-hidden #floating-toggle {
@@ -273,9 +273,9 @@ body.menu-hidden #floating-toggle {
     box-sizing: border-box;
 }
 
-/* 移除 body padding-top 避免跳動，改用 sticky 佈向 */
+/* 移除 body padding-top ?��?跳�?，改??sticky 佈�? */
 body {
-    padding-top: 63px; /* 只有 Navbar 的高度 */
+    padding-top: 63px; /* ?��? Navbar ?��?�?*/
 }
 
 .breadcrumb-item {
@@ -325,7 +325,7 @@ body {
     font-weight: 700;
 }
 
-/* 移除多餘的 padding 避免跳動 */
+/* 移除多�???padding ?��?跳�? */
 body.with-breadcrumb {
     padding-top: 63px;
 }
@@ -341,7 +341,7 @@ body.with-breadcrumb {
 }
 
 /* ========================================= */
-/* 3. 資源區排版 (Cards) */
+/* 3. 資�??�?��? (Cards) */
 /* ========================================= */
 .section-content {
     display: none;
@@ -352,12 +352,12 @@ body.with-breadcrumb {
     display: block;
 }
 
-/* 專注模式下，將內容區塊垂直居中 */
+/* 專注模�?下�?將內容�?塊�??��?�?*/
 body.menu-hidden .section-content.active-section {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 120px); /* 扣除導覽列與路徑條的高度 */
+    min-height: calc(100vh - 120px); /* ??��導覽?��?路�?條�?高度 */
     padding: 20px 0;
 }
 
@@ -367,10 +367,10 @@ body.menu-hidden .section-content.active-section {
     align-items: center;
     width: 100%;
     max-width: 1600px;
-    margin: 0 auto; /* 移除固定 margin-top */
+    margin: 0 auto; /* 移除?��? margin-top */
 }
 
-/* 專注模式下縮減上方間距 */
+/* 專注模�?下縮減�??��?�?*/
 body.menu-hidden .social-container {
     margin-top: 0;
 }
@@ -466,7 +466,7 @@ body.menu-hidden .social-container {
 }
 
 /* ========================================= */
-/* 4. 分頁按鈕 */
+/* 4. ?��??��? */
 /* ========================================= */
 .chapter-button,
 .section-button {
@@ -506,6 +506,26 @@ body.menu-hidden .social-container {
     box-shadow: 0 0 0 transparent;
 }
 
+.button-container.ch-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.ch-container .section-button {
+    width: 100%;
+    margin: 0;
+}
+
+/* ?��??��??��??�改??2xN */
+@media (max-width: 768px) {
+    .button-container.ch-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 .chapter-button.active,
 .section-button.active {
     background: #f4c542;
@@ -526,7 +546,7 @@ body.menu-hidden .social-container {
     max-width: 1200px;
 }
 
-/* --- 英文科專屬：方形按鈕與每列七個 --- */
+/* --- ?��?科�?屬�??�形?��??��??��???--- */
 .eg-container {
     max-width: 850px !important;
     gap: 12px !important;
@@ -546,7 +566,7 @@ body.menu-hidden .social-container {
 }
 
 /* ========================================= */
-/* 5. 頁尾 (Footer) */
+/* 5. ?�尾 (Footer) */
 /* ========================================= */
 footer,
 .sticky-footer {
@@ -634,16 +654,16 @@ footer,
 }
 
 /* ========================================= */
-/* 手機版頁尾專用設定 (適應窄螢幕) */
+/* ?��??��?尾�??�設�?(?��?窄螢�? */
 /* ========================================= */
 
 /* ========================================= */
-/* 手機版頁尾專用設定 (精簡版) */
+/* ?��??��?尾�??�設�?(精簡?? */
 /* ========================================= */
 
 
 /* ========================================= */
-/* 手機版頁尾專用設定 (單行列佈局) */
+/* ?��??��?尾�??�設�?(?��??��?局) */
 /* ========================================= */
 @media (max-width: 768px) {
 
@@ -667,21 +687,21 @@ footer,
         text-align: center;
     }
 
-    /* 暑假倒數縮小文字 */
+    /* ?��??�數縮�??��? */
     .footer-left .countdown-wrapper {
         font-size: 10px !important;
         padding: 3px 6px !important;
         white-space: nowrap;
     }
 
-    /* 中間版權文字縮小 */
+    /* 中�??��??��?縮�? */
     .footer-center {
         font-size: 9px !important;
         white-space: nowrap;
         opacity: 0.9;
     }
 
-    /* 按鈕縮小 */
+    /* ?��?縮�? */
     .footer-right .footer-btn {
         font-size: 11px !important;
         padding: 3px 8px !important;
@@ -689,12 +709,12 @@ footer,
         border-width: 2px !important;
     }
 
-    /* 隱藏倒數圖示省空間 */
+    /* ?��??�數?�示?�空??*/
     .footer-left .countdown-wrapper i {
         display: none;
     }
 
-    /* 手機版水管縮小 */
+    /* ?��??�水管縮�?*/
     .pipe-decoration {
         width: 40px !important;
         height: 50px !important;
@@ -712,7 +732,7 @@ footer,
         height: 40px !important;
     }
 
-    /* 手機版方塊同步縮小 */
+    /* ?��??�方塊�?步縮�?*/
     .pipe-blocks {
         top: -60px !important;
     }
@@ -725,10 +745,10 @@ footer,
 }
 
 /* ========================================= */
-/* 6. 其他通用元件 */
+/* 6. ?��??�用?�件 */
 /* ========================================= */
 .intro-text {
-    /* 👇 主要修改這一行，將三個數值都調大 👇 */
+    /* ?? 主�?修改?��?行�?將�??�數?�都調大 ?? */
     font-size: clamp(2.2rem, 6vw, 4rem);
 
     font-weight: 900;
@@ -842,7 +862,7 @@ footer,
 }
 
 /* ========================================= */
-/* 6. 首頁儀表板 (Dashboard Cards) */
+/* 6. 首�??�表板 (Dashboard Cards) */
 /* ========================================= */
 .dashboard {
     display: flex;
@@ -945,7 +965,7 @@ footer,
     color: #000000;
 }
 
-/* 會考專區特別卡片 */
+/* ?�考�??�?�別?��? */
 .special-card {
     grid-column: span 3;
     background: #f4c542;
@@ -996,7 +1016,7 @@ footer,
 }
 
 /* ========================================= */
-/* 7. 彈出視窗 (Modal) */
+/* 7. 彈出視�? (Modal) */
 /* ========================================= */
 .modal {
     display: none;
@@ -1023,7 +1043,7 @@ footer,
     position: relative;
     color: #334155;
 
-    /* 👇 加上這兩行：限制最大高度，並允許內容過多時可上下滑動 */
+    /* ?? ?��??�兩行�??�制?�大�?度�?並�?許內容�?多�??��?下�???*/
     max-height: 80vh;
     overflow-y: auto;
 }
@@ -1089,7 +1109,7 @@ footer,
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* --- 按鈕禁用狀態 --- */
+/* --- ?��?禁用?�??--- */
 a.btn[href="#"],
 a.btn[href=""] {
     background: #BDBDBD !important;
@@ -1101,7 +1121,7 @@ a.btn[href=""] {
     opacity: 0.7;
 }
 
-/* --- 學期顯示 --- */
+/* --- 學�?顯示 --- */
 #semester1-area {
     display: none;
 }
@@ -1110,10 +1130,10 @@ a.btn[href=""] {
     display: block;
 }
 
-/* --- 右上角切換鈕 --- */
+/* --- ?��?角�??��? --- */
 #floating-toggle {
     position: absolute;
-    /* 從 fixed 改成 absolute，讓它釘在網頁頂端而不是螢幕上 */
+    /* �?fixed ?��? absolute，�?它�??�網?��?端而�??�螢幕�? */
     top: 100px;
     right: 20px;
     background-color: #ffffff;
@@ -1143,7 +1163,7 @@ a.btn[href=""] {
     box-shadow: none;
 }
 
-/* --- 停止更新公告 --- */
+/* --- ?�止?�新?��? --- */
 .stop-update-notice {
     background: #fef2f2;
     border: 2px dashed #e11d48;
@@ -1165,7 +1185,7 @@ a.btn[href=""] {
 }
 
 /* ========================================= */
-/* 8. 遊戲啟動畫面 (Title Screen)專用樣式 */
+/* 8. ?�戲?��??�面 (Title Screen)專用�?? */
 /* ========================================= */
 
 
@@ -1175,7 +1195,7 @@ a.btn[href=""] {
 
 
 
-/* 開始按鈕 */
+/* ?��??��? */
 .start-btn {
     background: #f4c542;
     color: #000000;
@@ -1212,12 +1232,12 @@ a.btn[href=""] {
     font-weight: bold;
 }
 
-/* --- 隱藏工具 --- */
+/* --- ?��?工具 --- */
 .hidden {
     display: none !important;
 }
 
-/* --- 動畫定義 --- */
+/* --- ?�畫定義 --- */
 @keyframes float {
 
     0%,
@@ -1253,5 +1273,25 @@ a.btn[href=""] {
     100% {
         background: #4f46e5;
         box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+    }
+}
+
+/* �K�~�żƾ� 2x2 ���� */
+.button-container.ma-grid-2x2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 600px;
+    margin: 30px auto 50px auto;
+}
+
+.ma-grid-2x2 .section-button {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+@media (max-width: 480px) {
+    .button-container.ma-grid-2x2 {
+        grid-template-columns: 1fr;
     }
 }
