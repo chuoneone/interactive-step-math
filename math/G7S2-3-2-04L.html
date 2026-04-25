@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反比的判別 - 視覺判斷版</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9;
+            user-select: none;
+        }
+
+        /* 填答格樣式 */
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 80px;
+            height: 40px;
+            border-bottom: 3px solid #64748b;
+            margin: 0 4px;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            color: #1e293b;
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        .slot.active {
+            background-color: #e0e7ff;
+            border-bottom: 3px solid #4f46e5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            animation: pulse 1.5s infinite;
+        }
+
+        .slot.correct {
+            border-bottom: 3px solid #22c55e !important;
+            background-color: #f0fdf4;
+            color: #15803d;
+            cursor: default;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* 大勾勾動畫 */
+        #success-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #success-overlay.show {
+            opacity: 1;
+        }
+
+        .checkmark-svg {
+            width: 250px;
+            height: 250px;
+            color: #22c55e;
+            transform: scale(0);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 10px 15px rgba(34, 197, 94, 0.4));
+        }
+
+        #success-overlay.show .checkmark-svg {
+            transform: scale(1);
+        }
+
+        /* 選項按鈕 */
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 2px solid #4f46e5;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #e2e8f0;
+            padding: 10px 6px;
+            text-align: center;
+            font-size: 1.0em;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #4f46e5;
+            font-weight: 800;
+            width: 120px;
+        }
+
+        .highlight-row {
+            background-color: #f5f3ff;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            border: 2px solid #4f46e5;
+            border-radius: 0 0 24px 24px;
+            background: white;
+            min-height: 400px;
+        }
+
+        .calc-column {
+            padding: 20px;
+        }
+
+        .calc-column:first-child {
+            border-right: 2px solid #4f46e5;
+        }
+
+        .locked-step {
+            opacity: 0.15;
+            pointer-events: none;
+            filter: grayscale(1) blur(2px);
+        }
+
+        .step-label {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- 成功大勾勾 -->
+    <div id="success-overlay">
+        <svg class="checkmark-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path>
+        </svg>
+    </div>
+
+    <!-- 導覽列 -->
+    <nav class="bg-white border-b border-indigo-100 sticky top-0 z-[100] shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-2">
+                <span class="font-bold text-indigo-600 whitespace-nowrap border-r pr-4">反比判別練習</span>
+                <div id="nav-tabs" class="flex gap-2"></div>
+            </div>
+            <div class="flex items-center gap-4 font-bold">
+                <div class="text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg text-sm">⏱️ <span id="timer">07:00</span>
+                </div>
+                <div class="text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg text-sm">得分: <span
+                        id="total-score">0</span></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 凍結題幹 -->
+    <div class="sticky top-16 z-[90] bg-indigo-600 border-b-4 border-indigo-800 p-3 shadow-md text-white">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-yellow-300 text-lg">💡</span>
+                <h2 id="q-title" class="text-indigo-100 font-bold text-sm">載入中...</h2>
+            </div>
+            <div id="q-description" class="text-lg md:text-xl font-bold"></div>
+        </div>
+    </div>
+
+    <main class="flex-grow max-w-6xl mx-auto w-full p-2 md:p-6 mb-36">
+        <div id="question-card" class="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-indigo-500">
+            <div class="calc-grid">
+                <!-- 左欄：表格數據 -->
+                <div id="col-left" class="calc-column">
+                    <span class="step-label text-xs">步驟 1. 算算看 x × y</span>
+                    <div id="table-container" class="mt-2"></div>
+                </div>
+
+                <!-- 右欄：判斷 -->
+                <div id="col-right" class="calc-column locked-step">
+                    <div class="mb-6">
+                        <span class="step-label text-xs">步驟 2. 判斷相同嗎？</span>
+                        <div class="text-lg font-bold mt-2">
+                            相乘結果相同嗎？<div class="slot" data-step="1" data-i="0"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="step-label text-xs">步驟 3. 結論</span>
+                        <div class="text-lg font-bold mt-2">
+                            成反比嗎？<div class="slot" data-step="2" data-i="0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部選項 -->
+        <div
+            class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-indigo-200 p-4 shadow-2xl z-50">
+            <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-4">
+                <div class="flex-grow flex flex-wrap justify-center gap-2" id="options-container"></div>
+                <button id="check-btn"
+                    class="w-full md:w-auto bg-indigo-600 text-white px-10 py-3 rounded-xl font-bold text-lg hover:bg-indigo-700 shadow-lg transition active:scale-95"
+                    onclick="checkActiveStep()">
+                    檢查答案
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 完成彈窗 -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[200] hidden p-4">
+        <div
+            class="bg-white rounded-[40px] shadow-2xl max-w-md w-full p-10 text-center border-t-[12px] border-indigo-500">
+            <div class="text-7xl mb-6">🏆</div>
+            <h2 class="text-3xl font-bold mb-2 text-slate-800">練習完成！</h2>
+            <p class="text-2xl mb-10 text-indigo-600 font-bold">得分：<span id="final-score">0</span></p>
+            <button onclick="resetApp()"
+                class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-bold text-xl hover:bg-indigo-700 transition">再做一次</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                id: 1,
+                title: "1. 長方形 周長 100 公分",
+                desc: "設長為 x、寬為 y：",
+                headers: ["x (長)", "10", "20", "30", "40"],
+                rows: ["y (寬)", "40", "30", "20", "10"],
+                steps: [
+                    {
+                        slots: ["400", "600", "600", "400"],
+                        options: ["400", "600", "900", "1200"]
+                    },
+                    {
+                        slots: ["不同"],
+                        options: ["相同", "不同"]
+                    },
+                    {
+                        slots: ["否"],
+                        options: ["是", "否"]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "2. 長方形 面積 120 平方公分",
+                desc: "設長為 x、寬為 y：",
+                headers: ["x (長)", "2", "4", "6", "10"],
+                rows: ["y (寬)", "60", "30", "20", "12"],
+                steps: [
+                    {
+                        slots: ["120", "120", "120", "120"],
+                        options: ["120", "180", "240"]
+                    },
+                    {
+                        slots: ["相同"],
+                        options: ["相同", "不同"]
+                    },
+                    {
+                        slots: ["是"],
+                        options: ["是", "否"]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "3. 小明有 600 元",
+                desc: "單價 x 元，買 y 枝筆：",
+                headers: ["x (單價)", "10", "20", "30", "60"],
+                rows: ["y (數量)", "60", "30", "20", "10"],
+                steps: [
+                    {
+                        slots: ["600", "600", "600", "600"],
+                        options: ["300", "600", "1200"]
+                    },
+                    {
+                        slots: ["相同"],
+                        options: ["相同", "不同"]
+                    },
+                    {
+                        slots: ["是"],
+                        options: ["是", "否"]
+                    }
+                ]
+            }
+        ];
+
+        let currentQIdx = 0;
+        let activeStepIdx = 0;
+        let scores = [0, 0, 0];
+        let quizStatus = quizData.map(() => [false, false, false]);
+        let timeLeft = 420;
+        let timerInterval;
+
+        function init() {
+            renderNav();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        function renderNav() {
+            const container = document.getElementById('nav-tabs');
+            container.innerHTML = quizData.map((_, i) => `
+                <button onclick="loadQuestion(${i})" class="px-5 py-2 rounded-xl font-bold transition ${i === currentQIdx ? 'bg-indigo-600 text-white shadow-lg' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'}">
+                    題目 ${i + 1}
+                </button>
+            `).join('');
+        }
+
+        function loadQuestion(index) {
+            currentQIdx = index;
+            // Determine active step based on progress
+            if (!quizStatus[index][0]) activeStepIdx = 0;
+            else if (!quizStatus[index][1]) activeStepIdx = 1;
+            else if (!quizStatus[index][2]) activeStepIdx = 2;
+            else activeStepIdx = 3; // Done
+
+            renderNav();
+            const q = quizData[index];
+            document.getElementById('q-title').innerText = q.title;
+            document.getElementById('q-description').innerText = q.desc;
+
+            renderTable();
+            updateUIState();
+            renderOptions();
+            updateActiveSlot();
+        }
+
+        function renderTable() {
+            const q = quizData[currentQIdx];
+            const container = document.getElementById('table-container');
+            const isDone = quizStatus[currentQIdx][0];
+
+            let html = `<table>
+                <tr><th>${q.headers[0]}</th>${q.headers.slice(1).map(h => `<td>${h}</td>`).join('')}</tr>
+                <tr><th>${q.rows[0]}</th>${q.rows.slice(1).map(r => `<td>${r}</td>`).join('')}</tr>
+                <tr class="highlight-row">
+                    <th>算算看 x × y</th>
+                    ${[0, 1, 2, 3].map(i => `<td><div class="slot ${isDone ? 'correct filled' : ''}" data-step="0" data-i="${i}">${isDone ? q.steps[0].slots[i] : ''}</div></td>`).join('')}
+                </tr>
+            </table>`;
+            container.innerHTML = html;
+        }
+
+        function renderOptions() {
+            const container = document.getElementById('options-container');
+            if (activeStepIdx >= 3) {
+                container.innerHTML = '<span class="text-indigo-400 font-bold italic">✨ 本題已完成判斷</span>';
+                return;
+            }
+            const opts = quizData[currentQIdx].steps[activeStepIdx].options;
+            container.innerHTML = opts.map(opt => `<button class="option-btn" onclick="fillActiveSlot('${opt}')">${opt}</button>`).join('');
+        }
+
+        function updateUIState() {
+            const rightCol = document.getElementById('col-right');
+            const leftDone = quizStatus[currentQIdx][0];
+            rightCol.classList.toggle('locked-step', !leftDone);
+
+            // Populate static slots if done
+            [1, 2].forEach(stepIdx => {
+                const s = document.querySelector(`.slot[data-step="${stepIdx}"]`);
+                if (quizStatus[currentQIdx][stepIdx]) {
+                    s.innerText = quizData[currentQIdx].steps[stepIdx].slots[0];
+                    s.classList.add('correct', 'filled');
+                } else {
+                    s.innerText = '';
+                    s.classList.remove('correct', 'filled');
+                }
+            });
+        }
+
+        function updateActiveSlot() {
+            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+            if (activeStepIdx >= 3) return;
+
+            const slots = Array.from(document.querySelectorAll(`.slot[data-step="${activeStepIdx}"]:not(.correct)`));
+            const firstEmpty = slots.find(s => s.innerText === '');
+
+            if (firstEmpty) {
+                firstEmpty.classList.add('active');
+                firstEmpty.onclick = () => {
+                    firstEmpty.innerText = '';
+                    firstEmpty.classList.remove('filled');
+                    updateActiveSlot();
+                };
+            }
+        }
+
+        function fillActiveSlot(val) {
+            const active = document.querySelector('.slot.active');
+            if (!active) return;
+            active.innerText = val;
+            active.classList.add('filled');
+            updateActiveSlot();
+        }
+
+        function checkActiveStep() {
+            if (activeStepIdx >= 3) return;
+            const slots = document.querySelectorAll(`.slot[data-step="${activeStepIdx}"]`);
+            const answers = Array.from(slots).map(s => s.innerText);
+
+            if (answers.some(a => a === '')) { alertToast("還有格子沒填喔！"); return; }
+
+            const correctAnswers = quizData[currentQIdx].steps[activeStepIdx].slots;
+            const isCorrect = answers.every((a, i) => a === correctAnswers[i]);
+
+            if (isCorrect) {
+                quizStatus[currentQIdx][activeStepIdx] = true;
+                scores[currentQIdx] += 1;
+                updateTotalScore();
+                playSound('correct');
+                showBigCheckmark();
+
+                setTimeout(() => {
+                    loadQuestion(currentQIdx);
+                    checkFinal();
+                }, 600);
+            } else {
+                playSound('wrong');
+                alertToast("判斷不太對，再觀察看看表格喔！");
+            }
+        }
+
+        function showBigCheckmark() {
+            const overlay = document.getElementById('success-overlay');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 1000);
+        }
+
+        function updateTotalScore() {
+            const total = scores.reduce((a, b) => a + b, 0);
+            document.getElementById('total-score').innerText = total;
+            document.getElementById('final-score').innerText = total;
+        }
+
+        function alertToast(msg, type = "error") {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-32 left-1/2 -translate-x-1/2 px-10 py-4 rounded-2xl text-white font-bold shadow-2xl z-[300] transition-all duration-300 ${type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'}`;
+            toast.innerText = msg; document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) { checkFinal(); return; }
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function checkFinal() {
+            if (quizStatus.every(q => q.every(s => s === true))) {
+                clearInterval(timerInterval);
+                document.getElementById('finish-modal').classList.remove('hidden');
+            }
+        }
+
+        function resetApp() {
+            timeLeft = 420; scores = [0, 0, 0]; quizStatus = quizData.map(() => [false, false, false]);
+            updateTotalScore(); document.getElementById('finish-modal').classList.add('hidden');
+            loadQuestion(0);
+        }
+
+        function playSound(type) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            if (type === 'correct') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1046, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.3);
+            } else {
+                osc.type = 'square'; osc.frequency.setValueAtTime(150, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.2);
+            }
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>
