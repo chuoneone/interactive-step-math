@@ -194,20 +194,23 @@ body {
     padding: 12px 20px;
     font-size: 22px;
     border-radius: 12px;
-    border: 3px solid #f4c542;
+    border: 2px solid #005959;
+    border-left: 8px solid #f4c542;
     text-decoration: none;
     text-align: left;
     display: block;
     margin-bottom: 12px;
-    box-shadow: 0 4px 10px rgba(255, 206, 84, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 89, 89, 0.05);
     transition: all 0.2s;
     font-weight: 800;
 }
 
 .btn:hover {
-    background: rgba(14, 165, 233, 0.05);
+    background: #f4c542;
+    color: #000000;
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 6px 15px rgba(244, 197, 66, 0.3);
+    border-color: #f4c542;
 }
 
 .btn:active {
@@ -258,10 +261,10 @@ body {
 
 .chapter-button.active,
 .section-button.active {
-    background: #005959;
-    color: #ffffff;
-    border: 2px solid #f4c542;
-    box-shadow: 0 8px 20px rgba(0, 77, 77, 0.3), inset 0 -4px 0 #f4c542;
+    background: #f4c542;
+    color: #000000;
+    border: 2px solid #005959;
+    box-shadow: 0 8px 20px rgba(244, 197, 66, 0.3);
     transform: scale(1.05);
 }
 
@@ -614,8 +617,13 @@ footer,
     animation: scaleIn 0.6s backwards;
 }
 
-.grade-card:nth-child(2) { animation-delay: 0.1s; }
-.grade-card:nth-child(3) { animation-delay: 0.2s; }
+.grade-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.grade-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
 
 .grade-card:hover {
     transform: translateY(-10px);
@@ -713,14 +721,22 @@ footer,
         grid-template-columns: repeat(1, 1fr);
         max-width: 500px;
     }
+
     .special-card {
         grid-column: span 1;
     }
 }
 
 @keyframes scaleIn {
-    0% { transform: scale(0.9); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* ========================================= */

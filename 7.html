@@ -17,11 +17,13 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         .tab-animation {
             animation: fade-in-up 0.4s ease-out forwards;
         }
@@ -422,7 +424,7 @@
             // 切換面板顯示
             const normalPanel = document.getElementById(groupId + '-normal');
             const basicPanel = document.getElementById(groupId + '-basic');
-            
+
             if (level === 'normal') {
                 normalPanel.style.display = '';
                 basicPanel.style.display = 'none';
