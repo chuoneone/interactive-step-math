@@ -12,25 +12,25 @@ const NAVBAR_TEMPLATE = `
       <li class="dropdown">
         <a href="javascript:void(0)" class="dropbtn">國文 <i class="fas fa-caret-down"></i></a>
         <div class="dropdown-content">
-          <a href="7ch.html">七年級</a>
-          <a href="8ch.html">八年級</a>
-          <a href="9ch.html">九年級</a>
+          <a href="7ch.html">國一</a>
+          <a href="8ch.html">國二</a>
+          <a href="9ch.html">國三</a>
         </div>
       </li>
       <li class="dropdown">
         <a href="javascript:void(0)" class="dropbtn">數學 <i class="fas fa-caret-down"></i></a>
         <div class="dropdown-content">
-          <a href="7.html">七年級</a>
-          <a href="8.html">八年級</a>
-          <a href="9.html">九年級</a>
+          <a href="7.html">國一</a>
+          <a href="8.html">國二</a>
+          <a href="9.html">國三</a>
         </div>
       </li>
       <li class="dropdown">
         <a href="javascript:void(0)" class="dropbtn">英文 <i class="fas fa-caret-down"></i></a>
         <div class="dropdown-content">
-          <a href="7eng.html">七年級</a>
-          <a href="8eng.html">八年級</a>
-          <a href="9eng.html">九年級</a>
+          <a href="7eng.html">國一</a>
+          <a href="8eng.html">國二</a>
+          <a href="9eng.html">國三</a>
         </div>
       </li>
       <li><a href="bigtest.html"><i class="fas fa-pen-alt"></i> 會考專區</a></li>
