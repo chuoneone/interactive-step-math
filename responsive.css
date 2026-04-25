@@ -227,6 +227,24 @@
     overflow-y: auto;
   }
 
+  /* --- Hero Section Mobile --- */
+  .hero-section {
+    padding: 40px 15px 30px 15px !important;
+    border-radius: 0 0 30px 30px !important;
+    margin-bottom: 25px !important;
+  }
+
+  .hero-content h1 {
+    font-size: 1.8rem !important;
+    margin-bottom: 10px !important;
+    letter-spacing: 1px !important;
+  }
+
+  .hero-content p {
+    font-size: 0.95rem !important;
+    line-height: 1.4 !important;
+  }
+
   /* --- Breadcrumb Mobile --- */
   .breadcrumb-container {
     top: 52px; /* 手機版導覽列較窄 */
