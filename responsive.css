@@ -60,6 +60,12 @@
 /* 📱 手機版 (直向)：最大寬度 768px */
 @media (max-width: 768px) {
 
+  /* --- 導覽列標題縮小並防止換行 --- */
+  .navbar .logo {
+    font-size: 1.1rem !important;
+    white-space: nowrap !important;
+  }
+
   /* --- 修正下拉選單容器 --- */
   .nav-links .dropdown-content {
     display: none;

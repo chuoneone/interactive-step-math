@@ -33,8 +33,6 @@ const NAVBAR_TEMPLATE = `
           <a href="9eng.html">國三</a>
         </div>
       </li>
-      <li><a href="bigtest.html"><i class="fas fa-pen-alt"></i> 會考專區</a></li>
-      <li><a href="https://emotionrecording.pages.dev/" target="_blank"><i class="fas fa-face-smile"></i> 情緒紀錄</a></li>
     </ul>
   </nav>
   <div class="menu-toggle">
@@ -47,7 +45,7 @@ const FOOTER_TEMPLATE = `
   <div class="footer-left">
     <div class="countdown-wrapper"><i class="fas fa-sun"></i> 暑假倒數：<span id="days">00</span> 天</div>
   </div>
-  <div class="footer-center" style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.4;">© 2026 SPEDMIX 米克師</div>
+  <div class="footer-center" style="font-size: 0.7rem; color: rgba(255,255,255,0.6); line-height: 1.2;">© 2026 SPEDMIX 米克師</div>
   <div class="footer-right">
     <button id="other-btn" class="footer-btn">其它 <i class="fas fa-caret-up"></i></button>
   </div>
@@ -61,6 +59,8 @@ const OTHER_MODAL_TEMPLATE = `
     <div class="modal-grid">
       <div class="modal-group">
         <h3><i class="fas fa-cogs"></i> 小工具</h3>
+        <a href="bigtest.html" class="btn"><i class="fas fa-pen-alt"></i> 會考專區</a>
+        <a href="https://emotionrecording.pages.dev/" target="_blank" class="btn"><i class="fas fa-face-smile"></i> 情緒紀錄</a>
         <a href="https://play.blooket.com/play" target="_blank" class="btn">Blooket</a>
         <a href="https://www.gimkit.com/join?class=60a1e3ba9eaadc0022adafb6" target="_blank" class="btn">Gimkit</a>
         <a href="https://sites.google.com/view/spedmixtool/time" target="_blank" class="btn">計時器</a>
