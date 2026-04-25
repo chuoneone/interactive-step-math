@@ -11,7 +11,21 @@
     <link rel="icon" href="images/dog.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC&display=swap"
         rel="stylesheet">
-
+    <style>
+        @keyframes fade-in-up {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .tab-animation {
+            animation: fade-in-up 0.4s ease-out forwards;
+        }
+    </style>
 </head>
 
 <body>
@@ -406,8 +420,22 @@
     <script>
         function switchTab(groupId, level, clickedBtn) {
             // 切換面板顯示
-            document.getElementById(groupId + '-normal').style.display = (level === 'normal') ? '' : 'none';
-            document.getElementById(groupId + '-basic').style.display = (level === 'basic') ? '' : 'none';
+            const normalPanel = document.getElementById(groupId + '-normal');
+            const basicPanel = document.getElementById(groupId + '-basic');
+            
+            if (level === 'normal') {
+                normalPanel.style.display = '';
+                basicPanel.style.display = 'none';
+                normalPanel.classList.remove('tab-animation');
+                void normalPanel.offsetWidth; // trigger reflow
+                normalPanel.classList.add('tab-animation');
+            } else {
+                normalPanel.style.display = 'none';
+                basicPanel.style.display = '';
+                basicPanel.classList.remove('tab-animation');
+                void basicPanel.offsetWidth; // trigger reflow
+                basicPanel.classList.add('tab-animation');
+            }
             // 更新按鈕樣式
             const tabs = clickedBtn.closest('.level-tabs').querySelectorAll('.level-tab-btn');
             tabs.forEach(btn => {
