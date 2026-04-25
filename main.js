@@ -33,7 +33,7 @@ const NAVBAR_TEMPLATE = `
           <a href="9eng.html">九年級</a>
         </div>
       </li>
-      <li><a href="bigtest.html" style="color: #FFD700;"><i class="fas fa-pen-alt"></i> 會考專區</a></li>
+      <li><a href="bigtest.html"><i class="fas fa-pen-alt"></i> 會考專區</a></li>
       <li><a href="https://emotionrecording.pages.dev/" target="_blank"><i class="fas fa-face-smile"></i> 情緒紀錄</a></li>
     </ul>
   </nav>

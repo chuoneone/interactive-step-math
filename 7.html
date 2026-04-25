@@ -288,9 +288,9 @@
                         <h3 style="text-align: center;">3-1 比例式</h3>
                         <div class="level-tabs" style="display:flex;justify-content:center;gap:8px;margin-bottom:10px;">
                             <button class="level-tab-btn active" onclick="switchTab('s2-3-1','normal',this)"
-                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#C84C0C;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #00e5ff;background:rgba(0, 229, 255, 0.2);color:#00e5ff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
                             <button class="level-tab-btn" onclick="switchTab('s2-3-1','basic',this)"
-                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#fff;color:#C84C0C;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #334155;background:transparent;color:#94a3b8;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
                         </div>
                         <div id="s2-3-1-normal" class="btn-group level-panel">
                             <a href="math/G7S2-3-1-01.html" class="btn" target="_blank">01 比值與倍數關係</a>
@@ -320,9 +320,9 @@
                         <h3 style="text-align: center;">3-2 正比與反比</h3>
                         <div class="level-tabs" style="display:flex;justify-content:center;gap:8px;margin-bottom:10px;">
                             <button class="level-tab-btn active" onclick="switchTab('s2-3-2','normal',this)"
-                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#C84C0C;color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #00e5ff;background:rgba(0, 229, 255, 0.2);color:#00e5ff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
                             <button class="level-tab-btn" onclick="switchTab('s2-3-2','basic',this)"
-                                style="padding:4px 18px;border-radius:20px;border:2px solid #C84C0C;background:#fff;color:#C84C0C;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #334155;background:transparent;color:#94a3b8;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
                         </div>
                         <div id="s2-3-2-normal" class="btn-group level-panel">
                             <a href="math/G7S2-3-2-01.html" class="btn" target="_blank">01 正比判別</a>
@@ -439,11 +439,13 @@
             // 更新按鈕樣式
             const tabs = clickedBtn.closest('.level-tabs').querySelectorAll('.level-tab-btn');
             tabs.forEach(btn => {
-                btn.style.background = '#fff';
-                btn.style.color = '#C84C0C';
+                btn.style.background = 'transparent';
+                btn.style.borderColor = '#334155';
+                btn.style.color = '#94a3b8';
             });
-            clickedBtn.style.background = '#C84C0C';
-            clickedBtn.style.color = '#fff';
+            clickedBtn.style.background = 'rgba(0, 229, 255, 0.2)';
+            clickedBtn.style.borderColor = '#00e5ff';
+            clickedBtn.style.color = '#00e5ff';
         }
     </script>
     <script src="progress.js"></script>
