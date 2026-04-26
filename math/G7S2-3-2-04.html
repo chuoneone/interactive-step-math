@@ -81,8 +81,14 @@
         }
 
         .katex {
-            font-size: 1.35em !important;
+            font-size: 1.2em !important;
             line-height: 1;
+        }
+
+        @media (min-width: 768px) {
+            .katex {
+                font-size: 1.35em !important;
+            }
         }
 
         /* 表格樣式 */
@@ -101,7 +107,14 @@
             border: 1px solid #e2e8f0;
             padding: 6px;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+        }
+
+        @media (min-width: 640px) {
+            .math-table th, .math-table td {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
         }
 
         .math-table th {
@@ -150,20 +163,28 @@
                 transform: scale(1) rotate(0);
             }
         }
+        
+        @media (max-width: 768px) {
+            .slot {
+                min-width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 
-<body class="h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
     <!-- 導覽列 -->
-    <nav class="bg-white border-b shadow-sm sticky top-0 z-50 flex items-center px-4 py-2 overflow-x-auto no-scrollbar">
-        <div class="flex-shrink-0 font-black text-blue-600 mr-6 text-lg">🔢 四、反比的判別</div>
-        <div id="tab-container" class="flex gap-2"></div>
-        <div class="ml-auto flex items-center gap-4 flex-shrink-0">
-            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl font-bold text-slate-600 text-sm">
+    <nav class="bg-white border-b shadow-sm sticky top-0 z-50 flex items-center px-4 py-2 overflow-x-auto no-scrollbar gap-2">
+        <div class="flex-shrink-0 font-black text-blue-600 mr-2 sm:mr-6 text-sm sm:text-lg whitespace-nowrap">🔢 反比判別</div>
+        <div id="tab-container" class="flex gap-1 sm:gap-2"></div>
+        <div class="ml-auto flex items-center gap-2 sm:gap-4 flex-shrink-0">
+            <div class="flex items-center gap-1 sm:gap-2 bg-slate-100 px-2 sm:px-3 py-1 rounded-xl font-bold text-slate-600 text-[10px] sm:text-sm">
                 <span>⏱️</span><span id="timer" class="font-mono">07:00</span>
             </div>
-            <div class="bg-blue-600 text-white px-4 py-1.5 rounded-xl font-bold text-sm shadow-sm">
+            <div class="bg-blue-600 text-white px-2 sm:px-4 py-1 rounded-xl font-bold text-[10px] sm:text-sm shadow-sm whitespace-nowrap">
                 得分：<span id="score">0</span>
             </div>
         </div>
@@ -172,12 +193,12 @@
     <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
 
         <!-- 左側：題目卡片 -->
-        <aside class="w-full md:w-1/3 bg-white p-6 border-r overflow-y-auto sticky top-0 h-auto md:h-full">
+        <aside class="w-full md:w-1/3 bg-white p-4 sm:p-6 border-b md:border-r overflow-y-auto relative md:sticky md:top-0 h-auto md:h-full">
             <div class="space-y-4">
                 <div
-                    class="inline-block bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-widest">
+                    class="inline-block bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest">
                     任務內容</div>
-                <div id="problem-content" class="text-lg text-gray-800 leading-relaxed font-medium"></div>
+                <div id="problem-content" class="text-base sm:text-lg text-gray-800 leading-relaxed font-medium"></div>
 
                 <div id="problem-table-container"></div>
 

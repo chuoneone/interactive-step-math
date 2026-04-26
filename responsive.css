@@ -344,11 +344,13 @@
     white-space: normal;
   }
 
-  .button-container {
+  .button-container,
+  .button-grid-3 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: 1fr;
+    gap: 12px;
     width: 100%;
+    max-width: 400px;
     margin: 10px auto 20px auto;
   }
 

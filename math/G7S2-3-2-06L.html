@@ -175,11 +175,36 @@
         @media (max-width: 768px) {
             .calc-grid {
                 grid-template-columns: 1fr;
+                min-height: auto;
             }
 
             .calc-column:first-child {
                 border-right: none;
                 border-bottom: 3px solid #4f46e5;
+            }
+            
+            .slot {
+                min-width: 65px;
+                height: 38px;
+                font-size: 18px;
+                margin: 0 4px;
+            }
+            
+            .option-btn {
+                padding: 8px 14px;
+                font-size: 16px;
+                min-width: 60px;
+            }
+            
+            .math-line {
+                font-size: 18px;
+                gap: 4px;
+            }
+            
+            .step-label {
+                font-size: 1em;
+                margin-right: 8px;
+                padding: 2px 12px;
             }
         }
     </style>
@@ -196,33 +221,33 @@
 
     <!-- 頂部導覽列 -->
     <nav class="bg-white border-b border-indigo-100 sticky top-0 z-[100] shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-2">
-                <span class="font-bold text-indigo-600 whitespace-nowrap border-r pr-4">六、反比例關係的應用</span>
+        <div class="max-w-7xl mx-auto px-4 min-h-[3.5rem] flex flex-wrap items-center justify-between py-2 gap-2">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar max-w-full">
+                <span class="font-bold text-indigo-600 whitespace-nowrap border-r pr-3 mr-1 text-sm">反比例應用</span>
                 <div id="nav-tabs" class="flex gap-2"></div>
             </div>
-            <div class="flex items-center gap-6 font-bold">
-                <div class="text-indigo-700 bg-indigo-50 px-4 py-1 rounded-xl text-sm md:text-base">⏱️ <span
+            <div class="flex items-center gap-3 font-bold ml-auto">
+                <div class="text-indigo-700 bg-indigo-50 px-3 py-1 rounded-xl text-xs sm:text-sm">⏱️ <span
                         id="timer">07:00</span></div>
-                <div class="text-emerald-700 bg-emerald-50 px-4 py-1 rounded-xl text-sm md:text-base">得分: <span
+                <div class="text-emerald-700 bg-emerald-50 px-3 py-1 rounded-xl text-xs sm:text-sm">得分: <span
                         id="total-score">0</span></div>
             </div>
         </div>
     </nav>
 
-    <!-- 凍結題幹區 -->
-    <div class="sticky top-16 z-[90] bg-indigo-600 border-b-4 border-indigo-900 p-4 shadow-xl text-white">
+    <!-- 凍結題幹區 (手機版改為非固定，節省空間) -->
+    <div class="relative md:sticky md:top-16 z-[90] bg-indigo-600 border-b-4 border-indigo-900 p-4 shadow-xl text-white">
         <div class="max-w-5xl mx-auto">
             <div class="flex items-center gap-2 mb-1">
                 <span class="text-yellow-300 text-xl">💡</span>
-                <h2 id="q-title" class="text-indigo-100 font-bold text-base">載入中...</h2>
+                <h2 id="q-title" class="text-indigo-100 font-bold text-xs md:text-base">載入中...</h2>
             </div>
-            <div id="q-description" class="text-xl md:text-2xl font-bold leading-snug"></div>
+            <div id="q-description" class="text-lg md:text-2xl font-bold leading-snug"></div>
         </div>
     </div>
 
     <!-- 主要內容區 -->
-    <main class="flex-grow max-w-6xl mx-auto w-full p-2 md:p-6 mb-40">
+    <main class="flex-grow max-w-6xl mx-auto w-full p-3 md:p-6 mb-44">
         <div id="question-card" class="bg-white rounded-[32px] shadow-2xl overflow-hidden border-2 border-indigo-500">
             <div class="calc-grid">
                 <!-- 左欄：找總量 -->
