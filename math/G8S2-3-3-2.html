@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>多邊形的全等</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        :root {
+            --primary-blue: #1d4ed8;
+            --success-green: #10b981;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            height: 44px;
+            border-bottom: 3px solid #cbd5e1;
+            margin: 0 4px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px 8px 0 0;
+            vertical-align: middle;
+        }
+
+        @media (min-width: 768px) {
+            .slot {
+                min-width: 70px;
+                height: 52px;
+                font-size: 28px;
+            }
+        }
+
+        .slot.active {
+            border-bottom-color: #3b82f6;
+            background-color: #eff6ff;
+            animation: pulse-ring 1.5s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        .slot.correct {
+            border-bottom-color: var(--success-green);
+            color: #059669;
+            background-color: #f0fdf4;
+            cursor: default;
+        }
+
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .option-btn {
+                font-size: 22px;
+                padding: 14px 28px;
+            }
+        }
+
+        .option-btn:active {
+            transform: scale(0.92);
+            background-color: #f8fafc;
+        }
+
+        .step-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .step-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-card.completed {
+            border-left-color: var(--success-green) !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        @media (min-width: 768px) {
+            .sticky-problem {
+                position: sticky;
+                top: 100px;
+                max-height: calc(100vh - 140px);
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50">
+
+    <!-- 頂部導覽列 -->
+    <nav class="glass-nav shadow-sm fixed top-0 w-full z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 flex-1 overflow-hidden">
+                <span
+                    class="hidden sm:inline-block bg-blue-700 text-white px-3 py-1 rounded-full text-xs font-black uppercase">翰林
+                    2下 3-3</span>
+                <div class="flex gap-2 overflow-x-auto no-scrollbar py-1 px-1 snap-x">
+                    <button onclick="switchTab(1)" id="tab-1"
+                        class="tab-btn snap-start whitespace-nowrap px-5 py-2 rounded-2xl bg-blue-600 text-white font-black shadow-md border-2 border-blue-600">題目
+                        1</button>
+                    <button onclick="switchTab(2)" id="tab-2"
+                        class="tab-btn snap-start whitespace-nowrap px-5 py-2 rounded-2xl bg-white text-slate-600 font-bold border-2 border-transparent">題目
+                        2</button>
+                    <button onclick="switchTab(3)" id="tab-3"
+                        class="tab-btn snap-start whitespace-nowrap px-5 py-2 rounded-2xl bg-white text-slate-600 font-bold border-2 border-transparent">題目
+                        4</button>
+                    <button onclick="switchTab(4)" id="tab-4"
+                        class="tab-btn snap-start whitespace-nowrap px-5 py-2 rounded-2xl bg-white text-slate-600 font-bold border-2 border-transparent">題目
+                        5</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 border-l border-slate-200 pl-4">
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase">Score</span>
+                    <span id="total-score" class="text-xl font-black text-blue-600 leading-none">0</span>
+                </div>
+                <div class="flex flex-col items-center min-w-[50px]">
+                    <span class="text-[10px] font-black text-slate-400 uppercase">Time</span>
+                    <span id="timer" class="text-xl font-black text-red-500 leading-none">07:00</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容區 -->
+    <main class="mt-24 px-4 max-w-7xl mx-auto pb-32">
+
+        <!-- 題目 1 -->
+        <div id="problem-1" class="problem-page block">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12">
+                <div class="md:w-[350px] lg:w-[400px] shrink-0">
+                    <div class="bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-slate-100 sticky-problem">
+                        <h2 class="text-2xl font-black text-slate-800 mb-4 text-blue-600">題目 1</h2>
+                        <div class="space-y-6 text-lg text-slate-700 leading-relaxed">
+                            <p>四邊形 <mark class="bg-blue-100/50 px-1 rounded font-bold">$ABCD$</mark> 與四邊形 <mark
+                                    class="bg-indigo-100/50 px-1 rounded font-bold">$PQRS$</mark> 全等。</p>
+                            <div
+                                class="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-3 font-semibold text-slate-600 text-base">
+                                <div>對應：$A \rightarrow P, B \rightarrow Q, C \rightarrow R, D \rightarrow S$</div>
+                                <div>已知：$\angle C = 134^\circ, \angle D = 78^\circ, \overline{RS} = 10$</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="steps-1" class="flex-1 space-y-6">
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-blue-500 active step-container"
+                        id="p1-s1">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-blue-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span>
+                            <h3 class="text-xl font-black text-slate-800">找出對應角</h3>
+                        </div>
+                        <div class="text-xl md:text-2xl mb-8 leading-relaxed text-slate-700">根據對應： $C \rightarrow$ <div
+                                class="slot" data-ans="R"></div>，$D \rightarrow$ <div class="slot" data-ans="S"></div>。
+                        </div>
+                        <div class="flex flex-wrap gap-4 mb-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('R')">R</button>
+                            <button class="option-btn" onclick="fillSlot('S')">S</button>
+                            <button class="option-btn" onclick="fillSlot('P')">P</button>
+                        </div>
+                        <button onclick="checkStep(1, 1)"
+                            class="w-full py-5 bg-blue-700 text-white rounded-2xl text-xl font-black shadow-xl">檢查答案</button>
+                    </div>
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-slate-200 step-container"
+                        id="p1-s2">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-blue-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span>
+                            <h3 class="text-xl font-black text-slate-800">填入數值</h3>
+                        </div>
+                        <div class="space-y-6 text-xl text-slate-700">
+                            <div>(1) $\angle R =$ <div class="slot" data-ans="134"></div> $^\circ$</div>
+                            <div>(2) $\angle S =$ <div class="slot" data-ans="78"></div> $^\circ$</div>
+                            <div>(3) $\overline{CD} =$ <div class="slot" data-ans="10"></div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 my-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('134')">134</button>
+                            <button class="option-btn" onclick="fillSlot('78')">78</button>
+                            <button class="option-btn" onclick="fillSlot('10')">10</button>
+                        </div>
+                        <button onclick="checkStep(1, 2)"
+                            class="w-full py-5 bg-blue-700 text-white rounded-2xl text-xl font-black">完成題目</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 題目 2 -->
+        <div id="problem-2" class="problem-page hidden">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12">
+                <div class="md:w-[350px] lg:w-[400px] shrink-0">
+                    <div class="bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-slate-100 sticky-problem">
+                        <h2 class="text-2xl font-black text-slate-800 mb-4 text-green-600">題目 2</h2>
+                        <div class="space-y-6 text-lg text-slate-700 leading-relaxed">
+                            <p>四邊形 $ABCD \cong EFGH$。</p>
+                            <div
+                                class="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-3 font-semibold text-slate-600 text-base">
+                                <div>對應：$A \rightarrow E, B \rightarrow F, C \rightarrow G, D \rightarrow H$</div>
+                                <div>已知：$\angle C = 90^\circ, \overline{EF}=17, \overline{EH}=8, \overline{BC}=9,
+                                    \overline{CD}=12$</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="steps-2" class="flex-1 space-y-6">
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-green-500 active step-container"
+                        id="p2-s1">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-green-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span>
+                            <h3 class="text-xl font-black text-slate-800">求對應角與邊長</h3>
+                        </div>
+                        <div class="text-xl mb-8 text-slate-700">$\angle G$ 對應 $\angle C$，所以 $\angle G =$ <div
+                                class="slot" data-ans="90"></div> $^\circ$。<br>$\overline{FG} =$ <div class="slot"
+                                data-ans="9"></div>, $\overline{GH} =$ <div class="slot" data-ans="12"></div>。</div>
+                        <div class="flex flex-wrap gap-4 mb-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('90')">90</button>
+                            <button class="option-btn" onclick="fillSlot('9')">9</button>
+                            <button class="option-btn" onclick="fillSlot('12')">12</button>
+                        </div>
+                        <button onclick="checkStep(2, 1)"
+                            class="w-full py-5 bg-green-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
+                    </div>
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-slate-200 step-container"
+                        id="p2-s2">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-green-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span>
+                            <h3 class="text-xl font-black text-slate-800">計算周長</h3>
+                        </div>
+                        <div class="text-xl mb-8 text-slate-700">周長 $= 17 + 9 + 12 + 8 =$ <div class="slot"
+                                data-ans="46"></div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 my-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('46')">46</button>
+                        </div>
+                        <button onclick="checkStep(2, 2)"
+                            class="w-full py-5 bg-green-700 text-white rounded-2xl text-xl font-black">完成題目</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 題目 4 -->
+        <div id="problem-3" class="problem-page hidden">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12">
+                <div class="md:w-[350px] lg:w-[400px] shrink-0">
+                    <div class="bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-slate-100 sticky-problem">
+                        <h2 class="text-2xl font-black text-slate-800 mb-4 text-purple-600">題目 4</h2>
+                        <div class="space-y-6 text-lg text-slate-700 leading-relaxed">
+                            <p>$\triangle ABC \cong \triangle DEF$。</p>
+                            <div
+                                class="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-3 font-semibold text-slate-600 text-base">
+                                <div>對應：$A \rightarrow D, B \rightarrow E, C \rightarrow F$</div>
+                                <div>已知：$\angle A = 50^\circ, \angle B = 70^\circ, \overline{DE} = 16$</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="steps-3" class="flex-1 space-y-6">
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-purple-500 active step-container"
+                        id="p3-s1">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-purple-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span>
+                            <h3 class="text-xl font-black text-slate-800">求出 $\angle C$</h3>
+                        </div>
+                        <div class="text-xl mb-8 text-slate-700">$\angle C = 180^\circ - (50^\circ + 70^\circ) =$ <div
+                                class="slot" data-ans="60"></div> $^\circ$。</div>
+                        <div class="flex flex-wrap gap-4 mb-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('60')">60</button>
+                        </div>
+                        <button onclick="checkStep(3, 1)"
+                            class="w-full py-5 bg-purple-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
+                    </div>
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-slate-200 step-container"
+                        id="p3-s2">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-purple-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span>
+                            <h3 class="text-xl font-black text-slate-800">填寫最後答案</h3>
+                        </div>
+                        <div class="text-xl space-y-6 text-slate-700">
+                            <div>$\angle F =$ <div class="slot" data-ans="60"></div> $^\circ$</div>
+                            <div>$\overline{AB} =$ <div class="slot" data-ans="16"></div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 my-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('60')">60</button>
+                            <button class="option-btn" onclick="fillSlot('16')">16</button>
+                        </div>
+                        <button onclick="checkStep(3, 2)"
+                            class="w-full py-5 bg-purple-700 text-white rounded-2xl text-xl font-black">完成題目</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 題目 5 -->
+        <div id="problem-4" class="problem-page hidden">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12">
+                <div class="md:w-[350px] lg:w-[400px] shrink-0">
+                    <div class="bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-slate-100 sticky-problem">
+                        <h2 class="text-2xl font-black text-slate-800 mb-4 text-orange-600">題目 5</h2>
+                        <div class="space-y-6 text-lg text-slate-700 leading-relaxed">
+                            <p>$\triangle ABC \cong \triangle PQR$。</p>
+                            <div
+                                class="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-3 font-semibold text-slate-600 text-base">
+                                <div>對應：$A \rightarrow P, B \rightarrow Q, C \rightarrow R$</div>
+                                <div>已知：$\angle P = 62^\circ, \angle C = 85^\circ, \overline{BC} = 13, \overline{PQ} =
+                                    9$</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="steps-4" class="flex-1 space-y-6">
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-orange-500 active step-container"
+                        id="p4-s1">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-orange-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span>
+                            <h3 class="text-xl font-black text-slate-800">求出對應角度</h3>
+                        </div>
+                        <div class="text-xl mb-8 text-slate-700">$\angle A = \angle P =$ <div class="slot"
+                                data-ans="62"></div> $^\circ$。</div>
+                        <div class="flex flex-wrap gap-4 mb-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('62')">62</button>
+                        </div>
+                        <button onclick="checkStep(4, 1)"
+                            class="w-full py-5 bg-orange-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
+                    </div>
+                    <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-slate-200 step-container"
+                        id="p4-s2">
+                        <div class="flex items-center gap-3 mb-6"><span
+                                class="bg-orange-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span>
+                            <h3 class="text-xl font-black text-slate-800">計算結果</h3>
+                        </div>
+                        <div class="text-xl space-y-6 text-slate-700">
+                            <div>$\angle B = 180^\circ - (62^\circ + 85^\circ) =$ <div class="slot" data-ans="33"></div>
+                                $^\circ$。</div>
+                            <div>$\overline{QR} = \overline{BC} =$ <div class="slot" data-ans="13"></div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 my-8 options-area">
+                            <button class="option-btn" onclick="fillSlot('33')">33</button>
+                            <button class="option-btn" onclick="fillSlot('13')">13</button>
+                        </div>
+                        <button onclick="checkStep(4, 2)"
+                            class="w-full py-5 bg-orange-700 text-white rounded-2xl text-xl font-black">完成題目</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-3xl opacity-0 transition-all z-[200] pointer-events-none font-black text-lg shadow-2xl">
+    </div>
+
+    <!-- 成績結算視窗 -->
+    <div id="result-modal"
+        class="fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-500">
+        <div class="bg-white rounded-[40px] p-8 md:p-12 max-w-sm w-full mx-4 shadow-2xl transform scale-90 transition-all duration-500"
+            id="result-content">
+            <div class="text-center">
+                <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span class="text-5xl">🏆</span>
+                </div>
+                <h2 class="text-3xl font-black text-slate-800 mb-2">挑戰完成！</h2>
+                <p class="text-slate-500 font-bold mb-8 text-lg">你太棒了！這是你的成績：</p>
+
+                <div class="grid grid-cols-2 gap-4 mb-10">
+                    <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
+                        <div class="text-blue-600 font-black text-3xl mb-1" id="final-score">0</div>
+                        <div class="text-blue-400 font-black text-xs uppercase tracking-wider">Total Score</div>
+                    </div>
+                    <div class="bg-red-50 p-6 rounded-3xl border-2 border-red-100">
+                        <div class="text-red-600 font-black text-3xl mb-1" id="final-time">00:00</div>
+                        <div class="text-red-400 font-black text-xs uppercase tracking-wider">Time Left</div>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()"
+                    class="w-full py-5 bg-blue-700 hover:bg-blue-800 text-white rounded-3xl text-xl font-black shadow-xl transition-all active:scale-95">
+                    再試一次
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 420;
+        let timerInterval;
+        let completedSteps = new Set();
+        let mistakesPerStep = new Set();
+        const totalSteps = 8;
+
+        window.onload = () => {
+            renderMathInElement(document.body, { delimiters: [{ left: '$', right: '$', display: false }] });
+            shuffleAllOptions();
+            updateActiveSlot();
+            startTimer();
+            initSlotClick();
+        };
+
+        function shuffleAllOptions() {
+            document.querySelectorAll('.options-area').forEach(area => {
+                const btns = Array.from(area.children);
+                for (let i = btns.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    area.appendChild(btns[j]);
+                }
+            });
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) return clearInterval(timerInterval);
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        // 修復 switchTab 中的 Null 引用錯誤
+        function switchTab(id) {
+            const pages = document.querySelectorAll('.problem-page');
+            pages.forEach(p => p.classList.add('hidden'));
+
+            const targetPage = document.getElementById(`problem-${id}`);
+            if (targetPage) targetPage.classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white');
+                b.classList.add('bg-white', 'text-slate-600');
+                b.style.borderColor = 'transparent';
+            });
+
+            const activeBtn = document.getElementById(`tab-${id}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
+                activeBtn.classList.add('bg-blue-600', 'text-white');
+                activeBtn.style.borderColor = '#2563eb';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateActiveSlot();
+        }
+
+        function getActiveStepElement() {
+            const activePage = document.querySelector(`.problem-page:not(.hidden)`);
+            if (!activePage) return null;
+            return activePage.querySelector('.step-card.active:not(.completed)');
+        }
+
+        function fillSlot(val) {
+            const activeStep = getActiveStepElement();
+            if (!activeStep) return;
+            const slots = Array.from(activeStep.querySelectorAll('.slot'));
+            const target = slots.find(s => s.innerText === "" && !s.classList.contains('correct'));
+            if (target) {
+                target.innerText = val;
+                updateActiveSlot();
+            }
+        }
+
+        function updateActiveSlot() {
+            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+            const activeStep = getActiveStepElement();
+            if (!activeStep) return;
+            const target = Array.from(activeStep.querySelectorAll('.slot')).find(s => s.innerText === "");
+            if (target) target.classList.add('active');
+        }
+
+        function initSlotClick() {
+            document.querySelectorAll('.slot').forEach(slot => {
+                slot.addEventListener('click', function () {
+                    const parentStep = this.closest('.step-card');
+                    if (!parentStep.classList.contains('active') || parentStep.classList.contains('completed')) return;
+                    this.innerText = "";
+                    updateActiveSlot();
+                });
+            });
+        }
+
+        function checkStep(probIdx, stepIdx) {
+            const stepId = `p${probIdx}-s${stepIdx}`;
+            const stepEl = document.getElementById(stepId);
+            const slots = stepEl.querySelectorAll('.slot');
+
+            if (Array.from(slots).some(s => s.innerText === "")) return showToast("還有空格沒填完喔！ 🔍");
+
+            const isCorrect = Array.from(slots).every(s => s.innerText === s.dataset.ans);
+
+            if (isCorrect) {
+                if (!completedSteps.has(stepId)) {
+                    // 答錯過就不給分
+                    if (!mistakesPerStep.has(stepId)) {
+                        score++;
+                        document.getElementById('total-score').innerText = score;
+                    } else {
+                        showToast("答對了！(但因曾答錯不計分) 💡", true);
+                    }
+                    completedSteps.add(stepId);
+                }
+
+                slots.forEach(s => s.classList.add('correct'));
+                stepEl.classList.add('completed');
+
+                const options = stepEl.querySelector('.options-area');
+                if (options) options.style.display = 'none';
+                const btn = stepEl.querySelector('button:last-of-type');
+                if (btn) btn.style.display = 'none';
+
+                if (completedSteps.size === totalSteps) {
+                    showFinalResults();
+                } else {
+                    const nextStep = document.getElementById(`p${probIdx}-s${stepIdx + 1}`);
+                    if (nextStep) {
+                        nextStep.classList.add('active');
+                        nextStep.classList.add('border-blue-500');
+                        setTimeout(() => {
+                            nextStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            updateActiveSlot();
+                        }, 400);
+                    }
+                    showToast("正確！ 🌟", true);
+                }
+            } else {
+                mistakesPerStep.add(stepId);
+                showToast("好像填錯了，再檢查一下喔！ 💡");
+            }
+        }
+
+        function showFinalResults() {
+            clearInterval(timerInterval);
+            const modal = document.getElementById('result-modal');
+            const content = document.getElementById('result-content');
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-time').innerText = document.getElementById('timer').innerText;
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-90');
+            content.classList.add('scale-100');
+        }
+
+        function showToast(msg, isSuccess = false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.backgroundColor = isSuccess ? "#059669" : "#1e293b";
+            t.style.opacity = 1;
+            setTimeout(() => t.style.opacity = 0, 2000);
+        }
+    </script>
+</body>
+
+</html>
