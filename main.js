@@ -110,11 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initOtherModal();
 
     initSemesterLogic();
+    initMobileMenu();
+    initNavbarHighlight();
     initSearch();
     initBreadcrumb();
     handleSearchHighlight();
     initHistoryState();
-    initCountdown(); // 修正：加入倒數計時初始化
+    initCountdown();
+    initTabs();
 });
 
 // 監聽瀏覽器上一頁/下一頁
