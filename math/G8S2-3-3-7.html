@@ -249,7 +249,7 @@
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
                             <button class="option-btn" onclick="fillSlot('EAF')">∠EAF</button>
                             <button class="option-btn" onclick="fillSlot('90')">90</button>
-                            <button class="option-btn" onclick="fillSlot('AF')">AF</button>
+                            <button class="option-btn" onclick="fillSlot('AF')"><span style="text-decoration:overline">AF</span></button>
                             <button class="option-btn" onclick="fillSlot('BAC')">∠BAC</button>
                         </div>
                         <button onclick="checkStep(1, 1)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black shadow-xl">檢查答案</button>
@@ -258,11 +258,11 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span><h3 class="text-xl font-black text-slate-800">結論</h3></div>
                         <div class="text-xl mb-8 text-slate-700 space-y-4">
                             <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，</p>
-                            <p>得 $\triangle ADF \cong$ <span class="slot" data-ans="AEF"></span>。</p>
+                            <p>得 $\triangle ADF \cong$ <span class="slot" data-ans="△AEF"></span>。</p>
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('AAS')">AAS</button>
-                            <button class="option-btn" onclick="fillSlot('AEF')">AEF</button>
+                            <button class="option-btn" onclick="fillSlot('△AEF')">△AEF</button>
                             <button class="option-btn" onclick="fillSlot('ASA')">ASA</button>
                         </div>
                         <button onclick="checkStep(1, 2)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">完成題目</button>
@@ -318,9 +318,9 @@
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
                             <button class="option-btn" onclick="fillSlot('C')">∠C</button>
-                            <button class="option-btn" onclick="fillSlot('DE')">DE</button>
+                            <button class="option-btn" onclick="fillSlot('DE')"><span style="text-decoration:overline">DE</span></button>
                             <button class="option-btn" onclick="fillSlot('ASA')">ASA</button>
-                            <button class="option-btn" onclick="fillSlot('AE')">AE</button>
+                            <button class="option-btn" onclick="fillSlot('AE')"><span style="text-decoration:overline">AE</span></button>
                         </div>
                         <button onclick="checkStep(2, 1)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
                     </div>
@@ -328,11 +328,11 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span><h3 class="text-xl font-black text-slate-800">結論</h3></div>
                         <div class="text-xl mb-8 text-slate-700 space-y-4">
                             <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，</p>
-                            <p>得 $\triangle ABE \cong$ <span class="slot" data-ans="DCE"></span>。</p>
+                            <p>得 $\triangle ABE \cong$ <span class="slot" data-ans="△DCE"></span>。</p>
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('AAS')">AAS</button>
-                            <button class="option-btn" onclick="fillSlot('DCE')">DCE</button>
+                            <button class="option-btn" onclick="fillSlot('△DCE')">△DCE</button>
                             <button class="option-btn" onclick="fillSlot('SAS')">SAS</button>
                         </div>
                         <button onclick="checkStep(2, 2)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">完成題目</button>
@@ -387,20 +387,20 @@
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
                             <button class="option-btn" onclick="fillSlot('BFC')">∠BFC</button>
                             <button class="option-btn" onclick="fillSlot('BCF')">∠BCF</button>
-                            <button class="option-btn" onclick="fillSlot('BC')">BC</button>
-                            <button class="option-btn" onclick="fillSlot('BF')">BF</button>
+                            <button class="option-btn" onclick="fillSlot('BC')"><span style="text-decoration:overline">BC</span></button>
+                            <button class="option-btn" onclick="fillSlot('BF')"><span style="text-decoration:overline">BF</span></button>
                         </div>
                         <button onclick="checkStep(3, 1)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
                     </div>
                     <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-slate-200 step-container" id="p3-s2">
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span><h3 class="text-xl font-black text-slate-800">結論與計算</h3></div>
                         <div class="text-xl mb-8 text-slate-700 space-y-4">
-                            <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，得 $\triangle ABE \cong$ <span class="slot" data-ans="BCF"></span>。</p>
+                            <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，得 $\triangle ABE \cong$ <span class="slot" data-ans="△BCF"></span>。</p>
                             <p>若正方形邊長為 12，$\overline{BE} = 5$，則 $\overline{BF} = $ <span class="slot" data-ans="13"></span>。</p>
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('AAS')">AAS</button>
-                            <button class="option-btn" onclick="fillSlot('BCF')">BCF</button>
+                            <button class="option-btn" onclick="fillSlot('△BCF')">△BCF</button>
                             <button class="option-btn" onclick="fillSlot('13')">13</button>
                             <button class="option-btn" onclick="fillSlot('17')">17</button>
                         </div>
@@ -483,26 +483,32 @@
             const target = slots.find(s => s.innerText === "" && !s.classList.contains('correct'));
             if (target) {
                 target.innerText = val;
+                target.style.textDecoration = /^[A-Z]{2}$/.test(val) ? 'overline' : 'none';
                 highlightAllFilled(activeStep);
                 updateActiveSlot();
             }
         }
 
         function highlightAllFilled(activeStep) {
-            document.querySelectorAll('.geom-path').forEach(el => {
+            const activePage = activeStep.closest('.problem-page');
+            if (!activePage) return;
+            activePage.querySelectorAll('.geom-path').forEach(el => {
                 el.classList.remove('geom-hl-1', 'geom-hl-2', 'geom-hl-3', 'geom-hl-4', 'geom-hl-5');
-                if (el.tagName === 'path' || el.tagName === 'rect' || el.tagName === 'polyline') el.classList.add('opacity-0');
+                if ((el.tagName === 'path' || el.tagName === 'polyline' || el.tagName === 'rect') && el.classList.contains('geom-path')) {
+                    el.classList.add('opacity-0');
+                }
             });
             const slots = activeStep.querySelectorAll('.slot');
             slots.forEach((slot, idx) => {
                 const val = slot.innerText;
-                if (val) applyGeomHighlight(val, idx + 1);
+                if (val) applyGeomHighlight(val, idx + 1, activePage);
             });
         }
 
-        function applyGeomHighlight(val, colorIdx) {
+        function applyGeomHighlight(val, colorIdx, container) {
             let geomId = val.replace(/[∠△\overline{}]/g, '').trim();
             if (["AAS", "SSS", "SAS", "ASA", "RHS"].includes(geomId)) return;
+            const scope = container || document;
             const colorClass = `geom-hl-${colorIdx}`;
             const pairs = {
                 "DAF": ["DAF", "EAF"], "EAF": ["DAF", "EAF"],
@@ -510,19 +516,19 @@
                 "B": ["B", "C"], "C": ["B", "C"],
                 "AE": ["AE", "DE"], "DE": ["AE", "DE"],
                 "AEB": ["AEB", "CED"], "CED": ["AEB", "CED"],
-                "BFC": ["AEB", "BFC"], "AEB": ["AEB", "BFC"],
+                "BFC": ["AEB", "BFC"],
                 "BCF": ["ABE", "BCF"], "ABE": ["ABE", "BCF"],
                 "BC": ["AB", "BC"], "AB": ["AB", "BC"]
             };
             const toHighlight = pairs[geomId] || [geomId];
             toHighlight.forEach(id => {
-                document.querySelectorAll(`[data-geom="${id}"]`).forEach(t => {
+                scope.querySelectorAll(`[data-geom="${id}"]`).forEach(t => {
                     t.classList.add(colorClass);
                     t.classList.remove('opacity-0');
                 });
                 if (id.length === 2) {
                     const reverseId = id.split('').reverse().join('');
-                    document.querySelectorAll(`[data-geom="${reverseId}"]`).forEach(t => t.classList.add(colorClass));
+                    scope.querySelectorAll(`[data-geom="${reverseId}"]`).forEach(t => t.classList.add(colorClass));
                 }
             });
         }
@@ -537,8 +543,9 @@
         }
 
         function highlightTemporary(geomId) {
-            const targets = document.querySelectorAll(`[data-geom="${geomId}"]`);
-            targets.forEach(t => {
+            const activePage = document.querySelector('.problem-page:not(.hidden)');
+            if (!activePage) return;
+            activePage.querySelectorAll(`[data-geom="${geomId}"]`).forEach(t => {
                 t.classList.add('geom-hl-5');
                 t.classList.remove('opacity-0');
                 setTimeout(() => {
@@ -565,6 +572,7 @@
                     const parentStep = this.closest('.step-card');
                     if (!parentStep.classList.contains('active') || parentStep.classList.contains('completed')) return;
                     this.innerText = "";
+                    this.style.textDecoration = 'none';
                     updateActiveSlot();
                 });
             });
@@ -575,7 +583,7 @@
             const stepEl = document.getElementById(stepId);
             const slots = stepEl.querySelectorAll('.slot');
             if (Array.from(slots).some(s => s.innerText === "")) return showToast("還有空格沒填完喔！ 🔍");
-            const isCorrect = Array.from(slots).every(s => s.innerText.includes(s.dataset.ans) || s.innerText === s.dataset.ans);
+            const isCorrect = Array.from(slots).every(s => s.innerText.trim() === s.dataset.ans.trim());
             if (isCorrect) {
                 if (!completedSteps.has(stepId)) {
                     if (!mistakesPerStep.has(stepId)) { score++; document.getElementById('total-score').innerText = score; }

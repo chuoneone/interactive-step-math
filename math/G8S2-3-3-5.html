@@ -271,10 +271,10 @@
                             <p class="whitespace-nowrap">(3) 一股 <span class="geom-ref" data-geom="AD">$\overline{AD}$</span> = <span class="slot" data-ans="AE"></span></p>
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
-                            <button class="option-btn" onclick="fillSlot('E')">E</button>
-                            <button class="option-btn" onclick="fillSlot('AC')">AC</button>
-                            <button class="option-btn" onclick="fillSlot('AE')">AE</button>
-                            <button class="option-btn" onclick="fillSlot('BC')">BC</button>
+                            <button class="option-btn" onclick="fillSlot('E')">∠E</button>
+                            <button class="option-btn" onclick="fillSlot('AC')"><span style="text-decoration:overline">AC</span></button>
+                            <button class="option-btn" onclick="fillSlot('AE')"><span style="text-decoration:overline">AE</span></button>
+                            <button class="option-btn" onclick="fillSlot('BC')"><span style="text-decoration:overline">BC</span></button>
                         </div>
                         <button onclick="checkStep(1, 1)"
                             class="w-full py-5 bg-blue-700 text-white rounded-2xl text-xl font-black shadow-xl">檢查答案</button>
@@ -287,12 +287,12 @@
                         </div>
                         <div class="space-y-6 text-xl text-slate-700">
                             根據 <div class="slot" data-ans="RHS"></div> 全等性質，<br>
-                            得 $\triangle ADB \cong$ <div class="slot" data-ans="AEC"></div>，<br>
+                            得 $\triangle ADB \cong$ <div class="slot" data-ans="△AEC"></div>，<br>
                             可知 $\angle BAD = \angle CAE$。
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('RHS')">RHS</button>
-                            <button class="option-btn" onclick="fillSlot('AEC')">AEC</button>
+                            <button class="option-btn" onclick="fillSlot('△AEC')">△AEC</button>
                             <button class="option-btn" onclick="fillSlot('SSS')">SSS</button>
                         </div>
                         <button onclick="checkStep(1, 2)"
@@ -357,9 +357,9 @@
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
                             <button class="option-btn" onclick="fillSlot('BCF')">BCF</button>
-                            <button class="option-btn" onclick="fillSlot('BF')">BF</button>
-                            <button class="option-btn" onclick="fillSlot('BC')">BC</button>
-                            <button class="option-btn" onclick="fillSlot('AD')">AD</button>
+                            <button class="option-btn" onclick="fillSlot('BF')"><span style="text-decoration:overline">BF</span></button>
+                            <button class="option-btn" onclick="fillSlot('BC')"><span style="text-decoration:overline">BC</span></button>
+                            <button class="option-btn" onclick="fillSlot('AD')"><span style="text-decoration:overline">AD</span></button>
                         </div>
                         <button onclick="checkStep(2, 1)"
                             class="w-full py-5 bg-green-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
@@ -441,10 +441,10 @@
                             <p class="whitespace-nowrap">(3) 一股 <span class="geom-ref" data-geom="AB">$\overline{AB}$</span> = <span class="slot" data-ans="CD"></span></p>
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
-                            <button class="option-btn" onclick="fillSlot('D')">D</button>
-                            <button class="option-btn" onclick="fillSlot('CE')">CE</button>
-                            <button class="option-btn" onclick="fillSlot('CD')">CD</button>
-                            <button class="option-btn" onclick="fillSlot('BC')">BC</button>
+                            <button class="option-btn" onclick="fillSlot('D')">∠D</button>
+                            <button class="option-btn" onclick="fillSlot('CE')"><span style="text-decoration:overline">CE</span></button>
+                            <button class="option-btn" onclick="fillSlot('CD')"><span style="text-decoration:overline">CD</span></button>
+                            <button class="option-btn" onclick="fillSlot('BC')"><span style="text-decoration:overline">BC</span></button>
                         </div>
                         <button onclick="checkStep(3, 1)"
                             class="w-full py-5 bg-purple-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
@@ -538,20 +538,18 @@
 
         function highlightTemporary(geomId) {
             // 不影響已填寫的高亮，只是暫時顯示
-            // 這裡可以選擇用不同的顏色或樣式
-            const targets = document.querySelectorAll(`[data-geom="${geomId}"]`);
-            targets.forEach(t => {
-                t.classList.add('geom-hl-5'); // 使用琥珀色作為暫時提示
+            const activePage = document.querySelector('.problem-page:not(.hidden)');
+            if (!activePage) return;
+            activePage.querySelectorAll(`[data-geom="${geomId}"]`).forEach(t => {
+                t.classList.add('geom-hl-5');
                 t.classList.remove('opacity-0');
                 setTimeout(() => {
-                    // 如果該部位沒有被「已填寫」的條件佔用，則恢復
                     const activeStep = getActiveStepElement();
-                    const isFilled = Array.from(activeStep.querySelectorAll('.slot')).some(s => s.innerText === geomId);
+                    const isFilled = activeStep ? Array.from(activeStep.querySelectorAll('.slot')).some(s => s.innerText === geomId) : false;
                     if (!isFilled) {
                         t.classList.remove('geom-hl-5');
-                        if (t.tagName === 'path' || t.tagName === 'rect') t.classList.add('opacity-0');
-                        // 重新觸發全域高亮以恢復正確狀態
-                        highlightAllFilled(activeStep);
+                        if (t.tagName === 'path' || t.tagName === 'polyline' || t.tagName === 'rect') t.classList.add('opacity-0');
+                        if (activeStep) highlightAllFilled(activeStep);
                     }
                 }, 1500);
             });
@@ -614,16 +612,21 @@
             const target = slots.find(s => s.innerText === "" && !s.classList.contains('correct'));
             if (target) {
                 target.innerText = val;
+                target.style.textDecoration = /^[A-Z]{2}$/.test(val) ? 'overline' : 'none';
                 highlightAllFilled(activeStep);
                 updateActiveSlot();
             }
         }
 
         function highlightAllFilled(activeStep) {
-            // 清除所有高亮
-            document.querySelectorAll('.geom-path').forEach(el => {
+            // 只針對當前顯示的題目頁面內的 SVG 路徑做操作，避免影響其他題目的圖
+            const activePage = activeStep.closest('.problem-page');
+            if (!activePage) return;
+            activePage.querySelectorAll('.geom-path').forEach(el => {
                 el.classList.remove('geom-hl-1', 'geom-hl-2', 'geom-hl-3', 'geom-hl-4', 'geom-hl-5');
-                if (el.tagName === 'path' || el.tagName === 'rect') el.classList.add('opacity-0');
+                if ((el.tagName === 'path' || el.tagName === 'polyline' || el.tagName === 'rect') && el.classList.contains('geom-path')) {
+                    el.classList.add('opacity-0');
+                }
             });
 
             // 取得當前步驟所有已填寫的內容
@@ -631,19 +634,19 @@
             slots.forEach((slot, idx) => {
                 const val = slot.innerText;
                 if (val) {
-                    const colorIdx = idx + 1; // 每個條件一個顏色
-                    applyGeomHighlight(val, colorIdx);
+                    const colorIdx = idx + 1;
+                    applyGeomHighlight(val, colorIdx, activePage);
                 }
             });
         }
 
-        function applyGeomHighlight(val, colorIdx) {
+        function applyGeomHighlight(val, colorIdx, container) {
             let geomId = val.replace(/[∠△\overline{}]/g, '').trim();
             if (["RHS", "SSS", "SAS", "ASA", "AAS"].includes(geomId)) return;
 
+            const scope = container || document;
             const colorClass = `geom-hl-${colorIdx}`;
             
-            // 定義配對關係 (高亮等長/等角的另一半)
             const pairs = {
                 // 題目 1
                 "D": ["D", "E"], "E": ["D", "E"],
@@ -651,26 +654,25 @@
                 "AD": ["AD", "AE"], "AE": ["AD", "AE"],
                 // 題目 2
                 "ABE": ["ABE", "BCF"], "BCF": ["ABE", "BCF"],
-                "AE": ["AE", "BF"], "BF": ["AE", "BF"],
-                "AB": ["AB", "BC"], "BC": ["AB", "BC"],
+                "BF": ["AE", "BF"],
+                "BC": ["AB", "BC"],
                 // 題目 3
-                "A": ["A", "D"], "D": ["A", "D"],
-                "BF": ["BF", "CE"], "CE": ["BF", "CE"],
-                "AB": ["AB", "CD"], "CD": ["AB", "CD"]
+                "A": ["A", "D"],
+                "CE": ["BF", "CE"],
+                "CD": ["AB", "CD"]
             };
 
             const toHighlight = pairs[geomId] || [geomId];
             
             toHighlight.forEach(id => {
-                const targets = document.querySelectorAll(`[data-geom="${id}"]`);
-                targets.forEach(t => {
+                scope.querySelectorAll(`[data-geom="${id}"]`).forEach(t => {
                     t.classList.add(colorClass);
                     t.classList.remove('opacity-0');
                 });
                 
                 if (id.length === 2) {
                     const reverseId = id.split('').reverse().join('');
-                    document.querySelectorAll(`[data-geom="${reverseId}"]`).forEach(t => t.classList.add(colorClass));
+                    scope.querySelectorAll(`[data-geom="${reverseId}"]`).forEach(t => t.classList.add(colorClass));
                 }
             });
         }
@@ -689,6 +691,7 @@
                     const parentStep = this.closest('.step-card');
                     if (!parentStep.classList.contains('active') || parentStep.classList.contains('completed')) return;
                     this.innerText = "";
+                    this.style.textDecoration = 'none';
                     updateActiveSlot();
                 });
             });
