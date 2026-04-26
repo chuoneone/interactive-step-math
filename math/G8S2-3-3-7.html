@@ -190,12 +190,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 border-l border-slate-200 pl-4">
-                <button onclick="clearProgress()" class="p-2 text-slate-400 hover:text-red-500 transition-colors" title="清除進度">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>
+            <div class="flex items-center gap-4 border-l border-slate-200 pl-4">
                 <div class="flex flex-col items-center">
                     <span class="text-[10px] font-black text-slate-400 uppercase">Score</span>
                     <span id="total-score" class="text-xl font-black text-rose-600 leading-none">0</span>
@@ -230,10 +225,6 @@
                                     
                                     <polyline points="101.4,64.2 105,70.3 111.1,66.7" fill="none" stroke="#ef4444" stroke-width="1.5" data-geom="FDA" class="geom-path opacity-0" />
                                     <polyline points="101.4,135.8 105,129.7 111.1,133.3" fill="none" stroke="#ef4444" stroke-width="1.5" data-geom="FEA" class="geom-path opacity-0" />
-                                    
-                                    <!-- 新增角標記 -->
-                                    <path d="M50 90 Q60 100 50 110" fill="none" stroke="#ef4444" stroke-width="2" data-geom="DAF" class="geom-path opacity-0"/>
-                                    <path d="M50 110 Q60 100 50 90" fill="none" stroke="#ef4444" stroke-width="2" data-geom="EAF" class="geom-path opacity-0"/>
 
                                     <text x="25" y="105" font-size="12" font-weight="bold">A</text>
                                     <text x="165" y="30" font-size="12" font-weight="bold">B</text>
@@ -251,15 +242,15 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span><h3 class="text-xl font-black text-slate-800">說明全等理由</h3></div>
                         <div class="text-xl mb-8 leading-relaxed text-slate-700 space-y-4">
                             <p>在 $\triangle ADF$ 與 $\triangle AEF$ 中：</p>
-                            <p class="whitespace-nowrap">(1) <span class="geom-ref" data-geom="DAF">$\angle DAF$</span> = <span class="slot" data-ans="\angle EAF"></span> ($\vec{AF}$ 平分 $\angle BAC$)</p>
+                            <p class="whitespace-nowrap">(1) <span class="geom-ref" data-geom="DAF">$\angle DAF$</span> = <span class="slot" data-ans="EAF"></span> ($\vec{AF}$ 平分 $\angle BAC$)</p>
                             <p class="whitespace-nowrap">(2) <span class="geom-ref" data-geom="FDA">$\angle FDA$</span> = $\angle FEA =$ <span class="slot" data-ans="90"></span> 度 (垂直)</p>
-                            <p class="whitespace-nowrap">(3) <span class="geom-ref" data-geom="AF">$\overline{AF}$</span> = <span class="slot" data-ans="\overline{AF}"></span> (公用邊)</p>
+                            <p class="whitespace-nowrap">(3) <span class="geom-ref" data-geom="AF">$\overline{AF}$</span> = <span class="slot" data-ans="AF"></span> (公用邊)</p>
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
-                            <button class="option-btn" onclick="fillSlot('\\angle EAF')">$\angle EAF$</button>
+                            <button class="option-btn" onclick="fillSlot('EAF')">∠EAF</button>
                             <button class="option-btn" onclick="fillSlot('90')">90</button>
-                            <button class="option-btn" onclick="fillSlot('\\overline{AF}')">$\overline{AF}$</button>
-                            <button class="option-btn" onclick="fillSlot('\\angle BAC')">$\angle BAC$</button>
+                            <button class="option-btn" onclick="fillSlot('AF')">AF</button>
+                            <button class="option-btn" onclick="fillSlot('BAC')">∠BAC</button>
                         </div>
                         <button onclick="checkStep(1, 1)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black shadow-xl">檢查答案</button>
                     </div>
@@ -267,11 +258,11 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span><h3 class="text-xl font-black text-slate-800">結論</h3></div>
                         <div class="text-xl mb-8 text-slate-700 space-y-4">
                             <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，</p>
-                            <p>得 $\triangle ADF \cong$ <span class="slot" data-ans="\triangle AEF"></span>。</p>
+                            <p>得 $\triangle ADF \cong$ <span class="slot" data-ans="AEF"></span>。</p>
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('AAS')">AAS</button>
-                            <button class="option-btn" onclick="fillSlot('\\triangle AEF')">$\triangle AEF$</button>
+                            <button class="option-btn" onclick="fillSlot('AEF')">AEF</button>
                             <button class="option-btn" onclick="fillSlot('ASA')">ASA</button>
                         </div>
                         <button onclick="checkStep(1, 2)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">完成題目</button>
@@ -321,15 +312,15 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span><h3 class="text-xl font-black text-slate-800">說明全等理由</h3></div>
                         <div class="text-xl mb-8 leading-relaxed text-slate-700 space-y-4">
                             <p>在 $\triangle ABE$ 與 $\triangle DCE$ 中：</p>
-                            <p class="whitespace-nowrap">(1) <span class="geom-ref" data-geom="B">$\angle B$</span> = <span class="slot" data-ans="\angle C"></span> (已知)</p>
+                            <p class="whitespace-nowrap">(1) <span class="geom-ref" data-geom="B">$\angle B$</span> = <span class="slot" data-ans="C"></span> (已知)</p>
                             <p class="whitespace-nowrap">(2) <span class="geom-ref" data-geom="AEB">$\angle AEB$</span> = $\angle CED$ (對頂角)</p>
-                            <p class="whitespace-nowrap">(3) <span class="geom-ref" data-geom="AE">$\overline{AE}$</span> = <span class="slot" data-ans="\overline{DE}"></span> ($E$ 為 $\overline{AD}$ 中點)</p>
+                            <p class="whitespace-nowrap">(3) <span class="geom-ref" data-geom="AE">$\overline{AE}$</span> = <span class="slot" data-ans="DE"></span> ($E$ 為 $\overline{AD}$ 中點)</p>
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
-                            <button class="option-btn" onclick="fillSlot('\\angle C')">$\angle C$</button>
-                            <button class="option-btn" onclick="fillSlot('\\overline{DE}')">$\overline{DE}$</button>
+                            <button class="option-btn" onclick="fillSlot('C')">∠C</button>
+                            <button class="option-btn" onclick="fillSlot('DE')">DE</button>
                             <button class="option-btn" onclick="fillSlot('ASA')">ASA</button>
-                            <button class="option-btn" onclick="fillSlot('\\overline{AE}')">$\overline{AE}$</button>
+                            <button class="option-btn" onclick="fillSlot('AE')">AE</button>
                         </div>
                         <button onclick="checkStep(2, 1)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
                     </div>
@@ -337,11 +328,11 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span><h3 class="text-xl font-black text-slate-800">結論</h3></div>
                         <div class="text-xl mb-8 text-slate-700 space-y-4">
                             <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，</p>
-                            <p>得 $\triangle ABE \cong$ <span class="slot" data-ans="\triangle DCE"></span>。</p>
+                            <p>得 $\triangle ABE \cong$ <span class="slot" data-ans="DCE"></span>。</p>
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('AAS')">AAS</button>
-                            <button class="option-btn" onclick="fillSlot('\\triangle DCE')">$\triangle DCE$</button>
+                            <button class="option-btn" onclick="fillSlot('DCE')">DCE</button>
                             <button class="option-btn" onclick="fillSlot('SAS')">SAS</button>
                         </div>
                         <button onclick="checkStep(2, 2)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">完成題目</button>
@@ -359,7 +350,7 @@
                         <div class="space-y-6 text-lg text-slate-700 leading-relaxed">
                             <p>如圖，已知 $\angle AEB = \angle BFC$，且四邊形 $ABCD$ 為正方形，說明 $\triangle ABE \cong \triangle BCF$。</p>
                             <div class="bg-white rounded-2xl border border-slate-100 p-2 overflow-hidden">
-                                <svg viewBox="0 0 200 210" class="geom-svg">
+                                <svg viewBox="0 0 200 200" class="geom-svg">
                                     <rect x="40" y="40" width="120" height="120" fill="none" stroke="#cbd5e1" stroke-width="1"/>
                                     <line x1="40" y1="40" x2="40" y2="160" stroke="#64748b" stroke-width="2" data-geom="AB" class="geom-path"/>
                                     <line x1="40" y1="160" x2="160" y2="160" stroke="#64748b" stroke-width="2" data-geom="BC" class="geom-path"/>
@@ -372,10 +363,6 @@
                                     <!-- 直角記號 -->
                                     <polyline points="40,150 50,150 50,160" fill="none" stroke="#ef4444" stroke-width="1.5" data-geom="ABE" class="geom-path opacity-0"/>
                                     <polyline points="150,160 150,150 160,150" fill="none" stroke="#ef4444" stroke-width="1.5" data-geom="BCF" class="geom-path opacity-0"/>
-                                    
-                                    <!-- 新增角標記 -->
-                                    <path d="M90 145 Q100 150 110 145" fill="none" stroke="#ef4444" stroke-width="2" data-geom="AEB" class="geom-path opacity-0"/>
-                                    <path d="M145 110 Q150 100 145 90" fill="none" stroke="#ef4444" stroke-width="2" data-geom="BFC" class="geom-path opacity-0"/>
 
                                     <text x="30" y="35" font-size="12" font-weight="bold">A</text>
                                     <text x="30" y="175" font-size="12" font-weight="bold">B</text>
@@ -393,27 +380,27 @@
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 1</span><h3 class="text-xl font-black text-slate-800">說明全等理由</h3></div>
                         <div class="text-xl mb-8 leading-relaxed text-slate-700 space-y-4">
                             <p>在 $\triangle ABE$ 與 $\triangle BCF$ 中：</p>
-                            <p class="whitespace-nowrap">(1) <span class="geom-ref" data-geom="AEB">$\angle AEB$</span> = <span class="slot" data-ans="\angle BFC"></span> (已知)</p>
-                            <p class="whitespace-nowrap">(2) <span class="geom-ref" data-geom="ABE">$\angle ABE$</span> = <span class="slot" data-ans="\angle BCF"></span> = $90^\circ$ (正方形角)</p>
-                            <p class="whitespace-nowrap">(3) <span class="geom-ref" data-geom="AB">$\overline{AB}$</span> = <span class="slot" data-ans="\overline{BC}"></span> (正方形邊)</p>
+                            <p class="whitespace-nowrap">(1) <span class="geom-ref" data-geom="AEB">$\angle AEB$</span> = <span class="slot" data-ans="BFC"></span> (已知)</p>
+                            <p class="whitespace-nowrap">(2) <span class="geom-ref" data-geom="ABE">$\angle ABE$</span> = <span class="slot" data-ans="BCF"></span> = $90^\circ$ (正方形角)</p>
+                            <p class="whitespace-nowrap">(3) <span class="geom-ref" data-geom="AB">$\overline{AB}$</span> = <span class="slot" data-ans="BC"></span> (正方形邊)</p>
                         </div>
                         <div class="flex flex-wrap gap-4 mb-8 options-area">
-                            <button class="option-btn" onclick="fillSlot('\\angle BFC')">$\angle BFC$</button>
-                            <button class="option-btn" onclick="fillSlot('\\angle BCF')">$\angle BCF$</button>
-                            <button class="option-btn" onclick="fillSlot('\\overline{BC}')">$\overline{BC}$</button>
-                            <button class="option-btn" onclick="fillSlot('\\overline{BF}')">$\overline{BF}$</button>
+                            <button class="option-btn" onclick="fillSlot('BFC')">∠BFC</button>
+                            <button class="option-btn" onclick="fillSlot('BCF')">∠BCF</button>
+                            <button class="option-btn" onclick="fillSlot('BC')">BC</button>
+                            <button class="option-btn" onclick="fillSlot('BF')">BF</button>
                         </div>
                         <button onclick="checkStep(3, 1)" class="w-full py-5 bg-rose-700 text-white rounded-2xl text-xl font-black">檢查答案</button>
                     </div>
                     <div class="step-card bg-white p-6 md:p-10 rounded-[32px] shadow-sm border-l-[12px] border-slate-200 step-container" id="p3-s2">
                         <div class="flex items-center gap-3 mb-6"><span class="bg-rose-600 text-white font-black px-4 py-1 rounded-xl text-sm">Step 2</span><h3 class="text-xl font-black text-slate-800">結論與計算</h3></div>
                         <div class="text-xl mb-8 text-slate-700 space-y-4">
-                            <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，得 $\triangle ABE \cong$ <span class="slot" data-ans="\triangle BCF"></span>。</p>
+                            <p>根據 <span class="slot" data-ans="AAS"></span> 全等性質，得 $\triangle ABE \cong$ <span class="slot" data-ans="BCF"></span>。</p>
                             <p>若正方形邊長為 12，$\overline{BE} = 5$，則 $\overline{BF} = $ <span class="slot" data-ans="13"></span>。</p>
                         </div>
                         <div class="flex flex-wrap gap-4 my-8 options-area">
                             <button class="option-btn" onclick="fillSlot('AAS')">AAS</button>
-                            <button class="option-btn" onclick="fillSlot('\\triangle BCF')">$\triangle BCF$</button>
+                            <button class="option-btn" onclick="fillSlot('BCF')">BCF</button>
                             <button class="option-btn" onclick="fillSlot('13')">13</button>
                             <button class="option-btn" onclick="fillSlot('17')">17</button>
                         </div>
@@ -452,7 +439,6 @@
         window.onload = () => {
             renderMathInElement(document.body, { delimiters: [{ left: '$', right: '$', display: false }] });
             shuffleAllOptions();
-            loadProgress();
             updateActiveSlot();
             startTimer();
             initSlotClick();
@@ -496,8 +482,7 @@
             const slots = Array.from(activeStep.querySelectorAll('.slot'));
             const target = slots.find(s => s.innerText === "" && !s.classList.contains('correct'));
             if (target) {
-                target.innerText = `$${val}$`;
-                renderMathInElement(target, { delimiters: [{ left: '$', right: '$', display: false }] });
+                target.innerText = val;
                 highlightAllFilled(activeStep);
                 updateActiveSlot();
             }
@@ -524,7 +509,8 @@
                 "FDA": ["FDA", "FEA"], "FEA": ["FDA", "FEA"], "90": ["FDA", "FEA"],
                 "B": ["B", "C"], "C": ["B", "C"],
                 "AE": ["AE", "DE"], "DE": ["AE", "DE"],
-                "AEB": ["AEB", "CED", "BFC"], "CED": ["AEB", "CED"], "BFC": ["AEB", "BFC"],
+                "AEB": ["AEB", "CED"], "CED": ["AEB", "CED"],
+                "BFC": ["AEB", "BFC"], "AEB": ["AEB", "BFC"],
                 "BCF": ["ABE", "BCF"], "ABE": ["ABE", "BCF"],
                 "BC": ["AB", "BC"], "AB": ["AB", "BC"]
             };
@@ -592,12 +578,8 @@
             const isCorrect = Array.from(slots).every(s => s.innerText.includes(s.dataset.ans) || s.innerText === s.dataset.ans);
             if (isCorrect) {
                 if (!completedSteps.has(stepId)) {
-                    if (!mistakesPerStep.has(stepId)) { 
-                        score++; 
-                        document.getElementById('total-score').innerText = score; 
-                    }
+                    if (!mistakesPerStep.has(stepId)) { score++; document.getElementById('total-score').innerText = score; }
                     completedSteps.add(stepId);
-                    saveProgress();
                 }
                 slots.forEach(s => s.classList.add('correct'));
                 stepEl.classList.add('completed');
@@ -615,59 +597,6 @@
                     showToast("正確！ 🌟", true);
                 }
             } else { mistakesPerStep.add(stepId); showToast("好像填錯了，再檢查一下喔！ 💡"); }
-        }
-
-        function saveProgress() {
-            const data = {
-                score: score,
-                completed: Array.from(completedSteps),
-                timeLeft: timeLeft
-            };
-            localStorage.setItem('math_aas_progress', JSON.stringify(data));
-        }
-
-        function loadProgress() {
-            const saved = localStorage.getItem('math_aas_progress');
-            if (saved) {
-                const data = JSON.parse(saved);
-                score = data.score || 0;
-                document.getElementById('total-score').innerText = score;
-                timeLeft = data.timeLeft || 420;
-                
-                data.completed.forEach(stepId => {
-                    completedSteps.add(stepId);
-                    const stepEl = document.getElementById(stepId);
-                    if (stepEl) {
-                        stepEl.classList.add('active', 'completed');
-                        const slots = stepEl.querySelectorAll('.slot');
-                        slots.forEach(s => {
-                            s.innerText = s.dataset.ans;
-                            s.classList.add('correct');
-                        });
-                        const options = stepEl.querySelector('.options-area');
-                        if (options) options.style.display = 'none';
-                        const btn = stepEl.querySelector('button:last-of-type');
-                        if (btn) btn.style.display = 'none';
-                    }
-                });
-
-                for (let p = 1; p <= 3; p++) {
-                    for (let s = 1; s <= 2; s++) {
-                        const stepId = `p${p}-s${s}`;
-                        if (!completedSteps.has(stepId)) {
-                            const stepEl = document.getElementById(stepId);
-                            if (stepEl) stepEl.classList.add('active');
-                            break; 
-                        }
-                    }
-                }
-                updateActiveSlot();
-            }
-        }
-
-        function clearProgress() {
-            localStorage.removeItem('math_aas_progress');
-            location.reload();
         }
 
         function showFinalResults() {
