@@ -1,5 +1,5 @@
-/* ========================================= */
-/* 1. ?��?設�??��?體繼??*/
+﻿/* ========================================= */
+/* 1. ?箇?閮剖???擃匱??*/
 /* ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&family=Noto+Sans+TC:wght@400;900&display=swap');
@@ -25,7 +25,7 @@ body {
 }
 
 /* ========================================= */
-/* 2. 導覽??(Navbar) */
+/* 2. 撠汗??(Navbar) */
 /* ========================================= */
 .navbar {
     display: flex;
@@ -116,7 +116,7 @@ body {
     background: linear-gradient(135deg, #005959 0%, #008080 100%);
     color: white;
     text-align: center;
-    border-radius: 0 0 50px 50px; /* ?�潤底部 */
+    border-radius: 0 0 50px 50px; /* ?膜摨 */
     margin-bottom: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
@@ -229,7 +229,7 @@ body {
     font-style: italic;
 }
 
-/* ?��?跳�?高亮?��? */
+/* ??頝唾?擃漁?? */
 .search-highlight {
     animation: searchPulse 2s ease-in-out forwards;
     border: 3px solid #f4c542 !important;
@@ -247,7 +247,7 @@ body {
     100% { transform: scale(1); border-color: transparent; }
 }
 
-/* ?�籤?��?模�? (Focus Mode) */
+/* ?惜?梯?璅∪? (Focus Mode) */
 body.menu-hidden .button-container,
 body.menu-hidden .section-title,
 body.menu-hidden #floating-toggle {
@@ -264,7 +264,7 @@ body.menu-hidden #floating-toggle {
     font-size: 0.9rem;
     color: #475569;
     position: sticky;
-    top: 63px; /* 緊貼 Navbar */
+    top: 63px; /* 蝺票 Navbar */
     width: 100%;
     z-index: 950;
     backdrop-filter: blur(8px);
@@ -273,9 +273,9 @@ body.menu-hidden #floating-toggle {
     box-sizing: border-box;
 }
 
-/* 移除 body padding-top ?��?跳�?，改??sticky 佈�? */
+/* 蝘駁 body padding-top ?踹?頝喳?嚗??sticky 雿? */
 body {
-    padding-top: 63px; /* ?��? Navbar ?��?�?*/
+    padding-top: 63px; /* ?芣? Navbar ??摨?*/
 }
 
 .breadcrumb-item {
@@ -325,7 +325,7 @@ body {
     font-weight: 700;
 }
 
-/* 移除多�???padding ?��?跳�? */
+/* 蝘駁憭???padding ?踹?頝喳? */
 body.with-breadcrumb {
     padding-top: 63px;
 }
@@ -341,7 +341,7 @@ body.with-breadcrumb {
 }
 
 /* ========================================= */
-/* 3. 資�??�?��? (Cards) */
+/* 3. 鞈???? (Cards) */
 /* ========================================= */
 .section-content {
     display: none;
@@ -349,15 +349,19 @@ body.with-breadcrumb {
 }
 
 .section-content.active-section {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 220px);
+    padding: 20px 0;
 }
 
-/* 專注模�?下�?將內容�?塊�??��?�?*/
+/* 撠釣璅∪?銝?撠摰孵?憛??游?銝?*/
 body.menu-hidden .section-content.active-section {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 120px); /* ??��導覽?��?路�?條�?高度 */
+    min-height: calc(100vh - 120px); /* ??撠汗??頝臬?璇?擃漲 */
     padding: 20px 0;
 }
 
@@ -367,10 +371,10 @@ body.menu-hidden .section-content.active-section {
     align-items: center;
     width: 100%;
     max-width: 1600px;
-    margin: 0 auto; /* 移除?��? margin-top */
+    margin: 0 auto; /* 蝘駁?箏? margin-top */
 }
 
-/* 專注模�?下縮減�??��?�?*/
+/* 撠釣璅∪?銝葬皜??寥?頝?*/
 body.menu-hidden .social-container {
     margin-top: 0;
 }
@@ -466,7 +470,7 @@ body.menu-hidden .social-container {
 }
 
 /* ========================================= */
-/* 4. ?��??��? */
+/* 4. ???? */
 /* ========================================= */
 .chapter-button,
 .section-button {
@@ -519,7 +523,7 @@ body.menu-hidden .social-container {
     margin: 0;
 }
 
-/* ?��??��??��??�改??2xN */
+/* ?????????2xN */
 @media (max-width: 768px) {
     .button-container.ch-container {
         grid-template-columns: repeat(2, 1fr);
@@ -546,7 +550,7 @@ body.menu-hidden .social-container {
     max-width: 1200px;
 }
 
-/* --- ?��?科�?屬�??�形?��??��??��???--- */
+/* --- ?望?蝘?撅穿??孵耦????????--- */
 .eg-container {
     max-width: 850px !important;
     gap: 12px !important;
@@ -566,7 +570,7 @@ body.menu-hidden .social-container {
 }
 
 /* ========================================= */
-/* 5. ?�尾 (Footer) */
+/* 5. ?偏 (Footer) */
 /* ========================================= */
 footer,
 .sticky-footer {
@@ -654,16 +658,16 @@ footer,
 }
 
 /* ========================================= */
-/* ?��??��?尾�??�設�?(?��?窄螢�? */
+/* ????撠曉??刻身摰?(?拇?蝒撟? */
 /* ========================================= */
 
 /* ========================================= */
-/* ?��??��?尾�??�設�?(精簡?? */
+/* ????撠曉??刻身摰?(蝎曄陛?? */
 /* ========================================= */
 
 
 /* ========================================= */
-/* ?��??��?尾�??�設�?(?��??��?局) */
+/* ????撠曉??刻身摰?(?株???撅) */
 /* ========================================= */
 @media (max-width: 768px) {
 
@@ -687,21 +691,21 @@ footer,
         text-align: center;
     }
 
-    /* ?��??�數縮�??��? */
+    /* ???蝮桀??? */
     .footer-left .countdown-wrapper {
         font-size: 10px !important;
         padding: 3px 6px !important;
         white-space: nowrap;
     }
 
-    /* 中�??��??��?縮�? */
+    /* 銝剝?????蝮桀? */
     .footer-center {
         font-size: 9px !important;
         white-space: nowrap;
         opacity: 0.9;
     }
 
-    /* ?��?縮�? */
+    /* ??蝮桀? */
     .footer-right .footer-btn {
         font-size: 11px !important;
         padding: 3px 8px !important;
@@ -709,12 +713,12 @@ footer,
         border-width: 2px !important;
     }
 
-    /* ?��??�數?�示?�空??*/
+    /* ?梯???內?征??*/
     .footer-left .countdown-wrapper i {
         display: none;
     }
 
-    /* ?��??�水管縮�?*/
+    /* ???偌蝞∠葬撠?*/
     .pipe-decoration {
         width: 40px !important;
         height: 50px !important;
@@ -732,7 +736,7 @@ footer,
         height: 40px !important;
     }
 
-    /* ?��??�方塊�?步縮�?*/
+    /* ???憛?甇亦葬撠?*/
     .pipe-blocks {
         top: -60px !important;
     }
@@ -745,10 +749,10 @@ footer,
 }
 
 /* ========================================= */
-/* 6. ?��??�用?�件 */
+/* 6. ?嗡???辣 */
 /* ========================================= */
 .intro-text {
-    /* ?? 主�?修改?��?行�?將�??�數?�都調大 ?? */
+    /* ?? 銝餉?靽格??銵?撠???潮隤踹之 ?? */
     font-size: clamp(2.2rem, 6vw, 4rem);
 
     font-weight: 900;
@@ -862,7 +866,7 @@ footer,
 }
 
 /* ========================================= */
-/* 6. 首�??�表板 (Dashboard Cards) */
+/* 6. 擐??銵冽 (Dashboard Cards) */
 /* ========================================= */
 .dashboard {
     display: flex;
@@ -965,7 +969,7 @@ footer,
     color: #000000;
 }
 
-/* ?�考�??�?�別?��? */
+/* ????孵?∠? */
 .special-card {
     grid-column: span 3;
     background: #f4c542;
@@ -1016,7 +1020,7 @@ footer,
 }
 
 /* ========================================= */
-/* 7. 彈出視�? (Modal) */
+/* 7. 敶閬? (Modal) */
 /* ========================================= */
 .modal {
     display: none;
@@ -1043,7 +1047,7 @@ footer,
     position: relative;
     color: #334155;
 
-    /* ?? ?��??�兩行�??�制?�大�?度�?並�?許內容�?多�??��?下�???*/
+    /* ?? ???銵???憭折?摨佗?銝血?閮勗摰寥?憭??臭?銝???*/
     max-height: 80vh;
     overflow-y: auto;
 }
@@ -1109,7 +1113,7 @@ footer,
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* --- ?��?禁用?�??--- */
+/* --- ??蝳???--- */
 a.btn[href="#"],
 a.btn[href=""] {
     background: #BDBDBD !important;
@@ -1121,7 +1125,7 @@ a.btn[href=""] {
     opacity: 0.7;
 }
 
-/* --- 學�?顯示 --- */
+/* --- 摮豢?憿舐內 --- */
 #semester1-area {
     display: none;
 }
@@ -1130,10 +1134,10 @@ a.btn[href=""] {
     display: block;
 }
 
-/* --- ?��?角�??��? --- */
+/* --- ?喃?閫??? --- */
 #floating-toggle {
     position: absolute;
-    /* �?fixed ?��? absolute，�?它�??�網?��?端而�??�螢幕�? */
+    /* 敺?fixed ?寞? absolute嚗?摰??函雯??蝡航??航撟? */
     top: 100px;
     right: 20px;
     background-color: #ffffff;
@@ -1163,7 +1167,7 @@ a.btn[href=""] {
     box-shadow: none;
 }
 
-/* --- ?�止?�新?��? --- */
+/* --- ?迫?湔?砍? --- */
 .stop-update-notice {
     background: #fef2f2;
     border: 2px dashed #e11d48;
@@ -1185,7 +1189,7 @@ a.btn[href=""] {
 }
 
 /* ========================================= */
-/* 8. ?�戲?��??�面 (Title Screen)專用�?? */
+/* 8. ????恍 (Title Screen)撠璅?? */
 /* ========================================= */
 
 
@@ -1195,7 +1199,7 @@ a.btn[href=""] {
 
 
 
-/* ?��??��? */
+/* ???? */
 .start-btn {
     background: #f4c542;
     color: #000000;
@@ -1232,12 +1236,12 @@ a.btn[href=""] {
     font-weight: bold;
 }
 
-/* --- ?��?工具 --- */
+/* --- ?梯?撌亙 --- */
 .hidden {
     display: none !important;
 }
 
-/* --- ?�畫定義 --- */
+/* --- ?摰儔 --- */
 @keyframes float {
 
     0%,
@@ -1276,7 +1280,7 @@ a.btn[href=""] {
     }
 }
 
-/* �K�~�żƾ� 2x2 ���� */
+/* 八年級數學 2x2 網格 */
 .button-container.ma-grid-2x2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1302,4 +1306,43 @@ a.btn[href=""] {
     gap: 15px;
     max-width: 800px;
     margin: 20px auto;
+}
+
+
+/* --- 展開後的小標題 --- */
+.topic-inner-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #005959;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed #f4c542;
+}
+
+
+/* --- 展開內容裡的按鈕：正方形 --- */
+.section-content .btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-align: center;
+    padding: 0;
+    border-radius: 18px;
+    border: 2px solid #005959;
+    border-left: 2px solid #005959;
+    margin-bottom: 0;
+    box-shadow: 0 6px 0 #005959;
+}
+
+.section-content .btn-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
