@@ -354,6 +354,28 @@
     margin: 10px auto 20px auto;
   }
 
+  /* 英文單元按鈕 (U1-U6) 手機版改為 2x3 置中 */
+  .button-container.eg-container {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 300px;
+    justify-items: center;
+  }
+
+  .eg-container .section-button {
+    width: 130px !important;
+    height: 130px !important;
+    min-height: 130px !important;
+    font-size: 22px !important;
+    margin: 0 !important;
+  }
+
+  /* 如果有第 7 個按鈕 (如 PK區)，讓它橫跨兩欄達到置中效果 */
+  .eg-container .section-button:nth-child(7) {
+    grid-column: span 2;
+    width: 100% !important;
+    max-width: 272px; /* 130*2 + 12 */
+  }
+
   .section-button,
   .chapter-button {
     width: 100%;
