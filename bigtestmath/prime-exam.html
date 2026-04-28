@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國中數學 2-1 質因數分解與因倍數 - 互動解析平臺</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 30vh;
+            max-height: 350px;
+            min-height: 250px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        body {
+            background-color: #FDF8F5;
+            color: #333333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .step-item {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease-out;
+            display: none;
+        }
+        .step-visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .theme-accent { color: #D97757; }
+        .theme-accent-bg { background-color: #D97757; color: white; }
+        .theme-accent-hover:hover { background-color: #C06447; }
+        .theme-secondary-bg { background-color: #4A6C6F; color: white; }
+        .theme-secondary-hover:hover { background-color: #385355; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 1rem;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">📐</span>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">國中數學互動解析平臺</h1>
+                    <p class="text-sm text-gray-500">單元 2-1：質因數分解與因倍數專題 (視覺化特教版)</p>
+                </div>
+            </div>
+            <div class="bg-orange-50 border border-orange-200 text-orange-800 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
+                <span>💡</span> 教學策略輔助模式啟用
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full space-y-8">
+
+        <section class="glass-panel p-6 md:p-8">
+            <header class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <span>📊</span> 單元概念分佈概覽
+                </h2>
+                <p class="text-gray-600 mt-2 leading-relaxed">
+                    本區塊旨在協助教師快速掌握本單元題庫的核心概念比重。透過下方的環狀圖，您可以清楚看見「因數與倍數」、「標準分解式」以及「規律與週期」等主題的題數分佈，進而有策略地規劃教學重點與時間分配。滑鼠懸停於區塊上可檢視詳細題數。
+                </p>
+            </header>
+            <div class="chart-container">
+                <canvas id="conceptChart"></canvas>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8">
+            <header class="mb-8 border-b border-gray-100 pb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <span>🧠</span> 互動式題庫解析空間
+                </h2>
+                <p class="text-gray-600 mt-2 leading-relaxed">
+                    此區域專為特教教學設計，採用「分步揭示」的互動模式。請由左側列表選擇題目，右側將載入題目內容。點擊「下一步驟」可引導學生逐一拆解邏輯，避免一次性呈現大量文字造成認知負荷。部分題目附有專屬的「特教教學小撇步」以供參考。
+                </p>
+            </header>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                <aside class="lg:w-1/3 flex flex-col h-[600px]">
+                    <div class="bg-gray-50 p-4 rounded-t-xl border border-gray-200 border-b-0 font-bold text-gray-700 flex items-center gap-2">
+                        <span>📋</span> 題目列表
+                    </div>
+                    <div id="questionList" class="flex-grow overflow-y-auto border border-gray-200 rounded-b-xl bg-white p-2 space-y-2">
+                    </div>
+                </aside>
+
+                <div class="lg:w-2/3 flex flex-col">
+                    <div id="welcomeScreen" class="h-[600px] flex flex-col items-center justify-center text-center bg-gray-50 rounded-xl border border-gray-200 p-8">
+                        <span class="text-6xl mb-4">👈</span>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">請從左側選擇題目</h3>
+                        <p class="text-gray-500 max-w-md">點擊題目列表中的任何一題，即可在此處開始進行分步互動解析。</p>
+                    </div>
+
+                    <div id="workspace" class="hidden flex-col h-full bg-white rounded-xl border border-gray-200 p-6 md:p-8 shadow-sm">
+                        
+                        <div class="mb-6">
+                            <div class="flex flex-wrap justify-between items-start gap-4 mb-4">
+                                <h3 id="wsTitle" class="text-xl md:text-2xl font-bold text-gray-900 leading-tight"></h3>
+                                <span id="wsConcept" class="bg-teal-50 text-teal-700 border border-teal-200 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"></span>
+                            </div>
+                            <div class="bg-gray-50 p-5 rounded-lg border border-gray-100 mb-4">
+                                <p id="wsQuestion" class="text-lg text-gray-800 leading-relaxed"></p>
+                                <div id="wsVisual"></div>
+                            </div>
+                            <div id="wsOptions" class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm font-medium text-gray-700">
+                            </div>
+                        </div>
+
+                        <div id="wsTipContainer" class="hidden mb-6 bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <span class="text-xl">💡</span>
+                                <div>
+                                    <h4 class="font-bold text-orange-800 mb-1">教學小撇步</h4>
+                                    <p id="wsTip" class="text-orange-900 text-sm leading-relaxed"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow flex flex-col">
+                            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                                <h4 class="text-lg font-bold text-gray-800">解析步驟</h4>
+                                <button id="btnNextStep" class="theme-secondary-bg theme-secondary-hover px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm shadow-sm">
+                                    顯示下一步 <span>▶</span>
+                                </button>
+                            </div>
+                            
+                            <div id="wsSteps" class="flex flex-col gap-3 mb-6">
+                            </div>
+
+                            <div id="wsFinalAnswer" class="hidden mt-auto bg-green-50 border-2 border-green-400 rounded-xl p-6 text-center shadow-inner">
+                                <span class="block text-green-800 font-bold mb-2 text-lg">正確答案</span>
+                                <span id="wsAnswerText" class="text-3xl font-black text-green-600"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            設計理念：降低認知負荷、強化視覺提示、漸進式資訊揭露。
+        </div>
+    </footer>
+
+    <script>
+        const reportData = [
+            {
+                id: "q19",
+                title: "Q19：正方形木板的分割",
+                source: "99 基測 II",
+                concept: "因數與倍數",
+                question: "一正方形木板可分成 36 個邊長 2cm 的小正方形。若重新分成大小相同的長方形，長寬不可能為哪一組？",
+                options: ["(A) 3, 2", "(B) 6, 4", "(C) 9, 6", "(D) 12, 4"],
+                answer: "(C)",
+                tip: "可讓學生動手拿 12x12 的格子紙跟 9x6 的小卡嘗試鋪鋪看，將抽象的因數概念具體化。",
+                visual: `<div class="flex flex-col items-center mt-4 mb-2">
+                    <p class="text-xs text-gray-400 mb-2">如右圖：一塊大正方形木板（6×6 格）</p>
+                    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:2px;width:144px;height:144px;border:3px solid #4A6C6F;padding:2px;background:#4A6C6F;border-radius:4px;">
+                        ${Array(36).fill('<div style="background:#FDF8F5;"></div>').join('')}
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">每格邊長 2cm，整板邊長 12cm</p>
+                </div>`,
+                steps: [
+                    "<b>步驟 1：計算大正方形邊長</b><br>36 個小正方形排列成大正方形，表示每邊有 &radic;36 = 6 個小正方形。",
+                    "大正方形邊長 = 6 &times; 2 = 12 (公分)。",
+                    "<b>步驟 2：判斷原則</b><br>若要完整分割且不剩下，長方形的「長」與「寬」必須都是大正方形邊長（12公分）的<b>因數</b>。",
+                    "<b>步驟 3：檢查選項</b><br>✔️ (A) 3 是 12 的因數，2 是 12 的因數。(可能)",
+                    "✔️ (B) 6 是 12 的因數，4 是 12 的因數。(可能)",
+                    "❌ (C) <b>9 不是 12 的因數</b>。(不可能)",
+                    "✔️ (D) 12 是 12 的因數，4 是 12 的因數。(可能)"
+                ]
+            },
+            {
+                id: "q20",
+                title: "Q20：刪除因數找第 10 個數",
+                source: "100 聯測",
+                concept: "因數與倍數",
+                question: "在 1 到 45 的正整數中，先將 45 的因數全部刪除，再將剩下的整數由小到大排列，求第 10 個數為何？",
+                options: ["(A) 13", "(B) 14", "(C) 16", "(D) 17"],
+                answer: "(B)",
+                tip: "準備 1 到 45 的數字字卡，讓學生親手挑出 45 的因數並移開，再重新數剩下的卡片，加強動手操作記憶。",
+                steps: [
+                    "<b>步驟 1：找出 45 的因數</b><br>45 = 1 &times; 45 = 3 &times; 15 = 5 &times; 9",
+                    "所以 45 的因數有：{1, 3, 5, 9, 15, 45}。",
+                    "<b>步驟 2：從 1 開始依序排除並數數</b><br>1 (刪除) ➔ 2 (第1個) ➔ 3 (刪除) ➔ 4 (第2個)",
+                    "5 (刪除) ➔ 6 (第3個) ➔ 7 (第4個) ➔ 8 (第5個)",
+                    "9 (刪除) ➔ 10 (第6個) ➔ 11 (第7個) ➔ 12 (第8個)",
+                    "13 (第9個) ➔ <b>14 (第10個)</b>"
+                ]
+            },
+            {
+                id: "q21",
+                title: "Q21：運動會舉辦年份",
+                source: "100 聯測",
+                concept: "規律與週期",
+                question: "世運會(2009年)、亞運會(2010年)、奧運會(2012年)均每四年舉辦一次。這三項運動會均不在下列哪一年舉辦？",
+                options: ["(A) 2070", "(B) 2071", "(C) 2072", "(D) 2073"],
+                answer: "(B)",
+                tip: "如果學生對除法餘數不熟，可以讓他們從 2009 開始每次加 4 寫下來，觀察尾數或年份的跳躍規律。",
+                steps: [
+                    "<b>步驟 1：利用除以 4 的餘數來判斷年份規律</b>",
+                    "世運：2009 &divide; 4 = 502 餘 1 (代表餘數為 1 的年份舉辦)",
+                    "亞運：2010 &divide; 4 = 502 餘 2 (代表餘數為 2 的年份舉辦)",
+                    "奧運：2012 &divide; 4 = 503 餘 0 (代表餘數為 0 的年份舉辦)",
+                    "<b>步驟 2：檢查選項年份的餘數</b>",
+                    "(A) 2070 &divide; 4 餘 2 (會舉辦亞運)",
+                    "<b>(B) 2071 &divide; 4 餘 3 (皆不符合，皆不舉辦)</b>",
+                    "(C) 2072 &divide; 4 餘 0 (會舉辦奧運)",
+                    "(D) 2073 &divide; 4 餘 1 (會舉辦世運)"
+                ]
+            },
+            {
+                id: "q22",
+                title: "Q22：洗牌問題",
+                source: "102 基測",
+                concept: "規律與週期",
+                question: "5張牌，每次將最下面2張交錯插入上面3張之間。洗幾次後順序會回到跟初始相同？",
+                options: ["(A) 18", "(B) 20", "(C) 25", "(D) 27"],
+                answer: "(B)",
+                tip: "建議使用 5 張不同顏色的色紙，帶著學生一步一步實際操作「洗牌」的交錯插入過程，眼見為憑。",
+                visual: `<div class="mt-4 mb-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <p class="text-xs text-gray-500 text-center mb-3 font-bold">洗牌示意：初始 → 第1次 → 第2次 → 回到初始</p>
+                    <div class="flex items-center justify-center gap-3 flex-wrap">
+                        <div class="flex flex-col items-center gap-1">
+                            <p class="text-xs text-gray-400 mb-1">初始</p>
+                            ${['1','2','3','4','5'].map((n,i)=>{
+                                const colors=['#D97757','#C06447','#4A6C6F','#6B9EA1','#EAC67A'];
+                                const top = i<3?'text-white':'text-gray-700';
+                                const bg = i<3?colors[i]:colors[i];
+                                return `<div style="width:36px;height:24px;background:${bg};border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);">${n}</div>`;
+                            }).join('')}
+                        </div>
+                        <span class="text-gray-400 text-lg">→</span>
+                        <div class="flex flex-col items-center gap-1">
+                            <p class="text-xs text-gray-400 mb-1">第1次</p>
+                            ${[['1','#D97757'],['4','#6B9EA1'],['2','#C06447'],['5','#EAC67A'],['3','#4A6C6F']].map(([n,c])=>`<div style="width:36px;height:24px;background:${c};border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);">${n}</div>`).join('')}
+                        </div>
+                        <span class="text-gray-400 text-lg">→</span>
+                        <div class="flex flex-col items-center gap-1">
+                            <p class="text-xs text-gray-400 mb-1">第2次</p>
+                            ${[['1','#D97757'],['5','#EAC67A'],['4','#6B9EA1'],['3','#4A6C6F'],['2','#C06447']].map(([n,c])=>`<div style="width:36px;height:24px;background:${c};border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);">${n}</div>`).join('')}
+                        </div>
+                        <span class="text-gray-400 text-lg">→ … →</span>
+                        <div class="flex flex-col items-center gap-1">
+                            <p class="text-xs text-green-500 mb-1 font-bold">第4次 ✅</p>
+                            ${['1','2','3','4','5'].map((n,i)=>{
+                                const colors=['#D97757','#C06447','#4A6C6F','#6B9EA1','#EAC67A'];
+                                return `<div style="width:36px;height:24px;background:${colors[i]};border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:white;box-shadow:0 1px 3px rgba(0,0,0,0.2);border:2px solid #22c55e;">${n}</div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>`,
+                steps: [
+                    "<b>步驟 1：設定初始狀態</b><br>假設牌從上到下的順序為 (1, 2, 3, 4, 5)。",
+                    "<b>步驟 2：模擬洗牌過程</b><br>第 1 次洗：將 (4, 5) 插入 (1, 2, 3) 之間 ➔ (1, 4, 2, 5, 3)",
+                    "第 2 次洗：將 (5, 3) 插入 (1, 4, 2) 之間 ➔ (1, 5, 4, 3, 2)",
+                    "第 3 次洗：將 (3, 2) 插入 (1, 5, 4) 之間 ➔ (1, 3, 5, 2, 4)",
+                    "第 4 次洗：將 (2, 4) 插入 (1, 3, 5) 之間 ➔ <b>(1, 2, 3, 4, 5)</b> 回到初始狀態！",
+                    "<b>結論：</b>得知每 4 次洗牌為一個循環。檢查選項，只有 20 是 4 的倍數。"
+                ]
+            },
+            {
+                id: "q23",
+                title: "Q23：判斷因數",
+                source: "103 會考",
+                concept: "標準分解式",
+                question: "若 A = 2<sup>5</sup> &times; 7<sup>6</sup> &times; 11<sup>4</sup>，則下列選項中所表示的數，何者是 A 的因數？",
+                options: ["(A) 2<sup>4</sup> &times; 5", "(B) 7<sup>7</sup> &times; 11<sup>3</sup>", "(C) 2<sup>4</sup> &times; 7<sup>4</sup> &times; 11<sup>4</sup>", "(D) 2<sup>6</sup> &times; 7<sup>6</sup> &times; 11<sup>6</sup>"],
+                answer: "(C)",
+                tip: "可用「大盒子裝小盒子」的比喻：A 是大盒子，選項是小盒子。小盒子有的東西(質數種類)，大盒子一定要有；小盒子的數量(次方)不能超過大盒子。",
+                steps: [
+                    "<b>核心觀念：</b>判斷因數時，選項的質因數種類不能比 A 多，且每個質因數的「次方」必須小於或等於 A。",
+                    "❌ (A) 2<sup>4</sup> &times; <b>5</b>：多出了質因數 5，錯誤。",
+                    "❌ (B) <b>7<sup>7</sup></b> &times; 11<sup>3</sup>：7 的次方(7) 大於 A 的次方(6)，錯誤。",
+                    "✔️ <b>(C) 2<sup>4</sup> &times; 7<sup>4</sup> &times; 11<sup>4</sup></b>：底數都有，且次方(4, 4, 4) 皆小於等於 A 的次方(5, 6, 4)，正確。",
+                    "❌ (D) <b>2<sup>6</sup></b> &times; 7<sup>6</sup> &times; <b>11<sup>6</sup></b>：2 和 11 的次方都大於 A，錯誤。"
+                ]
+            },
+            {
+                id: "q24",
+                title: "Q24：筆記本單價問題",
+                source: "107 會考",
+                concept: "因數與倍數",
+                question: "已知筆記本單價超過 10 元。小錦花 36 元，小勳可能花多少元？",
+                options: ["(A) 16", "(B) 27", "(C) 30", "(D) 48"],
+                answer: "(D)",
+                tip: "結合購物經驗，拿出 36 元硬幣，問學生可以平分成幾堆？且每堆規定要超過 10 元。",
+                steps: [
+                    "<b>步驟 1：找出單價的可能性</b><br>因為剛好花完 36 元，單價必須是 36 的因數。",
+                    "36 的因數有：{1, 2, 3, 4, 6, 9, 12, 18, 36}。",
+                    "加上條件「超過 10 元」，所以單價可能是：12, 18, 或 36 元。",
+                    "<b>步驟 2：檢查小勳花費的選項</b><br>小勳買一樣的筆記本，所以花費必須是 {12, 18, 36} 其中一個數字的倍數。",
+                    "❌ (A) 16，(B) 27，(C) 30 皆不是。",
+                    "✔️ <b>(D) 48</b>，因為 48 = 12 &times; 4。代表單價可能是 12 元，小勳買了 4 本。"
+                ]
+            },
+            {
+                id: "q25",
+                title: "Q25：兩個質數的乘積",
+                source: "109 會考",
+                concept: "標準分解式",
+                question: "下列何者可表示成兩個質數的乘積？",
+                options: ["(A) 81", "(B) 82", "(C) 83", "(D) 84"],
+                answer: "(B)",
+                tip: "引導學生在紙上畫短除法，逐一將選項分解，數數看最後底部 and 左邊總共有幾個質數。",
+                steps: [
+                    "<b>目標：</b>將各選項進行質因數分解，找出剛好由「兩個」質數相乘的結果。",
+                    "❌ (A) 81 = 3 &times; 3 &times; 3 &times; 3 (由四個質數相乘)",
+                    "✔️ <b>(B) 82 = 2 &times; 41</b> (2 是質數，41 是質數，剛好兩個，正確！)",
+                    "❌ (C) 83 (本身即為質數，無法分解為兩個更小質數相乘)",
+                    "❌ (D) 84 = 2 &times; 42 = 2 &times; 2 &times; 21 = 2 &times; 2 &times; 3 &times; 7 (由四個質數相乘)"
+                ]
+            },
+            {
+                id: "q26",
+                title: "Q26：156 的質因數",
+                source: "111 會考",
+                concept: "標準分解式",
+                question: "下列何者為 156 的質因數？",
+                options: ["(A) 11", "(B) 12", "(C) 13", "(D) 14"],
+                answer: "(C)",
+                tip: "畫出階梯狀的短除法，用有顏色的筆圈出左側和最下方的數字，強調這些才是質因數。",
+                steps: [
+                    "<b>步驟 1：使用短除法做質因數分解</b>",
+                    "156 &divide; 2 = 78",
+                    "78 &divide; 2 = 39",
+                    "39 &divide; 3 = 13 (13 已經是質數，分解結束)",
+                    "<b>步驟 2：整理結果</b><br>156 = 2 &times; 2 &times; 3 &times; 13 = 2<sup>2</sup> &times; 3 &times; 13",
+                    "156 的質因數包含：2, 3, <b>13</b>。",
+                    "對照選項，答案為 (C) 13。"
+                ]
+            }
+        ];
+
+        let state = {
+            currentQuestion: null,
+            currentStepIndex: 0
+        };
+
+        function initApp() {
+            renderDonutChart();
+            renderQuestionList();
+            setupEventListeners();
+        }
+
+        function renderDonutChart() {
+            const ctx = document.getElementById('conceptChart').getContext('2d');
+            const counts = {};
+            reportData.forEach(item => {
+                counts[item.concept] = (counts[item.concept] || 0) + 1;
+            });
+
+            const labels = Object.keys(counts);
+            const data = Object.values(counts);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#D97757', 
+                            '#4A6C6F', 
+                            '#EAC67A'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    family: "'Segoe UI', sans-serif",
+                                    size: 14
+                                },
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 14 },
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw} 題`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        function renderQuestionList() {
+            const listContainer = document.getElementById('questionList');
+            reportData.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-lg border-2 border-transparent hover:border-orange-200 hover:bg-orange-50 transition-all focus:outline-none flex flex-col gap-1 question-btn';
+                btn.dataset.index = index;
+                
+                const titleParts = q.title.split('：');
+                const qNum = titleParts[0];
+                const qName = titleParts[1] || '';
+
+                btn.innerHTML = `
+                    <div class="flex justify-between items-center w-full">
+                        <span class="font-bold text-gray-800">${qNum}</span>
+                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">${q.source}</span>
+                    </div>
+                    <span class="text-sm text-gray-600 truncate w-full block">${qName}</span>
+                `;
+                
+                btn.addEventListener('click', () => loadQuestion(index));
+                listContainer.appendChild(btn);
+            });
+        }
+
+        function loadQuestion(index) {
+            const q = reportData[index];
+            state.currentQuestion = q;
+            state.currentStepIndex = 0;
+
+            document.querySelectorAll('.question-btn').forEach(btn => {
+                btn.classList.remove('bg-orange-100', 'border-orange-400');
+                btn.classList.add('border-transparent');
+            });
+            const activeBtn = document.querySelector(`.question-btn[data-index="${index}"]`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-orange-100', 'border-orange-400');
+                activeBtn.classList.remove('border-transparent', 'hover:bg-orange-50');
+            }
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            const workspace = document.getElementById('workspace');
+            workspace.classList.remove('hidden');
+            workspace.classList.add('flex');
+
+            document.getElementById('wsTitle').innerHTML = q.title;
+            document.getElementById('wsConcept').innerText = q.concept;
+            document.getElementById('wsQuestion').innerHTML = q.question;
+            document.getElementById('wsVisual').innerHTML = q.visual || '';
+            
+            const optionsContainer = document.getElementById('wsOptions');
+            optionsContainer.innerHTML = '';
+            q.options.forEach(opt => {
+                const el = document.createElement('div');
+                el.className = 'bg-white border border-gray-200 p-2 rounded text-center shadow-sm';
+                el.innerHTML = opt;
+                optionsContainer.appendChild(el);
+            });
+
+            const tipContainer = document.getElementById('wsTipContainer');
+            if(q.tip) {
+                document.getElementById('wsTip').innerText = q.tip;
+                tipContainer.classList.remove('hidden');
+            } else {
+                tipContainer.classList.add('hidden');
+            }
+
+            const stepsContainer = document.getElementById('wsSteps');
+            stepsContainer.innerHTML = '';
+            q.steps.forEach((stepText, idx) => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'step-item bg-gray-50 border border-gray-100 rounded-lg p-4 text-gray-700 leading-relaxed flex gap-3 shadow-sm';
+                stepEl.innerHTML = `<span class="text-orange-500 font-bold mt-1">●</span> <div class="flex-grow">${stepText}</div>`;
+                stepsContainer.appendChild(stepEl);
+            });
+
+            document.getElementById('wsFinalAnswer').classList.add('hidden');
+            const btnNext = document.getElementById('btnNextStep');
+            btnNext.classList.remove('hidden');
+            btnNext.innerHTML = '顯示第一步 <span>▶</span>';
+
+            workspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('btnNextStep').addEventListener('click', handleNextStep);
+        }
+
+        function handleNextStep() {
+            if (!state.currentQuestion) return;
+            
+            const q = state.currentQuestion;
+            const stepsContainer = document.getElementById('wsSteps');
+            const stepElements = stepsContainer.children;
+
+            if (state.currentStepIndex < q.steps.length) {
+                const currentEl = stepElements[state.currentStepIndex];
+                currentEl.classList.remove('step-item');
+                currentEl.classList.add('step-visible');
+                
+                state.currentStepIndex++;
+                
+                const btnNext = document.getElementById('btnNextStep');
+                btnNext.innerHTML = '顯示下一步 <span>▶</span>';
+
+                currentEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                if (state.currentStepIndex === q.steps.length) {
+                    btnNext.classList.add('hidden');
+                    const answerContainer = document.getElementById('wsFinalAnswer');
+                    answerContainer.classList.remove('hidden');
+                    document.getElementById('wsAnswerText').innerText = q.answer;
+                    
+                    setTimeout(() => {
+                        answerContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    }, 100);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+
+    </script>
+</body>
+</html>
