@@ -1,4 +1,4 @@
-﻿/* ========================================= */
+/* ========================================= */
 /* 1. ?箇?閮剖???擃匱??*/
 /* ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
@@ -350,7 +350,6 @@ body.with-breadcrumb {
 
 .section-content.active-section {
     display: flex;
-    justify-content: center;
     align-items: center;
     min-height: calc(100vh - 220px);
     padding: 20px 0;
@@ -1322,27 +1321,27 @@ a.btn[href=""] {
 
 
 /* --- 展開內容裡的按鈕：正方形 --- */
-.section-content .btn {
-    display: flex;
+.section-content .btn { /* test */
+    display: block;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 120px;
+    width: 100%;
+    height: auto;
     font-size: 1.2rem;
     font-weight: 900;
-    text-align: center;
-    padding: 0;
+    text-align: left;
+    padding: 15px 20px;
     border-radius: 18px;
     border: 2px solid #005959;
-    border-left: 2px solid #005959;
-    margin-bottom: 0;
+    border-left: 8px solid #f4c542;
+    margin-bottom: 10px;
     box-shadow: 0 6px 0 #005959;
 }
 
 .section-content .btn-group {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
 }

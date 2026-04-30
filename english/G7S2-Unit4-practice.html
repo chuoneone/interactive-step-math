@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G7S2 UNIT 4 習作</title>
+    <link rel="icon" href="dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        html { font-size: 120%; }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
+
+        .word { position: relative; cursor: pointer; border-bottom: 1px dotted #a8a29e; transition: color .2s; }
+        .word:hover { color: #d97706; }
+        .word .tooltip {
+            visibility: hidden; width: max-content; max-width: 160px;
+            background: #1f2937; color: #fff; text-align: center;
+            border-radius: 6px; padding: 4px 8px; position: absolute;
+            z-index: 20; bottom: 130%; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: opacity .3s; pointer-events: none; font-size: .75rem;
+        }
+        .word:hover .tooltip { visibility: visible; opacity: 1; }
+
+        .sb-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 9px 12px; border-radius: 10px; font-weight: 700;
+            font-size: .875rem; color: #78716c; cursor: pointer; transition: all .2s;
+            background: transparent; border: 2px solid transparent; text-align: left;
+        }
+        .sb-btn:hover { background: #fef3c7; color: #92400e; }
+        .sb-btn.active { background: #fde68a; color: #92400e; border-color: #fcd34d; }
+
+        .badge { font-size: .65rem; border-radius: 999px; padding: 2px 7px; font-weight: 700; }
+        .badge-ok { background: #dcfce7; color: #16a34a; }
+        .badge-fail { background: #fee2e2; color: #dc2626; }
+        .badge-none { background: #f5f5f4; color: #a8a29e; }
+
+        .fill-blank {
+            display: inline-block; min-width: 80px; border-bottom: 2px solid #d6d3d1;
+            text-align: center; cursor: pointer; padding: 2px 8px;
+            color: #92400e; font-weight: 700; transition: all .2s;
+        }
+        .fill-blank:hover { border-color: #f59e0b; }
+        .fill-blank.filled { border-color: #f59e0b; background: #fef3c7; border-radius: 6px; }
+        .fill-blank.correct { border-color: #22c55e; background: #dcfce7; border-radius: 6px; color: #16a34a; }
+        .fill-blank.wrong { border-color: #ef4444; background: #fee2e2; border-radius: 6px; color: #dc2626; }
+
+        .word-chip {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 6px 16px; border-radius: 10px; cursor: pointer; font-weight: 600;
+            font-size: .95rem; transition: all .15s; border: 2px solid #d6d3d1;
+            background: #fff; color: #44403c; user-select: none;
+        }
+        .word-chip:hover { border-color: #fbbf24; background: #fefce8; }
+        .word-chip.used { opacity: .3; pointer-events: none; border-style: dashed; }
+
+        .reorder-word {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
+            font-size: .9rem; transition: all .15s; border: 2px solid #d6d3d1;
+            background: #fff; color: #44403c; user-select: none;
+        }
+        .reorder-word:hover { border-color: #fbbf24; background: #fefce8; }
+        .reorder-word.used { opacity: .3; pointer-events: none; border-style: dashed; }
+        .answer-slot {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
+            font-size: .9rem; transition: all .15s; border: 2px solid #f59e0b;
+            background: #fef3c7; color: #92400e;
+        }
+        .answer-slot:hover { background: #fde68a; }
+        .answer-zone {
+            min-height: 52px; border: 2px dashed #d6d3d1; border-radius: 12px;
+            padding: 10px; display: flex; flex-wrap: wrap; gap: 8px;
+            align-items: center; background: #fafaf9;
+        }
+        .answer-zone.correct { border-color: #22c55e; background: #dcfce7; }
+        .answer-zone.wrong { border-color: #ef4444; background: #fee2e2; animation: shake .4s; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) }
+            25% { transform: translateX(-6px) }
+            75% { transform: translateX(6px) }
+        }
+    </style>
+</head>
+
+<body class="bg-amber-50 min-h-screen">
+    <div class="flex min-h-screen">
+
+        <!-- ===== Sidebar ===== -->
+        <aside class="w-52 bg-white shadow-lg flex flex-col p-4 fixed h-full overflow-y-auto z-10">
+            <div class="mb-5">
+                <p class="text-xs font-bold text-amber-500 tracking-widest uppercase">G7S2 · Unit 4</p>
+                <h1 class="text-base font-bold text-stone-800 leading-snug mt-1">英語習作<br><span
+                        class="text-amber-600">How Many Bowls<br>of Rice Do You Want?</span></h1>
+            </div>
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">選擇大題</p>
+            <div id="sidebar-nav" class="flex flex-col gap-1"></div>
+
+            <div class="mt-auto border-t border-stone-200 pt-4">
+                <p class="text-xs font-bold text-stone-400 mb-2">📊 歷史成績</p>
+                <div id="score-summary" class="flex flex-col gap-2 text-xs"></div>
+                <button id="clear-btn" class="mt-3 text-xs text-red-400 hover:text-red-600 transition-colors">🗑 清除所有成績</button>
+            </div>
+        </aside>
+
+        <!-- ===== Main ===== -->
+        <main class="ml-52 flex-1 p-4 sm:p-8 flex justify-center items-start">
+            <div class="w-full max-w-2xl">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                    <div class="flex items-start justify-between mb-1">
+                        <div>
+                            <h2 id="sec-title" class="text-xl font-bold text-amber-700"></h2>
+                            <p id="sec-sub" class="text-xs text-stone-400 mt-0.5"></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-stone-400">本次得分</p>
+                            <p class="text-3xl font-bold text-amber-600">
+                                <span id="live-score">0</span><span class="text-stone-300 text-xl"> / </span><span id="live-total" class="text-stone-500 text-xl">0</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 my-4">
+                        <div class="flex-1 bg-stone-200 rounded-full h-2">
+                            <div id="prog-bar" class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width:0%"></div>
+                        </div>
+                        <span id="prog-text" class="text-xs text-stone-400 whitespace-nowrap">0 / 0</span>
+                    </div>
+                    <div id="q-wrap"></div>
+                    <div id="controls" class="mt-8 text-center"></div>
+                    <div id="score-disp" class="mt-6 text-center hidden"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Alert modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-30">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="alert-msg" class="text-lg text-gray-800 mb-4"></p>
+            <button id="alert-close" class="bg-amber-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-amber-600">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORE = 'g7s2u4_scores';
+
+            const tr = {
+                "eating": "吃", "dinner": "晚餐", "third": "第三", "meal": "餐/一頓飯",
+                "bed": "床", "still": "仍然", "watching": "觀看", "tv": "電視",
+                "cookies": "餅乾", "yummy": "美味的", "make": "製作", "birthday": "生日",
+                "party": "派對", "book": "書", "easy": "容易的", "even": "甚至",
+                "elementary": "小學", "student": "學生", "read": "閱讀", "sick": "生病",
+                "hungry": "餓的", "snack": "點心/零嘴", "banana": "香蕉", "cake": "蛋糕",
+                "table": "桌子", "gary": "蓋瑞", "late": "遲到", "nervous": "緊張的",
+                "people": "人們", "concert": "演唱會", "singer": "歌手", "popular": "受歡迎的",
+                "bottle": "瓶", "water": "水", "bowl": "碗", "fruit": "水果", "salad": "沙拉",
+                "can": "罐", "coffee": "咖啡", "glass": "杯(玻璃)", "milk": "牛奶", "shake": "搖晃/奶昔",
+                "plate": "盤", "popcorn": "爆米花", "bag": "袋", "tea": "茶"
+            };
+
+            const DATA = {
+                // Section A: Look and write (Food and quantity)
+                A: {
+                    wordBank: ["a bottle of water", "two bowls of fruit salad", "three cans of coffee", "three glasses of milk shake", "a plate of popcorn", "two bags of cookies"],
+                    questions: [
+                        { img: "💧", text: "1. ______", answer: "a bottle of water", hint: "一瓶水" },
+                        { img: "🥗🥗", text: "2. ______", answer: "two bowls of fruit salad", hint: "兩碗水果沙拉" },
+                        { img: "☕☕☕", text: "3. ______", answer: "three cans of coffee", hint: "三罐咖啡" },
+                        { img: "🥤🥤🥤", text: "4. ______", answer: "three glasses of milk shake", hint: "三杯奶昔" },
+                        { img: "🍿", text: "5. ______", answer: "a plate of popcorn", hint: "一盤爆米花" },
+                        { img: "🍪🍪", text: "6. ______", answer: "two bags of cookies", hint: "兩袋餅乾" }
+                    ]
+                },
+                // Section B: Read and write (Vocabulary)
+                B: {
+                    wordBank: ["meal", "still", "yummy", "easy", "sick", "snack"],
+                    questions: [
+                        { q: "I'm eating dinner now. This is my third ______ today.", ans: "meal", hint: "我現在在吃晚餐。這是我今天的第三「餐」。" },
+                        { q: "It is time for bed now. Why are you ______ watching TV?", ans: "still", hint: "該睡覺了。你為什麼「仍然」在看電視？" },
+                        { q: "The cookies are ______. Can you make some for my birthday party?", ans: "yummy", hint: "餅乾很「美味」。你能為我的生日派對做一些嗎？" },
+                        { q: "The book is ______. Even an elementary school student can read it.", ans: "easy", hint: "這本書很「簡單」。連小學生都能讀。" },
+                        { q: "Mandy can't go to school today because she is ______.", ans: "sick", hint: "Mandy 今天不能去上學，因為她「生病」了。" },
+                        { q: "Eva: I'm so hungry. Can I have a ______ before dinner?\nDan: Sure. There's a banana cake on the table.", ans: "snack", hint: "我好餓。晚餐前可以吃「點心」嗎？" }
+                    ]
+                },
+                // Section C: Make sentences (because/so)
+                C: [
+                    {
+                        prompt: "Gary is late. / Gary is nervous. (用 so)",
+                        answer: ["Gary", "is", "late,", "so", "he", "is", "nervous."],
+                        hint: "Gary 遲到了，所以他很緊張。"
+                    },
+                    {
+                        prompt: "There are many people at the concert. / The singer is popular. (用 because)",
+                        answer: ["There", "are", "many", "people", "at", "the", "concert", "because", "the", "singer", "is", "popular."],
+                        hint: "演唱會有很多位，因為歌手很受歡迎。"
+                    }
+                ]
+            };
+
+            const SECINFO = {
+                A: { title: "大題 A", sub: "Look and Write｜根據圖片內容，寫出食物及其數量" },
+                B: { title: "大題 B", sub: "Read and Write｜文意字彙" },
+                C: { title: "大題 C", sub: "Make Sentences｜判斷因果關係，用 because 或 so 造句" }
+            };
+
+            let curSec = 'A', score = 0;
+
+            const qWrap = document.getElementById('q-wrap');
+            const controls = document.getElementById('controls');
+            const scoredisp = document.getElementById('score-disp');
+            const progBar = document.getElementById('prog-bar');
+            const progText = document.getElementById('prog-text');
+            const secTitle = document.getElementById('sec-title');
+            const secSub = document.getElementById('sec-sub');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const scoreSummary = document.getElementById('score-summary');
+            const liveScore = document.getElementById('live-score');
+            const liveTotal = document.getElementById('live-total');
+            const alertModal = document.getElementById('alert-modal');
+            const alertMsg = document.getElementById('alert-msg');
+            const alertClose = document.getElementById('alert-close');
+            const clearBtn = document.getElementById('clear-btn');
+
+            function loadScores() { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { return {}; } }
+            function saveScore(sec, sc, tot) {
+                const d = loadScores();
+                d[sec] = { score: sc, total: tot, pct: Math.round(sc / tot * 100), at: (new Date()).toLocaleString('zh-TW') };
+                localStorage.setItem(STORE, JSON.stringify(d));
+            }
+
+            function mkInteractive(text) {
+                return text.split(/([a-zA-Z''.,!?]+)/).map(p => {
+                    const k = p.toLowerCase().replace(/[.,!?]/g, '');
+                    return tr[k] ? `<span class="word">${p}<span class="tooltip">${tr[k]}</span></span>` : p;
+                }).join('');
+            }
+
+            function speak(text) {
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text.trim());
+                u.lang = 'en-US'; u.rate = 0.9;
+                window.speechSynthesis.speak(u);
+            }
+
+            function mkSpeaker(txt) {
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("class", "h-5 w-5 text-amber-500 hover:text-amber-700 cursor-pointer flex-shrink-0");
+                svg.setAttribute("viewBox", "0 0 20 20"); svg.setAttribute("fill", "currentColor");
+                const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                p.setAttribute("d", "M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217z");
+                svg.appendChild(p);
+                svg.onclick = e => { e.stopPropagation(); speak(txt); };
+                return svg;
+            }
+
+            function renderSidebar() {
+                const scores = loadScores();
+                sidebarNav.innerHTML = '';
+                Object.keys(DATA).forEach(sec => {
+                    const btn = document.createElement('button');
+                    btn.className = 'sb-btn' + (sec === curSec ? ' active' : '');
+                    const sc = scores[sec];
+                    const badge = sc ? `<span class="badge ${sc.pct >= 60 ? 'badge-ok' : 'badge-fail'}">${sc.pct}%</span>` : `<span class="badge badge-none">—</span>`;
+                    btn.innerHTML = `<span>${SECINFO[sec].title}</span>${badge}`;
+                    btn.onclick = () => switchSection(sec);
+                    sidebarNav.appendChild(btn);
+                });
+                scoreSummary.innerHTML = '';
+                Object.keys(DATA).forEach(sec => {
+                    const sc = scores[sec];
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between';
+                    row.innerHTML = sc
+                        ? `<span class="text-stone-500">${SECINFO[sec].title}</span><span class="badge ${sc.pct >= 60 ? 'badge-ok' : 'badge-fail'}">${sc.score}/${sc.total}</span>`
+                        : `<span class="text-stone-400">${SECINFO[sec].title}</span><span class="badge badge-none">未作答</span>`;
+                    scoreSummary.appendChild(row);
+                });
+            }
+
+            function switchSection(sec) {
+                curSec = sec; score = 0;
+                selectedWord = null; selectedChip = null;
+                scoredisp.classList.add('hidden');
+                qWrap.classList.remove('opacity-50','pointer-events-none');
+                renderSidebar();
+                if (sec === 'A') displaySectionA();
+                else if (sec === 'B') displaySectionB();
+                else if (sec === 'C') displaySectionC();
+            }
+
+            function mkWordBank(bank) {
+                const div = document.createElement('div');
+                div.className = 'bg-blue-50 border border-blue-200 rounded-xl p-3 mb-5';
+                div.innerHTML = '<p class="text-xs font-bold text-blue-500 text-center mb-2">📖 Word Bank（點選單字再點空格填入）</p>';
+                const chips = document.createElement('div');
+                chips.className = 'flex flex-wrap gap-2 justify-center';
+                bank.forEach(w => {
+                    const chip = document.createElement('span');
+                    chip.className = 'word-chip'; chip.textContent = w;
+                    chip.onclick = () => {
+                        if (selectedWord === w) { chip.classList.remove('ring-2','ring-amber-400','bg-amber-100'); selectedWord=null; selectedChip=null; return; }
+                        if (selectedChip) selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                        selectedWord = w; selectedChip = chip;
+                        chip.classList.add('ring-2','ring-amber-400','bg-amber-100');
+                    };
+                    chips.appendChild(chip);
+                });
+                div.appendChild(chips);
+                return div;
+            }
+
+            // Section A: Matching
+            function displaySectionA() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.A.title;
+                secSub.textContent = SECINFO.A.sub;
+                const { wordBank, questions } = DATA.A;
+                const filled = new Array(questions.length).fill(null);
+                
+                qWrap.appendChild(mkWordBank(wordBank));
+
+                questions.forEach((q, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-6 p-4 bg-stone-50 border border-stone-200 rounded-xl';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-4xl w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm border border-stone-100">${q.img}</div>
+                            <p class="text-stone-500 text-sm italic">點選上方單字後，點擊下方空格填入</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-amber-600">${i+1}.</span>
+                            <span id="blank-a-${i}" class="fill-blank flex-1">______</span>
+                        </div>
+                    `;
+                    const blank = div.querySelector(`#blank-a-${i}`);
+                    blank.onclick = () => {
+                        if (!selectedWord) { alertMsg.textContent='請先點選上方 Word Bank 的單字！'; alertModal.classList.remove('hidden'); return; }
+                        filled[i] = selectedWord;
+                        blank.textContent = selectedWord; blank.classList.add('filled'); speak(selectedWord);
+                        selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                        selectedWord = null; selectedChip = null;
+                        const done = filled.filter(f => f !== null).length;
+                        progBar.style.width = (done / questions.length * 100) + '%';
+                        progText.textContent = `${done} / ${questions.length}`;
+                    };
+                    qWrap.appendChild(div);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600';
+                btn.textContent = '檢查答案';
+                btn.onclick = () => {
+                    if (filled.some(f => f === null)) { alertMsg.textContent='請填寫所有空格！'; alertModal.classList.remove('hidden'); return; }
+                    let sc = 0;
+                    questions.forEach((q, i) => {
+                        const blank = document.getElementById(`blank-a-${i}`);
+                        blank.classList.remove('filled');
+                        if (filled[i] === q.answer) { sc++; blank.classList.add('correct'); }
+                        else { blank.classList.add('wrong'); blank.title = `正確答案：${q.answer}`; }
+                    });
+                    renderResult(sc, questions.length, 'A');
+                };
+                controls.appendChild(btn);
+                progBar.style.width = '0%'; progText.textContent = `0 / ${questions.length}`;
+                liveScore.textContent = 0; liveTotal.textContent = questions.length;
+            }
+
+            // Section B: Matching
+            function displaySectionB() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.B.title;
+                secSub.textContent = SECINFO.B.sub;
+                const { wordBank, questions } = DATA.B;
+                const filled = new Array(questions.length).fill(null);
+                
+                qWrap.appendChild(mkWordBank(wordBank));
+
+                questions.forEach((q, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-6 p-4 bg-stone-50 border border-stone-200 rounded-xl';
+                    const parts = q.q.split('______');
+                    const qLine = document.createElement('div');
+                    qLine.className = 'flex items-start gap-2';
+                    qLine.appendChild(mkSpeaker(q.q));
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'text-stone-700 leading-relaxed';
+                    textSpan.innerHTML = `<span class="font-bold text-amber-600 mr-1">${i+1}.</span>`;
+                    textSpan.innerHTML += mkInteractive(parts[0]);
+                    const blank = document.createElement('span');
+                    blank.id = `blank-b-${i}`; blank.className = 'fill-blank mx-1'; blank.textContent = '______';
+                    blank.onclick = () => {
+                        if (!selectedWord) { alertMsg.textContent='請先點選上方 Word Bank 的單字！'; alertModal.classList.remove('hidden'); return; }
+                        filled[i] = selectedWord;
+                        blank.textContent = selectedWord; blank.classList.add('filled'); speak(selectedWord);
+                        selectedChip.classList.remove('ring-2','ring-amber-400','bg-amber-100');
+                        selectedWord = null; selectedChip = null;
+                        const done = filled.filter(f => f !== null).length;
+                        progBar.style.width = (done / questions.length * 100) + '%';
+                        progText.textContent = `${done} / ${questions.length}`;
+                    };
+                    textSpan.appendChild(blank);
+                    textSpan.innerHTML += mkInteractive(parts[1]);
+                    qLine.appendChild(textSpan);
+                    div.appendChild(qLine);
+                    qWrap.appendChild(div);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600';
+                btn.textContent = '檢查答案';
+                btn.onclick = () => {
+                    if (filled.some(f => f === null)) { alertMsg.textContent='請填寫所有空格！'; alertModal.classList.remove('hidden'); return; }
+                    let sc = 0;
+                    questions.forEach((q, i) => {
+                        const blank = document.getElementById(`blank-b-${i}`);
+                        blank.classList.remove('filled');
+                        if (filled[i] === q.ans) { sc++; blank.classList.add('correct'); }
+                        else { blank.classList.add('wrong'); blank.title = `正確答案：${q.ans}`; }
+                    });
+                    renderResult(sc, questions.length, 'B');
+                };
+                controls.appendChild(btn);
+                progBar.style.width = '0%'; progText.textContent = `0 / ${questions.length}`;
+                liveScore.textContent = 0; liveTotal.textContent = questions.length;
+            }
+
+            // Section C: Reorder
+            function displaySectionC() {
+                qWrap.innerHTML = ''; controls.innerHTML = '';
+                secTitle.textContent = SECINFO.C.title;
+                secSub.textContent = SECINFO.C.sub;
+                const qs = DATA.C;
+                progBar.style.width = '0%'; progText.textContent = `0 / ${qs.length}`;
+                liveScore.textContent = 0; liveTotal.textContent = qs.length;
+
+                qs.forEach((q, qi) => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-8 p-4 bg-stone-50 border border-stone-200 rounded-xl';
+                    div.innerHTML = `<p class="text-xs font-bold text-amber-600 mb-2">題目 ${qi+1}</p>
+                                     <p class="text-stone-700 font-bold mb-4">${q.prompt}</p>`;
+                    
+                    const pool = [...q.answer].sort(() => Math.random() - 0.5);
+                    const zone = document.createElement('div');
+                    zone.className = 'answer-zone mb-4'; zone.id = `zone-c-${qi}`;
+                    div.appendChild(zone);
+
+                    const chipBox = document.createElement('div');
+                    chipBox.className = 'flex flex-wrap gap-2';
+                    pool.forEach((word, wi) => {
+                        const chip = document.createElement('span');
+                        chip.className = 'reorder-word'; chip.textContent = word;
+                        chip.onclick = () => {
+                            if (chip.classList.contains('used')) return;
+                            chip.classList.add('used');
+                            const slot = document.createElement('span');
+                            slot.className = 'answer-slot'; slot.textContent = word;
+                            slot.onclick = () => {
+                                slot.remove(); chip.classList.remove('used');
+                                updateProgressC();
+                            };
+                            zone.appendChild(slot);
+                            updateProgressC();
+                        };
+                        chipBox.appendChild(chip);
+                    });
+                    div.appendChild(chipBox);
+                    qWrap.appendChild(div);
+                });
+
+                function updateProgressC() {
+                    let totalFilled = 0;
+                    qs.forEach((_,i) => {
+                        totalFilled += document.getElementById(`zone-c-${i}`).children.length > 0 ? 1 : 0;
+                    });
+                    progBar.style.width = (totalFilled / qs.length * 100) + '%';
+                    progText.textContent = `${totalFilled} / ${qs.length}`;
+                }
+
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600';
+                btn.textContent = '檢查句子';
+                btn.onclick = () => {
+                    let sc = 0;
+                    qs.forEach((q, qi) => {
+                        const zone = document.getElementById(`zone-c-${qi}`);
+                        const userAns = Array.from(zone.children).map(c => c.textContent).join(' ');
+                        const targetAns = q.answer.join(' ');
+                        if (userAns === targetAns) {
+                            sc++; zone.classList.add('correct');
+                        } else {
+                            zone.classList.add('wrong');
+                            const f = document.createElement('p'); f.className='text-xs text-red-500 mt-2';
+                            f.textContent = `正確：${targetAns}`; zone.after(f);
+                        }
+                    });
+                    renderResult(sc, qs.length, 'C');
+                };
+                controls.appendChild(btn);
+            }
+
+            function renderResult(sc, tot, key) {
+                saveScore(key, sc, tot);
+                renderSidebar();
+                scoredisp.innerHTML = `
+                    <div class="py-6">
+                        <p class="text-4xl mb-2">${sc===tot?'🎉':'👍'}</p>
+                        <p class="text-stone-500">測驗完成！</p>
+                        <p class="text-5xl font-bold text-amber-600 my-4">${sc} / ${tot}</p>
+                        <button onclick="location.reload()" class="bg-amber-500 text-white font-bold py-2 px-6 rounded-xl hover:bg-amber-600 transition-all">重新練習</button>
+                    </div>
+                `;
+                scoredisp.classList.remove('hidden');
+                qWrap.classList.add('opacity-50','pointer-events-none');
+                controls.classList.add('hidden');
+            }
+
+            alertClose.onclick = () => alertModal.classList.add('hidden');
+            clearBtn.onclick = () => { if(confirm('確定要清除所有歷史成績嗎？')) { localStorage.removeItem(STORE); location.reload(); } };
+
+            switchSection('A');
+        });
+    </script>
+</body>
+
+</html>
