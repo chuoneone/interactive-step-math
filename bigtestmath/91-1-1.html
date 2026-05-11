@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正負數加減</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            user-select: none;
+        }
+
+        .math {
+            font-size: 28px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 填答格樣式 */
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 8px;
+            margin: 0 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        .slot.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            animation: pulse 1.5s infinite;
+        }
+
+        .slot.filled {
+            border-style: solid;
+            border-color: #3b82f6;
+            background-color: #f0f9ff;
+        }
+
+        .slot.correct {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            cursor: default;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        /* 選項按鈕 */
+        .option-btn {
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 隱藏捲動軸 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .step-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.4s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        mark {
+            background-color: #fef08a;
+            padding: 0 2px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- 導覽列 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center space-x-4 overflow-x-auto no-scrollbar py-1 flex-1 mr-4" id="nav-tabs">
+                <span class="text-blue-600 font-bold whitespace-nowrap border-r pr-4">正負數加減</span>
+                <!-- 題目切換由 JS 產生 -->
+            </div>
+            <div class="flex items-center space-x-4 text-slate-700 font-medium shrink-0">
+                <div class="flex items-center space-x-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span id="timer">07:00</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <span class="text-sm">得分:</span>
+                    <span id="score-display" class="text-lg text-blue-600 font-bold">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 flex flex-col md:flex-row gap-6">
+
+        <!-- 左側：題目固定區 -->
+        <aside class="md:w-1/3">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky md:top-24">
+                <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold mb-4">
+                    題目 <span id="current-q-num">1</span>
+                </div>
+                <div id="problem-area" class="space-y-4">
+                    <!-- 題目內容由 JS 產生 -->
+                </div>
+                <div class="mt-8 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                    <h4 class="text-sm font-bold text-slate-500 mb-2">💡 老師的話：</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed" id="teacher-hint">
+                        準備好了嗎？我們開始吧！
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 右側：步驟解鎖區 -->
+        <section class="flex-1 flex flex-col space-y-6" id="steps-container">
+            <!-- 步驟由 JS 動態生成 -->
+        </section>
+
+    </main>
+
+    <!-- 完成視窗 -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center border border-white/20">
+            <div
+                class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">太棒了！練習完成</h2>
+            <p class="text-slate-500 mb-6">你的成績：<span id="final-score" class="font-bold text-blue-600">0</span>
+                分<br>完成時間：<span id="final-time" class="font-bold">00:00</span></p>
+            <div class="flex flex-col gap-3">
+                <button onclick="resetApp()"
+                    class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors shadow-lg">再做一次</button>
+                <button onclick="closeModal()"
+                    class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold transition-colors">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 音效函數
+        const playSound = (type) => {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(110, ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            }
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        };
+
+        // 精選 7 題資料庫
+        const problems = [
+            {
+                id: 1, text: "19 - (-8) =", hint: "負負得正：減掉一個負數，等於加上一個正數。", steps: [
+                    { type: 'transform', label: '步驟 1：處理中間負號', template: '19 [s] 8', answers: ['+'], options: ['+', '-', '×', '÷'] },
+                    { type: 'calc', label: '步驟 2：得出最後答案', template: '19 + 8 = [s]', answers: ['27'], options: ['11', '27', '-11', '30'] }
+                ]
+            },
+            {
+                id: 2, text: "(-18) + (-20) =", hint: "正負得負：正號遇到括號內的負號會變成負號。", steps: [
+                    { type: 'transform', label: '步驟 1：化簡算式', template: '-18 [s] 20', answers: ['-'], options: ['+', '-', '(', ')'] },
+                    { type: 'calc', label: '步驟 2：得出最後答案', template: '-18 - 20 = [s]', answers: ['-38'], options: ['2', '-2', '38', '-38'] }
+                ]
+            },
+            {
+                id: 3, text: "(-4) + 14 =", hint: "負數加正數：這題也可以看成 14 減 4 喔！", steps: [
+                    { type: 'calc', label: '步驟 1：直接計算答案', template: '-4 + 14 = [s]', answers: ['10'], options: ['10', '-10', '18', '14'] }
+                ]
+            },
+            {
+                id: 4, text: "(-1) - (-10) =", hint: "負負得正：括號前的減號和括號內的負號要變號。", steps: [
+                    { type: 'transform', label: '步驟 1：處理中間負號', template: '-1 [s] 10', answers: ['+'], options: ['+', '-', '1', '10'] },
+                    { type: 'calc', label: '步驟 2：得出最後答案', template: '-1 + 10 = [s]', answers: ['9'], options: ['9', '-9', '11', '-11'] }
+                ]
+            },
+            {
+                id: 5, text: "4 + (-11) =", hint: "正負得負：加上一個負數，數值會變小。", steps: [
+                    { type: 'transform', label: '步驟 1：化簡算式', template: '4 [s] 11', answers: ['-'], options: ['+', '-', '4', '11'] },
+                    { type: 'calc', label: '步驟 2：得出最後答案', template: '4 - 11 = [s]', answers: ['-7'], options: ['7', '-7', '15', '-15'] }
+                ]
+            },
+            {
+                id: 6, text: "(-12) - (-6) =", hint: "又是連在一起的負號，記得要負負得正！", steps: [
+                    { type: 'transform', label: '步驟 1：變換符號', template: '-12 [s] 6', answers: ['+'], options: ['+', '-', '6', '12'] },
+                    { type: 'calc', label: '步驟 2：得出最終答案', template: '-12 + 6 = [s]', answers: ['-6'], options: ['6', '-6', '18', '-18'] }
+                ]
+            },
+            {
+                id: 7, text: "5 - 10 =", hint: "小數減大數：數值會變成負的喔。", steps: [
+                    { type: 'calc', label: '步驟 1：得出答案', template: '5 - 10 = [s]', answers: ['-5'], options: ['5', '-5', '15', '0'] }
+                ]
+            }
+        ];
+
+        let currentProblemIndex = 0;
+        let score = 0;
+        let timeLeft = 420; // 7 mins
+        let timerInterval;
+        let solvedSteps = new Set();
+        let currentStepAnswers = [];
+
+        function init() {
+            renderNav();
+            loadProblem(0);
+            startTimer();
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('nav-tabs');
+            nav.innerHTML = '<span class="text-blue-600 font-bold whitespace-nowrap border-r pr-4">正負數加減</span>';
+            problems.forEach((p, index) => {
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-all ${index === currentProblemIndex ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
+                btn.innerText = `題目 ${index + 1}`;
+                btn.onclick = () => loadProblem(index);
+                nav.appendChild(btn);
+            });
+        }
+
+        function loadProblem(index) {
+            currentProblemIndex = index;
+            renderNav();
+
+            const problem = problems[index];
+            document.getElementById('current-q-num').innerText = index + 1;
+            document.getElementById('problem-area').innerHTML = `
+                <div class="math text-slate-800">${formatMath(problem.text)}</div>
+                <div class="mt-4 text-slate-500 flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>請完成步驟計算。</span>
+                </div>
+            `;
+            document.getElementById('teacher-hint').innerText = problem.hint;
+
+            document.getElementById('steps-container').innerHTML = '';
+            renderStep(0);
+        }
+
+        function formatMath(text) {
+            return text.replace(/\(-?\d+\)/g, match => `<span class="text-blue-600">${match}</span>`);
+        }
+
+        function renderStep(stepIdx) {
+            const problem = problems[currentProblemIndex];
+            const step = problem.steps[stepIdx];
+            currentStepAnswers = new Array(step.answers.length).fill(null);
+
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'bg-white p-6 rounded-2xl shadow-sm border border-slate-200 step-enter';
+            stepDiv.id = `step-box-${stepIdx}`;
+
+            stepDiv.innerHTML = `
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-bold text-slate-700 flex items-center">
+                        <span class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm italic">S${stepIdx + 1}</span>
+                        ${step.label}
+                    </h3>
+                    <span id="step-status-${stepIdx}" class="hidden text-green-500 font-bold flex items-center">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        完成
+                    </span>
+                </div>
+                <div id="content-${stepIdx}" class="flex flex-wrap items-center gap-2 mb-8 min-h-[60px] text-2xl font-bold"></div>
+                <div id="options-${stepIdx}" class="grid grid-cols-4 gap-3"></div>
+                <button id="check-btn-${stepIdx}" class="mt-6 w-full py-4 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition-colors">檢查答案</button>
+            `;
+
+            document.getElementById('steps-container').appendChild(stepDiv);
+
+            // 渲染填答格
+            const contentArea = document.getElementById(`content-${stepIdx}`);
+            const parts = step.template.split('[s]');
+            parts.forEach((part, i) => {
+                contentArea.appendChild(document.createTextNode(part));
+                if (i < parts.length - 1) {
+                    const slot = document.createElement('div');
+                    slot.className = `slot ${i === 0 ? 'active' : ''}`;
+                    slot.dataset.idx = i;
+                    slot.onclick = () => clearSlot(i, stepIdx);
+                    contentArea.appendChild(slot);
+                }
+            });
+
+            // 渲染按鈕
+            const optionsArea = document.getElementById(`options-${stepIdx}`);
+            const shuffledOptions = [...step.options].sort(() => Math.random() - 0.5);
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn bg-slate-50 hover:bg-white border-2 border-slate-200 py-3 rounded-xl font-bold text-xl text-slate-700 shadow-sm';
+                btn.innerText = opt;
+                btn.onclick = () => fillSlot(opt, stepIdx);
+                optionsArea.appendChild(btn);
+            });
+
+            document.getElementById(`check-btn-${stepIdx}`).onclick = () => checkAnswer(stepIdx);
+            stepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function fillSlot(value, stepIdx) {
+            const slots = document.querySelectorAll(`#step-box-${stepIdx} .slot`);
+            let targetIdx = currentStepAnswers.indexOf(null);
+            if (targetIdx !== -1) {
+                currentStepAnswers[targetIdx] = value;
+                slots[targetIdx].innerText = value;
+                slots[targetIdx].classList.add('filled');
+                slots[targetIdx].classList.remove('active');
+                if (targetIdx + 1 < currentStepAnswers.length) {
+                    slots[targetIdx + 1].classList.add('active');
+                }
+            }
+        }
+
+        function clearSlot(idx, stepIdx) {
+            const slots = document.querySelectorAll(`#step-box-${stepIdx} .slot`);
+            if (slots[idx].classList.contains('correct')) return;
+            currentStepAnswers[idx] = null;
+            slots[idx].innerText = '';
+            slots[idx].classList.remove('filled');
+            slots.forEach(s => s.classList.remove('active'));
+            let firstEmpty = currentStepAnswers.indexOf(null);
+            if (firstEmpty !== -1) slots[firstEmpty].classList.add('active');
+        }
+
+        function checkAnswer(stepIdx) {
+            if (currentStepAnswers.includes(null)) {
+                showMessage("要把空格填滿喔！", "warning");
+                return;
+            }
+
+            const step = problems[currentProblemIndex].steps[stepIdx];
+            const isCorrect = currentStepAnswers.every((ans, i) => ans === step.answers[i]);
+
+            if (isCorrect) {
+                playSound('correct');
+                const slots = document.querySelectorAll(`#step-box-${stepIdx} .slot`);
+                slots.forEach(s => {
+                    s.classList.remove('active', 'filled');
+                    s.classList.add('correct');
+                });
+                document.getElementById(`step-status-${stepIdx}`).classList.remove('hidden');
+                document.getElementById(`options-${stepIdx}`).classList.add('hidden');
+                document.getElementById(`check-btn-${stepIdx}`).classList.add('hidden');
+
+                if (!solvedSteps.has(`${currentProblemIndex}-${stepIdx}`)) {
+                    score += 1;
+                    updateScore();
+                    solvedSteps.add(`${currentProblemIndex}-${stepIdx}`);
+                }
+
+                if (stepIdx + 1 < problems[currentProblemIndex].steps.length) {
+                    setTimeout(() => renderStep(stepIdx + 1), 500);
+                } else {
+                    if (currentProblemIndex === problems.length - 1) {
+                        endGame();
+                    } else {
+                        setTimeout(() => showNextProblemButton(), 500);
+                    }
+                }
+            } else {
+                playSound('wrong');
+                showMessage("再想想看喔，順序或數字對嗎？", "error");
+            }
+        }
+
+        function showNextProblemButton() {
+            const btn = document.createElement('button');
+            btn.className = 'w-full py-4 bg-green-500 text-white rounded-xl font-bold mt-4 shadow-lg hover:bg-green-600 transition-all';
+            btn.innerText = '完成本題！前往下一題 ➔';
+            btn.onclick = () => loadProblem(currentProblemIndex + 1);
+            document.getElementById('steps-container').appendChild(btn);
+            btn.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').innerText = score;
+        }
+
+        function showMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.className = `fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl shadow-2xl font-bold text-white z-[200] animate-bounce ${type === 'error' ? 'bg-red-500' : 'bg-orange-500'}`;
+            msg.innerText = text;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.getElementById('final-score').innerText = score;
+            const elapsed = 420 - timeLeft;
+            document.getElementById('final-time').innerText = `${Math.floor(elapsed / 60)}分${elapsed % 60}秒`;
+            document.getElementById('finish-modal').classList.remove('hidden');
+        }
+
+        function resetApp() {
+            score = 0;
+            timeLeft = 420;
+            solvedSteps.clear();
+            updateScore();
+            document.getElementById('finish-modal').classList.add('hidden');
+            loadProblem(0);
+            startTimer();
+        }
+
+        function closeModal() {
+            document.getElementById('finish-modal').classList.add('hidden');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
