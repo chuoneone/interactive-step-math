@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動英語對話練習 - 口說測驗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+
+        .speaker-bubble {
+            position: absolute;
+            top: -1.2rem;
+            left: 1.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 點擊單字時的動畫回饋 */
+        .word-clicked {
+            background-color: #fde047 !important;
+            /* Tailwind yellow-300 */
+            color: #1f2937 !important;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 flex items-center justify-center min-h-screen py-8">
+
+    <div class="w-full max-w-4xl mx-auto p-4 md:p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-6 bg-blue-600 text-white">
+                <h1 class="text-2xl font-bold text-center tracking-wide">口說測驗練習</h1>
+                <div class="flex justify-center items-center gap-2 mt-2 text-blue-100 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                    </svg>
+                    <p>點擊整句可朗讀，<span class="font-bold text-yellow-300">點擊英文單字</span>可個別發音</p>
+                </div>
+            </div>
+
+            <!-- 對話卡片容器 -->
+            <div id="dialogue-container" class="p-6 md:p-10 min-h-[280px] flex flex-col justify-center items-center">
+                <!-- 句子將會動態插入此處 -->
+            </div>
+
+            <!-- 進度條和導航 -->
+            <div class="px-6 md:px-8 pb-6 mt-4">
+                <!-- 進度條 -->
+                <div
+                    class="flex justify-between items-center mb-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <span>測驗進度</span>
+                    <span id="progress-text">1 / 14</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-6 shadow-inner">
+                    <div id="progress-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500 ease-out"
+                        style="width: 5%"></div>
+                </div>
+
+                <!-- 導航按鈕 -->
+                <div class="flex justify-between items-center gap-4">
+                    <button id="prev-btn"
+                        class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold py-3 px-4 rounded-xl transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        上一句
+                    </button>
+                    <button id="next-btn"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 flex justify-center items-center gap-2 shadow-md">
+                        下一句
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dialogueContainer = document.getElementById('dialogue-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        // 填充對話內容 (課文與問答)
+        const dialogue = [
+            { speaker: '測驗說明', english: 'Speaking Test', chinese: '口說測驗 (共10%)' },
+            { speaker: '第一部分', english: 'Part 1: Reading', chinese: '朗讀以下段落 (3%)' },
+            { speaker: '朗讀', english: 'Toast art is popular because it turns a slice of bread into a yummy work of art.', chinese: '吐司藝術很受歡迎，因為它把一片麵包變成了美味的藝術品。' },
+            { speaker: '朗讀', english: "It's an easy snack.", chinese: '它是一種簡單的點心。' },
+            { speaker: '朗讀', english: 'Parents can make it with their kids.', chinese: '父母可以和他們的孩子一起做。' },
+            { speaker: '第二部分', english: 'Part 2: Questions and Answers', chinese: '問答' },
+            { speaker: '問題 1', english: 'Which do you like, baseball or basketball?', chinese: '你喜歡哪一個，棒球還是籃球？ (自行回答 1%)' },
+            { speaker: '參考答案', english: 'I like baseball.', chinese: '我喜歡棒球。' },
+            { speaker: '問題 2', english: 'How much are the cookies?', chinese: '這些餅乾多少錢？ (2%)' },
+            { speaker: '解答 2', english: 'They are three hundred and fifty dollars.', chinese: '它們是三百五十元。' },
+            { speaker: '問題 3', english: 'How much water do you drink every day?', chinese: '你每天喝多少水？ (請用數量詞回答 2%)' },
+            { speaker: '參考答案', english: 'I drink eight glasses of water every day.', chinese: '我每天喝八杯水。' },
+            { speaker: '問題 4', english: 'How many books are there in your schoolbag?', chinese: '你的書包裡有多少本書？ (自行回答 2%)' },
+            { speaker: '參考答案', english: 'There are ten books in my schoolbag.', chinese: '我的書包裡有十本書。' }
+        ];
+
+        let currentIndex = 0;
+
+        // 朗讀功能
+        function speak(text, lang = 'en-US') {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 先取消目前發音
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+
+                // 稍微放慢語速，對特教生更友善
+                if (lang === 'en-US') {
+                    utterance.rate = 0.85;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.error('瀏覽器不支援語音合成功能');
+            }
+        }
+
+        // 將英文句子拆解成可點擊的單字字卡
+        function wrapWords(text) {
+            return text.split(' ').map(word => {
+                // 使用 Tailwind 提供 hover 背景與游標樣式，建立視覺提示
+                return `<span class="clickable-word inline-block px-1 mx-[1px] rounded hover:bg-yellow-200 dark:hover:bg-yellow-600 dark:hover:text-white cursor-pointer transition-colors duration-200">${word}</span>`;
+            }).join(' ');
+        }
+
+        // 顯示當前句子
+        function showSentence(index) {
+            const item = dialogue[index];
+            let cardHtml = '';
+
+            // 喇叭 icon
+            const speakerIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.414z" clip-rule="evenodd" /></svg>`;
+
+            const buttonsHtml = (alignClass = 'justify-end') => `
+                <div class="mt-8 flex ${alignClass} gap-3">
+                    <button class="speak-en-btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg transition flex items-center shadow-sm">
+                        ${speakerIconSvg} 整句英文
+                    </button>
+                    <button class="speak-zh-btn bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-5 rounded-lg transition flex items-center shadow-sm">
+                        ${speakerIconSvg} 中文翻譯
+                    </button>
+                </div>
+            `;
+
+            // 判斷是否為過場/標題說明
+            if (item.speaker.includes('說明') || item.speaker.includes('部分')) {
+                cardHtml = `
+                    <div class="text-center w-full animate-fade-in">
+                        <div class="inline-block bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-1 rounded-full text-sm font-bold mb-4 tracking-widest">${item.speaker}</div>
+                        <p class="text-3xl font-bold text-gray-800 dark:text-gray-100">${item.english}</p>
+                        <p class="text-xl text-gray-500 dark:text-gray-400 mt-4 font-medium">${item.chinese}</p>
+                        ${buttonsHtml('justify-center')}
+                    </div>
+                `;
+            } else {
+                // 根據類型決定顏色：朗讀/問題用藍色，解答用綠色
+                const isQuestionOrReading = item.speaker.includes('朗讀') || item.speaker.includes('問題');
+                const bgColor = isQuestionOrReading ? 'bg-blue-50 dark:bg-blue-900 border-blue-200' : 'bg-green-50 dark:bg-green-900 border-green-200';
+                const speakerColor = isQuestionOrReading ? 'bg-blue-600 text-white' : 'bg-green-600 text-white';
+
+                // 英文句子處理：將單字套上 span 標籤
+                const wrappedEnglishText = wrapWords(item.english);
+
+                cardHtml = `
+                    <div class="relative w-full p-6 md:p-8 pt-10 border-2 rounded-2xl shadow-sm ${bgColor} animate-fade-in">
+                        <div class="speaker-bubble ${speakerColor}">${item.speaker}</div>
+                        
+                        <p class="text-3xl leading-relaxed font-semibold text-gray-800 dark:text-gray-100" style="word-spacing: 0.1em;">
+                            ${wrappedEnglishText}
+                        </p>
+                        
+                        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-xl text-gray-600 dark:text-gray-300 font-medium">${item.chinese}</p>
+                        </div>
+                        
+                        ${buttonsHtml('justify-end')}
+                    </div>
+                `;
+            }
+
+            dialogueContainer.innerHTML = cardHtml;
+
+            // 綁定整句按鈕事件
+            dialogueContainer.querySelector('.speak-en-btn')?.addEventListener('click', () => speak(item.english, 'en-US'));
+            dialogueContainer.querySelector('.speak-zh-btn')?.addEventListener('click', () => speak(item.chinese, 'zh-TW'));
+
+            // 綁定個別單字點擊事件
+            dialogueContainer.querySelectorAll('.clickable-word').forEach(wordSpan => {
+                wordSpan.addEventListener('click', function (e) {
+                    e.stopPropagation(); // 避免觸發到其他背景點擊
+
+                    // 取得單字純文字
+                    let textToSpeak = this.textContent;
+
+                    // 處理 a 的發音：去除標點符號並轉小寫後，若為單字 a，則改用 uh 來強制發出 /ə/ (鵝) 的音
+                    const cleanText = textToSpeak.replace(/[^a-zA-Z]/g, '').toLowerCase();
+                    if (cleanText === 'a') {
+                        textToSpeak = 'uh';
+                    }
+
+                    speak(textToSpeak, 'en-US');
+
+                    // 加入視覺回饋動畫
+                    this.classList.add('word-clicked');
+                    setTimeout(() => {
+                        this.classList.remove('word-clicked');
+                    }, 300);
+                });
+            });
+
+            updateControls();
+        }
+
+        // 更新按鈕和進度條狀態
+        function updateControls() {
+            const progressPercentage = ((currentIndex + 1) / dialogue.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            progressText.textContent = `${currentIndex + 1} / ${dialogue.length}`;
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === dialogue.length - 1;
+        }
+
+        // 事件監聽
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < dialogue.length - 1) {
+                currentIndex++;
+                showSentence(currentIndex);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showSentence(currentIndex);
+            }
+        });
+
+        // 加入簡單的淡入動畫
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in {
+                animation: fadeIn 0.4s ease-out forwards;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始顯示第一句
+        showSentence(currentIndex);
+    </script>
+</body>
+
+</html>
