@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>依情境列一元一次不等式</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 數學式專用 CSS */
+        .math {
+            font-size: 28px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+
+        .fraction span:first-child {
+            border-bottom: 2px solid #000;
+            padding: 0 4px;
+        }
+
+        /* 藍色格動態閃爍高亮 */
+        @keyframes flash-blue {
+
+            0%,
+            100% {
+                border-color: #3b82f6;
+                background-color: #eff6ff;
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4);
+            }
+
+            50% {
+                border-color: #93c5fd;
+                background-color: #f8fafc;
+            }
+        }
+
+        /* 紫色格動態閃爍高亮 */
+        @keyframes flash-violet {
+
+            0%,
+            100% {
+                border-color: #8b5cf6;
+                background-color: #f5f3ff;
+                box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.4);
+            }
+
+            50% {
+                border-color: #c084fc;
+                background-color: #f8fafc;
+            }
+        }
+
+        /* 黃色格動態閃爍高亮 */
+        @keyframes flash-amber {
+
+            0%,
+            100% {
+                border-color: #f59e0b;
+                background-color: #fffbeb;
+                box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.4);
+            }
+
+            50% {
+                border-color: #fcd34d;
+                background-color: #f8fafc;
+            }
+        }
+
+        /* 綠色格動態閃爍高亮 */
+        @keyframes flash-emerald {
+
+            0%,
+            100% {
+                border-color: #10b981;
+                background-color: #ecfdf5;
+                box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.4);
+            }
+
+            50% {
+                border-color: #6ee7b7;
+                background-color: #f8fafc;
+            }
+        }
+
+        .active-blue {
+            animation: flash-blue 1.5s infinite ease-in-out;
+        }
+
+        .active-violet {
+            animation: flash-violet 1.5s infinite ease-in-out;
+        }
+
+        .active-amber {
+            animation: flash-amber 1.5s infinite ease-in-out;
+        }
+
+        .active-emerald {
+            animation: flash-emerald 1.5s infinite ease-in-out;
+        }
+
+        /* 答錯時的左右抖動動畫 */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            75% {
+                transform: translateX(6px);
+            }
+        }
+
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* 漸顯與平滑轉換 */
+        .fade-in {
+            transition: all 0.5s ease-out;
+        }
+
+        /* 隱藏滾動條但保持滾動功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+
+    <!-- 頂部多功能導覽列 -->
+    <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-40 w-full">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <!-- 單元名稱 -->
+            <div class="flex items-center gap-2">
+                <span class="bg-white text-indigo-700 text-xs font-bold px-2 py-1 rounded">單元課程</span>
+                <h1 class="text-lg font-extrabold tracking-wide">💻 互動式數學－一元一次不等式</h1>
+            </div>
+
+            <!-- 題目導覽按鈕群 (支援水平滑動) -->
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar max-w-full py-1" id="nav-tabs">
+                <!-- JS 動態生成 -->
+            </div>
+
+            <!-- 計時與得分統計 -->
+            <div class="flex items-center gap-4 bg-indigo-700 px-3 py-1.5 rounded-full text-sm font-bold shadow-inner">
+                <div class="flex items-center gap-1.5 text-amber-300">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timer-display">倒數 07:00</span>
+                </div>
+                <div class="w-px h-4 bg-indigo-500"></div>
+                <div class="flex items-center gap-1 text-emerald-300">
+                    <span>得分：</span>
+                    <span id="score-display" class="text-base font-black">0</span>
+                    <span class="text-xs text-indigo-200">/ 6</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 網頁主要內容區 (橫式 md 為兩欄，直式為上下單欄) -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 flex flex-col md:flex-row gap-6 items-start">
+
+        <!-- 左側：題目描述 (固定區塊，Desktop 為 Sticky) -->
+        <section
+            class="w-full md:w-[350px] lg:w-[400px] md:sticky md:top-20 shrink-0 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col gap-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="text-xl font-black text-indigo-900 flex items-center gap-2">
+                    <span class="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
+                    題目情境
+                </h2>
+                <span class="text-xs font-semibold px-2 py-1 bg-slate-100 text-slate-500 rounded-lg"
+                    id="q-category">倍數關係</span>
+            </div>
+
+            <!-- 題目主題 SVG 圖像插畫 -->
+            <div class="bg-indigo-50/50 rounded-2xl p-4 flex items-center justify-center border border-indigo-50"
+                id="q-svg-container">
+                <!-- JS 動態插入 SVG -->
+            </div>
+
+            <!-- 題目內容與高亮文字 -->
+            <div class="bg-slate-50 rounded-xl p-5 border border-slate-100">
+                <h3 class="text-sm font-semibold text-slate-400 mb-2">情境描述：</h3>
+                <p class="text-lg font-bold leading-relaxed text-slate-700 animate-pulse-once" id="q-scenario">
+                    <!-- JS 動態插入情境與 Mark 標記 -->
+                </p>
+            </div>
+
+            <!-- 輔助資訊 -->
+            <div class="text-xs text-slate-400 flex items-center gap-1.5 justify-center">
+                <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>點擊右側的選項，直接由左而右完成列式！</span>
+            </div>
+        </section>
+
+        <!-- 右側：完整式子填入與選項區 -->
+        <section class="flex-1 w-full flex flex-col gap-6" id="equation-main-container">
+            <!-- JS 動態渲染本題列式大卡片 -->
+        </section>
+
+    </main>
+
+    <!-- 全螢幕粒子噴砂與歡慶容器 -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+
+    <!-- 全螢幕完成彈出視窗 (Modal) -->
+    <div id="completion-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 flex flex-col items-center text-center gap-5"
+            id="modal-card">
+            <div
+                class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center border border-emerald-100 text-emerald-500 mb-2">
+                <svg class="w-12 h-12 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+
+            <h3 class="text-2xl font-black text-slate-800" id="modal-title">🎉 恭喜你完成所有練習！</h3>
+
+            <div class="bg-slate-50 w-full p-4 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                <div class="flex justify-between items-center px-4">
+                    <span class="text-slate-500 font-bold">最終獲得分數</span>
+                    <span class="text-3xl font-black text-indigo-600" id="modal-score">6 / 6</span>
+                </div>
+                <div class="h-px bg-slate-200 my-1"></div>
+                <div class="flex justify-between items-center px-4">
+                    <span class="text-slate-500 font-bold">總共花費時間</span>
+                    <span class="text-lg font-extrabold text-slate-700" id="modal-time">03分15秒</span>
+                </div>
+            </div>
+
+            <div class="flex w-full gap-3 mt-2">
+                <button onclick="resetWholeGame()"
+                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors duration-200">
+                    再做一次
+                </button>
+                <button onclick="closeModalOnly()"
+                    class="flex-1 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 font-bold py-3 px-4 rounded-xl transition-colors duration-200">
+                    關閉視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 重新設計題庫結構：每題皆由左而右一次列出完整式子
+        const questionsData = [
+            {
+                id: 1,
+                title: "第 1 題",
+                shortName: "1. 身高",
+                category: "倍數關係",
+                type: "linear",
+                scenario: "治賢的身高為 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>x</mark> 公分，他身高的 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>4 倍</mark> <mark class='bg-amber-100 text-amber-800 px-1 rounded font-black'>高於</mark> <mark class='bg-emerald-100 text-emerald-800 px-1 rounded font-black'>720</mark> 公分。",
+                svgIcon: `
+          <svg class="w-28 h-28 text-indigo-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="20" y1="10" x2="20" y2="90" stroke-linecap="round"/>
+            <line x1="20" y1="20" x2="28" y2="20" />
+            <line x1="20" y1="35" x2="25" y2="35" />
+            <line x1="20" y1="50" x2="28" y2="50" />
+            <line x1="20" y1="65" x2="25" y2="65" />
+            <line x1="20" y1="80" x2="28" y2="80" />
+            <circle cx="55" cy="45" r="8" fill="currentColor" fill-opacity="0.1"/>
+            <line x1="55" y1="53" x2="55" y2="75" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="43" y2="55" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="67" y2="55" stroke-linecap="round"/>
+            <line x1="55" y1="75" x2="47" y2="90" stroke-linecap="round"/>
+            <line x1="55" y1="75" x2="63" y2="90" stroke-linecap="round"/>
+            <text x="55" y="30" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="currentColor">x公分</text>
+            <path d="M78 20 L88 30 M88 20 L78 30" stroke-width="3" stroke="#ef4444" stroke-linecap="round"/>
+            <text x="83" y="52" font-family="sans-serif" font-size="18" font-weight="black" text-anchor="middle" fill="#ef4444">4</text>
+          </svg>
+        `,
+                slots: [
+                    { id: "q1-s1", order: 1, type: "expr", placeholder: "算式", answer: "4x", value: "", colorClass: "blue" },
+                    { id: "q1-s2", order: 2, type: "sign", placeholder: "符號", answer: ">", value: "", colorClass: "amber" },
+                    { id: "q1-s3", order: 3, type: "num", placeholder: "數字", answer: "720", value: "", colorClass: "emerald" }
+                ],
+                options: ["4x", ">", "720", "4+x", "<", "1500"],
+                isEligible: true,
+                isCorrect: false
+            },
+            {
+                id: 2,
+                title: "第 2 題",
+                shortName: "2. 存款",
+                category: "倍數關係",
+                type: "linear",
+                scenario: "小明的存款有 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>x</mark> 元，他存款的 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>5 倍</mark> <mark class='bg-amber-100 text-amber-800 px-1 rounded font-black'>高於</mark> <mark class='bg-emerald-100 text-emerald-800 px-1 rounded font-black'>1500</mark> 元。",
+                svgIcon: `
+          <svg class="w-28 h-28 text-emerald-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M30 45 C30 25, 70 25, 70 45 C70 58, 65 68, 55 70 L55 78 C55 80, 45 80, 45 78 L45 70 C35 68, 30 58, 30 45 Z" fill="currentColor" fill-opacity="0.1"/>
+            <path d="M35 30 L25 18 L28 32" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M65 30 L75 18 L72 32" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="50" cy="50" rx="6" ry="4" />
+            <circle cx="43" cy="40" r="2.5" fill="black"/>
+            <circle cx="57" cy="40" r="2.5" fill="black"/>
+            <line x1="42" y1="28" x2="58" y2="28" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="50" cy="14" r="6" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+            <text x="50" y="17" font-size="9" font-family="sans-serif" text-anchor="middle" fill="#d97706" font-weight="black">$</text>
+          </svg>
+        `,
+                slots: [
+                    { id: "q2-s1", order: 1, type: "expr", placeholder: "算式", answer: "5x", value: "", colorClass: "blue" },
+                    { id: "q2-s2", order: 2, type: "sign", placeholder: "符號", answer: ">", value: "", colorClass: "amber" },
+                    { id: "q2-s3", order: 3, type: "num", placeholder: "數字", answer: "1500", value: "", colorClass: "emerald" }
+                ],
+                options: ["5x", ">", "1500", "5+x", "<", "720"],
+                isEligible: true,
+                isCorrect: false
+            },
+            {
+                id: 3,
+                title: "第 3 題",
+                shortName: "3. 水蜜桃",
+                category: "倍數關係",
+                type: "linear",
+                scenario: "水蜜桃每箱重 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>x</mark> 公斤，買了 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>3 箱</mark> 的總重量 <mark class='bg-amber-100 text-amber-800 px-1 rounded font-black'>高於</mark> <mark class='bg-emerald-100 text-emerald-800 px-1 rounded font-black'>50</mark> 公斤。",
+                svgIcon: `
+          <svg class="w-28 h-28 text-orange-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="20" y="40" width="60" height="42" rx="4" fill="currentColor" fill-opacity="0.1" />
+            <line x1="20" y1="54" x2="80" y2="54" />
+            <line x1="20" y1="68" x2="80" y2="68" />
+            <line x1="24" y1="42" x2="76" y2="80" stroke-dasharray="2,2"/>
+            <circle cx="35" cy="32" r="10" fill="#fca5a5" stroke="#ef4444" stroke-width="1.5" />
+            <circle cx="50" cy="28" r="10" fill="#fca5a5" stroke="#ef4444" stroke-width="1.5" />
+            <circle cx="65" cy="32" r="10" fill="#fca5a5" stroke="#ef4444" stroke-width="1.5" />
+            <path d="M48 18 C48 12, 54 12, 51 18 Z" fill="#22c55e" />
+          </svg>
+        `,
+                slots: [
+                    { id: "q3-s1", order: 1, type: "expr", placeholder: "算式", answer: "3x", value: "", colorClass: "blue" },
+                    { id: "q3-s2", order: 2, type: "sign", placeholder: "符號", answer: ">", value: "", colorClass: "amber" },
+                    { id: "q3-s3", order: 3, type: "num", placeholder: "數字", answer: "50", value: "", colorClass: "emerald" }
+                ],
+                options: ["3x", ">", "50", "3+x", "<", "10"],
+                isEligible: true,
+                isCorrect: false
+            },
+            {
+                id: 4,
+                title: "第 4 題",
+                shortName: "4. 體重",
+                category: "分數與組合",
+                type: "fractional",
+                scenario: "怡如的體重為 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>y</mark> 公斤，她體重的 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>一半</mark> <mark class='bg-violet-100 text-violet-800 px-1 rounded font-black'>減 3</mark> 公斤，<mark class='bg-amber-100 text-amber-800 px-1 rounded font-black'>超過</mark> <mark class='bg-emerald-100 text-emerald-800 px-1 rounded font-black'>25</mark> 公斤。",
+                svgIcon: `
+          <svg class="w-28 h-28 text-pink-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="15" y="68" width="70" height="16" rx="5" fill="currentColor" fill-opacity="0.1" />
+            <path d="M35 68 A15 15 0 0 1 65 68" />
+            <line x1="50" y1="68" x2="58" y2="56" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="50" cy="68" r="3.5" fill="black" />
+            <rect x="40" y="32" width="20" height="24" rx="2" stroke="currentColor" fill="currentColor" fill-opacity="0.1"/>
+            <text x="50" y="48" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="black" fill="currentColor">y</text>
+            <line x1="30" y1="20" x2="70" y2="60" stroke="#ef4444" stroke-dasharray="3,3" />
+          </svg>
+        `,
+                slots: [
+                    { id: "q4-s1", order: 1, type: "frac-num", placeholder: "分子", answer: "y", value: "", colorClass: "blue" },
+                    { id: "q4-s2", order: 2, type: "frac-den", placeholder: "分母", answer: "2", value: "", colorClass: "violet" },
+                    { id: "q4-s3", order: 3, type: "sub", placeholder: "減數", answer: "3", value: "", colorClass: "violet" },
+                    { id: "q4-s4", order: 4, type: "sign", placeholder: "符號", answer: ">", value: "", colorClass: "amber" },
+                    { id: "q4-s5", order: 5, type: "num", placeholder: "數字", answer: "25", value: "", colorClass: "emerald" }
+                ],
+                options: ["y", "2", "3", ">", "25", "10", "y-3", "<"],
+                isEligible: true,
+                isCorrect: false
+            },
+            {
+                id: 5,
+                title: "第 5 題",
+                shortName: "5. 果汁",
+                category: "分數與組合",
+                type: "fractional",
+                scenario: "果汁每瓶有 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>y</mark> 毫升，平分給 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>3 個人</mark> 喝，每人喝的量再 <mark class='bg-violet-100 text-violet-800 px-1 rounded font-black'>減 50</mark> 毫升，仍 <mark class='bg-amber-100 text-amber-800 px-1 rounded font-black'>超過</mark> <mark class='bg-emerald-100 text-emerald-800 px-1 rounded font-black'>200</mark> 毫升。",
+                svgIcon: `
+          <svg class="w-28 h-28 text-amber-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M38 30 L45 30 L45 15 L55 15 L55 30 L62 30 L62 76 L38 76 Z" fill="currentColor" fill-opacity="0.1" />
+            <rect x="43" y="10" width="14" height="5" fill="#ef4444" rx="1"/>
+            <line x1="38" y1="52" x2="62" y2="52" stroke-dasharray="3,3" />
+            <text x="50" y="66" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="black" fill="currentColor">y mL</text>
+            <path d="M22 82 L38 82 M44 82 L56 82 M62 82 L78 82" stroke-linecap="round"/>
+          </svg>
+        `,
+                slots: [
+                    { id: "q5-s1", order: 1, type: "frac-num", placeholder: "分子", answer: "y", value: "", colorClass: "blue" },
+                    { id: "q5-s2", order: 2, type: "frac-den", placeholder: "分母", answer: "3", value: "", colorClass: "violet" },
+                    { id: "q5-s3", order: 3, type: "sub", placeholder: "減數", answer: "50", value: "", colorClass: "violet" },
+                    { id: "q5-s4", order: 4, type: "sign", placeholder: "符號", answer: ">", value: "", colorClass: "amber" },
+                    { id: "q5-s5", order: 5, type: "num", placeholder: "數字", answer: "200", value: "", colorClass: "emerald" }
+                ],
+                options: ["y", "3", "50", ">", "200", "100", "y-50", "<"],
+                isEligible: true,
+                isCorrect: false
+            },
+            {
+                id: 6,
+                title: "第 6 題",
+                shortName: "6. 緞帶",
+                category: "分數與組合",
+                type: "fractional",
+                scenario: "緞帶每捆長 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>y</mark> 公尺，平分剪成 <mark class='bg-blue-100 text-blue-800 px-1 rounded font-black'>4 段</mark> 後，每段長度再 <mark class='bg-violet-100 text-violet-800 px-1 rounded font-black'>減 2</mark> 公尺，仍 <mark class='bg-amber-100 text-amber-800 px-1 rounded font-black'>超過</mark> <mark class='bg-emerald-100 text-emerald-800 px-1 rounded font-black'>10</mark> 公尺。",
+                svgIcon: `
+          <svg class="w-28 h-28 text-indigo-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M10 50 C25 32, 35 68, 50 50 C65 32, 75 68, 90 50" stroke-width="3" stroke-linecap="round"/>
+            <line x1="30" y1="35" x2="30" y2="65" stroke="#ef4444" stroke-dasharray="3,2"/>
+            <line x1="50" y1="35" x2="50" y2="65" stroke="#ef4444" stroke-dasharray="3,2"/>
+            <line x1="70" y1="35" x2="70" y2="65" stroke="#ef4444" stroke-dasharray="3,2"/>
+            <circle cx="43" cy="22" r="4.5" />
+            <circle cx="57" cy="22" r="4.5" />
+            <line x1="45" y1="26" x2="54" y2="36" />
+            <line x1="55" y1="26" x2="46" y2="36" />
+            <text x="50" y="82" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="black" fill="currentColor">y公尺</text>
+          </svg>
+        `,
+                slots: [
+                    { id: "q6-s1", order: 1, type: "frac-num", placeholder: "分子", answer: "y", value: "", colorClass: "blue" },
+                    { id: "q6-s2", order: 2, type: "frac-den", placeholder: "分母", answer: "4", value: "", colorClass: "violet" },
+                    { id: "q6-s3", order: 3, type: "sub", placeholder: "減數", answer: "2", value: "", colorClass: "violet" },
+                    { id: "q6-s4", order: 4, type: "sign", placeholder: "符號", answer: ">", value: "", colorClass: "amber" },
+                    { id: "q6-s5", order: 5, type: "num", placeholder: "數字", answer: "10", value: "", colorClass: "emerald" }
+                ],
+                options: ["y", "4", "2", ">", "10", "5", "y-2", "<"],
+                isEligible: true,
+                isCorrect: false
+            }
+        ];
+
+        // 全域變數定義
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let secondsLeft = 420; // 7分鐘預設
+        let timerInterval = null;
+        let isFinished = false;
+
+        // 深拷貝一份遊戲題目狀態
+        let activeQuestions = JSON.parse(JSON.stringify(questionsData));
+
+        // 打亂選項數組
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // 初始化所有選項打亂 (每個步驟在最一開始即固定打亂)
+        function initializeShuffledOptions() {
+            activeQuestions.forEach(q => {
+                q.shuffledOptions = shuffle([...q.options]);
+            });
+        }
+
+        // Web Audio 音效產生器 (無外部依賴)
+        function playSound(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                if (type === 'correct') {
+                    // 清脆上升雙音
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    osc.start();
+
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12); // E5
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime + 0.12);
+
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+                    osc.stop(ctx.currentTime + 0.4);
+                } else if (type === 'wrong') {
+                    // 低沉錯誤警告
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.frequency.setValueAtTime(180.00, ctx.currentTime); // F3
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    osc.start();
+
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                    osc.stop(ctx.currentTime + 0.35);
+                }
+            } catch (e) {
+                console.log("瀏覽器音效不支援或被阻擋");
+            }
+        }
+
+        // 動態發射炫麗彩色亮粉 (Confetti) 效果
+        function triggerConfetti() {
+            const container = document.getElementById('confetti-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const colors = ['#f43f5e', '#3b82f6', '#10b981', '#fbbf24', '#8b5cf6', '#ec4899'];
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.className = 'absolute w-3 h-3 rounded-full opacity-90';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.left = '50%';
+                p.style.top = '50%';
+
+                // 隨動放射角度
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 6 + Math.random() * 12;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity - 2; // 稍向上偏升
+
+                container.appendChild(p);
+
+                let x = 0;
+                let y = 0;
+                let gravity = 0.35;
+                let currentVx = vx;
+                let currentVy = vy;
+
+                const interval = setInterval(() => {
+                    x += currentVx;
+                    y += currentVy;
+                    currentVy += gravity;
+                    p.style.transform = `translate(${x}px, ${y}px) scale(${1 - y / 350})`;
+                    p.style.opacity = `${1 - y / 400}`;
+
+                    if (y > 350) {
+                        clearInterval(interval);
+                        p.remove();
+                    }
+                }, 16);
+            }
+        }
+
+        // 啟動與倒數計時器
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishGame(true); // 時間到，結算
+                    return;
+                }
+                secondsLeft--;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(secondsLeft / 60);
+            const secs = secondsLeft % 60;
+            const displayStr = `倒數 ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = displayStr;
+
+            // 最後一分鐘紅色警示
+            if (secondsLeft < 60) {
+                document.getElementById('timer-display').parentElement.classList.add('text-red-400', 'animate-pulse');
+            } else {
+                document.getElementById('timer-display').parentElement.classList.remove('text-red-400', 'animate-pulse');
+            }
+        }
+
+        // 切換題目並重新渲染
+        function switchQuestion(idx) {
+            currentQuestionIdx = idx;
+            renderTabs();
+            renderQuestionLeftPanel();
+            renderStepsRightPanel();
+        }
+
+        // 渲染上方題目導覽分頁
+        function renderTabs() {
+            const container = document.getElementById('nav-tabs');
+            container.innerHTML = '';
+
+            activeQuestions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `px-3.5 py-1.5 rounded-full text-sm font-extrabold transition-all duration-200 flex items-center gap-1.5 shrink-0 select-none shadow-sm`;
+
+                if (idx === currentQuestionIdx) {
+                    btn.classList.add('bg-white', 'text-indigo-800', 'scale-105', 'ring-2', 'ring-indigo-300');
+                } else {
+                    if (q.isCorrect) {
+                        btn.classList.add('bg-emerald-700', 'text-emerald-100', 'hover:bg-emerald-600');
+                    } else {
+                        btn.classList.add('bg-indigo-700', 'text-indigo-200', 'hover:bg-indigo-600', 'hover:text-white');
+                    }
+                }
+
+                // 加上通關勾勾
+                let checkMarkHtml = '';
+                if (q.isCorrect) {
+                    checkMarkHtml = `<span class="text-xs bg-emerald-500 text-white rounded-full p-0.5">✔</span>`;
+                }
+
+                btn.innerHTML = `${q.shortName} ${checkMarkHtml}`;
+                btn.onclick = () => switchQuestion(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        // 渲染左側題目說明與插圖
+        function renderQuestionLeftPanel() {
+            const q = activeQuestions[currentQuestionIdx];
+            document.getElementById('q-category').innerText = q.category;
+            document.getElementById('q-svg-container').innerHTML = q.svgIcon;
+            document.getElementById('q-scenario').innerHTML = q.scenario;
+        }
+
+        // 找出當前「最前方未填寫」的空格 ID
+        function getNextActiveSlotId(q) {
+            if (!q || q.isCorrect) return null;
+            // 依 order 欄位排序
+            const sortedSlots = [...q.slots].sort((a, b) => a.order - b.order);
+            for (let s of sortedSlots) {
+                if (!s.value) return s.id;
+            }
+            return null;
+        }
+
+        // 取得填答格樣式（動態結合顏色提示與閃爍機制）
+        function getSlotStyles(slot, isActive, isCorrect) {
+            // 基礎樣式
+            const base = "min-w-[65px] md:min-w-[80px] h-[48px] md:h-[56px] border-2 border-dashed rounded-xl flex items-center justify-center font-black text-sm md:text-base transition-all duration-150 select-none cursor-pointer";
+
+            if (isCorrect) {
+                // 完成狀態（全部變綠）
+                return `${base} bg-emerald-50 border-emerald-500 text-emerald-700 border-solid`;
+            }
+
+            if (slot.value) {
+                // 已有填寫值
+                if (slot.colorClass === 'blue') return `${base} bg-blue-100 border-blue-500 text-blue-800 border-solid scale-105 shadow-sm`;
+                if (slot.colorClass === 'violet') return `${base} bg-violet-100 border-violet-500 text-violet-800 border-solid scale-105 shadow-sm`;
+                if (slot.colorClass === 'amber') return `${base} bg-amber-100 border-amber-500 text-amber-800 border-solid scale-105 shadow-sm`;
+                if (slot.colorClass === 'emerald') return `${base} bg-emerald-100 border-emerald-500 text-emerald-800 border-solid scale-105 shadow-sm`;
+            } else {
+                // 尚未填寫
+                if (isActive) {
+                    // 正處於編輯高亮
+                    if (slot.colorClass === 'blue') return `${base} active-blue`;
+                    if (slot.colorClass === 'violet') return `${base} active-violet`;
+                    if (slot.colorClass === 'amber') return `${base} active-amber`;
+                    if (slot.colorClass === 'emerald') return `${base} active-emerald`;
+                } else {
+                    // 靜態未選取
+                    if (slot.colorClass === 'blue') return `${base} bg-white border-blue-200 text-blue-300 hover:border-blue-300`;
+                    if (slot.colorClass === 'violet') return `${base} bg-white border-violet-200 text-violet-300 hover:border-violet-300`;
+                    if (slot.colorClass === 'amber') return `${base} bg-white border-amber-200 text-amber-300 hover:border-amber-300`;
+                    if (slot.colorClass === 'emerald') return `${base} bg-white border-emerald-200 text-emerald-300 hover:border-emerald-300`;
+                }
+            }
+            return base;
+        }
+
+        // 點擊選項 → 填入空格
+        function fillActiveSlot(optionText) {
+            const q = activeQuestions[currentQuestionIdx];
+            if (q.isCorrect) return;
+
+            const activeId = getNextActiveSlotId(q);
+            if (!activeId) return; // 沒有剩餘空格
+
+            const slot = q.slots.find(s => s.id === activeId);
+            if (slot) {
+                slot.value = optionText;
+                playSound('correct'); // 短促提示聲
+                renderStepsRightPanel();
+            }
+        }
+
+        // 點擊空格 → 清空該格
+        function clearSlot(slotId) {
+            const q = activeQuestions[currentQuestionIdx];
+            if (q.isCorrect) return; // 答對後便鎖定無法修改
+
+            const slot = q.slots.find(s => s.id === slotId);
+            if (slot) {
+                slot.value = "";
+                renderStepsRightPanel();
+            }
+        }
+
+        // 檢查整行式子是否正確
+        function checkEquationAnswer() {
+            const q = activeQuestions[currentQuestionIdx];
+            const cardEl = document.getElementById(`equation-card`);
+
+            // 1. 防呆：檢查是否有空格未填寫
+            const hasEmpty = q.slots.some(s => !s.value);
+            if (hasEmpty) {
+                showFeedback("請先點擊按鈕，填滿式子中所有的空格喔！", "warning");
+                if (cardEl) {
+                    cardEl.classList.add('animate-shake');
+                    setTimeout(() => cardEl.classList.remove('animate-shake'), 400);
+                }
+                return;
+            }
+
+            // 2. 比對所有 slots 是否完全正確
+            let isAllCorrect = true;
+            q.slots.forEach(s => {
+                if (s.value.trim() !== s.answer.trim()) {
+                    isAllCorrect = false;
+                }
+            });
+
+            if (isAllCorrect) {
+                q.isCorrect = true;
+                playSound('correct');
+                triggerConfetti();
+
+                // 若從未答錯，則加 1 分
+                if (q.isEligible) {
+                    score += 1;
+                    updateScoreDisplay();
+                }
+
+                showFeedback("太棒了！列式完全正確！ ✔", "success");
+
+                // 延遲重繪與導引
+                setTimeout(() => {
+                    renderStepsRightPanel();
+                    renderTabs();
+                    autoProceedAndScroll();
+                }, 1000);
+
+            } else {
+                playSound('wrong');
+                q.isEligible = false; // 本題已失去獲得該分資格，但仍需修正至正確
+                showFeedback("算式好像有點不對喔...再想想看！可以點擊錯誤的格子清空它。", "error");
+
+                if (cardEl) {
+                    cardEl.classList.add('animate-shake');
+                    setTimeout(() => cardEl.classList.remove('animate-shake'), 400);
+                }
+            }
+        }
+
+        // 顯示回饋文字
+        function showFeedback(message, type) {
+            const container = document.getElementById(`feedback-box`);
+            if (!container) return;
+
+            container.innerHTML = "";
+            let colorClass = "text-amber-600 bg-amber-50 border-amber-200";
+            if (type === "success") colorClass = "text-emerald-700 bg-emerald-50 border-emerald-200 animate-bounce";
+            if (type === "error") colorClass = "text-rose-700 bg-rose-50 border-rose-200 font-extrabold";
+
+            container.className = `p-3 rounded-xl border text-sm font-bold mt-4 text-center transition-all duration-300 ${colorClass}`;
+            container.innerText = message;
+        }
+
+        // 自動前進到下一題
+        function autoProceedAndScroll() {
+            const isAllCompleted = activeQuestions.every(q => q.isCorrect);
+            if (isAllCompleted) {
+                finishGame(false);
+                return;
+            }
+            // 不會自動暴力跳題，給予按鈕讓學生自行確認進度，提升自主掌控權
+        }
+
+        // 更新計分看板
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = score;
+        }
+
+        // 渲染右側核心列式控制區
+        function renderStepsRightPanel() {
+            const container = document.getElementById('equation-main-container');
+            container.innerHTML = '';
+
+            const q = activeQuestions[currentQuestionIdx];
+            const nextActiveId = getNextActiveSlotId(q);
+
+            const mainCard = document.createElement('div');
+            mainCard.id = `equation-card`;
+            mainCard.className = `bg-white rounded-3xl shadow-sm border p-6 md:p-8 transition-all duration-300 ${q.isCorrect ? 'border-emerald-200 bg-emerald-50/10' : 'border-indigo-200 ring-2 ring-indigo-50/50'
+                }`;
+
+            // 標題與通關標記
+            const headerHtml = `
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-6 select-none">
+          <h3 class="text-base md:text-lg font-black text-indigo-900 flex items-center gap-2">
+            <span class="w-3 h-6 bg-indigo-600 rounded-full"></span>
+            練習列出式子
+          </h3>
+          ${q.isCorrect ? '<span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-black">✔ 本題列式完成</span>' : '<span class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-black">📝 填答中</span>'}
+        </div>
+      `;
+
+            // 核心大數學式區域
+            let slotsHtml = '';
+            if (q.type === 'fractional') {
+                // 分數式： (分子/分母) - 減數 符號 數字
+                const numSlot = q.slots[0];
+                const denSlot = q.slots[1];
+                const subSlot = q.slots[2];
+                const signSlot = q.slots[3];
+                const valSlot = q.slots[4];
+
+                slotsHtml = `
+          <div class="flex flex-col items-center justify-center py-6 bg-slate-50/80 rounded-2xl border border-slate-100 mb-6">
+            <div class="math flex items-center gap-3 flex-wrap justify-center px-4">
+              <!-- 分數本體 -->
+              <div class="fraction flex flex-col items-center">
+                <!-- 分子 -->
+                <div onclick="clearSlot('${numSlot.id}')" 
+                  class="${getSlotStyles(numSlot, nextActiveId === numSlot.id, q.isCorrect)}"
+                >
+                  ${numSlot.value || numSlot.placeholder}
+                </div>
+                
+                <!-- 分線 -->
+                <div class="w-16 h-1 bg-slate-800 my-1.5 rounded-full"></div>
+                
+                <!-- 分母 -->
+                <div onclick="clearSlot('${denSlot.id}')" 
+                  class="${getSlotStyles(denSlot, nextActiveId === denSlot.id, q.isCorrect)}"
+                >
+                  ${denSlot.value || denSlot.placeholder}
+                </div>
+              </div>
+              
+              <span class="text-2xl md:text-3xl font-black text-slate-500 mx-1">－</span>
+              
+              <!-- 減去的數 -->
+              <div onclick="clearSlot('${subSlot.id}')" 
+                class="${getSlotStyles(subSlot, nextActiveId === subSlot.id, q.isCorrect)}"
+              >
+                ${subSlot.value || subSlot.placeholder}
+              </div>
+              
+              <!-- 不等號 -->
+              <div onclick="clearSlot('${signSlot.id}')" 
+                class="${getSlotStyles(signSlot, nextActiveId === signSlot.id, q.isCorrect)} mx-1"
+              >
+                ${signSlot.value || signSlot.placeholder}
+              </div>
+              
+              <!-- 最後的比較數字 -->
+              <div onclick="clearSlot('${valSlot.id}')" 
+                class="${getSlotStyles(valSlot, nextActiveId === valSlot.id, q.isCorrect)}"
+              >
+                ${valSlot.value || valSlot.placeholder}
+              </div>
+            </div>
+          </div>
+        `;
+            } else {
+                // 經典倍數式： 算式 符號 數字
+                const exprSlot = q.slots[0];
+                const signSlot = q.slots[1];
+                const valSlot = q.slots[2];
+
+                slotsHtml = `
+          <div class="flex flex-col items-center justify-center py-6 bg-slate-50/80 rounded-2xl border border-slate-100 mb-6">
+            <div class="math flex items-center gap-4 flex-wrap justify-center px-4">
+              <!-- 算式 -->
+              <div onclick="clearSlot('${exprSlot.id}')" 
+                class="${getSlotStyles(exprSlot, nextActiveId === exprSlot.id, q.isCorrect)}"
+              >
+                ${exprSlot.value || exprSlot.placeholder}
+              </div>
+              
+              <!-- 不等號 -->
+              <div onclick="clearSlot('${signSlot.id}')" 
+                class="${getSlotStyles(signSlot, nextActiveId === signSlot.id, q.isCorrect)}"
+              >
+                ${signSlot.value || signSlot.placeholder}
+              </div>
+              
+              <!-- 最後比較數字 -->
+              <div onclick="clearSlot('${valSlot.id}')" 
+                class="${getSlotStyles(valSlot, nextActiveId === valSlot.id, q.isCorrect)}"
+              >
+                ${valSlot.value || valSlot.placeholder}
+              </div>
+            </div>
+          </div>
+        `;
+            }
+
+            // 顏色對應與指示說明面板 (落實：你可以給顏色提示)
+            const colorLegendsHtml = `
+        <div class="bg-indigo-50/40 rounded-2xl p-4 border border-indigo-50 mb-6">
+          <span class="text-xs font-black text-indigo-500 block mb-2 uppercase tracking-wider">💡 式子顏色填答指示</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-bold text-slate-600">
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded bg-blue-100 border-2 border-dashed border-blue-400 inline-block"></span>
+              <span>藍色格：填入「包含變數的算式或分子」</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded bg-violet-100 border-2 border-dashed border-violet-400 inline-block"></span>
+              <span>紫色格：填入「分母或後續加減數字」</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded bg-amber-100 border-2 border-dashed border-amber-400 inline-block"></span>
+              <span>黃色格：填入「大於、小於、超過不等號」</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded bg-emerald-100 border-2 border-dashed border-emerald-400 inline-block"></span>
+              <span>綠色格：填入「目標比較的常數值」</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+            // 選項按鈕區（已正確完成本題則不顯示按鈕）
+            let optionsBtnHtml = '';
+            if (!q.isCorrect && q.shuffledOptions) {
+                optionsBtnHtml = `
+          <div class="flex flex-col gap-3">
+            <span class="text-xs font-black text-slate-400 flex items-center gap-1">
+              👉 請點擊下方卡片，填入閃爍框中：
+            </span>
+            <div class="flex flex-wrap gap-2.5">
+              ${q.shuffledOptions.map(opt => `
+                <button onclick="fillActiveSlot('${opt}')" 
+                  class="px-5 py-3.5 bg-white border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30 active:scale-95 text-slate-700 text-lg font-black rounded-xl transition-all duration-150 shadow-sm flex items-center justify-center min-w-[55px] select-none"
+                >
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+            }
+
+            // 底部的送出檢查按鈕或下一題指引
+            let footerHtml = '';
+            if (!q.isCorrect) {
+                footerHtml = `
+          <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="text-xs text-slate-400 font-bold">填錯了？點擊填錯的格子即可清空！</span>
+            <button onclick="checkEquationAnswer()" 
+              class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-7 py-3 rounded-xl shadow-md flex items-center justify-center gap-1 transition-all duration-150 select-none text-base"
+            >
+              檢查式子是否正確
+            </button>
+          </div>
+        `;
+            } else {
+                // 完成此題
+                let actionBtn = '';
+                if (currentQuestionIdx < activeQuestions.length - 1) {
+                    actionBtn = `
+            <button onclick="switchQuestion(${currentQuestionIdx + 1})" 
+              class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold px-7 py-3 rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all duration-150 select-none"
+            >
+              👉 前往下一題
+            </button>
+          `;
+                } else {
+                    actionBtn = `
+            <button onclick="finishGame(false)" 
+              class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-extrabold px-7 py-3 rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all duration-150 select-none animate-bounce"
+            >
+              🏁 送出結算成績
+            </button>
+          `;
+                }
+
+                footerHtml = `
+          <div class="mt-6 pt-6 border-t border-slate-100 bg-emerald-50/40 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 class="text-emerald-800 text-base font-black">🎉 超級厲害！本題列式完全正確！</h4>
+              <p class="text-xs text-emerald-600 font-bold">你在這個題目上展現了極佳的觀察力與邏輯力！</p>
+            </div>
+            ${actionBtn}
+          </div>
+        `;
+            }
+
+            mainCard.innerHTML = `
+        ${headerHtml}
+        ${slotsHtml}
+        ${colorLegendsHtml}
+        ${optionsBtnHtml}
+        ${footerHtml}
+        <div id="feedback-box" class="hidden"></div>
+      `;
+
+            container.appendChild(mainCard);
+        }
+
+        // 當學生完成所有題目或時間結束
+        function finishGame(isTimeUp = false) {
+            isFinished = true;
+            if (timerInterval) clearInterval(timerInterval);
+
+            // 計算作答花費時間
+            const elapsedTotalSeconds = 420 - secondsLeft;
+            const mins = Math.floor(elapsedTotalSeconds / 60);
+            const secs = elapsedTotalSeconds % 60;
+            const timeStr = `${mins.toString().padStart(2, '0')} 分 ${secs.toString().padStart(2, '0')} 秒`;
+
+            // 填充 Modal
+            document.getElementById('modal-score').innerText = `${score} / 6 分`;
+            document.getElementById('modal-time').innerText = timeStr;
+
+            if (isTimeUp) {
+                document.getElementById('modal-title').innerText = "⏰ 時間到囉！不要氣餒！";
+                document.getElementById('modal-title').className = "text-2xl font-black text-rose-600";
+            } else {
+                document.getElementById('modal-title').innerText = "🎉 太棒了！你完成了所有練習！";
+                document.getElementById('modal-title').className = "text-2xl font-black text-slate-800";
+            }
+
+            // 展開 Modal
+            const modal = document.getElementById('completion-modal');
+            const card = document.getElementById('modal-card');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+        }
+
+        // 再做一次 (重置整個遊戲狀態)
+        function resetWholeGame() {
+            score = 0;
+            secondsLeft = 420;
+            isFinished = false;
+
+            // 完全重置題目狀態與填寫值
+            activeQuestions = JSON.parse(JSON.stringify(questionsData));
+            initializeShuffledOptions();
+
+            // 重置 UI
+            updateScoreDisplay();
+            updateTimerDisplay();
+            switchQuestion(0);
+
+            // 關閉視窗
+            closeModalOnly();
+
+            // 重啟計時器
+            startTimer();
+        }
+
+        // 關閉視窗 (保留現有完成狀態不重置)
+        function closeModalOnly() {
+            const modal = document.getElementById('completion-modal');
+            const card = document.getElementById('modal-card');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+        }
+
+        // 網頁載入執行初始化
+        window.onload = function () {
+            initializeShuffledOptions();
+            updateScoreDisplay();
+            updateTimerDisplay();
+
+            // 預設渲染第一題
+            switchQuestion(0);
+
+            // 啟動 7 分鐘計時
+            startTimer();
+        };
+    </script>
+</body>
+
+</html>
