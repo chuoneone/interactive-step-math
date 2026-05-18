@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學 - 一元一次不等式</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .math-font {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+
+        /* 填答格基本樣式 */
+        .slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 4.5rem;
+            height: 3.5rem;
+            border: 3px solid #cbd5e1;
+            border-radius: 0.75rem;
+            font-size: 1.75rem;
+            font-weight: bold;
+            background-color: white;
+            cursor: pointer;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 作用中閃爍高亮 */
+        .slot.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            animation: pulse-blue 1.5s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        /* 填入文字後的樣式 */
+        .slot.filled {
+            color: #1e40af;
+            border-color: #94a3b8;
+            animation: none;
+        }
+
+        /* 完成狀態的樣式 */
+        .question-completed .slot {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #166534;
+            pointer-events: none;
+        }
+
+        .completed-banner {
+            display: none;
+        }
+
+        .question-completed .completed-banner {
+            display: flex;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* 按鈕 hover 特效 */
+        .option-btn {
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 內容出現動畫 */
+        .fade-in-container {
+            opacity: 0;
+            transform: translateY(15px);
+            animation: slideUpFade 0.4s forwards;
+        }
+
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        svg text {
+            font-family: 'Times New Roman', Times, serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 h-screen flex flex-col overflow-hidden text-slate-800">
+
+    <!-- 定義 SVG 箭頭標記 -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
+        <defs>
+            <marker id="arrowRight" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
+            </marker>
+        </defs>
+    </svg>
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white shadow-sm border-b border-slate-200 shrink-0 relative z-10">
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-4">
+                <div class="font-black text-xl text-blue-900 shrink-0 tracking-wide hidden sm:block">
+                    一元一次不等式
+                </div>
+                <!-- 下拉式選單容器 -->
+                <div class="relative shrink-0">
+                    <select id="question-select" onchange="loadQuestion(parseInt(this.value))"
+                        class="block w-48 sm:w-56 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 py-2 px-4 pr-10 rounded-xl font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer appearance-none transition-all">
+                        <!-- 由 JS 動態生成 -->
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                        <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="bg-slate-100 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timer" class="font-mono font-bold text-base sm:text-lg text-slate-700">07:00</span>
+                </div>
+                <div class="bg-blue-50 px-4 py-1.5 rounded-lg border border-blue-200 flex items-center gap-2">
+                    <span class="font-bold text-blue-800 text-sm sm:text-base">得分</span>
+                    <span id="score" class="font-black text-lg sm:text-xl text-blue-600">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+
+        <!-- 左側：題目區 -->
+        <div
+            class="md:w-5/12 bg-white border-r border-slate-200 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-0 shrink-0 md:shrink">
+            <div class="p-6 md:p-8 overflow-y-auto h-full flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-700 mb-2 border-l-4 border-blue-500 pl-3">寫出下列各圖示所表示的不等式：
+                    </h2>
+                    <p class="text-slate-500 font-medium mb-6">（以 <span class="math-font text-lg text-black">x</span>
+                        的不等式表示）</p>
+                </div>
+
+                <div
+                    class="flex-1 flex items-center justify-center p-6 bg-slate-50 rounded-2xl border border-slate-100 min-h-[200px]">
+                    <div id="question-graphics" class="w-full max-w-[420px]">
+                        <!-- SVG 題目圖形由 JS 注入 -->
+                    </div>
+                </div>
+                <div class="hidden md:block text-xs text-slate-400 mt-4 text-center">
+                    💡 提示：仔細觀察圓點是空心還是實心，以及箭頭指向左邊還是右邊。
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：作答區 -->
+        <div class="md:w-7/12 bg-slate-50 relative overflow-hidden flex flex-col justify-center p-6 md:p-12">
+            <div id="answer-card"
+                class="fade-in-container bg-white p-8 md:p-10 rounded-3xl shadow-md border border-slate-100 max-w-2xl w-full mx-auto">
+                <!-- 內容動態生成 -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 提示訊息 Modal (答錯時) -->
+    <div id="toast"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white px-8 py-4 rounded-2xl shadow-2xl font-bold text-2xl z-50 transition-all duration-300 scale-0 opacity-0 pointer-events-none flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd" />
+        </svg>
+        <span>再想想看喔！</span>
+    </div>
+
+    <!-- 提示訊息 Modal (未填滿時) -->
+    <div id="warn-toast"
+        class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-amber-400 text-amber-900 px-6 py-3 rounded-full shadow-lg font-bold text-lg z-50 transition-all duration-300 -translate-y-10 opacity-0 pointer-events-none flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>請填滿所有空格</span>
+    </div>
+
+    <!-- 結算視窗 -->
+    <div id="completion-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300">
+            <div class="text-center">
+                <div
+                    class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-black text-slate-800 mb-2">全數完成！</h2>
+                <div class="bg-blue-50 rounded-xl p-4 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-slate-600 font-bold">總花費時間</span>
+                        <span id="final-time" class="text-xl font-black text-blue-600">00:00</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600 font-bold">總得分</span>
+                        <span id="final-score" class="text-2xl font-black text-blue-600">0</span>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button id="btn-retry"
+                        class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">再做一次</button>
+                    <button id="btn-close"
+                        class="flex-1 py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-blue-500/30">關閉視窗</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 音效合成器
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                oscillator.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // C6
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.2);
+            }
+        }
+
+        // 題目資料定義（擴充至 7 題）
+        const gameData = {
+            totalQuestions: 7,
+            questions: [
+                {
+                    id: 1,
+                    label: "題目 (1)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="100" y1="95" x2="100" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="100" y="128" text-anchor="middle" font-size="22">-4</text>
+                            <line x1="240" y1="95" x2="240" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="240" y="128" text-anchor="middle" font-size="22">0</text>
+                            <line x1="275" y1="95" x2="275" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="275" y="128" text-anchor="middle" font-size="22">1</text>
+                            <circle cx="100" cy="100" r="6" fill="#000" stroke="#000" stroke-width="2" />
+                            <polyline points="100,100 100,50 360,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                        </svg>
+                    `,
+                    symbolAns: "≥",
+                    valAns: "-4",
+                    options: ["≥", "≤", ">", "<", "-4", "0", "1", "4"]
+                },
+                {
+                    id: 2,
+                    label: "題目 (2)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="160" y1="95" x2="160" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="160" y="128" text-anchor="middle" font-size="22">-2</text>
+                            <line x1="240" y1="95" x2="240" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="240" y="128" text-anchor="middle" font-size="22">0</text>
+                            <line x1="280" y1="95" x2="280" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="280" y="128" text-anchor="middle" font-size="22">1</text>
+                            <circle cx="160" cy="100" r="6" fill="#000" stroke="#000" stroke-width="2" />
+                            <polyline points="160,100 160,50 40,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                        </svg>
+                    `,
+                    symbolAns: "≤",
+                    valAns: "-2",
+                    options: ["≥", "≤", ">", "<", "-2", "0", "1", "2"]
+                },
+                {
+                    id: 3,
+                    label: "題目 (3)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="120" y1="95" x2="120" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="120" y="128" text-anchor="middle" font-size="22">-3</text>
+                            <line x1="240" y1="95" x2="240" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="240" y="128" text-anchor="middle" font-size="22">0</text>
+                            <line x1="280" y1="95" x2="280" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="280" y="128" text-anchor="middle" font-size="22">1</text>
+                            <polyline points="120,94 120,50 360,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                            <circle cx="120" cy="100" r="6" fill="#f8fafc" stroke="#000" stroke-width="2" />
+                        </svg>
+                    `,
+                    symbolAns: ">",
+                    valAns: "-3",
+                    options: ["≥", "≤", ">", "<", "-3", "0", "1", "3"]
+                },
+                {
+                    id: 4,
+                    label: "題目 (4)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="160" y1="95" x2="160" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="160" y="128" text-anchor="middle" font-size="22">-100</text>
+                            <line x1="260" y1="95" x2="260" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="260" y="128" text-anchor="middle" font-size="22">0</text>
+                            <polyline points="160,94 160,50 40,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                            <circle cx="160" cy="100" r="6" fill="#f8fafc" stroke="#000" stroke-width="2" />
+                        </svg>
+                    `,
+                    symbolAns: "<",
+                    valAns: "-100",
+                    options: ["≥", "≤", ">", "<", "-100", "0", "100"]
+                },
+                {
+                    id: 5,
+                    label: "題目 (5)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="100" y1="95" x2="100" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="100" y="128" text-anchor="middle" font-size="22">0</text>
+                            <line x1="240" y1="95" x2="240" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="240" y="128" text-anchor="middle" font-size="22">5</text>
+                            <line x1="320" y1="95" x2="320" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="320" y="128" text-anchor="middle" font-size="22">10</text>
+                            <polyline points="240,94 240,50 360,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                            <circle cx="240" cy="100" r="6" fill="#f8fafc" stroke="#000" stroke-width="2" />
+                        </svg>
+                    `,
+                    symbolAns: ">",
+                    valAns: "5",
+                    options: ["≥", "≤", ">", "<", "5", "0", "10", "-5"]
+                },
+                {
+                    id: 6,
+                    label: "題目 (6)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="100" y1="95" x2="100" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="100" y="128" text-anchor="middle" font-size="22">-5</text>
+                            <line x1="220" y1="95" x2="220" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="220" y="128" text-anchor="middle" font-size="22">0</text>
+                            <line x1="300" y1="95" x2="300" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="300" y="128" text-anchor="middle" font-size="22">5</text>
+                            <circle cx="220" cy="100" r="6" fill="#000" stroke="#000" stroke-width="2" />
+                            <polyline points="220,100 220,50 40,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                        </svg>
+                    `,
+                    symbolAns: "≤",
+                    valAns: "0",
+                    options: ["≥", "≤", ">", "<", "-5", "0", "5", "10"]
+                },
+                {
+                    id: 7,
+                    label: "題目 (7)",
+                    svg: `
+                        <svg viewBox="0 0 400 150" class="w-full h-auto">
+                            <line x1="20" y1="100" x2="380" y2="100" stroke="#333" stroke-width="2.5" marker-end="url(#arrowRight)" />
+                            <line x1="100" y1="95" x2="100" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="100" y="128" text-anchor="middle" font-size="22">0</text>
+                            <line x1="200" y1="95" x2="200" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="200" y="128" text-anchor="middle" font-size="22">1</text>
+                            <line x1="300" y1="95" x2="300" y2="105" stroke="#333" stroke-width="2" />
+                            <text x="300" y="128" text-anchor="middle" font-size="22">2</text>
+                            <polyline points="300,94 300,50 40,50" fill="none" stroke="#000" stroke-width="3" marker-end="url(#arrowRight)" />
+                            <circle cx="300" cy="100" r="6" fill="#f8fafc" stroke="#000" stroke-width="2" />
+                        </svg>
+                    `,
+                    symbolAns: "<",
+                    valAns: "2",
+                    options: ["≥", "≤", ">", "<", "0", "1", "2", "-2"]
+                }
+            ]
+        };
+
+        // 系統狀態
+        let currentQIdx = 0;
+        let score = 0;
+        let timeRemaining = 7 * 60; // 7分鐘
+        let timerInterval;
+        let attempts = {};
+        let progress = {};
+
+        // DOM 元素
+        const qSelect = document.getElementById('question-select');
+        const qGraphics = document.getElementById('question-graphics');
+        const answerCard = document.getElementById('answer-card');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+
+        // 初始化
+        function init() {
+            buildNav();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        // 打亂陣列 (Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // 建立/更新下拉選單
+        function buildNav() {
+            qSelect.innerHTML = '';
+            gameData.questions.forEach((q, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+
+                // 若已完成，增加綠色勾勾圖示
+                const checkmark = progress[`q${idx}`] ? "✔ " : "　 ";
+                opt.innerText = `${checkmark}${q.label}`;
+
+                if (idx === currentQIdx) {
+                    opt.selected = true;
+                }
+                qSelect.appendChild(opt);
+            });
+        }
+
+        // 載入題目
+        function loadQuestion(idx) {
+            currentQIdx = idx;
+            const q = gameData.questions[idx];
+
+            // 同步下拉式選單狀態
+            qSelect.value = idx;
+
+            // 載入左側圖形
+            qGraphics.innerHTML = q.svg;
+
+            // 觸發漸顯動畫效果
+            answerCard.classList.remove('fade-in-container');
+            void answerCard.offsetWidth; // 觸發 reflow
+            answerCard.classList.add('fade-in-container');
+
+            renderAnsweringArea();
+        }
+
+        // 渲染右側一體化答題區
+        function renderAnsweringArea() {
+            const q = gameData.questions[currentQIdx];
+            const isCompleted = progress[`q${currentQIdx}`] === true;
+
+            if (isCompleted) {
+                answerCard.className = "fade-in-container bg-white p-8 md:p-10 rounded-3xl shadow-md border border-green-100 max-w-2xl w-full mx-auto question-completed";
+            } else {
+                answerCard.className = "fade-in-container bg-white p-8 md:p-10 rounded-3xl shadow-md border border-slate-100 max-w-2xl w-full mx-auto";
+            }
+
+            // 1. 標題與綠色完成標籤
+            const headerHtml = `
+                <div class="flex items-center justify-between mb-6">
+                    <span class="text-lg font-black text-slate-500 tracking-wider">
+                        ${q.label}
+                    </span>
+                    <span class="completed-banner text-green-600 font-bold items-center gap-1 bg-green-50 border border-green-200 px-3 py-1 rounded-full text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>已答對
+                    </span>
+                </div>
+                <h3 class="text-2xl font-extrabold text-slate-800 mb-6 text-center">
+                    請點選下方選項，拼出正確的不等式式子：
+                </h3>
+            `;
+
+            // 2. 算式填空區 (答對後保留學生正確解答)
+            const symbolValue = isCompleted ? q.symbolAns : "";
+            const valValue = isCompleted ? q.valAns : "";
+            const filledClassSymbol = isCompleted ? "filled" : "";
+            const filledClassVal = isCompleted ? "filled" : "";
+
+            const formulaHtml = `
+                <div class="flex justify-center items-center py-6 bg-slate-50 rounded-2xl mb-8 border border-slate-100">
+                    <div class="flex items-center gap-4">
+                        <span class="math-font text-5xl font-black text-slate-700 select-none">x</span>
+                        <span class="slot ${filledClassSymbol}" id="slot-symbol" data-ans="${q.symbolAns}">${symbolValue}</span>
+                        <span class="slot ${filledClassVal}" id="slot-val" data-ans="${q.valAns}">${valValue}</span>
+                    </div>
+                </div>
+            `;
+
+            // 3. 選項與檢查按鈕
+            let actionHtml = '';
+            if (!isCompleted) {
+                const shuffledOptions = shuffle([...q.options]);
+                const optionBtns = shuffledOptions.map(opt =>
+                    `<button class="option-btn bg-white border-2 border-slate-200 hover:border-blue-400 hover:bg-blue-50 text-slate-700 font-bold text-2xl h-14 rounded-2xl flex items-center justify-center shadow-sm" onclick="handleOptionClick('${opt}')">${opt}</button>`
+                ).join('');
+
+                actionHtml = `
+                    <div class="grid grid-cols-4 gap-3 mb-8">
+                        ${optionBtns}
+                    </div>
+                    <button onclick="checkAnswer()" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold text-xl rounded-2xl shadow-lg shadow-blue-500/20 transition-all duration-150 active:scale-[0.98]">
+                        檢查答案
+                    </button>
+                `;
+            } else {
+                actionHtml = `
+                    <div class="text-center py-4">
+                        <p class="text-green-600 font-bold text-xl">真棒！這題你已經答對囉！🎉</p>
+                    </div>
+                `;
+            }
+
+            answerCard.innerHTML = headerHtml + formulaHtml + actionHtml;
+
+            // 綁定 slot 點擊清除事件
+            if (!isCompleted) {
+                const slots = answerCard.querySelectorAll('.slot');
+                slots.forEach(slot => {
+                    slot.onclick = function () {
+                        if (this.innerText !== '') {
+                            this.innerText = '';
+                            this.classList.remove('filled');
+                            updateHighlight();
+                        }
+                    };
+                });
+                updateHighlight();
+            }
+        }
+
+        // 更新高亮狀態
+        function updateHighlight() {
+            const slots = Array.from(answerCard.querySelectorAll('.slot'));
+            slots.forEach(s => s.classList.remove('active'));
+
+            const firstEmpty = slots.find(s => s.innerText === '');
+            if (firstEmpty) {
+                firstEmpty.classList.add('active');
+            }
+        }
+
+        // 點擊選項填入
+        window.handleOptionClick = function (val) {
+            const slots = Array.from(answerCard.querySelectorAll('.slot'));
+            const firstEmpty = slots.find(s => s.innerText === '');
+
+            if (firstEmpty) {
+                firstEmpty.innerText = val;
+                firstEmpty.classList.remove('active');
+                firstEmpty.classList.add('filled');
+                updateHighlight();
+            }
+        };
+
+        // 顯示提示彈窗
+        function showToast(id) {
+            const toast = document.getElementById(id);
+            if (id === 'toast') {
+                toast.classList.remove('scale-0', 'opacity-0');
+                toast.classList.add('scale-100', 'opacity-100');
+            } else {
+                toast.classList.remove('-translate-y-10', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }
+
+            setTimeout(() => {
+                if (id === 'toast') {
+                    toast.classList.remove('scale-100', 'opacity-100');
+                    toast.classList.add('scale-0', 'opacity-0');
+                } else {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('-translate-y-10', 'opacity-0');
+                }
+            }, 2000);
+        }
+
+        // 檢查最終答案
+        window.checkAnswer = function () {
+            const slots = Array.from(answerCard.querySelectorAll('.slot'));
+            const hasEmpty = slots.some(s => s.innerText === '');
+
+            if (hasEmpty) {
+                showToast('warn-toast');
+                return;
+            }
+
+            // 驗證答案
+            let isCorrect = true;
+            slots.forEach(slot => {
+                if (slot.innerText !== slot.dataset.ans) {
+                    isCorrect = false;
+                }
+            });
+
+            const qKey = `q${currentQIdx}`;
+            if (!attempts[qKey]) attempts[qKey] = 0;
+            attempts[qKey]++;
+
+            if (isCorrect) {
+                playSound('correct');
+
+                // 第一次答對就得分 (20 分/題)
+                if (attempts[qKey] === 1) {
+                    score += 20;
+                    scoreEl.innerText = score;
+                    scoreEl.classList.add('scale-150', 'text-green-500');
+                    setTimeout(() => scoreEl.classList.remove('scale-150', 'text-green-500'), 300);
+                }
+
+                // 更新進度
+                progress[qKey] = true;
+
+                // 重新渲染並建立選單以套用新進度 (顯示已完成打勾)
+                renderAnsweringArea();
+                buildNav();
+
+                // 檢查是否全卷完成
+                if (checkAllComplete()) {
+                    return;
+                }
+
+                // 答對後自動切換至下一未解題目
+                setTimeout(() => {
+                    let nextUnsolved = -1;
+                    for (let i = 0; i < gameData.questions.length; i++) {
+                        const nextIdx = (currentQIdx + 1 + i) % gameData.questions.length;
+                        if (!progress[`q${nextIdx}`]) {
+                            nextUnsolved = nextIdx;
+                            break;
+                        }
+                    }
+                    if (nextUnsolved !== -1) {
+                        loadQuestion(nextUnsolved);
+                    }
+                }, 1200);
+
+            } else {
+                playSound('wrong');
+                showToast('toast');
+            }
+        };
+
+        // 檢查是否全卷完成
+        function checkAllComplete() {
+            let allDone = true;
+            for (let i = 0; i < gameData.questions.length; i++) {
+                if (!progress[`q${i}`]) {
+                    allDone = false;
+                    break;
+                }
+            }
+            if (allDone) {
+                clearInterval(timerInterval);
+                showCompletionModal();
+                return true;
+            }
+            return false;
+        }
+
+        // 計時器
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timeRemaining > 0) {
+                    timeRemaining--;
+                    const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+                    const s = (timeRemaining % 60).toString().padStart(2, '0');
+                    timerEl.innerText = `${m}:${s}`;
+                    if (timeRemaining <= 60) timerEl.classList.add('text-red-500', 'animate-pulse');
+                } else {
+                    clearInterval(timerInterval);
+                    showCompletionModal();
+                }
+            }, 1000);
+        }
+
+        // 結算視窗邏輯
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const finalTime = document.getElementById('final-time');
+            const finalScore = document.getElementById('final-score');
+
+            const timeUsed = (7 * 60) - timeRemaining;
+            const m = Math.floor(timeUsed / 60).toString().padStart(2, '0');
+            const s = (timeUsed % 60).toString().padStart(2, '0');
+
+            finalTime.innerText = `${m}:${s}`;
+            finalScore.innerText = score;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+        }
+
+        document.getElementById('btn-close').addEventListener('click', () => {
+            const modal = document.getElementById('completion-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        });
+
+        document.getElementById('btn-retry').addEventListener('click', () => {
+            // 重設所有狀態
+            score = 0;
+            scoreEl.innerText = '0';
+            timeRemaining = 7 * 60;
+            timerEl.innerText = '07:00';
+            timerEl.classList.remove('text-red-500', 'animate-pulse');
+            attempts = {};
+            progress = {};
+
+            const modal = document.getElementById('completion-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                init();
+            }, 300);
+        });
+
+        // 啟動
+        window.onload = init;
+
+    </script>
+</body>
+
+</html>
