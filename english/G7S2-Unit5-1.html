@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
     <title>過去時間副詞選擇題挑戰 🎯</title>
-    <link rel="icon" href="images/dog.png" type="image/png">
+    <link rel="icon" href="../images/dog.png" type="image/png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -208,8 +208,15 @@
         }
 
         @keyframes pop-in {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @keyframes confetti-fall {
@@ -257,19 +264,27 @@
     <div id="home-screen" class="max-w-3xl mx-auto w-full flex-grow flex flex-col justify-center items-center">
         <h1 class="text-4xl font-black text-slate-900 mb-8 tracking-tight text-center">請選擇要練習的過去時間副詞</h1>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl px-4">
-            <button onclick="startGameCategory('ago')" class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1" id="btn-cat-ago">
+            <button onclick="startGameCategory('ago')"
+                class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1"
+                id="btn-cat-ago">
                 <span>ago</span>
                 <span id="score-ago" class="text-sm font-bold text-slate-400"></span>
             </button>
-            <button onclick="startGameCategory('last')" class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1" id="btn-cat-last">
+            <button onclick="startGameCategory('last')"
+                class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1"
+                id="btn-cat-last">
                 <span>last</span>
                 <span id="score-last" class="text-sm font-bold text-slate-400"></span>
             </button>
-            <button onclick="startGameCategory('yesterday')" class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1" id="btn-cat-yesterday">
+            <button onclick="startGameCategory('yesterday')"
+                class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1"
+                id="btn-cat-yesterday">
                 <span>yesterday</span>
                 <span id="score-yesterday" class="text-sm font-bold text-slate-400"></span>
             </button>
-            <button onclick="startGameCategory('other')" class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1" id="btn-cat-other">
+            <button onclick="startGameCategory('other')"
+                class="choice-btn !h-auto !py-4 !text-3xl text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 !opacity-100 flex flex-col gap-1"
+                id="btn-cat-other">
                 <span>其它</span>
                 <span id="score-other" class="text-sm font-bold text-slate-400"></span>
             </button>
@@ -300,12 +315,15 @@
             </button>
 
             <h1 class="text-3xl font-black text-slate-900 mb-1 tracking-tight">過去時間副詞選擇題挑戰</h1>
-            <p class="text-md text-indigo-700 font-bold bg-indigo-50 inline-block px-4 py-1.5 rounded-full border border-indigo-100 mb-2">
+            <p
+                class="text-md text-indigo-700 font-bold bg-indigo-50 inline-block px-4 py-1.5 rounded-full border border-indigo-100 mb-2">
                 看中文提示，選出正確的英文單字吧！
             </p>
             <div class="flex justify-center gap-4 text-sm font-black">
-                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">✅ 答對：<span id="game-score">0</span></span>
-                <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full">⏱ <span id="game-timer">0</span> 秒</span>
+                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">✅ 答對：<span
+                        id="game-score">0</span></span>
+                <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full">⏱ <span id="game-timer">0</span>
+                    秒</span>
             </div>
         </header>
 
@@ -340,8 +358,9 @@
                 <!-- Correct Answer Overlay -->
                 <div id="correct-overlay">
                     <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="26" cy="26" r="25" fill="#10b981"/>
-                        <path d="M14.1 27.2l7.1 7.2 16.7-16.8" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="26" cy="26" r="25" fill="#10b981" />
+                        <path d="M14.1 27.2l7.1 7.2 16.7-16.8" stroke="white" stroke-width="4" stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
                 </div>
             </div>
@@ -415,7 +434,7 @@
                 records,
                 wrongArr: Array.from(wrongSet.entries())
             };
-            try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) {}
+            try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch (e) { }
         }
 
         function loadFromStorage() {
@@ -425,7 +444,7 @@
                 const data = JSON.parse(raw);
                 if (data.records) Object.assign(records, data.records);
                 if (data.wrongArr) wrongSet = new Map(data.wrongArr);
-            } catch(e) {}
+            } catch (e) { }
         }
 
         const synth = window.speechSynthesis;
