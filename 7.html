@@ -357,8 +357,17 @@
                 <div class="single-row">
                     <div class="social-group">
                         <h3 style="text-align: center;">4-1 不等式</h3>
-                        <div class="btn-group">
+                        <div class="level-tabs" style="display:flex;justify-content:center;gap:8px;margin-bottom:10px;">
+                            <button class="level-tab-btn active" onclick="switchTab('s2-4-1','normal',this)"
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #00e5ff;background:rgba(0, 229, 255, 0.2);color:#00e5ff;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">一般</button>
+                            <button class="level-tab-btn" onclick="switchTab('s2-4-1','basic',this)"
+                                style="padding:4px 18px;border-radius:20px;border:2px solid #334155;background:transparent;color:#94a3b8;font-weight:700;cursor:pointer;font-size:0.9rem;transition:all 0.2s;">基礎</button>
+                        </div>
+                        <div id="s2-4-1-normal" class="btn-group level-panel">
                             <a href="math/G7S2-4-1-01.html" class="btn" target="_blank">01 不等式</a>
+                        </div>
+                        <div id="s2-4-1-basic" class="btn-group level-panel" style="display:none;">
+                            <a href="math/G7S2-4-1-01L.html" class="btn" target="_blank">01 不等式</a>
                         </div>
                     </div>
                     <div class="social-group">
