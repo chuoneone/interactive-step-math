@@ -260,10 +260,11 @@
         // 本單元題型：一元一次不等式的圖示法 (數線畫法)
 
         // --- 題目資料庫 ---
+        // 在所有題目包含不等式標籤中加入 "inline-block whitespace-nowrap" 以防止不等式中間斷行
         const QUESTIONS_DATA = [
             {
                 id: 0,
-                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-1 rounded font-black text-slate-900 text-3xl'>x &gt; -1</mark>",
+                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-2 py-0.5 rounded font-black text-slate-900 text-3xl inline-block whitespace-nowrap'>x &gt; -1</mark>",
                 math: "x > -1",
                 type: "ray", // ray (射線) or segment (雙端點線段)
                 boundary: -1,
@@ -300,7 +301,7 @@
             },
             {
                 id: 1,
-                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-1 rounded font-black text-slate-900 text-3xl'>x &lt; 0</mark>",
+                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-2 py-0.5 rounded font-black text-slate-900 text-3xl inline-block whitespace-nowrap'>x &lt; 0</mark>",
                 math: "x < 0",
                 type: "ray",
                 boundary: 0,
@@ -329,7 +330,7 @@
                     {
                         title: "決定畫線方向",
                         instruction: "「 x 小於 0 」，數值變小（往負數前進），圖形線條應往哪裡畫？",
-                        lines: ["因為是小於，所以射線要朝向： {{slot}} 畫。"],
+                        lines: ["開口指向小於，所以射線要朝向： {{slot}} 畫。"],
                         answers: ["左邊"],
                         choices: ["左邊", "右邊"]
                     }
@@ -337,7 +338,7 @@
             },
             {
                 id: 2,
-                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-1 rounded font-black text-slate-900 text-3xl'>x &ge; 3</mark>",
+                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-2 py-0.5 rounded font-black text-slate-900 text-3xl inline-block whitespace-nowrap'>x &ge; 3</mark>",
                 math: "x >= 3",
                 type: "ray",
                 boundary: 3,
@@ -374,7 +375,7 @@
             },
             {
                 id: 3,
-                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-1 rounded font-black text-slate-900 text-3xl'>x &le; -2</mark>",
+                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-2 py-0.5 rounded font-black text-slate-900 text-3xl inline-block whitespace-nowrap'>x &le; -2</mark>",
                 math: "x <= -2",
                 type: "ray",
                 boundary: -2,
@@ -411,7 +412,7 @@
             },
             {
                 id: 4,
-                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-1 rounded font-black text-slate-900 text-3xl'>-1 &le; x &le; 2</mark>",
+                text: "在數線上畫出不等式：<mark class='bg-yellow-200 px-2 py-0.5 rounded font-black text-slate-900 text-3xl inline-block whitespace-nowrap'>-1 &le; x &le; 2</mark>",
                 math: "-1 <= x <= 2",
                 type: "segment", // 雙端點線段
                 boundaryLeft: -1,
@@ -961,6 +962,7 @@
         }
 
         // --- 倒數計時器設定 ---
+        // 預設為 7 分鐘 (420 秒)
         function startTimer() {
             state.isTimerActive = true;
             state.timerInterval = setInterval(() => {
