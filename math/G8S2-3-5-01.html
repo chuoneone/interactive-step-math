@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三線段形成三角形的判別 - 互動點擊解題</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+        /* 步驟卡片平滑過渡 */
+        .step-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* 閃爍高亮外框動畫 - 用於提示當前填寫的 slot */
+        @keyframes activePulse {
+            0%, 100% { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3); background-color: #eff6ff; }
+            50% { border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.5); background-color: #dbeafe; }
+        }
+        .active-slot {
+            animation: activePulse 1.8s infinite ease-in-out;
+        }
+        /* 美化導覽列滾動條 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col antialiased selection:bg-blue-200">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-md">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex flex-col gap-3">
+            
+            <!-- 頂部資訊列：單元名稱、得分與計時器 -->
+            <div class="flex items-center gap-3 w-full justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="bg-blue-600 text-white text-xs font-black px-2.5 py-1.5 rounded-lg tracking-wider shrink-0">幾何單元</span>
+                    <h1 class="text-base md:text-lg font-extrabold text-slate-800 tracking-tight hidden sm:block">三線段形成三角形的判別</h1>
+                    <h1 class="text-base font-extrabold text-slate-800 tracking-tight sm:hidden">三角形判別</h1>
+                </div>
+                <!-- 分數與計時器 (7題 x 2步 = 14分) -->
+                <div class="flex items-center gap-2 text-xs font-bold shrink-0">
+                    <div class="flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-1.5 rounded-xl border border-amber-200 shadow-sm">
+                        <span id="timer-text" class="font-mono text-sm">07:00</span>
+                    </div>
+                    <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-xl border border-emerald-200 shadow-sm">
+                        <span>得分: <span id="total-score" class="text-sm font-black">0</span> / 14</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 多題滑動導覽列 -->
+            <div class="flex items-center overflow-x-auto py-1 w-full gap-2 no-scrollbar" id="nav-questions">
+                <!-- 由 JavaScript 動態生成題目切換鈕 -->
+            </div>
+
+            <!-- 這一區塊在往下滾動時會完美固定在最上方，讓學生能隨時對照邊長數字解題 -->
+            <div class="bg-blue-50/80 rounded-2xl p-3 md:p-4 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+                <div class="text-center sm:text-left w-full sm:w-auto">
+                    <span class="text-[10px] md:text-xs font-bold text-blue-500 uppercase tracking-wider block mb-0.5">當前挑戰：邊長判別</span>
+                    <h2 class="text-lg md:text-xl font-black text-slate-800 flex items-center justify-center sm:justify-start gap-1.5">
+                        <span class="text-blue-600" id="question-title-num">題目 1</span>
+                        <span class="text-slate-400">/ 7</span>
+                        <span class="text-slate-600 text-sm font-semibold ml-1">是否能圍成三角形？</span>
+                    </h2>
+                </div>
+                <!-- 邊長數字卡片展示區 -->
+                <div id="question-sides-display" class="flex gap-2 text-xl font-black text-blue-700 w-full sm:w-auto justify-center sm:justify-end">
+                    <!-- 由 JS 動態渲染數字 -->
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-4 space-y-4">
+        
+        <!-- 教學指引觀念卡（會隨著頁面往上滾動，不佔用空間） -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+            <h3 class="text-sm font-extrabold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                特教生解題小秘訣
+            </h3>
+            <p class="text-sm text-slate-500 leading-relaxed font-medium">
+                只要檢查：<mark class="bg-amber-100 text-amber-800 px-1 rounded font-bold">「兩條較短的線段相加」</mark>，算出來的值有沒有<mark class="bg-blue-100 text-blue-800 px-1 rounded font-bold">「大於最長的那條線段」</mark>。如果是，就能圍成三角形喔！
+            </p>
+        </section>
+
+        <!-- 下方：2 步驟解鎖解題流程區 -->
+        <section class="space-y-4 pb-12" id="steps-container">
+            <!-- 步驟由 JavaScript 動態生成 -->
+        </section>
+
+    </main>
+
+    <div id="finish-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full text-center border border-slate-100 shadow-2xl transform scale-90 transition-transform duration-300" id="finish-modal-content">
+            <!-- 獎盃圖示 -->
+            <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-amber-200 animate-bounce">
+                <span class="text-4xl">🏆</span>
+            </div>
+            <h3 class="text-2xl font-black text-slate-800 mb-2">哇！你太棒了！</h3>
+            <p class="text-slate-500 font-medium mb-6">你已經完成了所有三角形邊長關係判別的練習囉！</p>
+            
+            <!-- 成績單顯示 -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-6 flex flex-col gap-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-bold">答題總得分：</span>
+                    <span class="text-emerald-600 font-extrabold text-lg" id="modal-score">0 分 / 14 分</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-500 font-bold">作答花費時間：</span>
+                    <span class="text-blue-600 font-extrabold text-lg" id="modal-time">00:00</span>
+                </div>
+            </div>
+
+            <!-- 控制按鈕 -->
+            <div class="flex gap-3">
+                <button id="btn-restart" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl transition shadow-md shadow-blue-200 active:scale-95 text-base">
+                    再挑戰一次
+                </button>
+                <button id="btn-close-modal" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl border border-slate-200 transition active:scale-95 text-base">
+                    關閉視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 題目資料庫 (嚴格對照使用者提供的7題數據)
+        const questionData = [
+            { id: 1, sides: [1, 1, 3], ans: { max: 3, shorts: [1, 1], sum: 2, compare: '沒有大於', can: '不可以' } },
+            { id: 2, sides: [6, 7, 9], ans: { max: 9, shorts: [6, 7], sum: 13, compare: '大於', can: '可以' } },
+            { id: 3, sides: [5, 6, 6], ans: { max: 6, shorts: [5, 6], sum: 11, compare: '大於', can: '可以' } },
+            { id: 4, sides: [3, 5, 8], ans: { max: 8, shorts: [3, 5], sum: 8, compare: '沒有大於', can: '不可以' } },
+            { id: 5, sides: [10, 11, 12], ans: { max: 12, shorts: [10, 11], sum: 21, compare: '大於', can: '可以' } },
+            { id: 6, sides: [9, 16, 25], ans: { max: 25, shorts: [9, 16], sum: 25, compare: '沒有大於', can: '不可以' } },
+            { id: 7, sides: [8, 33, 41], ans: { max: 41, shorts: [8, 33], sum: 41, compare: '沒有大於', can: '不可以' } }
+        ];
+
+        // 系統狀態變數
+        let gameState = {
+            currentIdx: 0,
+            scores: {}, // 格式 "qIdx-stepIdx" -> 1 (對) 或 0
+            attempts: {}, // 答錯次數記錄，錯過此步不給分
+            answers: {}, // 儲存學生已填寫的暫時答案，格式 "qIdx-stepIdx" -> 陣列
+            activeStep: 1, // 當前題目正在解答的步驟 1 ~ 2
+            timer: 420, // 預設 7 分鐘
+            timerInterval: null,
+            timerActive: true
+        };
+
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                if (type === 'correct') {
+                    // 悅耳向上和弦
+                    const oscs = [523.25, 659.25, 783.99];
+                    oscs.forEach((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = f;
+                        gain.gain.setValueAtTime(0, now);
+                        gain.gain.linearRampToValueAtTime(0.1, now + 0.05 + i * 0.05);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6 + i * 0.05);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + i * 0.05);
+                        osc.stop(now + 0.8 + i * 0.05);
+                    });
+                } else {
+                    // 答錯沉悶音效
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(140, now + 0.3);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                }
+            } catch (e) {
+                console.log("AudioContext 初始化失敗或受瀏覽器限制。");
+            }
+        }
+
+        function startTimer() {
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            gameState.timerInterval = setInterval(() => {
+                if (gameState.timerActive && gameState.timer > 0) {
+                    gameState.timer--;
+                    updateTimerDisplay();
+                    if (gameState.timer === 0) {
+                        endGame();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameState.timer / 60);
+            const seconds = gameState.timer % 60;
+            document.getElementById('timer-text').innerText = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function initNavigation() {
+            const nav = document.getElementById('nav-questions');
+            nav.innerHTML = '';
+            
+            questionData.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `nav-btn-${idx}`;
+                btn.className = `px-3.5 py-1.5 text-sm font-black rounded-xl transition-all duration-300 shrink-0 border select-none ${
+                    idx === gameState.currentIdx 
+                    ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-100' 
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`;
+                btn.innerHTML = `題 ${q.id}`;
+                btn.onclick = () => switchQuestion(idx);
+                nav.appendChild(btn);
+            });
+            updateNavColors();
+        }
+
+        function updateNavColors() {
+            questionData.forEach((q, idx) => {
+                const btn = document.getElementById(`nav-btn-${idx}`);
+                if (!btn) return;
+                
+                const completed = isQuestionFullyCompleted(idx);
+                if (idx === gameState.currentIdx) {
+                    btn.className = "px-3.5 py-1.5 text-sm font-black rounded-xl transition-all duration-300 shrink-0 border bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-100 scale-105";
+                    btn.innerHTML = completed ? `題 ${q.id} ✔` : `題 ${q.id}`;
+                } else {
+                    if (completed) {
+                        btn.className = "px-3.5 py-1.5 text-sm font-black rounded-xl transition-all duration-300 shrink-0 border bg-emerald-500 border-emerald-500 text-white hover:bg-emerald-600";
+                        btn.innerHTML = `題 ${q.id} ✔`;
+                    } else {
+                        btn.className = "px-3.5 py-1.5 text-sm font-black rounded-xl transition-all duration-300 shrink-0 border bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+                        btn.innerHTML = `題 ${q.id}`;
+                    }
+                }
+            });
+        }
+
+        function isQuestionFullyCompleted(qIdx) {
+            for (let step = 1; step <= 2; step++) {
+                if (gameState.scores[`${qIdx}-${step}`] !== 1) return false;
+            }
+            return true;
+        }
+
+        function switchQuestion(idx) {
+            gameState.currentIdx = idx;
+            
+            // 找出該題第一個尚未解開的步驟
+            let firstUnsolved = 1;
+            for (let step = 1; step <= 2; step++) {
+                if (gameState.scores[`${idx}-${step}`] !== 1) {
+                    firstUnsolved = step;
+                    break;
+                }
+                firstUnsolved = 2; // 如果兩步都答對了，預設停在步驟二
+            }
+            gameState.activeStep = firstUnsolved;
+
+            renderQuestionDetails();
+            renderSteps();
+            updateNavColors();
+        }
+
+        function renderQuestionDetails() {
+            const q = questionData[gameState.currentIdx];
+            document.getElementById('question-title-num').innerText = `題目 ${q.id}`;
+            
+            const display = document.getElementById('question-sides-display');
+            display.innerHTML = q.sides.map(s => 
+                `<span class="bg-white border-2 border-blue-500 rounded-xl px-3 py-1 shadow-sm font-mono tracking-wide text-lg md:text-xl shrink-0">${s}</span>`
+            ).join('');
+        }
+
+        function renderSteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            
+            const q = questionData[gameState.currentIdx];
+
+            const stepsMeta = [
+                {
+                    stepNum: 1,
+                    title: "步驟 1：算算看，兩條比較短的線段相加是多少？",
+                    desc: "請點選下方數字填入空格中，並算出它們相加的和。",
+                    formula: `
+                        <div class="slot border-2 border-slate-300 w-12 h-12 inline-flex items-center justify-center rounded-xl font-black text-lg bg-slate-50 cursor-pointer select-none transition shrink-0" data-step="1" data-slot="0">?</div> 
+                        <span class="text-xl font-extrabold mx-1">+</span> 
+                        <div class="slot border-2 border-slate-300 w-12 h-12 inline-flex items-center justify-center rounded-xl font-black text-lg bg-slate-50 cursor-pointer select-none transition shrink-0" data-step="1" data-slot="1">?</div> 
+                        <span class="text-xl font-extrabold mx-1">=</span> 
+                        <div class="slot border-2 border-slate-300 w-12 h-12 inline-flex items-center justify-center rounded-xl font-black text-lg bg-slate-50 cursor-pointer select-none transition shrink-0" data-step="1" data-slot="2">?</div>`,
+                    // 打亂選項順序，去重處理
+                    options: [...new Set([...q.sides, q.ans.sum])].sort(() => Math.random() - 0.5)
+                },
+                {
+                    stepNum: 2,
+                    title: "步驟 2：比比看，有沒有大於第三邊（最長邊）呢？",
+                    desc: "請直接判定兩短邊相加的和跟最長邊的大小關係，並得出結論。",
+                    formula: `
+                        兩短邊相加的和 
+                        <div class="slot border-2 border-slate-300 px-4 h-12 inline-flex items-center justify-center rounded-xl font-black text-base md:text-lg bg-slate-50 cursor-pointer select-none transition shrink-0" data-step="2" data-slot="0">?</div> 
+                        最長邊，
+                        所以 
+                        <div class="slot border-2 border-slate-300 px-4 h-12 inline-flex items-center justify-center rounded-xl font-black text-base md:text-lg bg-slate-50 cursor-pointer select-none transition shrink-0" data-step="2" data-slot="1">?</div> 
+                        圍成三角形。`,
+                    // 特教生極簡判定選項
+                    options: ['大於', '沒有大於', '可以', '不可以'].sort(() => Math.random() - 0.5)
+                }
+            ];
+
+            stepsMeta.forEach((meta) => {
+                const stepIdx = meta.stepNum;
+                const isPassed = gameState.scores[`${gameState.currentIdx}-${stepIdx}`] === 1;
+                const isActive = stepIdx === gameState.activeStep;
+                const isLocked = stepIdx > gameState.activeStep;
+
+                const card = document.createElement('div');
+                card.id = `step-card-${stepIdx}`;
+                
+                let borderClass = "border-slate-200 bg-white";
+                let opacityClass = "opacity-100";
+                
+                if (isPassed) {
+                    borderClass = "border-emerald-200 bg-emerald-50/20";
+                } else if (isActive) {
+                    borderClass = "border-blue-300 shadow-lg shadow-blue-50 bg-white ring-1 ring-blue-100";
+                } else if (isLocked) {
+                    borderClass = "border-slate-200 bg-slate-100/60 select-none pointer-events-none";
+                    opacityClass = "opacity-50";
+                }
+
+                card.className = `step-card border rounded-2xl p-4 md:p-5 ${borderClass} ${opacityClass} relative overflow-hidden`;
+
+                let statusBadge = '';
+                if (isPassed) {
+                    statusBadge = `<span class="bg-emerald-500 text-white font-black text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0"><span class="text-sm">✔</span> 已完成</span>`;
+                } else if (isActive) {
+                    statusBadge = `<span class="bg-blue-600 text-white font-black text-xs px-2.5 py-1 rounded-full animate-pulse shrink-0">進行中</span>`;
+                } else {
+                    statusBadge = `<span class="bg-slate-400 text-white font-black text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">🔒 尚未解鎖</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <h4 class="text-sm md:text-base font-black text-slate-800 tracking-tight">
+                            <span class="text-slate-400">${meta.title.split('：')[0]}：</span>
+                            <span class="text-slate-800">${meta.title.split('：')[1]}</span>
+                        </h4>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4 font-medium">${meta.desc}</p>
+                    
+                    <div class="flex flex-wrap items-center gap-1.5 md:gap-2.5 text-base md:text-lg font-black text-slate-700 bg-slate-50/70 p-3 md:p-4 rounded-xl border border-slate-100 justify-start overflow-x-auto">
+                        ${meta.formula}
+                    </div>
+                `;
+
+                if (isActive) {
+                    const optContainer = document.createElement('div');
+                    optContainer.className = "mt-4 border-t border-dashed border-slate-200 pt-3";
+                    optContainer.innerHTML = `
+                        <p class="text-[10px] md:text-xs text-slate-400 font-bold mb-2 uppercase tracking-wider">點選下方答案放入空格：</p>
+                        <div class="flex flex-wrap gap-2" id="opt-buttons-${stepIdx}"></div>
+                    `;
+                    card.appendChild(optContainer);
+
+                    const optBtnGroup = optContainer.querySelector(`#opt-buttons-${stepIdx}`);
+                    meta.options.forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = "px-3 py-2 bg-white border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50 text-slate-700 text-base md:text-lg font-black rounded-xl transition duration-150 active:scale-95 shadow-sm";
+                        btn.innerText = opt;
+                        btn.onclick = () => fillSlot(stepIdx, opt);
+                        optBtnGroup.appendChild(btn);
+                    });
+
+                    const footer = document.createElement('div');
+                    footer.className = "mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+                    footer.innerHTML = `
+                        <div id="feedback-msg-${stepIdx}" class="text-xs md:text-sm font-bold text-red-500 flex items-center gap-1.5 opacity-0 transition-opacity duration-200">
+                            <span class="text-base">😢</span> 再想想看喔！你可以點選框框內寫錯的答案來清除重填。
+                        </div>
+                        <button id="btn-check-${stepIdx}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl transition shadow-md shadow-blue-200 active:scale-95 text-xs md:text-sm shrink-0">
+                            檢查答案
+                        </button>
+                    `;
+                    card.appendChild(footer);
+
+                    footer.querySelector(`#btn-check-${stepIdx}`).onclick = () => checkAnswer(stepIdx);
+                }
+
+                container.appendChild(card);
+            });
+
+            // 恢復當前題目已作答（含已答對）之完整內容，拒絕顯示問號
+            restoreUserAnswers();
+            
+            // 更新目前聚焦格子的高亮效果
+            updateActiveSlotHighlight();
+        }
+
+        function fillSlot(stepIdx, value) {
+            const key = `${gameState.currentIdx}-${stepIdx}`;
+            if (!gameState.answers[key]) {
+                const slotsCount = document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).length;
+                gameState.answers[key] = Array(slotsCount).fill('');
+            }
+
+            const arr = gameState.answers[key];
+            const emptyIdx = arr.indexOf('');
+            
+            if (emptyIdx !== -1) {
+                arr[emptyIdx] = value.toString();
+                const slotEl = document.querySelector(`.slot[data-step="${stepIdx}"][data-slot="${emptyIdx}"]`);
+                if (slotEl) {
+                    slotEl.innerText = value;
+                    slotEl.classList.remove('border-slate-300', 'bg-slate-50', 'text-slate-400');
+                    slotEl.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+                }
+                updateActiveSlotHighlight();
+            }
+        }
+
+        function restoreUserAnswers() {
+            for (let stepIdx = 1; stepIdx <= 2; stepIdx++) {
+                const key = `${gameState.currentIdx}-${stepIdx}`;
+                const arr = gameState.answers[key];
+                const isPassed = gameState.scores[key] === 1;
+
+                if (!arr) continue;
+
+                arr.forEach((val, slotIdx) => {
+                    const slotEl = document.querySelector(`.slot[data-step="${stepIdx}"][data-slot="${slotIdx}"]`);
+                    if (slotEl && val !== '') {
+                        slotEl.innerText = val;
+                        slotEl.classList.remove('border-slate-300', 'bg-slate-50', 'text-slate-400');
+                        
+                        if (isPassed) {
+                            slotEl.className = "slot border-2 border-emerald-500 bg-emerald-50 text-emerald-700 px-3 h-12 rounded-xl font-black text-base md:text-lg flex items-center justify-center min-w-[3rem] select-none shrink-0";
+                        } else {
+                            slotEl.className = "slot border-2 border-blue-500 bg-blue-50 text-blue-700 px-3 h-12 rounded-xl font-black text-base md:text-lg flex items-center justify-center min-w-[3rem] cursor-pointer select-none transition shrink-0";
+                        }
+                    }
+                });
+
+                if (!isPassed && stepIdx === gameState.activeStep) {
+                    document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).forEach(slotEl => {
+                        slotEl.onclick = (e) => {
+                            const sIdx = parseInt(e.target.getAttribute('data-slot'));
+                            clearSlot(stepIdx, sIdx);
+                        };
+                    });
+                } else {
+                    document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).forEach(slotEl => {
+                        slotEl.onclick = null;
+                    });
+                }
+            }
+        }
+
+        function clearSlot(stepIdx, slotIdx) {
+            const key = `${gameState.currentIdx}-${stepIdx}`;
+            if (gameState.answers[key]) {
+                gameState.answers[key][slotIdx] = '';
+                const slotEl = document.querySelector(`.slot[data-step="${stepIdx}"][data-slot="${slotIdx}"]`);
+                if (slotEl) {
+                    slotEl.innerText = '?';
+                    slotEl.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
+                    slotEl.classList.add('border-slate-300', 'bg-slate-50', 'text-slate-400');
+                }
+                updateActiveSlotHighlight();
+            }
+        }
+
+        function updateActiveSlotHighlight() {
+            const stepIdx = gameState.activeStep;
+            const key = `${gameState.currentIdx}-${stepIdx}`;
+            const arr = gameState.answers[key] || [];
+
+            document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).forEach(el => {
+                el.classList.remove('active-slot');
+            });
+
+            let activeIdx = -1;
+            const totalSlots = document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).length;
+            
+            for (let i = 0; i < totalSlots; i++) {
+                if (!arr[i] || arr[i] === '') {
+                    activeIdx = i;
+                    break;
+                }
+            }
+
+            if (activeIdx !== -1) {
+                const activeEl = document.querySelector(`.slot[data-step="${stepIdx}"][data-slot="${activeIdx}"]`);
+                if (activeEl) {
+                    activeEl.classList.add('active-slot');
+                }
+            }
+        }
+
+        function checkAnswer(stepIdx) {
+            const q = questionData[gameState.currentIdx];
+            const key = `${gameState.currentIdx}-${stepIdx}`;
+            const userArr = gameState.answers[key] || [];
+            const totalSlots = document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).length;
+
+            const feedback = document.getElementById(`feedback-msg-${stepIdx}`);
+
+            let hasEmpty = false;
+            for (let i = 0; i < totalSlots; i++) {
+                if (!userArr[i] || userArr[i] === '') {
+                    hasEmpty = true;
+                    break;
+                }
+            }
+
+            if (hasEmpty) {
+                feedback.innerHTML = `<span class="text-base">⚠️</span> 請填滿所有空格喔！`;
+                feedback.classList.remove('opacity-0');
+                return;
+            }
+
+            let isCorrect = false;
+
+            if (stepIdx === 1) {
+                // 兩短邊相加驗證
+                const s1 = parseInt(userArr[0]);
+                const s2 = parseInt(userArr[1]);
+                const sSum = parseInt(userArr[2]);
+
+                const userShorts = [s1, s2].sort((x, y) => x - y);
+                const actualShorts = [...q.ans.shorts].sort((x, y) => x - y);
+
+                const shortsCorrect = (userShorts[0] === actualShorts[0] && userShorts[1] === actualShorts[1]);
+                const sumCorrect = (sSum === q.ans.sum);
+
+                isCorrect = shortsCorrect && sumCorrect;
+            } 
+            else if (stepIdx === 2) {
+                // 特教極簡判定：大於/沒有大於、可以/不可以
+                const userCompare = userArr[0];
+                const userCan = userArr[1];
+
+                isCorrect = (
+                    userCompare === q.ans.compare && 
+                    userCan === q.ans.can
+                );
+            }
+
+            if (isCorrect) {
+                playSound('correct');
+
+                const attemptsKey = `${gameState.currentIdx}-${stepIdx}`;
+                const attemptsCount = gameState.attempts[attemptsKey] || 0;
+                
+                // 初次作答即對得 1 分；若曾答錯則扣為 0 分，但依然算解開此關，確保公平性
+                if (attemptsCount === 0) {
+                    gameState.scores[key] = 1;
+                } else {
+                    gameState.scores[key] = 0;
+                }
+
+                feedback.innerHTML = `<span class="text-emerald-500 font-extrabold text-sm flex items-center gap-1">✔ 太棒了，完全正確！</span>`;
+                feedback.classList.remove('text-red-500', 'opacity-0');
+                feedback.classList.add('text-emerald-600');
+
+                document.querySelectorAll(`.slot[data-step="${stepIdx}"]`).forEach(el => {
+                    el.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700', 'active-slot');
+                    el.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                    el.onclick = null; 
+                });
+
+                updateTotalScore();
+
+                setTimeout(() => {
+                    unlockNext(stepIdx);
+                }, 1200);
+
+            } else {
+                playSound('error');
+                
+                const attemptsKey = `${gameState.currentIdx}-${stepIdx}`;
+                gameState.attempts[attemptsKey] = (gameState.attempts[attemptsKey] || 0) + 1;
+
+                feedback.innerHTML = `<span class="text-base">😢</span> 再想想看喔！你可以點選框框內寫錯的答案來清除重填。`;
+                feedback.classList.remove('text-emerald-600', 'opacity-0');
+                feedback.classList.add('text-red-500');
+            }
+        }
+
+        function unlockNext(currentStepIdx) {
+            if (currentStepIdx < 2) {
+                gameState.activeStep = currentStepIdx + 1;
+                renderSteps();
+                
+                setTimeout(() => {
+                    const nextCard = document.getElementById(`step-card-${currentStepIdx + 1}`);
+                    if (nextCard) {
+                        nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 200);
+            } else {
+                updateNavColors();
+                
+                let allComplete = true;
+                for (let i = 0; i < questionData.length; i++) {
+                    if (!isQuestionFullyCompleted(i)) {
+                        allComplete = false;
+                        break;
+                    }
+                }
+
+                if (allComplete) {
+                    endGame();
+                } else {
+                    // 自動挑選並切換到下一題
+                    let nextQIdx = (gameState.currentIdx + 1) % questionData.length;
+                    for (let i = 0; i < questionData.length; i++) {
+                        let tempIdx = (gameState.currentIdx + 1 + i) % questionData.length;
+                        if (!isQuestionFullyCompleted(tempIdx)) {
+                            nextQIdx = tempIdx;
+                            break;
+                        }
+                    }
+                    
+                    setTimeout(() => {
+                        switchQuestion(nextQIdx);
+                    }, 500);
+                }
+            }
+        }
+
+        function updateTotalScore() {
+            let total = 0;
+            for (let qIdx = 0; qIdx < questionData.length; qIdx++) {
+                for (let sIdx = 1; sIdx <= 2; sIdx++) {
+                    if (gameState.scores[`${qIdx}-${sIdx}`] === 1) {
+                        total++;
+                    }
+                }
+            }
+            document.getElementById('total-score').innerText = total;
+            return total;
+        }
+
+        function endGame() {
+            gameState.timerActive = false;
+            clearInterval(gameState.timerInterval);
+
+            const totalScore = updateTotalScore();
+            document.getElementById('modal-score').innerText = `${totalScore} 分 / 14 分`;
+
+            const totalSecondsUsed = 420 - gameState.timer;
+            const minutes = Math.floor(totalSecondsUsed / 60);
+            const seconds = totalSecondsUsed % 60;
+            document.getElementById('modal-time').innerText = 
+                `${String(minutes).padStart(2, '0')} 分 ${String(seconds).padStart(2, '0')} 秒`;
+
+            const modal = document.getElementById('finish-modal');
+            const content = document.getElementById('finish-modal-content');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-90');
+            content.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('finish-modal');
+            const content = document.getElementById('finish-modal-content');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-90');
+        }
+
+        function restartGame() {
+            gameState.scores = {};
+            gameState.attempts = {};
+            gameState.answers = {};
+            gameState.activeStep = 1;
+            gameState.currentIdx = 0;
+            gameState.timer = 420;
+            gameState.timerActive = true;
+
+            closeModal();
+            updateTotalScore();
+            updateTimerDisplay();
+            initNavigation();
+            switchQuestion(0);
+            startTimer();
+        }
+
+        document.getElementById('btn-close-modal').onclick = closeModal;
+        document.getElementById('btn-restart').onclick = restartGame;
+
+        window.onload = function() {
+            initNavigation();
+            switchQuestion(0);
+            startTimer();
+        };
+    </script>
+    <script src="../progress.js"></script>
+</body>
+</html>
