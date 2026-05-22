@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
-    <title>Unit 5 單字選擇題挑戰</title>
+    <title>Unit 6 單字選擇題挑戰</title>
     <link rel="icon" href="../images/dog.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
@@ -92,10 +92,10 @@
         .btn-premium:active { transform:translateY(2px); box-shadow:0 2px 0 #1e1b4b; }
         #correct-overlay { position:absolute; top:12px; right:12px; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.2s ease; }
         #correct-overlay.show { opacity:1; }
-        #correct-overlay svg { width:40px; height:40px; animation:pop-in 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+        #correct-overlay svg { width:40px; height:40px; animation:pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes pop-in { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
         .checkmark { width:100px; height:100px; border-radius:50%; display:block; stroke-width:4; stroke:#fff; stroke-miterlimit:10; box-shadow:inset 0 0 0 #10b981; animation:fill .4s ease-in-out .4s forwards,cscale .3s ease-in-out .9s both; }
-        .checkmark__check { transform-origin:50% 50%; stroke-dasharray:48; stroke-dashoffset:48; animation:stroke 0.3s cubic-bezier(0.65,0,0.45,1) 0.8s forwards; }
+        .checkmark__check { transform-origin:50% 50%; stroke-dasharray:48; stroke-dashoffset:48; animation:stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
         @keyframes stroke { 100%{stroke-dashoffset:0} }
         @keyframes cscale { 0%,100%{transform:none} 50%{transform:scale3d(1.1,1.1,1)} }
         @keyframes fill { 100%{box-shadow:inset 0 0 0 80px #10b981} }
@@ -123,23 +123,23 @@
 
 <!-- Home Screen -->
 <div id="home-screen" class="max-w-3xl mx-auto w-full flex-grow flex flex-col justify-center items-center">
-    <h1 class="text-4xl font-black mb-2 tracking-tight text-center gradient-text">Unit 5 單字選擇題挑戰</h1>
+    <h1 class="text-4xl font-black mb-2 tracking-tight text-center gradient-text">Unit 6 單字選擇題挑戰</h1>
     <p class="text-slate-500 font-bold mb-8">選擇要練習的單字範圍</p>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl px-4">
         <button onclick="startGameCategory('g1')" class="stage-btn !h-auto !py-5 !text-2xl font-black text-indigo-700 flex flex-col gap-1" id="btn-cat-g1">
-            <span>1 ~ 10</span>
+            <span>1 ~ 9</span>
             <span id="score-g1" class="text-sm font-bold text-slate-400"></span>
         </button>
         <button onclick="startGameCategory('g2')" class="stage-btn !h-auto !py-5 !text-2xl font-black text-indigo-700 flex flex-col gap-1" id="btn-cat-g2">
-            <span>11 ~ 20</span>
+            <span>10 ~ 18</span>
             <span id="score-g2" class="text-sm font-bold text-slate-400"></span>
         </button>
         <button onclick="startGameCategory('g3')" class="stage-btn !h-auto !py-5 !text-2xl font-black text-indigo-700 flex flex-col gap-1" id="btn-cat-g3">
-            <span>21 ~ 30</span>
+            <span>19 ~ 27</span>
             <span id="score-g3" class="text-sm font-bold text-slate-400"></span>
         </button>
         <button onclick="startGameCategory('g4')" class="stage-btn !h-auto !py-5 !text-2xl font-black text-indigo-700 flex flex-col gap-1" id="btn-cat-g4">
-            <span>31 ~ 41</span>
+            <span>28 ~ 36</span>
             <span id="score-g4" class="text-sm font-bold text-slate-400"></span>
         </button>
         <button onclick="startGameCategory('wrong')" class="stage-btn !h-auto !py-5 !text-2xl font-black text-red-700 flex flex-col gap-1 hidden col-span-1 sm:col-span-2 border-red-200 hover:border-red-400 hover:bg-red-50/50" id="btn-cat-wrong">
@@ -154,7 +154,7 @@
     <button onclick="backToHomeDirectly()" class="absolute top-0 left-0 bg-white hover:bg-slate-100 text-slate-600 px-4 py-2 rounded-xl font-bold text-sm transition-colors shadow-sm border border-slate-200 z-10">← 回主選單</button>
 
     <header class="relative text-center mb-4 pt-10">
-        <h1 class="text-2xl font-black text-slate-900 mb-1">Unit 5 單字挑戰</h1>
+        <h1 class="text-2xl font-black text-slate-900 mb-1">Unit 6 單字挑戰</h1>
         <div class="flex justify-center gap-4 text-sm font-black mt-2">
             <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">✅ 答對：<span id="game-score">0</span></span>
             <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full">⏱ <span id="game-timer">0</span> 秒</span>
@@ -165,7 +165,7 @@
     <main class="space-y-3">
         <!-- Question Card -->
         <div class="premium-card p-6 md:p-8 text-center relative overflow-hidden flex flex-col items-center justify-center min-h-[180px]">
-            <div class="absolute top-3 left-3 bg-indigo-100 text-indigo-700 font-black rounded-full px-3 py-1 text-sm" id="question-index-badge">Q 1/10</div>
+            <div class="absolute top-3 left-3 bg-indigo-100 text-indigo-700 font-black rounded-full px-3 py-1 text-sm" id="question-index-badge">Q 1/9</div>
             <h2 id="zh-prompt" class="text-4xl md:text-5xl font-black text-slate-800 tracking-wide mt-2 mb-4">載入中...</h2>
             <button id="btn-speak-zh" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold py-2 px-4 rounded-xl text-sm flex items-center gap-2 border border-indigo-100 active:scale-95 transition-transform">
                 🔊 聽英文
@@ -190,54 +190,49 @@
 
 <script>
     const fullDictionary = [
-        {zh:'昨天', en:'yesterday', cat:'g1'},
-        {zh:'海灘', en:'beach', cat:'g1'},
-        {zh:'垃圾', en:'trash', cat:'g1'},
-        {zh:'前；以前', en:'ago', cat:'g1'},
-        {zh:'拜訪', en:'visit', cat:'g1'},
-        {zh:'島嶼', en:'island', cat:'g1'},
-        {zh:'幾個；一些', en:'a few', cat:'g1'},
-        {zh:'海', en:'sea', cat:'g1'},
-        {zh:'停止', en:'stop', cat:'g1'},
-        {zh:'發生', en:'happen', cat:'g1'},
-        {zh:'死亡的', en:'dead', cat:'g2'},
-        {zh:'溫暖的', en:'warm', cat:'g2'},
-        {zh:'雨林', en:'rainforest', cat:'g2'},
-        {zh:'死亡', en:'die', cat:'g2'},
-        {zh:'在…旁邊', en:'by', cat:'g2'},
-        {zh:'怎麼會? / 為什麼?', en:'How come?', cat:'g2'},
-        {zh:'那時候', en:'then', cat:'g2'},
-        {zh:'忙碌的', en:'busy', cat:'g2'},
-        {zh:'河流', en:'river', cat:'g2'},
-        {zh:'湖泊', en:'lake', cat:'g2'},
-        {zh:'山丘', en:'hill', cat:'g3'},
-        {zh:'山', en:'mountain', cat:'g3'},
-        {zh:'露營；紮營', en:'camp', cat:'g3'},
-        {zh:'爬（山）', en:'climb', cat:'g3'},
-        {zh:'划船', en:'row a boat', cat:'g3'},
-        {zh:'種植；植物', en:'plant', cat:'g3'},
-        {zh:'健行', en:'hike', cat:'g3'},
-        {zh:'野餐', en:'picnic', cat:'g3'},
-        {zh:'上一個的', en:'last', cat:'g3'},
-        {zh:'居住', en:'live', cat:'g3'},
-        {zh:'遊樂場；操場', en:'playground', cat:'g4'},
-        {zh:'每樣事物', en:'everything', cat:'g4'},
-        {zh:'改變', en:'change', cat:'g4'},
-        {zh:'燃燒', en:'burn', cat:'g4'},
-        {zh:'油', en:'oil', cat:'g4'},
-        {zh:'賣', en:'sell', cat:'g4'},
-        {zh:'賺錢', en:'make money', cat:'g4'},
-        {zh:'想念', en:'miss', cat:'g4'},
-        {zh:'小的', en:'little', cat:'g4'},
-        {zh:'一點一點地；逐漸地', en:'little by little', cat:'g4'},
-        {zh:'方式', en:'way', cat:'g4'}
+        {zh:'機場', en:'airport', cat:'g1'},
+        {zh:'旅行；行進', en:'travel', cat:'g1'},
+        {zh:'休息', en:'rest', cat:'g1'},
+        {zh:'飯店', en:'hotel', cat:'g1'},
+        {zh:'飛機', en:'plane', cat:'g1'},
+        {zh:'風景；名勝', en:'the sights', cat:'g1'},
+        {zh:'書店', en:'bookstore', cat:'g1'},
+        {zh:'購買', en:'buy', cat:'g1'},
+        {zh:'就；只', en:'just', cat:'g1'},
+        {zh:'學習', en:'learn', cat:'g2'},
+        {zh:'故事', en:'story', cat:'g2'},
+        {zh:'酷的', en:'cool', cat:'g2'},
+        {zh:'火車', en:'train', cat:'g2'},
+        {zh:'冷的', en:'cold', cat:'g2'},
+        {zh:'嘗試', en:'try', cat:'g2'},
+        {zh:'距離；路線', en:'way', cat:'g2'},
+        {zh:'帶；拿；取', en:'take', cat:'g2'},
+        {zh:'前幾天', en:'the other day', cat:'g2'},
+        {zh:'車站；局', en:'station', cat:'g3'},
+        {zh:'百貨公司', en:'department store', cat:'g3'},
+        {zh:'餐廳', en:'restaurant', cat:'g3'},
+        {zh:'電影院', en:'theater', cat:'g3'},
+        {zh:'市場', en:'market', cat:'g3'},
+        {zh:'寺廟', en:'temple', cat:'g3'},
+        {zh:'有名的', en:'famous', cat:'g3'},
+        {zh:'在…期間', en:'during', cat:'g3'},
+        {zh:'除…之外', en:'besides', cat:'g3'},
+        {zh:'墜入情網', en:'fall in love', cat:'g4'},
+        {zh:'年記', en:'age', cat:'g4'},
+        {zh:'失去', en:'lose', cat:'g4'},
+        {zh:'哭泣', en:'cry', cat:'g4'},
+        {zh:'躲藏', en:'hide', cat:'g4'},
+        {zh:'建造', en:'build', cat:'g4'},
+        {zh:'旅行；行程', en:'trip', cat:'g4'},
+        {zh:'令人傷心地', en:'sadly', cat:'g4'},
+        {zh:'持續', en:'last', cat:'g4'}
     ];
 
-    const catLabels = {g1:'1 ~ 10', g2:'11 ~ 20', g3:'21 ~ 30', g4:'31 ~ 41', wrong:'常錯題型'};
+    const catLabels = {g1:'1 ~ 9', g2:'10 ~ 18', g3:'19 ~ 27', g4:'28 ~ 36', wrong:'常錯題型'};
     let activeDictionary = [], currentCategory = '', questions = [];
     let currentIndex = 0, isCorrectAnswerSelected = false;
     let correctCount = 0, timerInterval = null, elapsedSeconds = 0;
-    const LS_KEY = 'u5-words';
+    const LS_KEY = 'u6-words';
     let records = {g1:null, g2:null, g3:null, g4:null, wrong:null};
     let wrongSet = new Map(); // en -> item object
     const synth = window.speechSynthesis;
@@ -257,6 +252,7 @@
         } catch(e) {}
     }
 
+    // Rate and Pitch parameters for consistent quality speech
     function speak(text, isChinese=false) {
         if (!text) return;
         synth.cancel();

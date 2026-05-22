@@ -312,10 +312,16 @@
             </div>
             <h2 class="text-4xl font-extrabold text-indigo-900 mb-3 animate-bounce">超級無敵棒！🎉</h2>
             <p class="text-slate-600 text-lg mb-8 font-medium">你用最清晰的視覺與智慧，完成了所有 be動詞過去式 的挑戰！</p>
-            <button onclick="closeOverlay()"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl px-8 py-4 rounded-2xl font-bold transition shadow-lg btn-premium">
-                太棒了，再試一次！
-            </button>
+            <div class="flex flex-col gap-3">
+                <button onclick="closeOverlay()"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl px-8 py-4 rounded-2xl font-bold transition shadow-lg btn-premium">
+                    太棒了，再試一次！
+                </button>
+                <button onclick="viewResults()"
+                    class="w-full bg-white hover:bg-slate-50 text-indigo-600 border-2 border-indigo-200 text-lg px-8 py-3 rounded-2xl font-bold transition">
+                    檢視答案 (留在頁面)
+                </button>
+            </div>
         </div>
     </div>
 
@@ -812,7 +818,7 @@
             if (completedCount === totalCount) {
                 bar.classList.remove('from-indigo-500', 'to-blue-500');
                 bar.classList.add('from-emerald-500', 'to-teal-500');
-                showOverlay();
+                setTimeout(showOverlay, 1200);
             } else {
                 bar.classList.add('from-indigo-500', 'to-blue-500');
                 bar.classList.remove('from-emerald-500', 'to-teal-500');
@@ -853,6 +859,21 @@
 
                 // Reload or Reset All
                 exercises.forEach(ex => resetQuestion(ex.id));
+            }, 500);
+        }
+
+        // View Results (Close modal without resetting)
+        window.viewResults = function () {
+            const overlay = document.getElementById('completion-overlay');
+            const modal = document.getElementById('completion-modal');
+
+            overlay.classList.add('opacity-0');
+            modal.classList.remove('scale-100');
+            modal.classList.add('scale-90');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                document.querySelectorAll('.confetti').forEach(c => c.remove());
             }, 500);
         }
 

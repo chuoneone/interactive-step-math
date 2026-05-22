@@ -252,10 +252,16 @@
                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xl px-8 py-4 rounded-2xl font-bold transition shadow-lg btn-premium mb-4">
                 再玩一次！
             </button>
-            <button onclick="backToHome()"
-                class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 text-xl px-8 py-4 rounded-2xl font-bold transition shadow-lg btn-premium">
-                回主選單
-            </button>
+            <div class="flex gap-4 mb-4">
+                <button onclick="backToHome()"
+                    class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xl px-8 py-4 rounded-2xl font-bold transition shadow-lg btn-premium">
+                    回主選單
+                </button>
+                <button onclick="viewResultsOnly()"
+                    class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xl px-8 py-4 rounded-2xl font-bold transition border border-slate-200 btn-premium">
+                    檢視答案
+                </button>
+            </div>
         </div>
     </div>
 
@@ -534,7 +540,7 @@
         // Load specific question details
         function loadQuestion() {
             if (currentIndex >= questions.length) {
-                showOverlay();
+                setTimeout(showOverlay, 500);
                 return;
             }
 
@@ -580,7 +586,13 @@
             });
 
             // Reset action area view
-            document.getElementById('btn-next').classList.add('hidden');
+            const btnNext = document.getElementById('btn-next');
+            btnNext.classList.add('hidden');
+            if (currentIndex === questions.length - 1) {
+                btnNext.textContent = '查看結果 ➔';
+            } else {
+                btnNext.textContent = '下一題 ➔';
+            }
             clearFeedback();
             // Hide correct overlay for next question
             document.getElementById('correct-overlay').classList.remove('show');
@@ -626,7 +638,13 @@
                 clearFeedback();
 
                 // Enable Next Question Button
-                document.getElementById('btn-next').classList.remove('hidden');
+                const btnNext = document.getElementById('btn-next');
+                if (currentIndex === questions.length - 1) {
+                    btnNext.textContent = '查看結果 ➔';
+                } else {
+                    btnNext.textContent = '下一題 ➔';
+                }
+                btnNext.classList.remove('hidden');
 
                 // Visual freeze of choice container (prevent changing correct state)
                 const choices = document.querySelectorAll('#choices-container .choice-btn');
@@ -657,7 +675,13 @@
                 });
 
                 // Show next button (no auto-advance)
-                document.getElementById('btn-next').classList.remove('hidden');
+                const btnNext = document.getElementById('btn-next');
+                if (currentIndex === questions.length - 1) {
+                    btnNext.textContent = '查看結果 ➔';
+                } else {
+                    btnNext.textContent = '下一題 ➔';
+                }
+                btnNext.classList.remove('hidden');
             }
         }
 
@@ -780,6 +804,21 @@
                 updateHomeScores();
             }, 500);
         }
+
+        function viewResultsOnly() {
+            const overlay = document.getElementById('completion-overlay');
+            const modal = document.getElementById('completion-modal');
+
+            overlay.classList.add('opacity-0');
+            modal.classList.remove('scale-100');
+            modal.classList.add('scale-90');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                document.querySelectorAll('.confetti').forEach(c => c.remove());
+            }, 500);
+        }
+        window.viewResultsOnly = viewResultsOnly;
 
         function backToHomeDirectly() {
             stopTimer();

@@ -1,8 +1,49 @@
 /* ========================================= */
-/* 1. ?箇?閮剖???擃匱??*/
+/* 1. 全域變數與字型載入 */
 /* ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&family=Noto+Sans+TC:wght@400;900&display=swap');
+
+:root {
+    --navbar-bg: #0f766e;
+    --navbar-border: #ffb800;
+    --hero-gradient: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #4338ca 100%);
+    --body-bg: #f8fafc;
+    
+    /* Subject: Chinese */
+    --ch-primary: #0d9488;
+    --ch-dark: #0f766e;
+    --ch-light: #f0fdfa;
+    --ch-border: #ccfbf1;
+    
+    /* Subject: Math */
+    --ma-primary: #2563eb;
+    --ma-dark: #1e3a8a;
+    --ma-light: #eff6ff;
+    --ma-border: #dbeafe;
+    
+    /* Subject: English */
+    --en-primary: #8b5cf6;
+    --en-dark: #5b21b6;
+    --en-light: #f5f3ff;
+    --en-border: #ede9fe;
+    
+    /* Subject: Social */
+    --so-primary: #f43f5e;
+    --so-dark: #be123c;
+    --so-light: #fff1f2;
+    --so-border: #fda4af;
+    
+    /* Subject: Strategy */
+    --st-primary: #06b6d4;
+    --st-dark: #0891b2;
+    --st-light: #ecfeff;
+    --st-border: #67e8f9;
+    
+    --accent: #ffb800;
+    --accent-hover: #f59e0b;
+    --shadow-hover: 0 12px 30px rgba(15, 118, 110, 0.12);
+}
 
 *,
 *::before,
@@ -11,7 +52,7 @@
 }
 
 body {
-    background: #f1f5f9;
+    background: var(--body-bg);
     background-attachment: fixed;
     color: #1e293b;
     margin: 0;
@@ -25,14 +66,14 @@ body {
 }
 
 /* ========================================= */
-/* 2. 撠汗??(Navbar) */
+/* 2. 導航欄 (Navbar) */
 /* ========================================= */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #005959;
-    border-bottom: 3px solid #f4c542;
+    background: var(--navbar-bg);
+    border-bottom: 4px solid var(--navbar-border);
     padding: 10px 30px;
     position: fixed;
     width: 100%;
@@ -40,7 +81,7 @@ body {
     left: 0;
     z-index: 1000;
     border-radius: 0;
-    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);
+    box-shadow: 0 4px 20px rgba(15, 118, 110, 0.15);
     animation: slideInFromTop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     transform: translateY(-150%);
 }
@@ -60,13 +101,19 @@ body {
 .navbar .logo {
     font-size: 1.8em;
     font-weight: 900;
-    color: #f4c542;
+    color: var(--accent);
     text-shadow: none;
     letter-spacing: 2px;
     font-family: inherit;
     text-decoration: none;
     white-space: nowrap;
     flex-shrink: 0;
+    transition: all 0.3s;
+}
+
+.navbar .logo:hover {
+    color: #ffffff;
+    transform: scale(1.05);
 }
 
 .nav-links {
@@ -97,15 +144,15 @@ body {
 
 .nav-links a:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #f4c542;
+    color: var(--accent);
     transform: scale(1.1);
     box-shadow: none;
 }
 
 .nav-links a.active {
     background: rgba(255, 255, 255, 0.15);
-    color: #f4c542;
-    border: 1px solid #f4c542;
+    color: var(--accent);
+    border: 1px solid var(--accent);
     box-shadow: none;
 }
 
@@ -113,12 +160,12 @@ body {
 .hero-section {
     width: 100%;
     padding: 60px 20px 40px 20px;
-    background: linear-gradient(135deg, #005959 0%, #008080 100%);
+    background: var(--hero-gradient);
     color: white;
     text-align: center;
-    border-radius: 0 0 50px 50px; /* ?膜摨 */
+    border-radius: 0 0 40px 40px;
     margin-bottom: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.1);
 }
 
 .hero-content h1 {
@@ -1344,4 +1391,18 @@ a.btn[href=""] {
     width: 100%;
     justify-content: center;
     gap: 10px;
+}
+
+/* ========================================= */
+/* 9. 其它樣式優化 */
+/* ========================================= */
+
+/* --- 停止更新公告優化 (Stop Update Notice Premium Flat Card) --- */
+.stop-update-notice {
+    transform: none !important;
+    border: 2px solid #fda4af !important;
+    background: #fff5f5 !important;
+    color: #e11d48 !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08) !important;
+    border-radius: 12px !important;
 }

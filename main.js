@@ -94,7 +94,13 @@ let currentSem = 2;
 
 // 主程式初始化
 document.addEventListener('DOMContentLoaded', () => {
-    // A. 注入導覽列
+    // A. 動態偵測網頁檔名並注入 body class
+    const filename = window.location.pathname.split('/').pop().toLowerCase();
+    if (filename === '' || filename === 'index.html') {
+        document.body.classList.add('portal-page');
+    }
+
+    // B. 注入導覽列
     const navbarElement = document.querySelector('.navbar');
     if (navbarElement) {
         navbarElement.innerHTML = NAVBAR_TEMPLATE;
