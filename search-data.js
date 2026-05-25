@@ -31,6 +31,13 @@ window.SEARCH_INDEX = [
     { title: "7下 數學 Ch2 坐標圖形", page: "7.html", section: "s2-chapter2", keywords: "7年級 國一 數學 坐標圖形 平面" },
     { title: "7下 數學 Ch3 比例", page: "7.html", section: "s2-chapter3", keywords: "7年級 國一 數學 比例 正比 反比" },
     { title: "7下 數學 Ch4 不等式", page: "7.html", section: "s2-chapter4", keywords: "7年級 國一 數學 不等式" },
+    { title: "7下 數學 4-2 x - a 類型", page: "math/G7S2-4-2-01.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 x-a 點選填空 分步解題" },
+    { title: "7下 數學 4-2 x + a 類型", page: "math/G7S2-4-2-02.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 x+a 點選填空 分步解題" },
+    { title: "7下 數學 4-2 -x 類型", page: "math/G7S2-4-2-03.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 負號 轉向 點選填空 分步解題" },
+    { title: "7下 數學 4-2 -x ± a 類型", page: "math/G7S2-4-2-04.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 移項 變號 點選填空 分步解題" },
+    { title: "7下 數學 4-2 係數 x 類型", page: "math/G7S2-4-2-05.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 係數 點選填空 分步解題" },
+    { title: "7下 數學 4-2 分數係數 x 類型", page: "math/G7S2-4-2-06.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 分數係數 點選填空 分步解題" },
+    { title: "7下 數學 4-2 分數係數結合加減", page: "math/G7S2-4-2-07.html", section: "", keywords: "7年級 國一 數學 不等式 解一元一次不等式 分數係數 加減 點選填空 分步解題" },
 
     // --- 7年級 英文 ---
     { title: "7上 英文 Unit 1", page: "7eng.html", section: "s1-unit1", keywords: "7年級 國一 英文 Unit 1 be動詞" },

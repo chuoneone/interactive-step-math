@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+}
+
+.math-line {
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    line-height: 1.8;
+    margin: 14px 0;
+}
+
+.math,
+.math-display {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.math-display {
+    justify-content: center;
+    width: 100%;
+    overflow-x: auto;
+    padding: 8px 0;
+}
+
+.katex {
+    font-size: 1.12em;
+}
+
+.slot {
+    min-width: 58px;
+    min-height: 46px;
+    padding: 4px 12px;
+    border: 3px solid #93c5fd;
+    border-radius: 12px;
+    background: #eff6ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #1d4ed8;
+    cursor: pointer;
+    font-size: 26px;
+    font-weight: 800;
+    transition: all 0.2s ease;
+}
+
+.slot.active {
+    animation: pulseSlot 1s infinite;
+    background: #dbeafe;
+    border-color: #2563eb;
+}
+
+.slot.correct {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #166534;
+    cursor: default;
+}
+
+@keyframes pulseSlot {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45);
+    }
+
+    70% {
+        box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
