@@ -64,6 +64,7 @@ window.SEARCH_INDEX = [
 
     // --- 特需課程 ---
     { title: "社會技巧", page: "socialskill.html", section: "", keywords: "特需 社會技巧" },
+    { title: "校園衝突解碼器", page: "socialemotion/conflict_decoder.html", section: "", keywords: "特需 社會技巧 情緒 EQ 溝通 非暴力溝通 衝突" },
     { title: "學習策略", page: "learningstrategy.html", section: "", keywords: "特需 學習策略" },
 
     // --- 工具 ---
