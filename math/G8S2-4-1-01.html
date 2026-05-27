@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學-點擊版：平行線的截角性質</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts - Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- KaTeX CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* 數學式美觀 CSS */
+        .math-line {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            line-height: 1.8;
+            margin: 14px 0;
+        }
+
+        .math,
+        .math-display {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+
+        .math-display {
+            justify-content: center;
+            width: 100%;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .katex {
+            font-size: 1.15em;
+        }
+
+        /* 填答格 Slot 樣式 */
+        .slot {
+            min-width: 64px;
+            min-height: 48px;
+            padding: 4px 14px;
+            border: 3px solid #93c5fd;
+            border-radius: 12px;
+            background: #eff6ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #1d4ed8;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: 900;
+            transition: all 0.2s ease;
+        }
+
+        .slot.active {
+            animation: pulseSlot 1.2s infinite;
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+
+        .slot.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+            cursor: default;
+        }
+
+        @keyframes pulseSlot {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            }
+        }
+
+        /* 隱藏滾動條但保持功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 確保 SVG 圓圈徽章能以中心點進行平滑縮放動畫 */
+        g circle {
+            transform-box: fill-box;
+            transform-origin: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        g text {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* SVG 亮點發光效果：優化數字與背景對比度 */
+        .highlight-glow circle {
+            stroke: #f59e0b !important;
+            stroke-width: 3.5px !important;
+            fill: #fef3c7 !important;
+            /* 溫暖的亮黃色底，提供高對比 */
+        }
+
+        .highlight-glow text {
+            fill: #b45309 !important;
+            /* 強制切換為深琥珀色，確保極佳的數字清晰度 */
+            font-weight: 900 !important;
+        }
+
+        /* 呼吸發光效果：只動態縮放背景圓圈並閃爍陰影，文字不閃爍，保持 100% 辨識度 */
+        .highlight-angle {
+            animation: glowPulse 1.6s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes glowPulse {
+            0% {
+                filter: drop-shadow(0px 0px 4px rgba(245, 158, 11, 0.5));
+                transform: scale(1);
+            }
+
+            100% {
+                filter: drop-shadow(0px 0px 14px rgba(245, 158, 11, 1));
+                transform: scale(1.15);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col select-none">
+
+    <!-- 頂部多題目導覽列 -->
+    <header class="bg-white border-b border-slate-200 shadow-sm shrink-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+
+            <!-- 單元名稱與分頁按鈕 -->
+            <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
+                <span
+                    class="text-lg font-black text-indigo-700 whitespace-nowrap bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100">
+                    📍 平行線與截角
+                </span>
+                <div id="nav-btn-container" class="flex gap-2">
+                    <!-- 動態生成題目切換鈕 -->
+                </div>
+            </div>
+
+            <!-- 右側計時與分數 -->
+            <div class="flex items-center gap-3 shrink-0">
+                <div
+                    class="flex items-center gap-1.5 bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-xl text-rose-700 font-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timer-display" class="tabular-nums">07:00</span>
+                </div>
+
+                <div
+                    class="bg-amber-50 border border-amber-200 px-4 py-1.5 rounded-xl text-amber-700 font-extrabold flex items-center gap-1">
+                    <span>得分:</span>
+                    <span id="score-display" class="text-xl text-amber-600 tabular-nums">0</span>
+                    <span class="text-sm text-slate-400">/110</span>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- 題型判定橫幅 -->
+    <div class="bg-indigo-600 text-white text-xs md:text-sm py-1.5 px-4 font-bold tracking-wider text-center shrink-0">
+        💡 本單元題型：【幾何：平行線截角性質概念理解與度數推理計算】
+    </div>
+
+    <!-- 主學習區塊 -->
+    <main class="flex-1 relative flex flex-col md:flex-row">
+
+        <!-- 兩欄式容器 -->
+        <div
+            class="flex-1 overflow-y-auto p-4 md:p-6 w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 pb-24">
+
+            <!-- 左欄：圖形與題幹 (Sticky) -->
+            <div
+                class="col-span-12 md:col-span-5 md:sticky md:top-0 h-fit bg-white p-5 rounded-3xl border border-slate-200 shadow-md">
+                <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                    <h2 id="question-title" class="text-xl font-black text-slate-800">載入中...</h2>
+                    <span class="text-xs bg-slate-100 text-slate-500 font-bold px-2 py-1 rounded-md">幾何圖形</span>
+                </div>
+
+                <!-- 題幹文字 -->
+                <p id="question-prompt" class="text-lg text-slate-600 mb-4 leading-relaxed"></p>
+
+                <!-- SVG 圖形渲染區 -->
+                <div class="bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 relative overflow-hidden"
+                    style="min-height: 280px;">
+                    <!-- SVG 1: Q1 -->
+                    <svg id="svg-q1" class="w-full max-w-[360px] h-auto hidden" viewBox="0 0 400 300"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <!-- 輔助網格/背景 (隱形) -->
+                        <rect width="100%" height="100%" fill="none" />
+
+                        <!-- 兩條平行線 L1, L2 -->
+                        <line id="q1-l1" x1="50" y1="100" x2="350" y2="120" stroke="#3b82f6" stroke-width="4"
+                            stroke-linecap="round" />
+                        <line id="q1-l2" x1="40" y1="210" x2="340" y2="230" stroke="#3b82f6" stroke-width="4"
+                            stroke-linecap="round" />
+
+                        <!-- 截線 L -->
+                        <line id="q1-trans" x1="290" y1="50" x2="250" y2="270" stroke="#475569" stroke-width="4"
+                            stroke-linecap="round" />
+
+                        <!-- 標籤文字 -->
+                        <text x="360" y="125" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#3b82f6">L₁</text>
+                        <text x="350" y="235" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#3b82f6">L₂</text>
+                        <text x="290" y="40" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#475569">L</text>
+
+                        <!-- 角度徽章（圓圈背景+文字置中，徹底解決重疊與辨識度問題） -->
+                        <!-- L1 與 L 的交點一 P1(281, 113) -->
+                        <!-- ∠1 -->
+                        <g id="grp-q1-a1">
+                            <circle cx="255" cy="85" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="255" y="85" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">1</text>
+                        </g>
+                        <!-- ∠2 -->
+                        <g id="grp-q1-a2">
+                            <circle cx="307" cy="90" r="15" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" />
+                            <text x="307" y="90" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#ef4444" text-anchor="middle"
+                                dominant-baseline="central">2</text>
+                        </g>
+                        <!-- ∠4 -->
+                        <g id="grp-q1-a4">
+                            <circle cx="250" cy="140" r="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+                            <text x="250" y="140" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#2563eb" text-anchor="middle"
+                                dominant-baseline="central">4</text>
+                        </g>
+                        <!-- ∠3 -->
+                        <g id="grp-q1-a3">
+                            <circle cx="302" cy="145" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="302" y="145" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">3</text>
+                        </g>
+
+                        <!-- L2 與 L 的交點二 P2(262, 219) -->
+                        <!-- ∠5 -->
+                        <g id="grp-q1-a5">
+                            <circle cx="235" cy="190" r="15" fill="#ffffff" stroke="#86efac" stroke-width="1.5" />
+                            <text x="235" y="190" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#10b981" text-anchor="middle"
+                                dominant-baseline="central">5</text>
+                        </g>
+                        <!-- ∠6 -->
+                        <g id="grp-q1-a6">
+                            <circle cx="287" cy="195" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="287" y="195" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">6</text>
+                        </g>
+                        <!-- ∠8 -->
+                        <g id="grp-q1-a8">
+                            <circle cx="230" cy="245" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="230" y="245" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">8</text>
+                        </g>
+                        <!-- ∠7 -->
+                        <g id="grp-q1-a7">
+                            <circle cx="282" cy="250" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="282" y="250" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">7</text>
+                        </g>
+                    </svg>
+
+                    <!-- SVG 2: Q2 -->
+                    <svg id="svg-q2" class="w-full max-w-[360px] h-auto hidden" viewBox="0 0 400 300"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <!-- 兩條平行線 L1, L2 -->
+                        <line id="q2-l1" x1="160" y1="50" x2="110" y2="260" stroke="#3b82f6" stroke-width="4"
+                            stroke-linecap="round" />
+                        <line id="q2-l2" x1="280" y1="80" x2="230" y2="290" stroke="#3b82f6" stroke-width="4"
+                            stroke-linecap="round" />
+
+                        <!-- 截線 M -->
+                        <line id="q2-trans" x1="60" y1="110" x2="350" y2="210" stroke="#475569" stroke-width="4"
+                            stroke-linecap="round" />
+
+                        <!-- 標籤文字 -->
+                        <text x="165" y="45" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#3b82f6">L₁</text>
+                        <text x="285" y="75" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#3b82f6">L₂</text>
+                        <text x="360" y="220" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#475569">M</text>
+
+                        <!-- L1 與 M 的交點 P1(140, 136) -->
+                        <!-- ∠1 -->
+                        <g id="grp-q2-a1">
+                            <circle cx="110" cy="115" r="15" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" />
+                            <text x="110" y="115" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#ef4444" text-anchor="middle"
+                                dominant-baseline="central">1</text>
+                        </g>
+                        <!-- ∠2 -->
+                        <g id="grp-q2-a2">
+                            <circle cx="170" cy="120" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="170" y="120" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">2</text>
+                        </g>
+                        <!-- ∠4 -->
+                        <g id="grp-q2-a4">
+                            <circle cx="110" cy="160" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="110" y="160" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">4</text>
+                        </g>
+                        <!-- ∠3 -->
+                        <g id="grp-q2-a3">
+                            <circle cx="170" cy="165" r="15" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" />
+                            <text x="170" y="165" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#ef4444" text-anchor="middle"
+                                dominant-baseline="central">3</text>
+                        </g>
+
+                        <!-- L2 與 M 的交點 P2(256, 175) -->
+                        <!-- ∠5 -->
+                        <g id="grp-q2-a5">
+                            <circle cx="225" cy="155" r="15" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" />
+                            <text x="225" y="155" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#ef4444" text-anchor="middle"
+                                dominant-baseline="central">5</text>
+                        </g>
+                        <!-- ∠6 -->
+                        <g id="grp-q2-a6">
+                            <circle cx="285" cy="160" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="285" y="160" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">6</text>
+                        </g>
+                        <!-- ∠8 -->
+                        <g id="grp-q2-a8">
+                            <circle cx="225" cy="200" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="225" y="200" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">8</text>
+                        </g>
+                        <!-- ∠7 -->
+                        <g id="grp-q2-a7">
+                            <circle cx="285" cy="205" r="15" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" />
+                            <text x="285" y="205" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#ef4444" text-anchor="middle"
+                                dominant-baseline="central">7</text>
+                        </g>
+                    </svg>
+
+                    <!-- SVG 3: Q3 -->
+                    <svg id="svg-q3" class="w-full max-w-[360px] h-auto hidden" viewBox="0 0 400 300"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <!-- 兩條平行線 L1, L2 -->
+                        <line id="q3-l1" x1="50" y1="110" x2="350" y2="110" stroke="#3b82f6" stroke-width="4"
+                            stroke-linecap="round" />
+                        <line id="q3-l2" x1="50" y1="210" x2="350" y2="210" stroke="#3b82f6" stroke-width="4"
+                            stroke-linecap="round" />
+
+                        <!-- 截線 M -->
+                        <line id="q3-trans" x1="130" y1="260" x2="250" y2="60" stroke="#475569" stroke-width="4"
+                            stroke-linecap="round" />
+
+                        <!-- 標籤文字 -->
+                        <text x="360" y="115" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#3b82f6">L₁</text>
+                        <text x="360" y="215" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#3b82f6">L₂</text>
+                        <text x="235" y="50" font-family="'Noto Sans TC', sans-serif" font-weight="bold" font-size="18"
+                            fill="#475569">M</text>
+
+                        <!-- L1 與 M 的交點 P1(220, 110) -->
+                        <!-- ∠1 -->
+                        <g id="grp-q3-a1">
+                            <circle cx="250" cy="85" r="15" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5" />
+                            <text x="250" y="85" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#ef4444" text-anchor="middle"
+                                dominant-baseline="central">1</text>
+                        </g>
+                        <!-- ∠2 -->
+                        <g id="grp-q3-a2">
+                            <circle cx="190" cy="85" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="190" y="85" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">2</text>
+                        </g>
+                        <!-- ∠3 -->
+                        <g id="grp-q3-a3">
+                            <circle cx="190" cy="135" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="190" y="135" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">3</text>
+                        </g>
+                        <!-- ∠4 -->
+                        <g id="grp-q3-a4">
+                            <circle cx="250" cy="135" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="250" y="135" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">4</text>
+                        </g>
+
+                        <!-- L2 與 M 的交點 P2(160, 210) -->
+                        <!-- ∠5 -->
+                        <g id="grp-q3-a5">
+                            <circle cx="190" cy="185" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="190" y="185" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">5</text>
+                        </g>
+                        <!-- ∠6 -->
+                        <g id="grp-q3-a6">
+                            <circle cx="130" cy="185" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="130" y="185" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">6</text>
+                        </g>
+                        <!-- ∠7 -->
+                        <g id="grp-q3-a7">
+                            <circle cx="130" cy="235" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="130" y="235" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">7</text>
+                        </g>
+                        <!-- ∠8 -->
+                        <g id="grp-q3-a8">
+                            <circle cx="190" cy="235" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="190" y="235" font-family="'Noto Sans TC', sans-serif" font-size="15"
+                                font-weight="900" fill="#475569" text-anchor="middle"
+                                dominant-baseline="central">8</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 右欄：步驟解鎖流程區 -->
+            <div id="steps-container" class="col-span-12 md:col-span-7 flex flex-col gap-6">
+                <!-- 動態渲染當前題目的步驟 -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 作答完成 Modal -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div
+            class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center border border-slate-100 transform scale-95 transition-transform duration-300">
+            <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-600 animate-bounce" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+
+            <h3 id="modal-title" class="text-3xl font-black text-slate-800 mb-2">🎉 挑戰成功！</h3>
+            <p id="modal-subtitle" class="text-slate-500 mb-6">太棒了！你已經完成了本單元的所有截角挑戰！</p>
+
+            <!-- 成績簡報 -->
+            <div class="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100 flex justify-around">
+                <div>
+                    <span class="block text-xs text-slate-400 font-bold mb-1">完成時間</span>
+                    <span id="finish-time" class="text-xl font-black text-slate-700 tabular-nums">00:00</span>
+                </div>
+                <div class="border-r border-slate-200"></div>
+                <div>
+                    <span class="block text-xs text-slate-400 font-bold mb-1">最終得分</span>
+                    <span id="finish-score" class="text-2xl font-black text-amber-600 tabular-nums">0</span>
+                    <span class="text-xs text-slate-400 font-bold">/ 110</span>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="restartAll()"
+                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-95 text-lg">
+                    再做一次 🔄
+                </button>
+                <button onclick="closeModal()"
+                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3.5 px-6 rounded-2xl transition-all active:scale-95 text-lg">
+                    關閉視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示訊息 Toast -->
+    <div id="toast"
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white font-bold py-3 px-6 rounded-2xl shadow-xl transition-all duration-300 opacity-0 pointer-events-none z-50 text-base flex items-center gap-2">
+        <!-- Toast 內文 -->
+    </div>
+
+    <script>
+        // 題型判定資訊（僅供開發與內部參考）
+        console.log("【題型判定】：國中數學幾何——平行線的截角性質（同位角、內錯角、同側內角與度數推導）");
+
+        // 音效合成器 (Web Audio API)
+        const audioSynth = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playSuccess() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const gain = this.ctx.createGain();
+                gain.connect(this.ctx.destination);
+
+                // C5 -> E5 -> G5 琶音
+                const freqs = [523.25, 659.25, 783.99];
+                freqs.forEach((f, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    osc.frequency.setValueAtTime(f, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.25);
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.25);
+                });
+            },
+            playError() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, now);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+        };
+
+        // 核心資料狀態結構
+        const appState = {
+            score: 0,
+            totalScore: 110, // 11 steps in total, 10 points each
+            timeRemaining: 420, // 7 mins = 420s
+            timerInterval: null,
+            activeQuestionIdx: 0,
+            questions: [
+                {
+                    id: 1,
+                    title: "題目 1：截角性質認識",
+                    prompt: "如圖，直線 <mark class='bg-amber-100 font-bold px-1 rounded'>L</mark> 是 <mark class='bg-blue-100 font-bold px-1 rounded text-blue-700'>L₁</mark> 和 <mark class='bg-blue-100 font-bold px-1 rounded text-blue-700'>L₂</mark> 的截線，請點擊下方選項，找出正確的截角關係。",
+                    svgId: "svg-q1",
+                    activeStepIdx: 0,
+                    steps: [
+                        {
+                            id: "q1s1",
+                            title: "步驟 1：找出 ∠2 的同位角",
+                            instruction: "點擊下方按鈕，填入 <mark class='bg-red-100 text-red-600 font-bold px-1 rounded'>∠2</mark> 的同位角：",
+                            type: "single",
+                            latexPre: "\\angle 2 \\text{ 的同位角為 }",
+                            latexPost: "",
+                            slots: [null],
+                            correct: ["∠6"],
+                            options: ["∠1", "∠3", "∠4", "∠5", "∠6", "∠7", "∠8"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["2", "6"]
+                        },
+                        {
+                            id: "q1s2",
+                            title: "步驟 2：找出 ∠4 的同側內角",
+                            instruction: "點擊下方按鈕，填入 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠4</mark> 的同側內角：",
+                            type: "single",
+                            latexPre: "\\angle 4 \\text{ 的同側內角為 }",
+                            latexPost: "",
+                            slots: [null],
+                            correct: ["∠5"],
+                            options: ["∠1", "∠2", "∠3", "∠5", "∠6", "∠7", "∠8"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["4", "5"]
+                        },
+                        {
+                            id: "q1s3",
+                            title: "步驟 3：找出 ∠5 的內錯角",
+                            instruction: "點擊下方按鈕，填入 <mark class='bg-green-100 text-green-600 font-bold px-1 rounded'>∠5</mark> 的內錯角：",
+                            type: "single",
+                            latexPre: "\\angle 5 \\text{ 的內錯角為 }",
+                            latexPost: "",
+                            slots: [null],
+                            correct: ["∠3"],
+                            options: ["∠1", "∠2", "∠3", "∠4", "∠6", "∠7", "∠8"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["5", "3"]
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "題目 2：計算平行線截角 (I)",
+                    prompt: "如圖，平行線 <mark class='bg-blue-100 font-bold px-1 text-blue-700 rounded'>L₁ // L₂</mark>，<mark class='bg-slate-100 font-bold px-1 rounded'>M</mark> 是截線。已知 <mark class='bg-amber-100 font-bold px-1 rounded text-amber-700'>∠1 = 57°</mark>，請運用平行線性質進行推演。",
+                    svgId: "svg-q2",
+                    activeStepIdx: 0,
+                    steps: [
+                        {
+                            id: "q2s1",
+                            title: "步驟 1：∠2 的同側內角",
+                            instruction: "請找出 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠2</mark> 的同側內角是哪一個角？",
+                            type: "single",
+                            latexPre: "\\angle 2 \\text{ 和 }",
+                            latexPost: "\\text{ 是同側內角。}",
+                            slots: [null],
+                            correct: ["∠5"],
+                            options: ["∠3", "∠4", "∠5", "∠6", "∠7", "∠8"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["2", "5"]
+                        },
+                        {
+                            id: "q2s2",
+                            title: "步驟 2：∠3 的同位角",
+                            instruction: "請找出 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠3</mark> 的同位角是哪一個角？",
+                            type: "single",
+                            latexPre: "\\angle 3 \\text{ 和 }",
+                            latexPost: "\\text{ 是同位角。}",
+                            slots: [null],
+                            correct: ["∠7"],
+                            options: ["∠1", "∠2", "∠4", "∠5", "∠6", "∠7", "∠8"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["3", "7"]
+                        },
+                        {
+                            id: "q2s3",
+                            title: "步驟 3：求出 ∠6 的度數",
+                            instruction: "因為 L₁ // L₂，同位角相等。已知 ∠1 = 57°，而 <mark class='bg-amber-100 px-1 font-bold rounded'>∠2 = 180° - 57° = 123°</mark>。由此試求 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠6</mark> 為幾度？",
+                            type: "single",
+                            latexPre: "\\angle 6 =",
+                            latexPost: "^{\\circ}",
+                            slots: [null],
+                            correct: ["123"],
+                            options: ["57", "123", "180", "110", "70"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["1", "2", "6"]
+                        },
+                        {
+                            id: "q2s4",
+                            title: "步驟 4：求出 ∠8 的度數",
+                            instruction: "由對頂角或內錯角關係，試求 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠8</mark> 為幾度？",
+                            type: "single",
+                            latexPre: "\\angle 8 =",
+                            latexPost: "^{\\circ}",
+                            slots: [null],
+                            correct: ["123"],
+                            options: ["57", "123", "180", "60", "130"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["6", "8"]
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "題目 3：推演所有截角度數",
+                    prompt: "如圖，平行線 <mark class='bg-blue-100 font-bold px-1 text-blue-700 rounded'>L₁ // L₂</mark>，<mark class='bg-slate-100 font-bold px-1 rounded'>M</mark> 是截線。已知 <mark class='bg-amber-100 font-bold px-1 rounded text-amber-700'>∠1 = 70°</mark>，請點擊填入推導出其他所有角的度數！",
+                    svgId: "svg-q3",
+                    activeStepIdx: 0,
+                    steps: [
+                        {
+                            id: "q3s1",
+                            title: "步驟 1：求出 ∠2 與 ∠3 的度數",
+                            instruction: "利用「鄰角互補」求 ∠2，與「對頂角相等」求 ∠3。請依序填入：",
+                            type: "double",
+                            latexPre1: "\\angle 2 =",
+                            latexPost1: "^{\\circ} , \\quad \\angle 3 =",
+                            latexPost2: "^{\\circ}",
+                            slots: [null, null],
+                            correct: ["110", "70"],
+                            options: ["70", "110", "180", "60", "120"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["1", "2", "3"]
+                        },
+                        {
+                            id: "q3s2",
+                            title: "步驟 2：求出 ∠4 與 ∠5 的度數",
+                            instruction: "試求出 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠4</mark> 及其同側內角 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠5</mark> 的度數：",
+                            type: "double",
+                            latexPre1: "\\angle 4 =",
+                            latexPost1: "^{\\circ} , \\quad \\angle 5 =",
+                            latexPost2: "^{\\circ}",
+                            slots: [null, null],
+                            correct: ["110", "70"],
+                            options: ["70", "110", "180", "80", "100"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["4", "5"]
+                        },
+                        {
+                            id: "q3s3",
+                            title: "步驟 3：求出 ∠6 與 ∠7 的度數",
+                            instruction: "試求出 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠6</mark> 與 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠7</mark> 的度數：",
+                            type: "double",
+                            latexPre1: "\\angle 6 =",
+                            latexPost1: "^{\\circ} , \\quad \\angle 7 =",
+                            latexPost2: "^{\\circ}",
+                            slots: [null, null],
+                            correct: ["110", "70"],
+                            options: ["70", "110", "180", "90", "120"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["6", "7"]
+                        },
+                        {
+                            id: "q3s4",
+                            title: "步驟 4：求出 ∠8 的度數",
+                            instruction: "最後推演出 <mark class='bg-blue-100 text-blue-600 font-bold px-1 rounded'>∠8</mark> 的度數：",
+                            type: "single",
+                            latexPre: "\\angle 8 =",
+                            latexPost: "^{\\circ}",
+                            slots: [null],
+                            correct: ["110"],
+                            options: ["70", "110", "180", "65", "115"],
+                            answeredCorrectly: false,
+                            hasError: false,
+                            highlightAngles: ["8"]
+                        }
+                    ]
+                }
+            ],
+            currentStepActiveSlotIdx: 0 // 當前正在作答步驟中的主動填答格 index
+        };
+
+        // 啟動計時器
+        function startTimer() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+            appState.timerInterval = setInterval(() => {
+                if (appState.timeRemaining > 0) {
+                    appState.timeRemaining--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(appState.timerInterval);
+                    // 時間到，強制結束
+                    showTimeout();
+                }
+            }, 1000);
+        }
+
+        // 更新計時顯示
+        function updateTimerDisplay() {
+            const mins = Math.floor(appState.timeRemaining / 60);
+            const secs = appState.timeRemaining % 60;
+            const displayStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = displayStr;
+
+            // 倒數警告音效/視覺 (最後一分鐘)
+            if (appState.timeRemaining <= 60) {
+                document.getElementById('timer-display').parentElement.classList.add('animate-pulse', 'bg-red-100', 'text-red-700');
+            } else {
+                document.getElementById('timer-display').parentElement.classList.remove('animate-pulse', 'bg-red-100', 'text-red-700');
+            }
+        }
+
+        // 動態渲染多題目切換導覽列
+        function renderNavigation() {
+            const container = document.getElementById('nav-btn-container');
+            container.innerHTML = '';
+
+            appState.questions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+
+                // 判斷是否完成該題所有步驟
+                const isCompleted = q.steps.every(s => s.answeredCorrectly);
+                const isActive = idx === appState.activeQuestionIdx;
+
+                let btnClass = "px-4 py-1.5 rounded-xl font-bold whitespace-nowrap text-sm border transition-all active:scale-95 flex items-center gap-1 ";
+                if (isActive) {
+                    btnClass += "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100";
+                } else if (isCompleted) {
+                    btnClass += "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100";
+                } else {
+                    btnClass += "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+                }
+
+                btn.className = btnClass;
+                btn.innerHTML = `
+          <span>題目 ${idx + 1}</span>
+          ${isCompleted ? '<span class="text-xs">✔</span>' : ''}
+        `;
+
+                btn.onclick = () => switchQuestion(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        // 切換題目並保留進度
+        function switchQuestion(idx) {
+            appState.activeQuestionIdx = idx;
+
+            // 更新主畫面
+            const q = appState.questions[idx];
+            document.getElementById('question-title').innerText = q.title;
+            document.getElementById('question-prompt').innerHTML = q.prompt;
+
+            // 切換 SVG
+            appState.questions.forEach(item => {
+                document.getElementById(item.svgId).classList.add('hidden');
+            });
+            document.getElementById(q.svgId).classList.remove('hidden');
+
+            // 重設當前步驟的主動 slot 索引
+            const activeStep = q.steps[q.activeStepIdx];
+            if (activeStep) {
+                const firstEmpty = activeStep.slots.indexOf(null);
+                appState.currentStepActiveSlotIdx = firstEmpty !== -1 ? firstEmpty : 0;
+            }
+
+            renderSteps();
+            renderNavigation();
+            updateSVGHighlight();
+        }
+
+        // 亂序重排演算法
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // 渲染右側的所有步驟
+        function renderSteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+
+            const q = appState.questions[appState.activeQuestionIdx];
+
+            q.steps.forEach((step, stepIdx) => {
+                const isLocked = stepIdx > q.activeStepIdx;
+                const isActive = stepIdx === q.activeStepIdx;
+                const isCompleted = step.answeredCorrectly;
+
+                // 建立 Step 容器
+                const stepCard = document.createElement('div');
+                stepCard.id = `step-card-${stepIdx}`;
+
+                let cardClass = "p-5 rounded-3xl border transition-all duration-300 ";
+                if (isLocked) {
+                    cardClass += "bg-slate-50/50 border-slate-100 opacity-40 select-none pointer-events-none";
+                } else if (isCompleted) {
+                    cardClass += "bg-emerald-50/60 border-emerald-200 shadow-sm";
+                } else {
+                    cardClass += "bg-white border-blue-200 shadow-lg shadow-blue-50 relative ring-4 ring-blue-50";
+                }
+                stepCard.className = cardClass;
+
+                // 步驟標題區
+                const titleEl = document.createElement('div');
+                titleEl.className = "flex items-center justify-between mb-2 border-b border-dashed border-slate-200 pb-2";
+                titleEl.innerHTML = `
+          <h3 class="font-black text-base text-slate-700 flex items-center gap-1.5">
+            <span class="w-6 h-6 rounded-lg ${isCompleted ? 'bg-emerald-500 text-white' : isActive ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-600'} text-xs flex items-center justify-center font-black">
+              ${stepIdx + 1}
+            </span>
+            ${step.title}
+          </h3>
+          ${isCompleted ? '<span class="text-sm font-black text-emerald-600 flex items-center gap-1">✔ 已完成</span>' : isLocked ? '<span class="text-sm font-bold text-slate-400">🔒 尚未解鎖</span>' : '<span class="text-xs bg-indigo-50 text-indigo-600 font-black px-2 py-1 rounded-md animate-pulse">進行中</span>'}
+        `;
+                stepCard.appendChild(titleEl);
+
+                // 鎖定狀態下不渲染內容
+                if (isLocked) {
+                    container.appendChild(stepCard);
+                    return;
+                }
+
+                // 題目步驟指令
+                const instructionEl = document.createElement('p');
+                instructionEl.className = "text-base text-slate-500 mb-3 font-medium leading-relaxed";
+                instructionEl.innerHTML = step.instruction;
+                stepCard.appendChild(instructionEl);
+
+                // 填答公式區 (混合 KaTeX 與 HTML Slot)
+                const mathLine = document.createElement('div');
+                mathLine.className = "math-line bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3";
+
+                if (step.type === "single") {
+                    // 前段數學式
+                    if (step.latexPre) {
+                        const mathPre = document.createElement('span');
+                        mathPre.className = "math";
+                        mathPre.dataset.latex = step.latexPre;
+                        mathLine.appendChild(mathPre);
+                    }
+
+                    // 填答格
+                    const slot = document.createElement('span');
+                    const isSlotActive = isActive && appState.currentStepActiveSlotIdx === 0;
+                    slot.className = `slot ${isCompleted ? 'correct' : ''} ${isSlotActive ? 'active' : ''}`;
+                    slot.innerText = step.slots[0] !== null ? step.slots[0] : "?";
+                    slot.onclick = () => handleSlotClick(stepIdx, 0);
+                    mathLine.appendChild(slot);
+
+                    // 後段數學式
+                    if (step.latexPost) {
+                        const mathPost = document.createElement('span');
+                        mathPost.className = "math";
+                        mathPost.dataset.latex = step.latexPost;
+                        mathLine.appendChild(mathPost);
+                    }
+                } else {
+                    // Double slots: Q3 step
+                    // L2 = slot0, L3 = slot1
+                    const mathPre1 = document.createElement('span');
+                    mathPre1.className = "math";
+                    mathPre1.dataset.latex = step.latexPre1;
+                    mathLine.appendChild(mathPre1);
+
+                    const slot1 = document.createElement('span');
+                    const isSlot1Active = isActive && appState.currentStepActiveSlotIdx === 0;
+                    slot1.className = `slot ${isCompleted ? 'correct' : ''} ${isSlot1Active ? 'active' : ''}`;
+                    slot1.innerText = step.slots[0] !== null ? step.slots[0] : "?";
+                    slot1.onclick = () => handleSlotClick(stepIdx, 0);
+                    mathLine.appendChild(slot1);
+
+                    const mathPost1 = document.createElement('span');
+                    mathPost1.className = "math";
+                    mathPost1.dataset.latex = step.latexPost1;
+                    mathLine.appendChild(mathPost1);
+
+                    const slot2 = document.createElement('span');
+                    const isSlot2Active = isActive && appState.currentStepActiveSlotIdx === 1;
+                    slot2.className = `slot ${isCompleted ? 'correct' : ''} ${isSlot2Active ? 'active' : ''}`;
+                    slot2.innerText = step.slots[1] !== null ? step.slots[1] : "?";
+                    slot2.onclick = () => handleSlotClick(stepIdx, 1);
+                    mathLine.appendChild(slot2);
+
+                    if (step.latexPost2) {
+                        const mathPost2 = document.createElement('span');
+                        mathPost2.className = "math";
+                        mathPost2.dataset.latex = step.latexPost2;
+                        mathLine.appendChild(mathPost2);
+                    }
+                }
+
+                stepCard.appendChild(mathLine);
+
+                // 若該步驟尚未完成，則顯示選項區與檢查按鈕
+                if (!isCompleted) {
+                    // 亂序後的選項
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = "mt-4";
+
+                    const optionsTitle = document.createElement('span');
+                    optionsTitle.className = "text-xs font-black text-slate-400 block mb-2";
+                    optionsTitle.innerText = "👉 點擊下方選項填入：";
+                    optionsContainer.appendChild(optionsTitle);
+
+                    const optionsGrid = document.createElement('div');
+                    optionsGrid.className = "grid grid-cols-4 sm:grid-cols-5 gap-2.5";
+
+                    // 如果尚未打亂過，在此時把選項打亂一次
+                    if (!step.shuffledOptions) {
+                        step.shuffledOptions = shuffleArray(step.options);
+                    }
+
+                    step.shuffledOptions.forEach(opt => {
+                        const optBtn = document.createElement('button');
+                        optBtn.type = 'button';
+                        optBtn.className = "bg-white hover:bg-indigo-50 active:bg-indigo-100 border-2 border-slate-200 hover:border-indigo-400 text-slate-700 font-extrabold py-2.5 px-3 rounded-xl transition-all active:scale-95 text-lg shadow-sm";
+                        optBtn.innerText = opt;
+                        optBtn.onclick = () => fillSlot(stepIdx, opt);
+                        optionsGrid.appendChild(optBtn);
+                    });
+                    optionsContainer.appendChild(optionsGrid);
+                    stepCard.appendChild(optionsContainer);
+
+                    // 錯誤提示與檢查按鈕
+                    const actionRow = document.createElement('div');
+                    actionRow.className = "mt-5 flex items-center justify-between gap-4 border-t border-slate-100 pt-4";
+
+                    // 錯誤文字
+                    const feedbackText = document.createElement('span');
+                    feedbackText.className = "text-red-500 font-bold text-sm min-h-[20px]";
+                    feedbackText.innerText = step.hasError ? "⚠️ 答案不太對喔，再觀察圖形看看！" : "";
+                    actionRow.appendChild(feedbackText);
+
+                    const checkBtn = document.createElement('button');
+                    checkBtn.type = 'button';
+
+                    // 檢查是否有未填答空格
+                    const hasEmpty = step.slots.some(s => s === null);
+                    checkBtn.className = `font-black py-2.5 px-6 rounded-xl text-sm shadow-md transition-all active:scale-95 ${hasEmpty ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-100'}`;
+                    checkBtn.innerText = "檢查答案";
+                    checkBtn.disabled = hasEmpty;
+                    checkBtn.onclick = () => checkStepAnswer(stepIdx);
+
+                    actionRow.appendChild(checkBtn);
+                    stepCard.appendChild(actionRow);
+                }
+
+                container.appendChild(stepCard);
+            });
+
+            // 動態更新 KaTeX 公式
+            renderMath();
+        }
+
+        // 當前步驟之 Slot 點擊事件：清空
+        function handleSlotClick(stepIdx, slotIdx) {
+            const q = appState.questions[appState.activeQuestionIdx];
+            const step = q.steps[stepIdx];
+
+            if (step.answeredCorrectly) return;
+
+            // 清空該格
+            step.slots[slotIdx] = null;
+            appState.currentStepActiveSlotIdx = slotIdx;
+
+            // 重繪右側步驟
+            renderSteps();
+        }
+
+        // 選項按鈕點擊：填入主動填答格
+        function fillSlot(stepIdx, val) {
+            const q = appState.questions[appState.activeQuestionIdx];
+            const step = q.steps[stepIdx];
+
+            // 填入當前高亮的 slot
+            step.slots[appState.currentStepActiveSlotIdx] = val;
+
+            // 自動尋找下一個空格
+            const nextEmpty = step.slots.indexOf(null);
+            if (nextEmpty !== -1) {
+                appState.currentStepActiveSlotIdx = nextEmpty;
+            } else {
+                // 沒有空格了，維持在原本格
+            }
+
+            renderSteps();
+        }
+
+        // 檢查步驟答案
+        function checkStepAnswer(stepIdx) {
+            const q = appState.questions[appState.activeQuestionIdx];
+            const step = q.steps[stepIdx];
+
+            // 檢查是否全滿
+            if (step.slots.some(s => s === null)) {
+                showToast("⚠️ 請填滿所有空格再檢查喔！");
+                return;
+            }
+
+            // 判斷是否正確
+            let isCorrect = true;
+            for (let i = 0; i < step.slots.length; i++) {
+                if (step.slots[i] !== step.correct[i]) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                // 播放成功音效與通知
+                audioSynth.playSuccess();
+                step.answeredCorrectly = true;
+
+                // 計分規則：若該步驟從未答錯過，則得10分（同一步驟不重複計分）
+                if (!step.hasError) {
+                    appState.score += 10;
+                    updateScoreDisplay();
+                }
+
+                // 解鎖下一步
+                if (stepIdx === q.activeStepIdx && q.activeStepIdx < q.steps.length - 1) {
+                    // 延遲解鎖下一步，給予滑動與視覺停留效果
+                    setTimeout(() => {
+                        q.activeStepIdx++;
+                        appState.currentStepActiveSlotIdx = 0;
+                        renderSteps();
+                        updateSVGHighlight();
+                        scrollToActiveStep();
+                    }, 400);
+                } else if (stepIdx === q.steps.length - 1) {
+                    // 此題全部步驟完成
+                    showToast("🎉 恭喜你完成本題所有步驟！");
+                    renderNavigation();
+
+                    // 檢查是否所有題目都完成了
+                    const allCompleted = appState.questions.every(item => item.steps.every(s => s.answeredCorrectly));
+                    if (allCompleted) {
+                        clearInterval(appState.timerInterval);
+                        setTimeout(showFinishModal, 800);
+                    }
+                }
+
+                renderSteps();
+            } else {
+                // 錯誤反饋
+                audioSynth.playError();
+                step.hasError = true;
+                renderSteps();
+                showToast("⚠️ 答案不太對喔，再想想看！");
+            }
+        }
+
+        // 自動捲動到當前活動步驟
+        function scrollToActiveStep() {
+            const activeCard = document.getElementById(`step-card-${appState.questions[appState.activeQuestionIdx].activeStepIdx}`);
+            if (activeCard) {
+                activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // 更新 SVG 中與當前步驟相關的角的高亮效果
+        function updateSVGHighlight() {
+            const q = appState.questions[appState.activeQuestionIdx];
+            const step = q.steps[q.activeStepIdx];
+
+            // 先清空該題所有角與背景徽章的高亮狀態
+            const allAngleGroups = document.querySelectorAll(`[id^="grp-"]`);
+            allAngleGroups.forEach(g => {
+                g.classList.remove('highlight-glow');
+                const txt = g.querySelector('text');
+                if (txt) txt.classList.remove('highlight-angle');
+                const circ = g.querySelector('circle');
+                if (circ) circ.classList.remove('highlight-angle');
+            });
+
+            if (!step || step.answeredCorrectly) return;
+
+            // 根據步驟關聯的角，添加發光與呼吸動畫（只加在 circle 上，文字維持不透明靜止）
+            if (step.highlightAngles) {
+                step.highlightAngles.forEach(num => {
+                    const grp = document.getElementById(`grp-q${q.id}-a${num}`);
+                    if (grp) {
+                        grp.classList.add('highlight-glow');
+                        const circ = grp.querySelector('circle');
+                        if (circ) circ.classList.add('highlight-angle');
+                    }
+                });
+            }
+        }
+
+        // 更新分數顯示
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = appState.score;
+        }
+
+        // Toast 顯示通知
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // 展示挑戰成功 Modal
+        function showFinishModal(isTimeout = false) {
+            document.getElementById('finish-score').innerText = appState.score;
+
+            // 計算作答使用時間
+            const usedSeconds = 420 - appState.timeRemaining;
+            const mins = Math.floor(usedSeconds / 60);
+            const secs = usedSeconds % 60;
+            document.getElementById('finish-time').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubtitle = document.getElementById('modal-subtitle');
+            if (isTimeout) {
+                modalTitle.innerText = "⏰ 時間到囉！";
+                modalSubtitle.innerText = "沒關係，再接再厲！再挑戰一次看看吧！";
+            } else {
+                modalTitle.innerText = "🎉 挑戰成功！";
+                modalSubtitle.innerText = "太棒了！你已經完成了本單元的所有截角挑戰！";
+            }
+
+            const modal = document.getElementById('finish-modal');
+            modal.classList.remove('hidden');
+        }
+
+        // 時間到 Modal
+        function showTimeout() {
+            audioSynth.playError();
+            showToast("⏰ 時間到囉！讓我們重新挑戰一次吧！");
+            setTimeout(() => showFinishModal(true), 1500);
+        }
+
+        // 關閉 Modal
+        function closeModal() {
+            document.getElementById('finish-modal').classList.add('hidden');
+        }
+
+        // 重新作答（保留進度清除）
+        function restartAll() {
+            closeModal();
+
+            // 重設核心狀態
+            appState.score = 0;
+            appState.timeRemaining = 420;
+            appState.activeQuestionIdx = 0;
+
+            appState.questions.forEach(q => {
+                q.activeStepIdx = 0;
+                q.steps.forEach(step => {
+                    step.slots = step.slots.map(() => null);
+                    step.answeredCorrectly = false;
+                    step.hasError = false;
+                    delete step.shuffledOptions;
+                });
+            });
+
+            appState.currentStepActiveSlotIdx = 0;
+
+            updateScoreDisplay();
+            updateTimerDisplay();
+            startTimer();
+            switchQuestion(0);
+        }
+
+        // 初始化自動渲染 KaTeX
+        function renderMath() {
+            document.querySelectorAll('.math').forEach(el => {
+                if (!el.dataset.rendered) {
+                    katex.render(el.dataset.latex, el, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                    el.dataset.rendered = "true";
+                }
+            });
+            document.querySelectorAll('.math-display').forEach(el => {
+                if (!el.dataset.rendered) {
+                    katex.render(el.dataset.latex, el, {
+                        throwOnError: false,
+                        displayMode: true
+                    });
+                    el.dataset.rendered = "true";
+                }
+            });
+        }
+
+        // 網頁加載初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMath();
+            switchQuestion(0);
+            startTimer();
+        });
+    </script>
+</body>
+
+</html>
