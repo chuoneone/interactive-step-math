@@ -354,26 +354,33 @@
     margin: 10px auto 20px auto;
   }
 
-  /* 英文單元按鈕 (U1-U6) 手機版改為 2x3 置中 */
+  /* 英文單元按鈕 (U1-U6) 手機版改為精緻的 3 欄圓形按鈕，大幅節省高度且更美觀 */
   .button-container.eg-container {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     max-width: 300px;
     justify-items: center;
+    gap: 16px 12px;
   }
 
   .eg-container .section-button {
-    width: 130px !important;
-    height: 130px !important;
-    min-height: 130px !important;
-    font-size: 22px !important;
+    width: 80px !important;
+    height: 80px !important;
+    min-height: 80px !important;
+    font-size: 20px !important;
     margin: 0 !important;
+    border-radius: 50% !important; /* 設計成 Duolingo 風格的精緻圓形 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
   }
 
-  /* 如果有第 7 個按鈕 (如 PK區)，讓它橫跨兩欄達到置中效果 */
+  /* 第 7 個按鈕 (PK區) 橫跨 3 欄並設計為膠囊狀寬按鈕，視覺更和諧 */
   .eg-container .section-button:nth-child(7) {
-    grid-column: span 2;
+    grid-column: span 3;
     width: 100% !important;
-    max-width: 272px; /* 130*2 + 12 */
+    max-width: 264px; /* 80*3 + 12*2 */
+    height: 48px !important;
+    min-height: 48px !important;
+    border-radius: 24px !important;
+    font-size: 16px !important;
   }
 
   .section-button,
