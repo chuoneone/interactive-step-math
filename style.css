@@ -1,4 +1,4 @@
-﻿/* ========================================= */
+/* ========================================= */
 /* 1. 全域變數與字型載入 */
 /* ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
@@ -9,37 +9,37 @@
     --navbar-border: #F5A130;
     --hero-gradient: linear-gradient(135deg, #2C9E9E 0%, #3BB8B8 50%, #4338ca 100%);
     --body-bg: #f8fafc;
-    
+
     /* Subject: Chinese */
     --ch-primary: #3BB8B8;
     --ch-dark: #2C9E9E;
     --ch-light: #f0fdfa;
     --ch-border: #ccfbf1;
-    
+
     /* Subject: Math */
     --ma-primary: #2563eb;
     --ma-dark: #1e3a8a;
     --ma-light: #eff6ff;
     --ma-border: #dbeafe;
-    
+
     /* Subject: English */
     --en-primary: #8b5cf6;
     --en-dark: #5b21b6;
     --en-light: #f5f3ff;
     --en-border: #ede9fe;
-    
+
     /* Subject: Social */
     --so-primary: #f43f5e;
     --so-dark: #be123c;
     --so-light: #fff1f2;
     --so-border: #fda4af;
-    
+
     /* Subject: Strategy */
     --st-primary: #06b6d4;
     --st-dark: #0891b2;
     --st-light: #ecfeff;
     --st-border: #67e8f9;
-    
+
     --accent: #F5A130;
     --accent-hover: #f59e0b;
     --shadow-hover: 0 12px 30px rgba(44, 158, 158, 0.12);
@@ -172,7 +172,7 @@ body {
     font-size: 3rem;
     font-weight: 900;
     margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     letter-spacing: 2px;
 }
 
@@ -181,6 +181,7 @@ body {
     opacity: 0.9;
     font-weight: 500;
 }
+
 .search-container {
     position: relative;
     flex: 1;
@@ -252,7 +253,8 @@ body {
     border-bottom: none;
 }
 
-.search-item:hover, .search-item.selected {
+.search-item:hover,
+.search-item.selected {
     background: #F5A130;
     outline: none;
 }
@@ -286,12 +288,30 @@ body {
 }
 
 @keyframes searchPulse {
-    0% { transform: scale(1); }
-    10% { transform: scale(1.05); }
-    20% { transform: scale(1); }
-    30% { transform: scale(1.05); }
-    40% { transform: scale(1); }
-    100% { transform: scale(1); border-color: transparent; }
+    0% {
+        transform: scale(1);
+    }
+
+    10% {
+        transform: scale(1.05);
+    }
+
+    20% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.05);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1);
+        border-color: transparent;
+    }
 }
 
 /* ?惜?梯?璅∪? (Focus Mode) */
@@ -311,7 +331,8 @@ body.menu-hidden #floating-toggle {
     font-size: 0.9rem;
     color: #475569;
     position: sticky;
-    top: 63px; /* 蝺票 Navbar */
+    top: 63px;
+    /* 蝺票 Navbar */
     width: 100%;
     z-index: 950;
     backdrop-filter: blur(8px);
@@ -322,7 +343,8 @@ body.menu-hidden #floating-toggle {
 
 /* 蝘駁 body padding-top ?踹?頝喳?嚗??sticky 雿? */
 body {
-    padding-top: 63px; /* ?芣? Navbar ??摨?*/
+    padding-top: 63px;
+    /* ?芣? Navbar ??摨?*/
 }
 
 .breadcrumb-item {
@@ -407,7 +429,8 @@ body.menu-hidden .section-content.active-section {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 120px); /* ??撠汗??頝臬?璇?擃漲 */
+    min-height: calc(100vh - 120px);
+    /* ??撠汗??頝臬?璇?擃漲 */
     padding: 20px 0;
 }
 
@@ -417,7 +440,8 @@ body.menu-hidden .section-content.active-section {
     align-items: center;
     width: 100%;
     max-width: 1600px;
-    margin: 0 auto; /* 蝘駁?箏? margin-top */
+    margin: 0 auto;
+    /* 蝘駁?箏? margin-top */
 }
 
 /* 撠釣璅∪?銝葬皜??寥?頝?*/
