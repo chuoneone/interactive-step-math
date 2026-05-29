@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>平行線截角互動教室</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #16202a;
+      --muted: #5d6774;
+      --line: #d8dee7;
+      --panel: #ffffff;
+      --paper: #f6f8fb;
+      --blue: #2563eb;
+      --green: #11875d;
+      --red: #d84a3a;
+      --yellow: #f0b429;
+      --violet: #7c3aed;
+      --shadow: 0 18px 45px rgba(36, 50, 72, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.88), rgba(246,248,251,.9)),
+        repeating-linear-gradient(0deg, transparent 0 31px, rgba(38, 99, 235, .05) 31px 32px),
+        repeating-linear-gradient(90deg, transparent 0 31px, rgba(38, 99, 235, .05) 31px 32px);
+      min-height: 100vh;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    }
+
+    aside {
+      background: rgba(255, 255, 255, .92);
+      border-right: 1px solid var(--line);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    main {
+      padding: 28px;
+      display: grid;
+      grid-template-rows: auto minmax(420px, 1fr) auto;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.75rem);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .intro {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mode-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mode-button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 12px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 13px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .mode-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(31, 45, 62, .08);
+    }
+
+    .mode-button[aria-pressed="true"] {
+      border-color: currentColor;
+      box-shadow: inset 0 0 0 1px currentColor;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .mode-title {
+      font-weight: 800;
+    }
+
+    .mode-note {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .same-position { color: var(--blue); }
+    .alternate-interior { color: var(--green); }
+    .same-side-interior { color: var(--red); }
+
+    .controls,
+    .lesson,
+    .challenge {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(36, 50, 72, .06);
+    }
+
+    .control-row {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .control-row:first-child {
+      margin-top: 0;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+    }
+
+    .switches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toggle {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .toggle[aria-pressed="true"] {
+      background: #16202a;
+      color: #fff;
+      border-color: #16202a;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .status {
+      min-width: 250px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: grid;
+      gap: 4px;
+      box-shadow: 0 10px 30px rgba(36, 50, 72, .06);
+    }
+
+    .status strong {
+      font-size: 1.35rem;
+    }
+
+    .stage {
+      position: relative;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      min-height: 430px;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 430px;
+      touch-action: none;
+      background:
+        linear-gradient(transparent 39px, rgba(22, 32, 42, .05) 40px),
+        linear-gradient(90deg, transparent 39px, rgba(22, 32, 42, .05) 40px);
+      background-size: 40px 40px;
+    }
+
+    .parallel-line {
+      stroke: #263341;
+      stroke-width: 5;
+      stroke-linecap: round;
+    }
+
+    .transversal {
+      stroke: #6b7280;
+      stroke-width: 5;
+      stroke-linecap: round;
+      cursor: grab;
+    }
+
+    .transversal:active {
+      cursor: grabbing;
+    }
+
+    .angle-sector {
+      opacity: .82;
+      transition: opacity .2s ease;
+    }
+
+    .angle-sector.dim {
+      opacity: .16;
+    }
+
+    .angle-label {
+      font-size: 18px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+      fill: #16202a;
+      paint-order: stroke;
+      stroke: white;
+      stroke-width: 5px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .angle-label.active {
+      fill: #fff;
+      stroke: rgba(22, 32, 42, .55);
+      stroke-width: 3px;
+    }
+
+    .handle {
+      fill: #fff;
+      stroke: #2563eb;
+      stroke-width: 4;
+      cursor: grab;
+      filter: drop-shadow(0 4px 8px rgba(37, 99, 235, .28));
+    }
+
+    .handle:active {
+      cursor: grabbing;
+    }
+
+    .caption {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: .9rem;
+      box-shadow: 0 6px 18px rgba(22, 32, 42, .08);
+    }
+
+    .lesson-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+    }
+
+    .property {
+      display: grid;
+      gap: 8px;
+    }
+
+    .formula {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 10px 12px;
+      color: var(--ink);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .challenge-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .answer {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 11px 10px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .answer.correct {
+      border-color: var(--green);
+      background: rgba(17, 135, 93, .1);
+      color: var(--green);
+    }
+
+    .answer.wrong {
+      border-color: var(--red);
+      background: rgba(216, 74, 58, .1);
+      color: var(--red);
+    }
+
+    .feedback {
+      min-height: 1.8em;
+      margin-top: 10px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .primary {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 14px;
+      background: #16202a;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .secondary {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    @media (max-width: 920px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      main {
+        grid-template-rows: auto auto auto;
+      }
+
+      .topbar,
+      .lesson-grid {
+        display: grid;
+      }
+
+      .status {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 620px) {
+      aside,
+      main {
+        padding: 18px;
+      }
+
+      .switches,
+      .challenge-options {
+        grid-template-columns: 1fr;
+      }
+
+      svg,
+      .stage {
+        min-height: 460px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <section class="intro">
+        <h1>平行線截角互動教室</h1>
+        <p>拖曳藍色控制點改變截線，觀察同位角、內錯角、同側內角在平行線中會出現的固定關係。</p>
+      </section>
+
+      <section>
+        <h2>選擇要觀察的角</h2>
+        <div class="mode-list" id="modeList">
+          <button class="mode-button same-position" data-mode="corresponding" aria-pressed="true">
+            <span class="dot"></span>
+            <span>
+              <span class="mode-title">同位角</span><br>
+              <span class="mode-note">位置相同，角度相等</span>
+            </span>
+            <span>∠1 = ∠5</span>
+          </button>
+          <button class="mode-button alternate-interior" data-mode="alternate" aria-pressed="false">
+            <span class="dot"></span>
+            <span>
+              <span class="mode-title">內錯角</span><br>
+              <span class="mode-note">平行線內，截線兩側</span>
+            </span>
+            <span>∠3 = ∠5</span>
+          </button>
+          <button class="mode-button same-side-interior" data-mode="sameSide" aria-pressed="false">
+            <span class="dot"></span>
+            <span>
+              <span class="mode-title">同側內角</span><br>
+              <span class="mode-note">平行線內，截線同側</span>
+            </span>
+            <span>∠2 + ∠5</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="controls">
+        <h2>操作</h2>
+        <div class="control-row">
+          <label for="angleSlider">
+            <span>截線傾斜</span>
+            <strong><span id="angleValue">62</span>°</strong>
+          </label>
+          <input id="angleSlider" type="range" min="34" max="146" value="62">
+        </div>
+        <div class="control-row">
+          <label for="gapSlider">
+            <span>平行線間距</span>
+            <strong><span id="gapValue">190</span></strong>
+          </label>
+          <input id="gapSlider" type="range" min="130" max="250" value="190">
+        </div>
+        <div class="control-row">
+          <div class="switches">
+            <button class="toggle" id="parallelToggle" aria-pressed="true">保持平行</button>
+            <button class="toggle" id="labelsToggle" aria-pressed="true">顯示編號</button>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <main>
+      <section class="topbar">
+        <div>
+          <h2 id="modeHeading">同位角：相對位置一樣</h2>
+          <p id="modeDescription">兩條平行線被同一條截線切過時，位在兩個交點「同一個方位」的角會相等。</p>
+        </div>
+        <div class="status">
+          <span id="statusTitle">目前關係</span>
+          <strong id="statusFormula">∠1 = ∠5</strong>
+          <span id="statusDetail">62° = 62°</span>
+        </div>
+      </section>
+
+      <section class="stage" aria-label="平行線與截線互動圖">
+        <svg id="diagram" viewBox="0 0 860 520" role="img">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#263341"></path>
+            </marker>
+          </defs>
+          <g id="drawing"></g>
+        </svg>
+        <div class="caption">
+          <span class="chip">上方交點：∠1、∠2、∠3、∠4</span>
+          <span class="chip">下方交點：∠5、∠6、∠7、∠8</span>
+          <span class="chip">拖曳藍點也可以改變截線</span>
+        </div>
+      </section>
+
+      <section class="lesson-grid">
+        <div class="lesson">
+          <h2>性質整理</h2>
+          <div class="property">
+            <p id="propertyText">同位角在兩個交點的相對位置相同。只要兩線平行，同位角就會相等。</p>
+            <span class="formula" id="propertyFormula">同位角相等</span>
+          </div>
+          <div class="actions">
+            <button class="primary" id="cycleButton">下一種角</button>
+            <button class="secondary" id="resetButton">重設圖形</button>
+          </div>
+        </div>
+
+        <div class="challenge">
+          <h2>課堂快問</h2>
+          <p id="questionText">圖中被標亮的兩個角是什麼關係？</p>
+          <div class="challenge-options">
+            <button class="answer" data-answer="corresponding">同位角</button>
+            <button class="answer" data-answer="alternate">內錯角</button>
+            <button class="answer" data-answer="sameSide">同側內角</button>
+          </div>
+          <div class="feedback" id="feedback">選一個答案看看。</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      mode: "corresponding",
+      angle: 62,
+      gap: 190,
+      parallel: true,
+      labels: true,
+      dragging: false
+    };
+
+    const modes = {
+      corresponding: {
+        name: "同位角",
+        color: "#2563eb",
+        pair: [1, 5],
+        heading: "同位角：相對位置一樣",
+        description: "兩條平行線被同一條截線切過時，位在兩個交點「同一個方位」的角會相等。",
+        property: "同位角在兩個交點的相對位置相同。只要兩線平行，同位角就會相等。",
+        formulaText: "同位角相等",
+        relation: (a) => `∠1 = ∠5`,
+        detail: (angle) => `${Math.abs(180 - angle)}° = ${Math.abs(180 - angle)}°`
+      },
+      alternate: {
+        name: "內錯角",
+        color: "#11875d",
+        pair: [3, 5],
+        heading: "內錯角：內部、交錯兩側",
+        description: "兩個角都在平行線內側，而且分別位在截線的左右兩邊。平行時，這一對角會相等。",
+        property: "內錯角一定在兩條線之間，且分布在截線相反兩側。兩線平行時，內錯角相等。",
+        formulaText: "內錯角相等",
+        relation: (a) => `∠3 = ∠5`,
+        detail: (angle) => `${Math.abs(180 - angle)}° = ${Math.abs(180 - angle)}°`
+      },
+      sameSide: {
+        name: "同側內角",
+        color: "#d84a3a",
+        pair: [2, 5],
+        heading: "同側內角：內部、同一側",
+        description: "兩個角都在平行線內側，而且在截線同一邊。平行時，兩角相加會剛好是 180°。",
+        property: "同側內角都在兩條線之間，且位在截線同一側。兩線平行時，同側內角互補。",
+        formulaText: "同側內角互補",
+        relation: (a) => `∠2 + ∠5 = 180°`,
+        detail: (angle) => `${angle}° + ${180 - angle}° = 180°`
+      }
+    };
+
+    const drawing = document.querySelector("#drawing");
+    const angleSlider = document.querySelector("#angleSlider");
+    const gapSlider = document.querySelector("#gapSlider");
+    const angleValue = document.querySelector("#angleValue");
+    const gapValue = document.querySelector("#gapValue");
+    const parallelToggle = document.querySelector("#parallelToggle");
+    const labelsToggle = document.querySelector("#labelsToggle");
+    const feedback = document.querySelector("#feedback");
+    const answerButtons = [...document.querySelectorAll(".answer")];
+    const modeButtons = [...document.querySelectorAll(".mode-button")];
+
+    function polar(cx, cy, r, deg) {
+      const rad = deg * Math.PI / 180;
+      return { x: cx + Math.cos(rad) * r, y: cy + Math.sin(rad) * r };
+    }
+
+    function sectorPath(cx, cy, start, end, r) {
+      const a = polar(cx, cy, r, start);
+      const b = polar(cx, cy, r, end);
+      const sweep = ((end - start + 360) % 360) > 180 ? 1 : 0;
+      return `M ${cx} ${cy} L ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${r} ${r} 0 ${sweep} 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)} Z`;
+    }
+
+    function lineEndpoints(cx, cy, angle, length) {
+      const p1 = polar(cx, cy, length, angle + 180);
+      const p2 = polar(cx, cy, length, angle);
+      return { p1, p2 };
+    }
+
+    function normalizeAngle(deg) {
+      return ((deg % 360) + 360) % 360;
+    }
+
+    function getGeometry() {
+      const topY = 165;
+      const bottomY = topY + Number(state.gap);
+      const topTilt = state.parallel ? 0 : -7;
+      const bottomTilt = state.parallel ? 0 : 7;
+      const angle = Number(state.angle);
+      const topX = 430;
+      const transSlope = Math.tan(angle * Math.PI / 180);
+      const bottomSlope = Math.tan(bottomTilt * Math.PI / 180);
+      const bottomX = (bottomY - topY + transSlope * topX - bottomSlope * 430) / (transSlope - bottomSlope);
+      const bottomIntersectY = topY + transSlope * (bottomX - topX);
+      return { topY, bottomY, bottomIntersectY, topTilt, bottomTilt, angle, topX, bottomX };
+    }
+
+    function angleDefinitions(cx, cy, lineAngle, transAngle, offset) {
+      const l0 = normalizeAngle(lineAngle);
+      const l1 = normalizeAngle(lineAngle + 180);
+      const t0 = normalizeAngle(transAngle);
+      const t1 = normalizeAngle(transAngle + 180);
+      return [
+        { id: offset + 1, start: t1, end: l0, labelAngle: midpoint(t1, l0) },
+        { id: offset + 2, start: l0, end: t0, labelAngle: midpoint(l0, t0) },
+        { id: offset + 3, start: t0, end: l1, labelAngle: midpoint(t0, l1) },
+        { id: offset + 4, start: l1, end: t1, labelAngle: midpoint(l1, t1) }
+      ].map((item) => ({ ...item, cx, cy }));
+    }
+
+    function midpoint(start, end) {
+      let diff = normalizeAngle(end - start);
+      return normalizeAngle(start + diff / 2);
+    }
+
+    function interiorAngle() {
+      const a = Number(state.angle);
+      return a <= 90 ? a : 180 - a;
+    }
+
+    function createSvg(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+      return el;
+    }
+
+    function draw() {
+      drawing.replaceChildren();
+      const geo = getGeometry();
+      const active = modes[state.mode];
+      const angleA = state.angle;
+      const topLine = lineEndpoints(430, geo.topY, geo.topTilt, 470);
+      const bottomLine = lineEndpoints(430, geo.bottomY, geo.bottomTilt, 470);
+      const trans = lineEndpoints((geo.topX + geo.bottomX) / 2, (geo.topY + geo.bottomIntersectY) / 2, state.angle, 420);
+
+      drawing.append(
+        createSvg("line", { class: "parallel-line", x1: topLine.p1.x, y1: topLine.p1.y, x2: topLine.p2.x, y2: topLine.p2.y, "marker-start": "url(#arrow)", "marker-end": "url(#arrow)" }),
+        createSvg("line", { class: "parallel-line", x1: bottomLine.p1.x, y1: bottomLine.p1.y, x2: bottomLine.p2.x, y2: bottomLine.p2.y, "marker-start": "url(#arrow)", "marker-end": "url(#arrow)" }),
+        createSvg("line", { class: "transversal", id: "transversalLine", x1: trans.p1.x, y1: trans.p1.y, x2: trans.p2.x, y2: trans.p2.y })
+      );
+
+      const angles = [
+        ...angleDefinitions(geo.topX, geo.topY, geo.topTilt, angleA, 0),
+        ...angleDefinitions(geo.bottomX, geo.bottomIntersectY, geo.bottomTilt, angleA, 4)
+      ];
+
+      angles.forEach((item) => {
+        const isActive = active.pair.includes(item.id);
+        const sector = createSvg("path", {
+          d: sectorPath(item.cx, item.cy, item.start, item.end, 54),
+          fill: isActive ? active.color : "#cbd5e1",
+          class: `angle-sector ${isActive ? "" : "dim"}`
+        });
+        drawing.append(sector);
+      });
+
+      drawing.append(
+        createSvg("circle", { cx: geo.topX, cy: geo.topY, r: 5, fill: "#16202a" }),
+        createSvg("circle", { cx: geo.bottomX, cy: geo.bottomIntersectY, r: 5, fill: "#16202a" })
+      );
+
+      if (state.labels) {
+        angles.forEach((item) => {
+          const isActive = active.pair.includes(item.id);
+          const pos = polar(item.cx, item.cy, isActive ? 76 : 72, item.labelAngle);
+          const label = createSvg("text", {
+            x: pos.x,
+            y: pos.y,
+            class: `angle-label ${isActive ? "active" : ""}`
+          });
+          label.textContent = item.id;
+          drawing.append(label);
+        });
+      }
+
+      const handlePoint = polar(geo.topX, geo.topY, 115, state.angle);
+      drawing.append(createSvg("circle", {
+        id: "dragHandle",
+        class: "handle",
+        cx: handlePoint.x,
+        cy: handlePoint.y,
+        r: 13,
+        "aria-label": "拖曳改變截線角度"
+      }));
+
+      updateCopy();
+      attachDragTargets();
+    }
+
+    function updateCopy() {
+      const active = modes[state.mode];
+      const a = Math.round(Number(state.angle));
+      document.querySelector("#modeHeading").textContent = active.heading;
+      document.querySelector("#modeDescription").textContent = active.description;
+      document.querySelector("#propertyText").textContent = active.property;
+      document.querySelector("#propertyFormula").textContent = active.formulaText;
+      document.querySelector("#statusFormula").textContent = state.parallel ? active.relation(a) : "兩線未平行，關係不固定";
+      document.querySelector("#statusDetail").textContent = state.parallel ? active.detail(a) : "請開啟「保持平行」再比較性質";
+      document.querySelector("#statusTitle").textContent = state.parallel ? "目前關係" : "觀察提醒";
+      angleValue.textContent = state.angle;
+      gapValue.textContent = state.gap;
+      angleSlider.value = state.angle;
+      gapSlider.value = state.gap;
+      parallelToggle.setAttribute("aria-pressed", String(state.parallel));
+      labelsToggle.setAttribute("aria-pressed", String(state.labels));
+      modeButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode)));
+      answerButtons.forEach((button) => {
+        button.classList.remove("correct", "wrong");
+      });
+      feedback.textContent = "選一個答案看看。";
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      draw();
+    }
+
+    function attachDragTargets() {
+      const handle = document.querySelector("#dragHandle");
+      const line = document.querySelector("#transversalLine");
+      [handle, line].forEach((target) => {
+        target.addEventListener("pointerdown", (event) => {
+          state.dragging = true;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          updateAngleFromPointer(event);
+        });
+      });
+    }
+
+    function updateAngleFromPointer(event) {
+      const svg = document.querySelector("#diagram");
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      const cursor = point.matrixTransform(svg.getScreenCTM().inverse());
+      const geo = getGeometry();
+      const deg = Math.atan2(cursor.y - geo.topY, cursor.x - geo.topX) * 180 / Math.PI;
+      let normalized = normalizeAngle(deg);
+      if (normalized > 180) normalized -= 180;
+      state.angle = Math.max(34, Math.min(146, Math.round(normalized)));
+      draw();
+    }
+
+    document.querySelector("#diagram").addEventListener("pointermove", (event) => {
+      if (state.dragging) updateAngleFromPointer(event);
+    });
+
+    document.querySelector("#diagram").addEventListener("pointerup", () => {
+      state.dragging = false;
+    });
+
+    document.querySelector("#diagram").addEventListener("pointerleave", () => {
+      state.dragging = false;
+    });
+
+    angleSlider.addEventListener("input", (event) => {
+      state.angle = Number(event.target.value);
+      draw();
+    });
+
+    gapSlider.addEventListener("input", (event) => {
+      state.gap = Number(event.target.value);
+      draw();
+    });
+
+    parallelToggle.addEventListener("click", () => {
+      state.parallel = !state.parallel;
+      draw();
+    });
+
+    labelsToggle.addEventListener("click", () => {
+      state.labels = !state.labels;
+      draw();
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
+    });
+
+    document.querySelector("#cycleButton").addEventListener("click", () => {
+      const order = ["corresponding", "alternate", "sameSide"];
+      const next = order[(order.indexOf(state.mode) + 1) % order.length];
+      setMode(next);
+    });
+
+    document.querySelector("#resetButton").addEventListener("click", () => {
+      state.mode = "corresponding";
+      state.angle = 62;
+      state.gap = 190;
+      state.parallel = true;
+      state.labels = true;
+      draw();
+    });
+
+    answerButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const isCorrect = button.dataset.answer === state.mode;
+        answerButtons.forEach((item) => item.classList.remove("correct", "wrong"));
+        button.classList.add(isCorrect ? "correct" : "wrong");
+        if (isCorrect) {
+          feedback.textContent = `答對了：這一對是${modes[state.mode].name}。`;
+        } else {
+          feedback.textContent = `再觀察位置：目前標亮的是${modes[state.mode].name}。`;
+        }
+      });
+    });
+
+    draw();
+  </script>
+</body>
+</html>
