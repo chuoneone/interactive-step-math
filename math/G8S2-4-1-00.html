@@ -112,7 +112,7 @@
                 </div>
 
                 <!-- 畫布下方的微互動說明 -->
-                <p class="text-xs text-slate-400 mt-2 text-center">💡 提示：您可以利用下方控制面板調整角度與線段關係！</p>
+                <p class="text-xs text-slate-400 mt-2 text-center">💡 拖曳下方滑桿，觀察角度變化！</p>
             </div>
 
             <!-- 控制面板卡片 -->
@@ -124,8 +124,8 @@
                 <!-- 平行開關 -->
                 <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <div>
-                        <span class="text-sm font-bold text-slate-700 block">平行線設定</span>
-                        <span class="text-xs text-slate-400">開啟後使 L₁ 與 L₂ 保持平行</span>
+                        <span class="text-sm font-bold text-slate-700 block">平行線開關</span>
+                        <span class="text-xs text-slate-400">開啟：L₁ 與 L₂ 保持平行</span>
                     </div>
                     <button id="btn-toggle-parallel" onclick="toggleParallel()"
                         class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 bg-indigo-600">
@@ -354,9 +354,9 @@
         // 關係定義表
         const relationsData = {
             corresponding: {
-                title: '同位角 (Corresponding Angles)',
-                subtitle: '【相同方位】的角組合',
-                definition: '當一條截線與兩條直線相交時，在<b>截線的同側</b>，且在兩條直線的<b>相同方向位置</b>（例如：都在左上角）的兩個角，就叫做「同位角」。',
+                title: '同位角',
+                subtitle: '位置相同的角',
+                definition: '截線與兩直線相交，位於<b>截線同側、相同方向</b>（如都在左上）的兩個角，稱為「同位角」。',
                 pairs: [
                     { a: 1, b: 5, label: '左上組 (∠1 與 ∠5)' },
                     { a: 2, b: 6, label: '右上組 (∠2 與 ∠6)' },
@@ -366,19 +366,19 @@
                 type: 'equal' // 性質：平行時相等
             },
             alternate: {
-                title: '內錯角 (Alternate Interior Angles)',
-                subtitle: '在兩條平行線【內部】且在截線【兩側相反位置】的角組合',
-                definition: '「內」代表在 L₁ 與 L₂ 的<b>內部（內側）</b>；「錯」代表在截線 M 的<b>相反兩側（左右錯開）</b>。這樣的兩個角就叫做「內錯角」。',
+                title: '內錯角',
+                subtitle: '在兩線內部、截線兩側相反位置的角',
+                definition: '「內」指在 L₁ 與 L₂ <b>之間</b>；「錯」指在截線 M 的<b>兩側（左右錯開）</b>。這兩個角稱為「內錯角」。',
                 pairs: [
-                    { a: 3, b: 6, label: '內錯配對一 (∠3 與 ∠6)' },
-                    { a: 4, b: 5, label: '內錯配對二 (∠4 與 ∠5)' }
+                    { a: 3, b: 6, label: '配對一 (∠3 與 ∠6)' },
+                    { a: 4, b: 5, label: '配對二 (∠4 與 ∠5)' }
                 ],
                 type: 'equal' // 性質：平行時相等
             },
             sameside: {
-                title: '同側內角 (Consecutive Interior Angles)',
-                subtitle: '在兩條平行線【內部】且在截線【同一個方向】的角組合',
-                definition: '「內」代表在 L₁ 與 L₂ 的<b>內側</b>；「同側」代表在截線 M 的<b>相同一邊（同左或同右）</b>。這樣的兩個角相加在平行時正好是 180 度。',
+                title: '同側內角',
+                subtitle: '在兩線內部、截線同側的角',
+                definition: '「內」指在 L₁ 與 L₂ <b>之間</b>；「同側」指在截線 M 的<b>同一側（同左或同右）</b>。平行時，兩角相加等於 180°。',
                 pairs: [
                     { a: 3, b: 5, label: '左側內角組 (∠3 與 ∠5)' },
                     { a: 4, b: 6, label: '右側內角組 (∠4 與 ∠6)' }
@@ -661,12 +661,12 @@
                     operatorEl.innerText = '＝';
                     operatorEl.className = 'text-2xl font-black text-emerald-500 animate-bounce';
                     summaryBox.className = 'mt-2 text-center text-xs py-2 px-3 rounded-lg font-bold bg-emerald-50 text-emerald-800 border border-emerald-100';
-                    summaryBox.innerHTML = `⭐ 幾何性質：<b>因為兩線平行，所以此組角度【相等】！</b>`;
+                    summaryBox.innerHTML = `⭐ 兩線平行 → 此組角度<b>相等</b>`;
                 } else {
                     operatorEl.innerText = valA === valB ? '＝' : '≠';
                     operatorEl.className = 'text-2xl font-black text-rose-500';
                     summaryBox.className = 'mt-2 text-center text-xs py-2 px-3 rounded-lg font-bold bg-rose-50 text-rose-800 border border-rose-100';
-                    summaryBox.innerHTML = `⚠️ 觀察發現：<b>因兩線不平行，所以角度【不相等】。</b>`;
+                    summaryBox.innerHTML = `⚠️ 兩線不平行 → 角度<b>不相等</b>`;
                 }
             } else if (relationType === 'supplementary') {
                 const sum = valA + valB;
@@ -675,10 +675,10 @@
 
                 if (isParallel) {
                     summaryBox.className = 'mt-2 text-center text-xs py-2 px-3 rounded-lg font-bold bg-emerald-50 text-emerald-800 border border-emerald-100';
-                    summaryBox.innerHTML = `⭐ 幾何性質：<b>因為兩線平行，所以此組角度【互補】(${valA}° + ${valB}° = 180°)！</b>`;
+                    summaryBox.innerHTML = `⭐ 兩線平行 → 此組角度<b>互補</b>（${valA}° + ${valB}° = 180°）`;
                 } else {
                     summaryBox.className = 'mt-2 text-center text-xs py-2 px-3 rounded-lg font-bold bg-rose-50 text-rose-800 border border-rose-100';
-                    summaryBox.innerHTML = `⚠️ 觀察發現：<b>因兩線不平行，所以相加不是 180° (目前相加：${sum}°)。</b>`;
+                    summaryBox.innerHTML = `⚠️ 兩線不平行 → 相加 <b>≠ 180°</b>（目前 ${sum}°）`;
                 }
             }
 
@@ -697,7 +697,7 @@
 
             if (relationType === 'equal') {
                 // 相等關係：並排對比兩個相同比例的扇形
-                descEl.innerHTML = `<b>【相等關係圖】</b><br/>此時 <span style="color:${colA}">∠${idA}</span> 與 <span style="color:${colB}">∠${idB}</span> 的張開大小完全相同！如同複製。`;
+                descEl.innerHTML = `<b>相等關係</b><br/><span style="color:${colA}">∠${idA}</span> 與 <span style="color:${colB}">∠${idB}</span> 大小相同`;
 
                 // 繪製圓圈外框1
                 const circle1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -738,9 +738,9 @@
             } else {
                 // 互補關係：兩個扇形拼成一個半圓 (180度)
                 if (isParallel) {
-                    descEl.innerHTML = `<b>【拼圖互補圖】</b><br/><span style="color:${colA}">∠${idA}</span> 與 <span style="color:${colB}">∠${idB}</span> 拼起來剛好是半圓 <b>180°</b> 喔！`;
+                    descEl.innerHTML = `<b>互補關係</b><br/><span style="color:${colA}">∠${idA}</span> ＋ <span style="color:${colB}">∠${idB}</span> ＝ <b>180°</b>`;
                 } else {
-                    descEl.innerHTML = `<b>【未互補示意】</b><br/>因為不平行，兩角拼起來<b>無法</b>拼成完美的半圓形。`;
+                    descEl.innerHTML = `<b>非互補</b><br/>兩線不平行，相加 <b>≠ 180°</b>`;
                 }
 
                 // 繪製圓圈外框
@@ -1046,7 +1046,7 @@
                     correctHint = `這題答案是 <b>${currentQuestion.correctAnswer}°</b> 喔！`;
                 }
 
-                feedback.innerHTML = `😭 答錯了，沒關係，再想一想！<br/>${correctHint}<br/><span class="text-[10px] text-slate-500 font-normal">提示：當兩線平行時，同位角相等、內錯角相等、同側內角互補(相加180°)。</span>`;
+                feedback.innerHTML = `😅 答錯了！${correctHint}<br/><span class="text-[10px] text-slate-500 font-normal">平行線性質：同位角＝內錯角（相等）；同側內角互補（和＝180°）</span>`;
 
                 // 播放低沉提醒音效
                 playSystemSound(220, 'sawtooth', 0.1, 0.3); // A3
