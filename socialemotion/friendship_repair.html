@@ -975,7 +975,9 @@
             // Remove highlighted class from previous nodes on same side
             document.querySelectorAll(`.matching-node`).forEach(el => {
                 if (el.id.startsWith(side)) {
-                    el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200', 'dot-pulse');
+                    el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200');
+                    const dot = el.querySelector('.dot');
+                    if (dot) dot.classList.remove('dot-pulse');
                 }
             });
 
@@ -983,6 +985,9 @@
                 // Clicking already selected node -> deselect
                 selectedNodeSide = null;
                 selectedNodeValue = null;
+                node.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200');
+                const dot = node.querySelector('.dot');
+                if (dot) dot.classList.remove('dot-pulse');
                 return;
             }
 
@@ -1015,7 +1020,10 @@
 
                 // Clear highlights
                 document.querySelectorAll('.matching-node').forEach(el => {
-                    el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200', 'dot-pulse');
+                    el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200');
+                });
+                document.querySelectorAll('.matching-node .dot').forEach(el => {
+                    el.classList.remove('dot-pulse');
                 });
                 selectedNodeSide = null;
                 selectedNodeValue = null;
@@ -1026,7 +1034,9 @@
                 // Select node
                 selectedNodeSide = side;
                 selectedNodeValue = val;
-                node.classList.add('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200', 'dot-pulse');
+                node.classList.add('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200');
+                const dot = node.querySelector('.dot');
+                if (dot) dot.classList.add('dot-pulse');
             }
         }
 
@@ -1132,9 +1142,12 @@
             const svg = document.getElementById('matching-svg');
             svg.setAttribute('data-checked', 'false');
             
-            // Remove node borders
+            // Remove node borders and dot pulse
             document.querySelectorAll('.matching-node').forEach(el => {
                 el.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
+            });
+            document.querySelectorAll('.matching-node .dot').forEach(el => {
+                el.classList.remove('dot-pulse');
             });
             
             document.getElementById('matching-feedback').innerHTML = `<i class="fa-solid fa-info-circle text-indigo-500"></i> 連線已清除。`;
