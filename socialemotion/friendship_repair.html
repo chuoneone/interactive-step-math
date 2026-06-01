@@ -961,6 +961,17 @@
             // If teacher mode is on, click matching is disabled to prevent confusion
             if (currentMode === 'teacher') return;
 
+            // Reset check status if it was previously checked
+            const svg = document.getElementById('matching-svg');
+            if (svg && svg.getAttribute('data-checked') === 'true') {
+                svg.setAttribute('data-checked', 'false');
+                document.querySelectorAll('.matching-node').forEach(el => {
+                    el.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
+                });
+                document.getElementById('matching-feedback').innerHTML = `<i class="fa-solid fa-info-circle text-indigo-500"></i> 請點選左側發生的錯誤，再點選右側對應的修補行動。`;
+                drawLines();
+            }
+
             // Remove highlighted class from previous nodes on same side
             document.querySelectorAll(`.matching-node`).forEach(el => {
                 if (el.id.startsWith(side)) {
@@ -980,21 +991,26 @@
                 const leftVal = side === 'left' ? val : selectedNodeValue;
                 const rightVal = side === 'right' ? val : selectedNodeValue;
 
-                // Check and delete previous links for leftVal or rightVal to keep it 1-to-1
-                // Remove leftVal connections
-                if (connections[leftVal]) {
+                // Toggle logic: if already connected to this target, remove it!
+                if (connections[leftVal] === rightVal) {
                     delete connections[leftVal];
-                }
-                // Remove rightVal connections
-                for (let key in connections) {
-                    if (connections[key] === rightVal) {
-                        delete connections[key];
+                    playSound('tap');
+                } else {
+                    // Check and delete previous links for leftVal or rightVal to keep it 1-to-1
+                    // Remove leftVal connections
+                    if (connections[leftVal]) {
+                        delete connections[leftVal];
                     }
+                    // Remove rightVal connections
+                    for (let key in connections) {
+                        if (connections[key] === rightVal) {
+                            delete connections[key];
+                        }
+                    }
+                    // Register connection
+                    connections[leftVal] = rightVal;
+                    playSound('connect');
                 }
-
-                // Register connection
-                connections[leftVal] = rightVal;
-                playSound('connect');
                 saveProgress();
 
                 // Clear highlights
@@ -1015,15 +1031,28 @@
         }
 
         // Draw Connections in SVG
+        let retryTimeout = null;
         function drawLines() {
             const svg = document.getElementById('matching-svg');
+            if (!svg) return;
             svg.innerHTML = '';
             
             const svgRect = svg.getBoundingClientRect();
-            if (svgRect.width === 0 || svgRect.height === 0) return;
+            if (svgRect.width === 0 || svgRect.height === 0) {
+                // Schedule a retry if width/height is 0 (layout not painted yet)
+                if (!retryTimeout) {
+                    retryTimeout = setTimeout(() => {
+                        retryTimeout = null;
+                        drawLines();
+                    }, 150);
+                }
+                return;
+            }
 
             const isTeacher = currentMode === 'teacher' || (currentMode === 'slide' && slideAnswerVisible);
             const displayConnections = isTeacher ? correctPairs : connections;
+
+            let needsRetry = false;
 
             // Map and Draw Lines
             for (let leftKey in displayConnections) {
@@ -1036,6 +1065,12 @@
                 // Find Dot locations
                 const leftDot = leftEl.querySelector('.dot').getBoundingClientRect();
                 const rightDot = rightEl.querySelector('.dot').getBoundingClientRect();
+
+                // If dots not loaded yet in layout space, schedule a retry
+                if (leftDot.width === 0 && leftDot.height === 0) {
+                    needsRetry = true;
+                    continue;
+                }
 
                 // Coordinates relative to SVG canvas
                 const x1 = (leftDot.left + leftDot.right) / 2 - svgRect.left;
@@ -1074,6 +1109,13 @@
                 path.setAttribute('stroke-linecap', 'round');
                 svg.appendChild(path);
             }
+
+            if (needsRetry && !retryTimeout) {
+                retryTimeout = setTimeout(() => {
+                    retryTimeout = null;
+                    drawLines();
+                }, 100);
+            }
         }
 
         // Show correct connections in teacher notes
@@ -1103,17 +1145,22 @@
         // Check Connections
         function checkConnections() {
             let correctCount = 0;
-            let totalCount = Object.keys(correctPairs).length;
             const connectedKeys = Object.keys(connections);
+            const totalCount = Object.keys(correctPairs).length;
 
-            if (connectedKeys.length < totalCount) {
+            if (connectedKeys.length === 0) {
                 playSound('error');
-                document.getElementById('matching-feedback').innerHTML = `<span class="text-amber-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 請完成所有連線後再進行檢查！ (${connectedKeys.length}/${totalCount})</span>`;
+                document.getElementById('matching-feedback').innerHTML = `<span class="text-amber-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 請先連線後再進行檢查！</span>`;
                 return;
             }
 
             const svg = document.getElementById('matching-svg');
             svg.setAttribute('data-checked', 'true');
+
+            // Clear previous check highlights
+            document.querySelectorAll('.matching-node').forEach(el => {
+                el.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
+            });
 
             // Visually highlight connected items
             for (let leftKey in connections) {
@@ -1122,9 +1169,6 @@
 
                 const leftEl = document.getElementById(`left-${leftKey}`);
                 const rightEl = document.getElementById(`right-${rightVal}`);
-
-                leftEl.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
-                rightEl.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
 
                 if (isCorrect) {
                     correctCount++;
@@ -1138,7 +1182,7 @@
 
             drawLines();
 
-            if (correctCount === totalCount) {
+            if (correctCount === totalCount && connectedKeys.length === totalCount) {
                 playSound('success');
                 // Trigger Confetti!
                 confetti({
@@ -1149,7 +1193,7 @@
                 document.getElementById('matching-feedback').innerHTML = `<span class="text-emerald-700 font-black"><i class="fa-solid fa-circle-check"></i> 太棒了！所有的連線均完全正確！ 🎉</span>`;
             } else {
                 playSound('error');
-                document.getElementById('matching-feedback').innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> 答錯了喔！連線有錯誤，綠色代表正確、紅色代表錯誤。再想想看！</span>`;
+                document.getElementById('matching-feedback').innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> 連線檢查完畢！綠色代表正確、紅色代表錯誤。再想想看！ (${correctCount}/${totalCount} 正確)</span>`;
             }
             recordWorksheetScore();
         }
