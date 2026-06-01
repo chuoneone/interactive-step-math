@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式數學 - 未分組資料的平均數</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0fdf4; /* 溫和的淡綠色底色，舒適閱讀 */
+            overflow-x: hidden;
+        }
+
+        .math {
+            font-size: 26px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        /* 題目顯示用 */
+        .problem-content {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        .slot {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 80px;
+            height: 52px;
+            border-bottom: 4px solid #3b82f6;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 900;
+            font-size: 1.6rem;
+            color: #1e40af;
+            background-color: #eff6ff;
+            border-radius: 8px 8px 0 0;
+            vertical-align: middle;
+        }
+
+        .slot.filled {
+            border-bottom-color: #10b981;
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        /* 閃爍的高亮外框，引導填答 */
+        @keyframes pulse-highlight {
+            0%, 100% {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+                background-color: #eff6ff;
+            }
+            50% {
+                border-color: #1d4ed8;
+                box-shadow: 0 0 0 5px rgba(29, 78, 216, 0.6);
+                background-color: #dbeafe;
+            }
+        }
+
+        .active-slot {
+            animation: pulse-highlight 1.5s infinite;
+        }
+
+        .step-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.3;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        .step-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .step-card.completed {
+            background-color: #f8fafc;
+            border-left: 6px solid #10b981;
+            opacity: 1;
+        }
+
+        @keyframes tada {
+            0% { transform: scale(1); }
+            10%, 20% { transform: scale(0.9) rotate(-2deg); }
+            30%, 50%, 70%, 90% { transform: scale(1.05) rotate(2deg); }
+            40%, 60%, 80% { transform: scale(1.05) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .tada {
+            animation: tada 0.6s ease-in-out;
+        }
+
+        .nav-active {
+            background-color: #f59e0b !important;
+            color: #1e293b !important;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b !important;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <nav class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between p-3 flex-wrap md:flex-nowrap gap-3">
+            <div class="flex items-center overflow-hidden w-full md:w-auto">
+                <div class="whitespace-nowrap font-black text-emerald-200 px-3 py-1 bg-emerald-900 rounded-full mr-3 text-sm">
+                    5-2 統計數據
+                </div>
+                <div id="problem-nav" class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                    <!-- 由 JS 生成 -->
+                </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 ml-auto">
+                <div id="timer-display" class="font-mono font-bold text-xl md:text-2xl text-emerald-100 bg-emerald-800/80 px-4 py-1.5 rounded-xl">07:00</div>
+                <button onclick="showLeaderboard()" class="px-4 py-2 bg-amber-400 text-slate-900 font-bold rounded-xl shadow hover:bg-amber-300 transition-all text-sm md:text-base">🏆 排行榜</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 題型判定提示欄 -->
+    <div class="bg-emerald-100 text-emerald-800 text-center py-1 px-4 text-xs md:text-sm font-bold border-b border-emerald-200">
+        💡 題型判定：求未分組資料的平均數（比較基準數差距求和除以總數法，與傳統總和除以總數法）
+    </div>
+
+    <!-- 開始視窗 -->
+    <div id="start-modal"
+        class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4 text-center">
+        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl max-w-md w-full transform transition-all border-4 border-emerald-500">
+            <div class="text-7xl mb-6">🎯</div>
+            <h3 class="text-3xl font-black text-slate-800 mb-3">平均數挑戰賽</h3>
+            <p class="text-slate-500 mb-6 text-base">你有 7 分鐘（420 秒）的時間，請依序完成未分組資料平均數的計算！</p>
+            <input type="text" id="player-name" placeholder="輸入你的名字" class="w-full mb-6 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-emerald-500 outline-none text-center text-lg font-bold">
+            <button onclick="startGame()"
+                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-emerald-200 text-xl">開始挑戰</button>
+        </div>
+    </div>
+
+    <!-- 排行榜視窗 -->
+    <div id="leaderboard-modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[200] hidden p-4">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl max-w-md w-full border-4 border-amber-400">
+            <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">🏆 排行榜 (本機紀錄)</h3>
+            <div id="leaderboard-list" class="flex flex-col gap-3 mb-6 max-h-64 overflow-y-auto pr-2">
+                <!-- 動態生成 -->
+            </div>
+            <button onclick="closeLeaderboard()"
+                class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition-all">關閉</button>
+        </div>
+    </div>
+
+    <!-- 主要內容區 (雙欄響應式) -->
+    <main class="max-w-7xl mx-auto p-4 md:p-6 flex-1 w-full">
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+
+            <!-- 左側：題目固定與 SVG 數線繪圖區 -->
+            <div class="w-full md:w-5/12 md:sticky md:top-24 bg-white p-6 rounded-3xl shadow-md border border-emerald-100">
+                <div id="problem-tag"
+                    class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black mb-4">
+                    關卡 1
+                </div>
+                <div id="problem-content" class="problem-content break-words mb-6 font-bold text-slate-700">
+                    <!-- 題目文字 -->
+                </div>
+
+                <!-- SVG 數線偏差標註渲染區 -->
+                <div class="mb-4 bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col items-center justify-center min-h-[220px]">
+                    <div id="svg-visual-container" class="w-full flex justify-center">
+                        <!-- JS 動態繪製 SVG -->
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3 p-4 bg-amber-50 rounded-2xl border border-amber-100 text-sm">
+                        <span class="text-2xl">💡</span>
+                        <div class="text-amber-900 leading-relaxed">
+                            <p class="font-bold text-base">基準數法（差距平均法）小技巧</p>
+                            <p class="mt-1 font-medium">當數據的數值較大且集中時，選定一個**基準數**，先計算各數據與基準數的**差距和**，將差距和除以個數得到**差距平均**，最後加上基準數即可。這樣比直接將大數字相加更不容易算錯喔！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：細分步驟區 -->
+            <div class="w-full md:w-7/12 flex flex-col gap-6" id="steps-container">
+                <!-- 步驟由 JS 動態生成 -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 完成/結算視窗 -->
+    <div id="finish-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] hidden p-4">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full text-center border-4 border-emerald-500 transform transition-all scale-90 opacity-0"
+            id="modal-content">
+            <div id="finish-emoji" class="text-7xl mb-6">🎯</div>
+            <h3 id="finish-title" class="text-3xl font-black text-slate-800 mb-3">挑戰成功！</h3>
+            <p id="finish-subtitle" class="text-slate-500 mb-8 text-lg">你已經順利完成了未分組平均數的所有題目！</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="showLeaderboard()"
+                    class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold py-4 rounded-2xl transition-all shadow-lg text-lg">🏆 查看排行榜</button>
+                <button onclick="location.reload()"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg text-lg">🔄 重新開始挑戰</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 題目定義 (3 題)
+        const problems = [
+            {
+                id: 1, 
+                title: "關卡 1：段考學科平均數",
+                text: "億昀設定 5 科段考目標為平均 90 分（即基準數）。下表為各科與目標分數的差距，求此次段考 5 科的平均分數。<br><table class='w-full border-collapse border border-slate-300 mt-2 text-center text-sm'><tr class='bg-slate-100'><th class='border border-slate-300 p-1'>科目</th><th class='border border-slate-300 p-1'>國文</th><th class='border border-slate-300 p-1'>英語</th><th class='border border-slate-300 p-1'>數學</th><th class='border border-slate-300 p-1'>社會</th><th class='border border-slate-300 p-1'>自然</th></tr><tr><td class='border border-slate-300 p-1 font-bold'>與目標差距</td><td class='border border-slate-300 p-1 text-emerald-600 font-bold'>+3</td><td class='border border-slate-300 p-1 text-emerald-600 font-bold'>+5</td><td class='border border-slate-300 p-1 text-amber-600 font-bold'>-2</td><td class='border border-slate-300 p-1 text-emerald-600 font-bold'>+4</td><td class='border border-slate-300 p-1 text-amber-600 font-bold'>-7</td></tr></table>",
+                svgParams: {
+                    minVal: 80,
+                    maxVal: 100,
+                    baseVal: 90,
+                    tickStep: 5,
+                    yLabel: "分數偏差",
+                    points: [
+                        { name: "國文", val: 93, diff: 3 },
+                        { name: "英語", val: 95, diff: 5 },
+                        { name: "數學", val: 88, diff: -2 },
+                        { name: "社會", val: 94, diff: 4 },
+                        { name: "自然", val: 83, diff: -7 }
+                    ]
+                },
+                steps: [
+                    { 
+                        title: "解法 1：計算與基準數的差距總和", 
+                        els: [
+                            { t: "將 5 科的差距累加：(+3) + (+5) + (-2) + (+4) + (-7) = " }, 
+                            { s: true }
+                        ], 
+                        ans: ["3"], 
+                        opts: ["1", "2", "3", "4", "5", "6"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "解法 1：計算差距的平均值", 
+                        els: [
+                            { t: "將差距總和 3 除以科目數 5，得到差距的平均值為：3 ÷ 5 = " }, 
+                            { s: true }
+                        ], 
+                        ans: ["0.6"], 
+                        opts: ["0.4", "0.5", "0.6", "0.8"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "解法 1：算出平均分數", 
+                        els: [
+                            { t: "平均分數 = 基準數 90 + 差距平均值 0.6 = " }, 
+                            { s: true },
+                            { t: "分。" }
+                        ], 
+                        ans: ["90.6"], 
+                        opts: ["89.4", "90.3", "90.6", "91.2"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "解法 2：算出各科的實際分數", 
+                        els: [
+                            { t: "國文有 90 + 3 = " }, { s: true }, { t: "分；英語有 " }, { s: true }, { t: "分；" },
+                            { t: "數學有 " }, { s: true }, { t: "分；社會有 " }, { s: true }, { t: "分；" },
+                            { t: "自然有 " }, { s: true }, { t: "分。" }
+                        ], 
+                        ans: ["93", "95", "88", "94", "83"], 
+                        opts: ["83", "88", "90", "93", "94", "95"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "解法 2：求 5 科總分", 
+                        els: [
+                            { t: "總分 = 93 + 95 + 88 + 94 + 83 = " }, 
+                            { s: true }, 
+                            { t: "分。" }
+                        ], 
+                        ans: ["453"], 
+                        opts: ["450", "453", "456", "460"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "解法 2：算出平均分數", 
+                        els: [
+                            { t: "平均分數 = 總分 453 ÷ 5 = " }, 
+                            { s: true }, 
+                            { t: "分。" }
+                        ], 
+                        ans: ["90.6"], 
+                        opts: ["90.2", "90.4", "90.6", "90.8"], 
+                        unorder: false 
+                    }
+                ]
+            },
+            {
+                id: 2, 
+                title: "關卡 2：小組身高平均數",
+                text: "某小組 7 位同學的身高以 160 公分為基準數，與基準身高的差距如下表所示。求這 7 位同學的平均身高。<br><table class='w-full border-collapse border border-slate-300 mt-2 text-center text-sm'><tr class='bg-slate-100'><th class='border border-slate-300 p-1'>學生</th><th class='border border-slate-300 p-1'>A</th><th class='border border-slate-300 p-1'>B</th><th class='border border-slate-300 p-1'>C</th><th class='border border-slate-300 p-1'>D</th><th class='border border-slate-300 p-1'>E</th><th class='border border-slate-300 p-1'>F</th><th class='border border-slate-300 p-1'>G</th></tr><tr><td class='border border-slate-300 p-1 font-bold'>與基準差距</td><td class='border border-slate-300 p-1 text-emerald-600 font-bold'>+4</td><td class='border border-slate-300 p-1 text-amber-600 font-bold'>-2</td><td class='border border-slate-300 p-1 text-emerald-600 font-bold'>+7</td><td class='border border-slate-300 p-1 font-bold'>0</td><td class='border border-slate-300 p-1 text-amber-600 font-bold'>-5</td><td class='border border-slate-300 p-1 text-emerald-600 font-bold'>+3</td><td class='border border-slate-300 p-1 text-amber-600 font-bold'>-7</td></tr></table>",
+                svgParams: {
+                    minVal: 150,
+                    maxVal: 170,
+                    baseVal: 160,
+                    tickStep: 5,
+                    yLabel: "身高偏差",
+                    points: [
+                        { name: "A", val: 164, diff: 4 },
+                        { name: "B", val: 158, diff: -2 },
+                        { name: "C", val: 167, diff: 7 },
+                        { name: "D", val: 160, diff: 0 },
+                        { name: "E", val: 155, diff: -5 },
+                        { name: "F", val: 163, diff: 3 },
+                        { name: "G", val: 153, diff: -7 }
+                    ]
+                },
+                steps: [
+                    { 
+                        title: "計算所有學生身高差距的總和", 
+                        els: [
+                            { t: "差距總和 = (+4) + (-2) + (+7) + 0 + (-5) + (+3) + (-7) = " }, 
+                            { s: true }
+                        ], 
+                        ans: ["0"], 
+                        opts: ["-2", "-1", "0", "1", "2"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "計算差距的平均值", 
+                        els: [
+                            { t: "差距的平均值為：差距總和 0 ÷ 人數 7 = " }, 
+                            { s: true }
+                        ], 
+                        ans: ["0"], 
+                        opts: ["-1", "0", "1", "2"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "求這 7 位學生的平均身高", 
+                        els: [
+                            { t: "平均身高 = 基準 160 + 差距平均值 0 = " }, 
+                            { s: true },
+                            { t: "公分。" }
+                        ], 
+                        ans: ["160"], 
+                        opts: ["158", "159", "160", "161"], 
+                        unorder: false 
+                    }
+                ]
+            },
+            {
+                id: 3, 
+                title: "關卡 3：男生體重平均數",
+                text: "某小組 6 位男生的體重分別為 52, 55, 48, 50, 56, 51 公斤。選定 **50 公斤** 為基準數，回答步驟問題：",
+                svgParams: {
+                    minVal: 45,
+                    maxVal: 60,
+                    baseVal: 50,
+                    tickStep: 5,
+                    yLabel: "體重偏差",
+                    points: [
+                        { name: "1", val: 52, diff: 2 },
+                        { name: "2", val: 55, diff: 5 },
+                        { name: "3", val: 48, diff: -2 },
+                        { name: "4", val: 50, diff: 0 },
+                        { name: "5", val: 56, diff: 6 },
+                        { name: "6", val: 51, diff: 1 }
+                    ]
+                },
+                steps: [
+                    { 
+                        title: "求各男生與基準數 50 的體重差距", 
+                        els: [
+                            { t: "52-50 = " }, { s: true }, { t: "； 55-50 = " }, { s: true }, { t: "；" },
+                            { t: "48-50 = " }, { s: true }, { t: "； 50-50 = " }, { s: true }, { t: "；" },
+                            { t: "56-50 = " }, { s: true }, { t: "； 51-50 = " }, { s: true }
+                        ], 
+                        ans: ["+2", "+5", "-2", "0", "+6", "+1"], 
+                        opts: ["+1", "+2", "-2", "+5", "0", "+6", "-6"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "計算差距的總和與差距的平均值", 
+                        els: [
+                            { t: "差距總和 = 2 + 5 - 2 + 0 + 6 + 1 = " }, { s: true }, { t: "；" },
+                            { t: "差距平均值 = 總和 ÷ 人數 6 = " }, { s: true }
+                        ], 
+                        ans: ["12", "2"], 
+                        opts: ["10", "12", "15", "2", "3"], 
+                        unorder: false 
+                    },
+                    { 
+                        title: "求這 6 位男生的平均體重", 
+                        els: [
+                            { t: "平均體重 = 基準 50 + 差距平均值 2 = " }, 
+                            { s: true },
+                            { t: "公斤。" }
+                        ], 
+                        ans: ["52"], 
+                        opts: ["50", "51", "52", "53"], 
+                        unorder: false 
+                    }
+                ]
+            }
+        ];
+
+        let currentIndex = 0;
+        let pState = {}; // 關卡作答狀態
+        
+        // 計時器與分數系統變數
+        let timerInterval;
+        let timeLeft = 7 * 60;
+        let playerName = "";
+        let completedProblemsCount = 0;
+        const LEADERBOARD_KEY = 'math_leaderboard_G7S2_5_2_01';
+
+        // --- 離線音效生成器 (Web Audio API) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'success') {
+                // 清亮和弦 C5 -> E5 -> G5 -> C6
+                osc.type = 'sine';
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.36); // C6
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            } else if (type === 'error') {
+                // 低沉滑音 (錯誤提示)
+                osc.type = 'sawtooth';
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.3);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'click') {
+                // 輕微點擊反饋
+                osc.type = 'sine';
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(900, now);
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            }
+        }
+
+        // --- 排行榜 LocalStorage 讀寫 ---
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (!nameInput) {
+                alert("請先輸入你的名字喔！");
+                return;
+            }
+            playerName = nameInput;
+            document.getElementById('start-modal').classList.add('hidden');
+            
+            timeLeft = 7 * 60;
+            completedProblemsCount = 0;
+            updateTimerDisplay();
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function endGame(isAllCompleted) {
+            clearInterval(timerInterval);
+            const timeUsed = 7 * 60 - timeLeft;
+            const finalScore = completedProblemsCount * 1000 + timeLeft;
+            
+            // 寫入本地紀錄
+            let board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            board.push({
+                name: playerName,
+                score: finalScore,
+                completed: completedProblemsCount,
+                timeUsed: timeUsed,
+                date: new Date().toLocaleString()
+            });
+            board.sort((a, b) => b.score - a.score);
+            board = board.slice(0, 10);
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+
+            // 修改 Modal 並顯示結算畫面
+            const m = document.getElementById('finish-modal');
+            const c = document.getElementById('modal-content');
+            
+            document.getElementById('finish-emoji').innerText = isAllCompleted ? '🎉' : '⏳';
+            document.getElementById('finish-title').innerText = isAllCompleted ? '挑戰成功！' : '時間終了！';
+            document.getElementById('finish-subtitle').innerHTML = `
+                <div class="text-slate-600 mb-4 font-bold text-lg">你完成了 ${completedProblemsCount} 關！</div>
+                <div class="bg-slate-100 p-4 rounded-2xl mb-4 font-black grid grid-cols-2 gap-2 text-sm">
+                    <div class="text-slate-500">使用時間: <span class="text-slate-800 block text-base font-black">${timeUsed} 秒</span></div>
+                    <div class="text-slate-500">挑戰得分: <span class="text-emerald-600 block text-base font-black">${finalScore} 分</span></div>
+                </div>
+            `;
+            
+            m.classList.remove('hidden');
+            setTimeout(() => { 
+                c.classList.remove('scale-90', 'opacity-0'); 
+                c.classList.add('scale-100', 'opacity-100'); 
+            }, 50);
+        }
+
+        function showLeaderboard() {
+            const board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = board.map((entry, i) => `
+                <div class="flex justify-between items-center p-3 ${i===0?'bg-amber-50 border-amber-300':'bg-slate-50 border-slate-100'} border-2 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-xl w-6 text-center ${i===0?'text-amber-500':'text-slate-400'}">${i+1}</span>
+                        <div>
+                            <div class="font-bold text-slate-700">${entry.name}</div>
+                            <div class="text-[10px] text-slate-400">${entry.date}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-black text-emerald-600">${entry.score} 分</div>
+                        <div class="text-[10px] text-slate-500">通關 ${entry.completed} 題 / 用時 ${entry.timeUsed}秒</div>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center text-slate-400 py-4">目前還沒有紀錄喔，快來搶占鰲頭吧！</div>';
+            
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        // --- 繪製 SVG 數線偏差標註 ---
+        function drawSvgVisual(q) {
+            const container = document.getElementById('svg-visual-container');
+            container.innerHTML = "";
+
+            const svgNs = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNs, "svg");
+            svg.setAttribute("width", "100%");
+            svg.setAttribute("height", "210");
+            svg.setAttribute("viewBox", "0 0 440 210");
+            svg.setAttribute("class", "w-full max-w-lg");
+
+            const params = q.svgParams;
+            const minVal = params.minVal;
+            const maxVal = params.maxVal;
+            const baseVal = params.baseVal;
+            const points = params.points;
+
+            // 坐標定位
+            const xOffset = 40;
+            const width = 360;
+            const lineY = 175;
+
+            // 畫主數線
+            const mainLine = document.createElementNS(svgNs, "line");
+            mainLine.setAttribute("x1", xOffset);
+            mainLine.setAttribute("y1", lineY);
+            mainLine.setAttribute("x2", xOffset + width);
+            mainLine.setAttribute("y2", lineY);
+            mainLine.setAttribute("stroke", "#475569");
+            mainLine.setAttribute("stroke-width", "3");
+            svg.appendChild(mainLine);
+
+            // 畫數線箭頭
+            const rightArrow = document.createElementNS(svgNs, "polygon");
+            rightArrow.setAttribute("points", `${xOffset + width},${lineY - 5} ${xOffset + width + 8},${lineY} ${xOffset + width},${lineY + 5}`);
+            rightArrow.setAttribute("fill", "#475569");
+            svg.appendChild(rightArrow);
+
+            // 畫刻度與數值
+            const range = maxVal - minVal;
+            const tickStep = params.tickStep || 5;
+
+            for (let val = minVal; val <= maxVal; val += tickStep) {
+                const xPos = xOffset + ((val - minVal) / range) * (width - 10);
+
+                const tick = document.createElementNS(svgNs, "line");
+                tick.setAttribute("x1", xPos);
+                tick.setAttribute("y1", lineY - 6);
+                tick.setAttribute("x2", xPos);
+                tick.setAttribute("y2", lineY + 6);
+                tick.setAttribute("stroke", "#475569");
+                tick.setAttribute("stroke-width", "1.5");
+                svg.appendChild(tick);
+
+                const text = document.createElementNS(svgNs, "text");
+                text.setAttribute("x", xPos);
+                text.setAttribute("y", lineY + 20);
+                text.setAttribute("font-size", "11");
+                text.setAttribute("font-weight", "bold");
+                text.setAttribute("fill", "#475569");
+                text.setAttribute("text-anchor", "middle");
+                text.textContent = val;
+                svg.appendChild(text);
+            }
+
+            // 畫基準數垂直虛線
+            const baseX = xOffset + ((baseVal - minVal) / range) * (width - 10);
+            const dottedLine = document.createElementNS(svgNs, "line");
+            dottedLine.setAttribute("x1", baseX);
+            dottedLine.setAttribute("y1", 20);
+            dottedLine.setAttribute("x2", baseX);
+            dottedLine.setAttribute("y2", lineY);
+            dottedLine.setAttribute("stroke", "#ef4444"); // 紅色基準線
+            dottedLine.setAttribute("stroke-dasharray", "4,4");
+            dottedLine.setAttribute("stroke-width", "2");
+            svg.appendChild(dottedLine);
+
+            const baseLabel = document.createElementNS(svgNs, "text");
+            baseLabel.setAttribute("x", baseX);
+            baseLabel.setAttribute("y", 15);
+            baseLabel.setAttribute("font-size", "11");
+            baseLabel.setAttribute("font-weight", "black");
+            baseLabel.setAttribute("fill", "#ef4444");
+            baseLabel.setAttribute("text-anchor", "middle");
+            baseLabel.textContent = `基準數: ${baseVal}`;
+            svg.appendChild(baseLabel);
+
+            // 繪製各點與偏差水平箭頭 (階梯狀高度防重疊)
+            points.forEach((p, idx) => {
+                const pX = xOffset + ((p.val - minVal) / range) * (width - 10);
+                const itemY = 32 + idx * 22; // 階梯式高度
+
+                // 畫數線上的藍色點
+                const dot = document.createElementNS(svgNs, "circle");
+                dot.setAttribute("cx", pX);
+                dot.setAttribute("cy", lineY);
+                dot.setAttribute("r", "5");
+                dot.setAttribute("fill", "#3b82f6");
+                dot.setAttribute("stroke", "#1d4ed8");
+                dot.setAttribute("stroke-width", "1.5");
+                svg.appendChild(dot);
+
+                // 畫垂直虛線輔助連接數線與箭頭
+                const helperLine = document.createElementNS(svgNs, "line");
+                helperLine.setAttribute("x1", pX);
+                helperLine.setAttribute("y1", itemY);
+                helperLine.setAttribute("x2", pX);
+                helperLine.setAttribute("y2", lineY);
+                helperLine.setAttribute("stroke", "#cbd5e1");
+                helperLine.setAttribute("stroke-dasharray", "2,2");
+                svg.appendChild(helperLine);
+
+                // 畫水平偏差箭頭 (綠色代表正數，橘色代表負數，0不畫線)
+                if (p.diff !== 0) {
+                    const devLine = document.createElementNS(svgNs, "line");
+                    devLine.setAttribute("x1", baseX);
+                    devLine.setAttribute("y1", itemY);
+                    devLine.setAttribute("x2", pX);
+                    devLine.setAttribute("y2", itemY);
+                    devLine.setAttribute("stroke", p.diff > 0 ? "#10b981" : "#f59e0b");
+                    devLine.setAttribute("stroke-width", "2");
+                    svg.appendChild(devLine);
+
+                    // 畫箭頭尖端
+                    const tip = document.createElementNS(svgNs, "polygon");
+                    const dir = p.diff > 0 ? 1 : -1;
+                    const tipPoints = `${pX - dir * 6},${itemY - 4} ${pX},${itemY} ${pX - dir * 6},${itemY + 4}`;
+                    tip.setAttribute("points", tipPoints);
+                    tip.setAttribute("fill", p.diff > 0 ? "#10b981" : "#f59e0b");
+                    svg.appendChild(tip);
+                }
+
+                // 標註差距文字標籤
+                const devText = document.createElementNS(svgNs, "text");
+                const textX = p.diff === 0 ? pX : (baseX + pX) / 2;
+                devText.setAttribute("x", textX);
+                devText.setAttribute("y", itemY - 4);
+                devText.setAttribute("font-size", "11");
+                devText.setAttribute("font-weight", "black");
+                devText.setAttribute("fill", p.diff > 0 ? "#047857" : (p.diff < 0 ? "#b45309" : "#64748b"));
+                devText.setAttribute("text-anchor", "middle");
+                devText.textContent = `${p.name}: ${p.diff > 0 ? '+' + p.diff : p.diff}`;
+                svg.appendChild(devText);
+            });
+
+            container.appendChild(svg);
+        }
+
+        // --- 初始化全部關卡與按鈕 ---
+        function init() {
+            const nav = document.getElementById('problem-nav');
+            problems.forEach((p, index) => {
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-1.5 rounded-full whitespace-nowrap font-bold transition-all bg-emerald-800 text-emerald-100 hover:bg-emerald-600 border-2 border-emerald-950/20 text-xs md:text-sm`;
+                btn.innerText = `關卡 ${p.id}`;
+                btn.id = `nav-btn-${index}`;
+                btn.onclick = () => {
+                    playSound('click');
+                    switchProblem(index);
+                };
+                nav.appendChild(btn);
+
+                // 初始化該題各步驟的作答狀況
+                const blocks = p.steps.map(() => ({ answers: [], usedOpts: [] }));
+                pState[index] = { step: 0, blocks: blocks, isCompleted: false };
+            });
+            switchProblem(0);
+        }
+
+        // --- 切換關卡 ---
+        function switchProblem(index) {
+            currentIndex = index;
+            const p = problems[index];
+            document.querySelectorAll('#problem-nav button').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(`nav-btn-${index}`).classList.add('nav-active');
+            
+            document.getElementById('problem-tag').innerText = p.title;
+            document.getElementById('problem-content').innerHTML = p.text;
+            
+            drawSvgVisual(p);
+            renderSteps();
+        }
+
+        // --- 渲染步驟與卡片 ---
+        function renderSteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            const p = problems[currentIndex];
+            const state = pState[currentIndex];
+
+            p.steps.forEach((stepDef, sIdx) => {
+                const isActive = state.step >= sIdx;
+                const isDone = state.step > sIdx;
+
+                // 步驟大卡片
+                const card = document.createElement('div');
+                card.id = `step-card-${sIdx}`;
+                card.className = `step-card bg-white p-6 rounded-3xl shadow-sm border-2 ${isActive ? (isDone ? 'completed border-slate-100 shadow' : 'active border-emerald-300 shadow-md') : 'border-transparent'}`;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                        <h3 class="text-lg font-black text-slate-700 flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-lg text-xs bg-emerald-600 text-white font-black">步驟 ${sIdx + 1}</span>
+                            ${stepDef.title}
+                        </h3>
+                        ${isDone ? '<span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">✔ 完成</span>' : ''}
+                    </div>
+                `;
+
+                // 答題展示區 (Slot 排列)
+                html += `<div class="math mb-4 text-slate-700 leading-loose" id="workspace-${sIdx}"></div>`;
+
+                // 僅在當前活動步驟顯示選項按鈕與檢查按鈕
+                if (isActive && !isDone) {
+                    html += `<div class="flex flex-wrap gap-2.5 mt-4 pt-4 border-t border-slate-100" id="opts-${sIdx}"></div>`;
+                    html += `<div class="flex items-center justify-between mt-5 gap-4">
+                                <span class="text-xs text-amber-600 font-bold">⚠️ 點選格子可清除。答案皆填滿後請點右方檢查。</span>
+                                <button id="check-${sIdx}" class="py-3 px-6 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow active:scale-95">🔍 檢查答案</button>
+                             </div>`;
+                }
+
+                card.innerHTML = html;
+                container.appendChild(card);
+
+                // 建立 Workspace HTML 節點與空格 (Slots)
+                const workspace = card.querySelector(`#workspace-${sIdx}`);
+                let slotCounter = 0;
+                
+                stepDef.els.forEach(el => {
+                    if (el.s) {
+                        const slot = document.createElement('div');
+                        const block = state.blocks[sIdx];
+                        const valObj = block.answers[slotCounter];
+                        
+                        // 判斷空格是否為當前焦點
+                        let slotClass = "slot ";
+                        if (valObj) {
+                            slotClass += "filled ";
+                        } else {
+                            // 第一個空格高亮閃爍
+                            const firstEmptyIdx = block.answers.findIndex(a => !a);
+                            if (slotCounter === firstEmptyIdx || (firstEmptyIdx === -1 && slotCounter === 0)) {
+                                slotClass += "active-slot ";
+                            }
+                        }
+
+                        slot.className = slotClass;
+                        slot.innerText = valObj ? valObj.val : '?';
+                        
+                        const currentSlotIdx = slotCounter;
+                        if (!isDone) {
+                            slot.onclick = () => {
+                                playSound('click');
+                                clearSlot(sIdx, currentSlotIdx);
+                            };
+                        } else {
+                            slot.style.cursor = 'default';
+                        }
+                        
+                        workspace.appendChild(slot);
+                        slotCounter++;
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = "font-medium text-slate-800 text-lg mx-1";
+                        span.innerHTML = el.t;
+                        workspace.appendChild(span);
+                    }
+                });
+
+                // 產生選項按鈕
+                if (isActive && !isDone) {
+                    const optBox = card.querySelector(`#opts-${sIdx}`);
+                    const block = state.blocks[sIdx];
+                    
+                    stepDef.opts.forEach((optText, optIdx) => {
+                        const btn = document.createElement('button');
+                        const isUsed = block.usedOpts.includes(optIdx);
+                        
+                        btn.className = `px-5 py-2.5 rounded-xl font-bold text-base transition-all border ${isUsed ? 'bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed' : 'bg-white border-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:shadow hover:border-emerald-600 active:scale-95 shadow-sm'}`;
+                        btn.innerText = optText;
+                        btn.disabled = isUsed;
+                        btn.onclick = () => {
+                            playSound('click');
+                            fillSlot(sIdx, optText, optIdx);
+                        };
+                        optBox.appendChild(btn);
+                    });
+
+                    card.querySelector(`#check-${sIdx}`).onclick = () => checkStep(sIdx);
+                }
+            });
+        }
+
+        // --- 填入空格 ---
+        function fillSlot(sIdx, val, optIdx) {
+            const state = pState[currentIndex];
+            const block = state.blocks[sIdx];
+            const maxSlots = problems[currentIndex].steps[sIdx].els.filter(e => e.s).length;
+            
+            // 尋找第一個未填空格填入
+            for (let i = 0; i < maxSlots; i++) {
+                if (!block.answers[i]) {
+                    block.answers[i] = { val: val, optIdx: optIdx };
+                    block.usedOpts.push(optIdx);
+                    break;
+                }
+            }
+            renderSteps();
+        }
+
+        // --- 清除已填空格 ---
+        function clearSlot(sIdx, slotIdx) {
+            const state = pState[currentIndex];
+            const block = state.blocks[sIdx];
+            
+            if (block.answers[slotIdx]) {
+                const optIdx = block.answers[slotIdx].optIdx;
+                block.usedOpts = block.usedOpts.filter(idx => idx !== optIdx);
+                block.answers[slotIdx] = null;
+                renderSteps();
+            }
+        }
+
+        // --- 檢查步驟答案 ---
+        function checkStep(sIdx) {
+            const state = pState[currentIndex];
+            const block = state.blocks[sIdx];
+            const stepDef = problems[currentIndex].steps[sIdx];
+            const maxSlots = stepDef.els.filter(e => e.s).length;
+            
+            // 確保所有空格都填好
+            let filledCount = 0;
+            for (let i = 0; i < maxSlots; i++) {
+                if (block.answers[i]) filledCount++;
+            }
+            
+            if (filledCount < maxSlots) {
+                toast("請填滿所有空格再進行檢查喔！", "warn");
+                return;
+            }
+
+            // 驗證答案
+            const userVals = block.answers.map(a => a.val);
+            const correctVals = [...stepDef.ans];
+            
+            let isCorrect = false;
+            if (stepDef.unorder) {
+                isCorrect = userVals.slice().sort().join() === correctVals.slice().sort().join();
+            } else {
+                isCorrect = userVals.join() === correctVals.join();
+            }
+
+            if (isCorrect) {
+                playSound('success');
+                const card = document.getElementById(`step-card-${sIdx}`);
+                card.classList.add('tada');
+                
+                setTimeout(() => {
+                    const isLastStep = (sIdx === problems[currentIndex].steps.length - 1);
+                    if (isLastStep) {
+                        state.isCompleted = true;
+                        document.getElementById(`nav-btn-${currentIndex}`).classList.add('!bg-emerald-100', '!text-emerald-700', '!border-emerald-300');
+                        
+                        completedProblemsCount = Object.values(pState).filter(s => s.isCompleted).length;
+                        if (completedProblemsCount === problems.length) {
+                            endGame(true);
+                        } else {
+                            toast("太棒了！這關完全解開了，換下一關試試看！", "success");
+                            // 延遲後跳轉下一題
+                            setTimeout(() => {
+                                if (currentIndex + 1 < problems.length) {
+                                    switchProblem(currentIndex + 1);
+                                }
+                            }, 1200);
+                        }
+                    } else {
+                        state.step++;
+                        renderSteps();
+                        const next = document.getElementById(`step-card-${state.step}`);
+                        if (next) next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 600);
+            } else {
+                playSound('error');
+                toast("答案不太對喔，再仔細計算一下！加油！", "error");
+            }
+        }
+
+        // --- 浮動提示 Toast ---
+        function toast(msg, type) {
+            // 清除現有 toast
+            const oldToast = document.querySelector('.floating-toast');
+            if (oldToast) oldToast.remove();
+
+            const t = document.createElement('div');
+            const color = type === 'error' ? 'bg-rose-500' : (type === 'success' ? 'bg-emerald-500' : 'bg-amber-500');
+            t.className = `floating-toast fixed bottom-8 left-1/2 -translate-x-1/2 ${color} text-white px-8 py-3.5 rounded-2xl shadow-2xl z-[200] font-black text-base md:text-lg animate-bounce border-2 border-white`;
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        window.onload = init;
+    </script>
+    <script src="../progress.js"></script>
+</body>
+
+</html>
