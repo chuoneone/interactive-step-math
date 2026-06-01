@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會技巧學習單：修補友誼與真誠道歉 🤝</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0f9ff 100%);
+            min-height: 100vh;
+        }
+
+        .fancy-font {
+            font-family: 'Quicksand', 'Noto Sans TC', sans-serif;
+        }
+
+        /* Smooth glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Hover effects */
+        .interactive-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom toggle switch */
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4f46e5;
+        }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot {
+            transform: translateX(100%);
+        }
+
+        /* Pulsing dot for matching game */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.5; }
+            100% { transform: scale(0.9); opacity: 0; }
+        }
+        .dot-pulse::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid currentColor;
+            animation: pulse-ring 1.8s infinite;
+        }
+
+        /* Print styling for Certificate */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-print-area, #certificate-print-area * {
+                visibility: visible;
+            }
+            #certificate-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="selection:bg-rose-200 text-slate-700 antialiased pb-20">
+
+    <!-- SOUND SYNTHESIZER (Web Audio API) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'success') {
+                    // Harmonious cute melody (C5 -> E5 -> G5)
+                    osc.type = 'sine';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'error') {
+                    // Soft buzz error
+                    osc.type = 'triangle';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.setValueAtTime(100, now + 0.12);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'connect') {
+                    // Upward slide for connections
+                    osc.type = 'sine';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(350, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.18);
+                    osc.start(now);
+                    osc.stop(now + 0.18);
+                } else {
+                    // Soft bubble tap
+                    osc.type = 'sine';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(450, now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.06);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                }
+            } catch (e) {
+                console.log("Audio contexts wait for user interaction.");
+            }
+        }
+    </script>
+
+    <!-- HEADER / NAVIGATION -->
+    <header id="page-header" class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="../socialskill.html" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors font-bold text-sm">
+                    <i class="fa-solid fa-circle-chevron-left text-lg"></i>
+                    <span>返回社會技巧</span>
+                </a>
+                <div class="hidden md:flex items-center gap-2 border-l border-slate-200 pl-4">
+                    <img src="../images/dog.png" class="h-6 w-6 object-contain">
+                    <span class="text-xs font-black text-slate-500 uppercase tracking-widest">米克師 SPEDMIX</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <span class="text-xs md:text-sm text-slate-500 font-bold hidden sm:inline"><i class="fa-solid fa-graduation-cap mr-1"></i>切換模式：</span>
+                <!-- Switch Mode Button -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1">
+                    <button id="student-mode-btn" onclick="setMode('student')" class="px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-white text-indigo-600 shadow-sm flex items-center gap-1">
+                        <i class="fa-solid fa-user-pen"></i> 學生練習
+                    </button>
+                    <button id="teacher-mode-btn" onclick="setMode('teacher')" class="px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                        <i class="fa-solid fa-chalkboard"></i> 教師投影
+                    </button>
+                    <button id="slide-mode-btn" onclick="setMode('slide')" class="px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-600 hover:text-indigo-600 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-play"></i> 互動簡報
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="worksheet-view" class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- TITLE CARD -->
+        <div class="glass-card rounded-3xl p-6 md:p-8 shadow-md border border-rose-100/50 relative overflow-hidden">
+            <!-- Background icons -->
+            <div class="absolute -right-6 -bottom-6 text-9xl text-rose-500/5 pointer-events-none transform rotate-12 select-none">🤝</div>
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="space-y-3">
+                    <span class="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-200 text-rose-600 font-bold text-xs px-3.5 py-1 rounded-full uppercase tracking-wider">
+                        <i class="fa-solid fa-heart text-xs"></i> 處人技巧與關係修補
+                    </span>
+                    <h1 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2 flex-wrap">
+                        <img src="../images/dog.png" class="h-9 w-9 object-contain inline-block">
+                        <span>社會技巧學習單：修補友誼與真誠道歉</span>
+                    </h1>
+                    <p class="text-xs md:text-sm text-slate-500 font-medium">🎯 <strong>學習目標：</strong>當和同學、朋友發生不愉快時，學習用適當的方法修補關係，讓友誼更穩固。</p>
+                </div>
+                
+                <!-- Student Metadata (Saves dynamically) -->
+                <div class="bg-white/50 border border-slate-200/60 rounded-2xl p-4 grid grid-cols-2 md:grid-cols-1 gap-3 md:w-64">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">班級</label>
+                        <input type="text" id="student-class" oninput="saveMetadata()" placeholder="輸入班級..." class="w-full bg-transparent border-b border-slate-300 focus:border-indigo-500 text-sm font-bold py-1 focus:outline-none transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">姓名</label>
+                        <input type="text" id="student-name" oninput="saveMetadata()" placeholder="輸入姓名..." class="w-full bg-transparent border-b border-slate-300 focus:border-indigo-500 text-sm font-bold py-1 focus:outline-none transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tip banner -->
+            <div class="mt-6 bg-amber-50 border border-amber-200/50 rounded-2xl p-4 flex items-start gap-3">
+                <span class="text-2xl">💡</span>
+                <div>
+                    <h4 class="font-bold text-amber-800 text-sm">小提醒</h4>
+                    <p class="text-xs text-amber-700/90 font-medium mt-0.5">先冷靜，再處理問題，通常能得到更好的結果！</p>
+                </div>
+            </div>
+            
+            <!-- Teacher Guide General -->
+            <div class="teacher-guide mt-6 bg-indigo-50 border border-indigo-200/50 rounded-2xl p-4 hidden">
+                <h4 class="font-black text-indigo-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-chalkboard-user"></i> 教師導引重點：</h4>
+                <p class="text-xs text-indigo-700 font-medium leading-relaxed mt-1">
+                    本學習單旨在引導學生探討「修補衝突」的社交技巧。建議在引導時強調：道歉不是「認輸」，而是展現「重視彼此友誼」與「勇於負責」的成熟表現。
+                </p>
+            </div>
+        </div>
+
+        <!-- SECTION 1: 勾選題 -->
+        <section class="space-y-4">
+            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                <span class="bg-rose-500 text-white rounded-lg w-7 h-7 flex items-center justify-center text-sm shadow-sm">一</span>
+                <span>勾選題（可複選）</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="section-1-grid">
+                <!-- MCQ Cards will be generated by JS -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: 情境問答題 -->
+        <section class="space-y-4">
+            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                <span class="bg-sky-500 text-white rounded-lg w-7 h-7 flex items-center justify-center text-sm shadow-sm">二</span>
+                <span>情境問答題 ✏️</span>
+            </h2>
+
+            <div class="space-y-6" id="section-2-list">
+                <!-- Scenario Cards will be generated by JS -->
+            </div>
+        </section>
+
+        <!-- SECTION 3: 連連看 -->
+        <section class="space-y-4">
+            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                <span class="bg-emerald-500 text-white rounded-lg w-7 h-7 flex items-center justify-center text-sm shadow-sm">三</span>
+                <span>連連看：將「發生的錯誤」與「適合的修補行動」連起來 🔗</span>
+            </h2>
+
+            <div id="worksheet-matching-parent" class="glass-card rounded-3xl p-6 md:p-8 border border-emerald-100/50 relative">
+                
+                <!-- Matching interactive canvas overlay -->
+                <div class="relative min-h-[450px]" id="matching-container">
+                    <svg id="matching-svg" class="absolute inset-0 w-full h-full pointer-events-none select-none z-10"></svg>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 relative z-20">
+                        <!-- Left Column (Errors) -->
+                        <div class="md:col-span-5 space-y-4 flex flex-col justify-between">
+                            <div class="text-center font-black text-sm text-slate-400 uppercase tracking-wider mb-2">發生的錯誤</div>
+                            
+                            <div id="left-1" onclick="selectNode('left', 1)" class="matching-node group flex items-center justify-between p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <span class="text-sm font-bold text-slate-700">① 說了傷人的話</span>
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="left-2" onclick="selectNode('left', 2)" class="matching-node group flex items-center justify-between p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <span class="text-sm font-bold text-slate-700">② 弄壞別人的筆</span>
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="left-3" onclick="selectNode('left', 3)" class="matching-node group flex items-center justify-between p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <span class="text-sm font-bold text-slate-700">③ 分組時不小心撞到人</span>
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="left-4" onclick="selectNode('left', 4)" class="matching-node group flex items-center justify-between p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <span class="text-sm font-bold text-slate-700">④ 忘了答應朋友的事</span>
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="left-5" onclick="selectNode('left', 5)" class="matching-node group flex items-center justify-between p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <span class="text-sm font-bold text-slate-700">⑤ 看到朋友很難過</span>
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mid Spacer on desktop -->
+                        <div class="hidden md:block md:col-span-2"></div>
+
+                        <!-- Right Column (Reconciliations) -->
+                        <div class="md:col-span-5 space-y-4 flex flex-col justify-between">
+                            <div class="text-center font-black text-sm text-slate-400 uppercase tracking-wider mb-2">適合的修補行動</div>
+                            
+                            <div id="right-A" onclick="selectNode('right', 'A')" class="matching-node group flex items-center p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors mr-3 relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">A. 幫他把東西貼好或賠一個新的</span>
+                            </div>
+                            
+                            <div id="right-B" onclick="selectNode('right', 'B')" class="matching-node group flex items-center p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors mr-3 relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">B. 主動過去問他：「還好嗎？」</span>
+                            </div>
+                            
+                            <div id="right-C" onclick="selectNode('right', 'C')" class="matching-node group flex items-center p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors mr-3 relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">C. 真誠地說：「對不起，我不該說那些話。」</span>
+                            </div>
+                            
+                            <div id="right-D" onclick="selectNode('right', 'D')" class="matching-node group flex items-center p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors mr-3 relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">D. 拍拍對方的肩膀，確認有沒有受傷</span>
+                            </div>
+                            
+                            <div id="right-E" onclick="selectNode('right', 'E')" class="matching-node group flex items-center p-4 bg-white border-2 border-slate-200 hover:border-emerald-300 rounded-2xl cursor-pointer transition-all shadow-sm">
+                                <div class="dot w-4.5 h-4.5 rounded-full bg-slate-300 group-hover:bg-emerald-400 transition-colors mr-3 relative flex items-center justify-center">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">E. 解釋原因，並表示下次會記在聯絡簿上</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons for Matching Game -->
+                <div class="mt-6 flex flex-wrap justify-between items-center gap-4">
+                    <div id="matching-feedback" class="text-sm font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 flex items-center gap-2">
+                        <i class="fa-solid fa-info-circle text-indigo-500"></i> 請點選左側發生的錯誤，再點選右側對應的修補行動。
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button onclick="clearConnections()" class="px-4 py-2 border border-slate-300 hover:border-red-300 hover:bg-red-50 text-slate-600 hover:text-red-700 font-bold rounded-xl text-sm transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-can"></i> 清除重來
+                        </button>
+                        <button onclick="checkConnections()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all shadow-md flex items-center gap-1.5">
+                            <i class="fa-solid fa-clipboard-check"></i> 檢查連線
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Teacher Guide for Matching Game -->
+                <div class="teacher-guide mt-6 bg-indigo-50 border border-indigo-200/50 rounded-2xl p-4 hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-black text-indigo-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-chalkboard-user"></i> 教師導引 / 正確解答：</h4>
+                        <button onclick="showCorrectConnections()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 自動顯示投影連線
+                        </button>
+                    </div>
+                    <ul class="text-xs text-indigo-700 font-bold space-y-1 list-disc list-inside">
+                        <li>① 說了傷人的話 ➔ C. 真誠地說：「對不起，我不該說那些話。」（承擔口語傷害責任）</li>
+                        <li>② 弄壞別人的筆 ➔ A. 幫他把東西貼好或賠一個新的（實體財物損壞賠償）</li>
+                        <li>③ 分組時不小心撞到人 ➔ D. 拍拍對方的肩膀，確認有沒有受傷（肢體碰撞優先關懷）</li>
+                        <li>④ 忘了答應朋友的事 ➔ E. 解釋原因，並表示下次會記在聯絡簿上（修補信任與具體改進）</li>
+                        <li>⑤ 看到朋友很難過 ➔ B. 主動過去問他：「還好嗎？」（情感支持同理心）</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: 我的提醒與練習 -->
+        <section class="space-y-4">
+            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                <span class="bg-amber-500 text-white rounded-lg w-7 h-7 flex items-center justify-center text-sm shadow-sm"><i class="fa-solid fa-heart"></i></span>
+                <span>我的提醒與實踐承諾</span>
+            </h2>
+
+            <div class="glass-card rounded-3xl p-6 md:p-8 border border-amber-100/50 space-y-6">
+                <!-- 4 Tips Grid -->
+                <div>
+                    <h3 class="font-black text-sm text-slate-400 uppercase tracking-wider mb-4">我的小提醒</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-4 bg-white/60 border border-slate-100 rounded-2xl flex items-center gap-3 interactive-card">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-500 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-face-smile-beam"></i></div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-xs">先冷靜，再說話</h4>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white/60 border border-slate-100 rounded-2xl flex items-center gap-3 interactive-card">
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-shield-cat"></i></div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-xs">做錯事時勇敢承認</h4>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white/60 border border-slate-100 rounded-2xl flex items-center gap-3 interactive-card">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-comments"></i></div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-xs">真誠道歉比找藉口更重要</h4>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white/60 border border-slate-100 rounded-2xl flex items-center gap-3 interactive-card">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-hourglass-half"></i></div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-xs">修補關係需要耐心與誠意</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Action practice target input -->
+                <div class="space-y-3">
+                    <label for="practice-target" class="block font-black text-sm text-slate-800">✍️ 今天我要練習：</label>
+                    <textarea id="practice-target" oninput="saveMetadata()" rows="3" placeholder="請寫下你今天決定練習的一個人際修補行動...（例如：當同學生氣時，我要先深呼吸三秒鐘再開口。）" class="w-full rounded-2xl border-2 border-slate-200 p-4 font-medium text-sm focus:border-indigo-500 focus:outline-none transition-colors shadow-sm bg-white/40 focus:bg-white"></textarea>
+                </div>
+
+                <!-- Generate Certificate Button -->
+                <div class="flex justify-center pt-2">
+                    <button onclick="generateCertificate()" class="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-black rounded-full text-base transition-all transform active:scale-95 shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-award"></i> 生成友誼修補小勇士證書 🏆
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SLIDE VIEW CONTAINER -->
+    <main id="slide-view" class="max-w-5xl mx-auto px-2 py-1.5 hidden h-[calc(100vh-24px)] flex flex-col">
+        <!-- SLIDE DECK PANEL -->
+        <div id="slide-deck-panel" class="glass-card rounded-3xl p-4 md:p-6 border border-slate-100 flex flex-col justify-between h-full shadow-lg relative overflow-hidden">
+            <!-- Slide Header: Slide Title & Badge -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <span id="slide-badge" class="bg-indigo-100 text-indigo-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">投影片 1 / 11</span>
+                    <h2 id="slide-title" class="text-xl md:text-2xl font-black text-slate-800"></h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- Exit presentation mode button -->
+                    <button onclick="setMode('teacher')" class="px-3 py-1.5 bg-slate-150 hover:bg-slate-200 active:scale-95 text-slate-600 font-bold rounded-xl text-xs flex items-center gap-1 transition-all">
+                        <i class="fa-solid fa-xmark"></i> 結束簡報
+                    </button>
+                    <img src="../images/dog.png" class="h-7 w-7 object-contain" id="slide-header-icon">
+                </div>
+            </div>
+
+            <!-- Slide Body Container -->
+            <div id="slide-body" class="flex-grow overflow-y-auto flex flex-col justify-center items-center py-4 px-2 md:px-6 w-full text-center">
+                <!-- Dynamic Slide Content will go here -->
+            </div>
+
+            <!-- Slide Footer: Controls -->
+            <div class="border-t border-slate-100 pt-4 flex flex-col sm:flex-row justify-between items-center gap-4 flex-shrink-0">
+                <button onclick="prevSlide()" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-600 font-bold rounded-xl text-sm transition-all flex items-center gap-1.5 active:scale-95">
+                    <i class="fa-solid fa-arrow-left"></i> 上一題
+                </button>
+                
+                <div class="flex items-center gap-2">
+                    <button id="slide-action-btn" onclick="toggleSlideAnswer()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-sm transition-all flex items-center gap-1.5 shadow-md active:scale-95">
+                        <i class="fa-solid fa-lightbulb"></i> 顯示參考答案與引導
+                    </button>
+                </div>
+
+                <button onclick="nextSlide()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition-all flex items-center gap-1.5 active:scale-95">
+                    下一題 <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <!-- Keyboard shortcuts hint -->
+            <div class="absolute bottom-2 right-4 text-[9px] text-slate-400 font-bold hidden md:block">
+                簡報操作：鍵盤 ⬅️ 前一題 | ➡️ 下一題 | 空白鍵 顯示答案
+            </div>
+        </div>
+    </main>
+
+    <!-- CERTIFICATE MODAL -->
+    <div id="certificate-modal" class="fixed inset-0 z-50 overflow-y-auto hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-10 shadow-2xl relative border-8 border-double border-indigo-100 flex flex-col justify-between">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-circle-xmark"></i></button>
+            
+            <!-- Certificate Layout Printable -->
+            <div id="certificate-print-area" class="border-4 border-indigo-200/50 rounded-2xl p-6 md:p-8 text-center space-y-6 bg-gradient-to-br from-indigo-50/20 to-rose-50/20 relative overflow-hidden">
+                <img src="../images/dog.png" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 pointer-events-none transform -rotate-12">
+                <div class="text-5xl">🏆</div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-wider">友誼修補小勇士證書</h2>
+                <p class="text-xs font-black text-indigo-600 tracking-widest uppercase">SPEDMIX SOCIAL SKILLS ACADEMY</p>
+                
+                <div class="py-6 space-y-4">
+                    <p class="text-slate-600 font-medium">恭喜 <span id="cert-class" class="font-black text-indigo-700 border-b-2 border-indigo-200 px-2">七年三班</span> 學生 <span id="cert-name" class="font-black text-indigo-700 border-b-2 border-indigo-200 text-lg px-4">王小明</span></p>
+                    <p class="text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
+                        完成「修補友誼與真誠道歉」學習單挑戰。在面對衝突時展現了冷靜思考，並在今日的課程中承諾實踐：
+                    </p>
+                    <div class="bg-white border border-indigo-100 rounded-2xl p-4 text-sm font-bold text-indigo-800 italic max-w-lg mx-auto shadow-sm">
+                        「<span id="cert-target">今天我要練習：當同學生氣時，我要先深呼吸三秒鐘。</span>」
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-slate-400 max-w-md mx-auto pt-4">
+                    <div>
+                        <p class="border-t border-slate-300 pt-1 w-24">導師簽名</p>
+                    </div>
+                    <div>
+                        <p id="cert-date" class="font-bold text-slate-500">2026-06-01</p>
+                        <p class="pt-1">頒發日期</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal operations -->
+            <div class="flex justify-center gap-4 mt-6">
+                <button onclick="printCertificate()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-print"></i> 列印 / 另存 PDF
+                </button>
+                <button onclick="closeModal()" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-600 font-bold rounded-xl text-sm transition-colors">
+                    關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT -->
+    <script>
+        // MCQ Questions Data
+        const mcqQuestions = [
+            {
+                id: 1,
+                title: "當你發現朋友在生你的氣時，哪些行為可以修補關係？",
+                options: [
+                    { text: "主動說對不起", correct: true },
+                    { text: "裝作沒看見，等他自己好", correct: false, note: "逃避通常會加深誤會，主動關懷才是修補的橋樑。" },
+                    { text: "寫一張道歉的小紙條給他", correct: true },
+                    { text: "詢問他：「我有什麼可以幫忙的嗎？」", correct: true },
+                    { text: "在背後跟別人說他的壞話", correct: false, note: "在背後批評會二次傷害關係，讓衝突更難收拾。" }
+                ]
+            },
+            {
+                id: 2,
+                title: "當我不小心衝動對同學大聲說話後，我可以怎麼做？",
+                options: [
+                    { text: "立刻離開現場去洗臉冷靜", correct: true },
+                    { text: "等心情平復後去跟同學解釋", correct: true },
+                    { text: "承認自己剛才太激動了", correct: true },
+                    { text: "叫同學也要跟我道歉", correct: false, note: "要求對方道歉是防衛心理，專注於自己的責任有助於修補關係。" },
+                    { text: "下次遇到他時給他一個微笑", correct: true }
+                ]
+            },
+            {
+                id: 3,
+                title: "哪些是真誠道歉的表現？",
+                options: [
+                    { text: "看著對方的眼睛說對不起", correct: true },
+                    { text: "語氣很大聲地說：「好啦對不起行了吧」", correct: false, note: "挑釁與防衛的氣話不是道歉，只會激起對方的防衛。" },
+                    { text: "說明自己做錯的地方", correct: true },
+                    { text: "低著頭小聲道歉", correct: false, note: "過於小聲或迴避眼神會讓對方感受不到誠意，試著自信且溫和地面對對方。" },
+                    { text: "承諾下次不會再這樣做了", correct: true }
+                ]
+            },
+            {
+                id: 4,
+                title: "如果你弄壞了朋友的東西，怎麼做比較好？",
+                options: [
+                    { text: "偷偷放回去當作沒發生", correct: false, note: "逃避與欺騙會徹底摧毀彼此的誠信根基。" },
+                    { text: "誠實告訴朋友並道歉", correct: true },
+                    { text: "問朋友能不能買一個新的賠給他", correct: true },
+                    { text: "幫朋友把東西修理好", correct: true },
+                    { text: "說是別人弄壞的", correct: false, note: "嫁禍他人是極不負責任的行為，會徹底破壞友誼信賴。" }
+                ]
+            },
+            {
+                id: 5,
+                title: "修補友誼時，什麼樣的心態最重要？",
+                options: [
+                    { text: "想要和好的誠心", correct: true },
+                    { text: "一定要吵贏對方", correct: false, note: "爭輸贏會把友誼當作戰場，和好需要的是雙贏的心態。" },
+                    { text: "願意聽對方說話的耐心", correct: true },
+                    { text: "承認錯誤的勇氣", correct: true }
+                ]
+            }
+        ];
+
+        // Scenario Questions Data
+        const scenarios = [
+            {
+                id: 6,
+                title: "情境一",
+                desc: "小明不小心把你的水壺撞倒了，你一時衝動大罵了他一聲，小明變得很難過不理你了。你會對小明說什麼來修補關係？",
+                teacherGuide: "引導點：『理智腦煞車』，承認自己衝動大罵的不當，同時同理對方的難過。",
+                example: "「對不起小明，我剛剛太衝動對你大聲說話。我當時只是因為看到水倒了很著急，不是故意要罵你的。真的很抱歉，我們能把水擦乾淨嗎？」"
+            },
+            {
+                id: 7,
+                title: "情境二",
+                desc: "你跟好友約好要一起去福利社，但你因為在打球忘了時間，讓他在烈日下等很久。見面時你該怎麼做？",
+                teacherGuide: "引導點：說明客觀原因但不找藉口，同理對方在烈日下等待的燥熱與焦慮情緒，並提出小補償。",
+                example: "「真的很對不起！我剛剛在打球忘記看時間，讓你一個人在太陽底下等了這麼久，一定很熱也很生氣吧。都是我的錯，我們快進去吹冷氣，今天我請你喝一罐冰飲料賠罪！」"
+            },
+            {
+                id: 8,
+                title: "想一想",
+                desc: "如果你想跟一個很久沒說話的朋友和好，你可以怎麼跨出第一步？",
+                teacherGuide: "引導點：建議從低壓力的友善動作（寫小紙條、傳表情貼圖、走廊微笑打招呼）開始，不給對方強烈的回應壓力。",
+                example: "「我可以先寫一張簡單的卡片放在他桌上，或者下一次在走廊遇到他時，主動看著他微笑點頭，說聲『嗨』，先建立小破冰。」"
+            }
+        ];
+
+        // Current App State
+        let currentMode = 'student'; // 'student' | 'teacher'
+        let connections = {}; // format: { 'left-1': 'right-C', ... }
+        let selectedNodeSide = null; // 'left' | 'right'
+        let selectedNodeValue = null; // number for left, letter for right
+
+        // Correct pairs for Matching Game
+        const correctPairs = {
+            1: 'C',
+            2: 'A',
+            3: 'D',
+            4: 'E',
+            5: 'B'
+        };
+
+        // Render Page Contents on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMCQ();
+            renderScenarios();
+            loadProgress();
+            
+            // Setup resize listener for SVG matching lines
+            window.addEventListener('resize', () => {
+                drawLines();
+            });
+
+            // Set up SVG container size observer
+            const resizeObserver = new ResizeObserver(() => {
+                drawLines();
+            });
+            resizeObserver.observe(document.getElementById('matching-container'));
+        });
+
+        // Save metadata dynamically to LocalStorage
+        function saveMetadata() {
+            const classVal = document.getElementById('student-class').value;
+            const nameVal = document.getElementById('student-name').value;
+            const targetVal = document.getElementById('practice-target').value;
+            localStorage.setItem('friendship_metadata', JSON.stringify({
+                class: classVal,
+                name: nameVal,
+                target: targetVal
+            }));
+        }
+
+        // Save all student answers dynamically
+        function saveProgress() {
+            saveMetadata();
+            
+            // Save checkbox states
+            const checkedInputs = {};
+            document.querySelectorAll('.mcq-checkbox').forEach(input => {
+                checkedInputs[input.id] = input.checked;
+            });
+            localStorage.setItem('friendship_checkboxes', JSON.stringify(checkedInputs));
+
+            // Save textarea answers
+            const texts = {};
+            scenarios.forEach(s => {
+                const el = document.getElementById(`textarea-${s.id}`);
+                if (el) texts[s.id] = el.value;
+            });
+            localStorage.setItem('friendship_scenarios', JSON.stringify(texts));
+
+            // Save matching game connections
+            localStorage.setItem('friendship_connections', JSON.stringify(connections));
+        }
+
+        // Load progress from LocalStorage
+        function loadProgress() {
+            try {
+                // Load metadata
+                const metadata = JSON.parse(localStorage.getItem('friendship_metadata'));
+                if (metadata) {
+                    document.getElementById('student-class').value = metadata.class || '';
+                    document.getElementById('student-name').value = metadata.name || '';
+                    document.getElementById('practice-target').value = metadata.target || '';
+                }
+
+                // Load checkboxes
+                const checkboxes = JSON.parse(localStorage.getItem('friendship_checkboxes'));
+                if (checkboxes) {
+                    Object.keys(checkboxes).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.checked = checkboxes[id];
+                    });
+                }
+
+                // Load scenarios
+                const scenarioData = JSON.parse(localStorage.getItem('friendship_scenarios'));
+                if (scenarioData) {
+                    Object.keys(scenarioData).forEach(id => {
+                        const el = document.getElementById(`textarea-${id}`);
+                        if (el) el.value = scenarioData[id];
+                    });
+                }
+
+                // Load connections
+                const loadedConnections = JSON.parse(localStorage.getItem('friendship_connections'));
+                if (loadedConnections) {
+                    connections = loadedConnections;
+                    // Redraw lines after short delay to ensure rendering completes
+                    setTimeout(drawLines, 200);
+                }
+            } catch (e) {
+                console.error("Error loading progress: ", e);
+            }
+        }
+
+        // Set Student vs Teacher Mode or Slide Presentation Mode
+        function setMode(mode) {
+            currentMode = mode;
+            playSound('tap');
+            
+            const studentBtn = document.getElementById('student-mode-btn');
+            const teacherBtn = document.getElementById('teacher-mode-btn');
+            const slideBtn = document.getElementById('slide-mode-btn');
+            const guides = document.querySelectorAll('.teacher-guide');
+            const worksheetView = document.getElementById('worksheet-view');
+            const slideView = document.getElementById('slide-view');
+
+            // Reset header button styling
+            studentBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-600 hover:text-indigo-600 flex items-center gap-1";
+            teacherBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-600 hover:text-indigo-600 flex items-center gap-1";
+            if (slideBtn) slideBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-600 hover:text-indigo-600 flex items-center gap-1";
+
+            if (mode === 'slide') {
+                if (slideBtn) slideBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-white text-indigo-600 shadow-sm flex items-center gap-1";
+                worksheetView.classList.add('hidden');
+                slideView.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                document.getElementById('page-header').classList.add('hidden');
+                window.scrollTo(0, 0);
+                
+                // Hide teacher guides inside worksheet
+                guides.forEach(el => el.classList.add('hidden'));
+                
+                // Render the slide deck
+                renderSlide();
+            } else {
+                worksheetView.classList.remove('hidden');
+                slideView.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                document.getElementById('page-header').classList.remove('hidden');
+                
+                // Make sure matching container is restored to worksheet
+                const matchingContainer = document.getElementById('matching-container');
+                const worksheetParent = document.getElementById('worksheet-matching-parent');
+                if (matchingContainer && worksheetParent && matchingContainer.parentElement !== worksheetParent) {
+                    worksheetParent.insertBefore(matchingContainer, worksheetParent.firstChild);
+                }
+
+                if (mode === 'student') {
+                    studentBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-white text-indigo-600 shadow-sm flex items-center gap-1";
+                    guides.forEach(el => el.classList.add('hidden'));
+                    
+                    // Reset MCQ overlays
+                    document.querySelectorAll('.mcq-option-row').forEach(row => {
+                        row.classList.remove('bg-emerald-50/50', 'border-emerald-200', 'bg-red-50/30', 'border-red-200');
+                    });
+                    document.querySelectorAll('.mcq-feedback-text').forEach(el => el.classList.add('hidden'));
+                    document.querySelectorAll('.mcq-option-correct-badge').forEach(el => el.classList.add('hidden'));
+                } else {
+                    teacherBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-white text-indigo-600 shadow-sm flex items-center gap-1";
+                    guides.forEach(el => el.classList.remove('hidden'));
+                    showMCQAnswers();
+                }
+                
+                // Refresh lines in worksheet view
+                drawLines();
+            }
+        }
+
+        // Render MCQ Cards
+        function renderMCQ() {
+            const grid = document.getElementById('section-1-grid');
+            grid.innerHTML = '';
+
+            mcqQuestions.forEach(q => {
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-5 border border-slate-100 flex flex-col justify-between interactive-card";
+                card.id = `mcq-card-${q.id}`;
+
+                let optionsHtml = '';
+                q.options.forEach((opt, index) => {
+                    const optionId = `mcq-${q.id}-${index}`;
+                    optionsHtml += `
+                        <div id="row-${optionId}" class="mcq-option-row p-3 border border-slate-100 hover:border-indigo-200 rounded-xl transition-all flex items-start gap-3 bg-white/40 cursor-pointer has-[:checked]:bg-indigo-50/30 has-[:checked]:border-indigo-200">
+                            <input type="checkbox" id="${optionId}" onchange="saveProgress()" class="mcq-checkbox w-4.5 h-4.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 mt-0.5">
+                            <div class="flex-grow">
+                                <label for="${optionId}" class="text-sm font-bold text-slate-700 cursor-pointer select-none">${opt.text}</label>
+                                <p id="note-${optionId}" class="mcq-feedback-text text-xs text-red-600 mt-1 font-semibold hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i>${opt.note || ''}</p>
+                            </div>
+                            <span id="badge-${optionId}" class="mcq-option-correct-badge text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full hidden">正確</span>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-800 text-sm md:text-base flex items-start gap-2">
+                            <span class="bg-indigo-50 text-indigo-600 text-xs font-black w-5.5 h-5.5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">${q.id}</span>
+                            <span>${q.title}</span>
+                        </h3>
+                        <div class="space-y-2">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 flex justify-between items-center border-t border-slate-100/60">
+                        <div id="mcq-result-${q.id}" class="text-xs font-bold text-slate-400">
+                            已填寫
+                        </div>
+                        <button onclick="checkMCQ(${q.id})" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1">
+                            <i class="fa-solid fa-clipboard-check"></i> 檢查答案
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Show MCQ Correct Answers (Teacher Mode)
+        function showMCQAnswers() {
+            mcqQuestions.forEach(q => {
+                q.options.forEach((opt, index) => {
+                    const optionId = `mcq-${q.id}-${index}`;
+                    const rowEl = document.getElementById(`row-${optionId}`);
+                    const badgeEl = document.getElementById(`badge-${optionId}`);
+                    const noteEl = document.getElementById(`note-${optionId}`);
+
+                    if (opt.correct) {
+                        rowEl.classList.add('bg-emerald-50/50', 'border-emerald-200');
+                        badgeEl.classList.remove('hidden');
+                    } else {
+                        rowEl.classList.add('bg-red-50/30', 'border-red-200');
+                        if (opt.note) noteEl.classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        // Check single MCQ card (Student Mode)
+        function checkMCQ(qId) {
+            const q = mcqQuestions.find(item => item.id === qId);
+            let correct = true;
+            let attempted = false;
+
+            q.options.forEach((opt, index) => {
+                const optionId = `mcq-${q.id}-${index}`;
+                const checkbox = document.getElementById(optionId);
+                const rowEl = document.getElementById(`row-${optionId}`);
+                const noteEl = document.getElementById(`note-${optionId}`);
+                const badgeEl = document.getElementById(`badge-${optionId}`);
+
+                rowEl.classList.remove('bg-emerald-50/50', 'border-emerald-200', 'bg-red-50/30', 'border-red-200');
+                noteEl.classList.add('hidden');
+                badgeEl.classList.add('hidden');
+
+                if (checkbox.checked) {
+                    attempted = true;
+                }
+
+                // Check mismatch
+                if (checkbox.checked !== opt.correct) {
+                    correct = false;
+                    rowEl.classList.add('bg-red-50/30', 'border-red-100');
+                    if (checkbox.checked && opt.note) {
+                        noteEl.classList.remove('hidden');
+                    }
+                } else if (checkbox.checked && opt.correct) {
+                    rowEl.classList.add('bg-emerald-50/50', 'border-emerald-200');
+                    badgeEl.classList.remove('hidden');
+                }
+            });
+
+            const feedbackEl = document.getElementById(`mcq-result-${qId}`);
+            if (!attempted) {
+                playSound('error');
+                feedbackEl.innerHTML = `<span class="text-amber-500 font-black"><i class="fa-solid fa-triangle-exclamation"></i> 請勾選答案後再檢查</span>`;
+                return;
+            }
+
+            if (correct) {
+                playSound('success');
+                feedbackEl.innerHTML = `<span class="text-emerald-600 font-black"><i class="fa-solid fa-circle-check"></i> 答對了！非常棒！</span>`;
+            } else {
+                playSound('error');
+                feedbackEl.innerHTML = `<span class="text-red-500 font-black"><i class="fa-solid fa-circle-xmark"></i> 答錯了，請再想一想</span>`;
+            }
+            recordWorksheetScore();
+        }
+
+        // Render Scenarios
+        function renderScenarios() {
+            const list = document.getElementById('section-2-list');
+            list.innerHTML = '';
+
+            scenarios.forEach(s => {
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-5 md:p-6 border border-slate-100 space-y-4 interactive-card";
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="inline-block text-[10px] font-black tracking-widest bg-sky-50 text-sky-600 border border-sky-100 rounded px-2.5 py-0.5 uppercase">${s.title}</span>
+                            <h3 class="font-bold text-slate-800 text-sm md:text-base leading-relaxed mt-1">${s.desc}</h3>
+                        </div>
+                        <span class="text-2xl">${s.id === 6 ? '🥤' : s.id === 7 ? '☀️' : '💬'}</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="textarea-${s.id}" class="block text-xs font-black text-slate-400 uppercase tracking-widest">答</label>
+                        <textarea id="textarea-${s.id}" oninput="saveProgress()" rows="3" placeholder="請在此輸入你的回答..." class="w-full rounded-xl border border-slate-200 p-3 font-medium text-sm focus:border-indigo-500 focus:outline-none transition-colors bg-white/40 focus:bg-white"></textarea>
+                    </div>
+
+                    <!-- Teacher guides for Scenario questions -->
+                    <div class="teacher-guide bg-indigo-50 border border-indigo-200/50 rounded-xl p-4 space-y-2 hidden">
+                        <p class="text-xs text-indigo-900 font-bold leading-relaxed flex items-center gap-1.5"><i class="fa-solid fa-chalkboard-user"></i> <strong>討論指引：</strong>${s.teacherGuide}</p>
+                        <div class="p-3 bg-white rounded-lg border border-indigo-100">
+                            <p class="text-xs text-slate-400 font-black uppercase tracking-widest">💡 參考我訊息句型示範：</p>
+                            <p class="text-xs text-indigo-700 font-bold mt-1 leading-relaxed">${s.example}</p>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // Matching Game Select Node
+        function selectNode(side, val) {
+            playSound('tap');
+            const node = document.getElementById(`${side}-${val}`);
+
+            // If teacher mode is on, click matching is disabled to prevent confusion
+            if (currentMode === 'teacher') return;
+
+            // Remove highlighted class from previous nodes on same side
+            document.querySelectorAll(`.matching-node`).forEach(el => {
+                if (el.id.startsWith(side)) {
+                    el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200', 'dot-pulse');
+                }
+            });
+
+            if (selectedNodeSide === side && selectedNodeValue === val) {
+                // Clicking already selected node -> deselect
+                selectedNodeSide = null;
+                selectedNodeValue = null;
+                return;
+            }
+
+            if (selectedNodeSide && selectedNodeSide !== side) {
+                // Selected opposite side -> perform connection
+                const leftVal = side === 'left' ? val : selectedNodeValue;
+                const rightVal = side === 'right' ? val : selectedNodeValue;
+
+                // Check and delete previous links for leftVal or rightVal to keep it 1-to-1
+                // Remove leftVal connections
+                if (connections[leftVal]) {
+                    delete connections[leftVal];
+                }
+                // Remove rightVal connections
+                for (let key in connections) {
+                    if (connections[key] === rightVal) {
+                        delete connections[key];
+                    }
+                }
+
+                // Register connection
+                connections[leftVal] = rightVal;
+                playSound('connect');
+                saveProgress();
+
+                // Clear highlights
+                document.querySelectorAll('.matching-node').forEach(el => {
+                    el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200', 'dot-pulse');
+                });
+                selectedNodeSide = null;
+                selectedNodeValue = null;
+
+                // Redraw line
+                drawLines();
+            } else {
+                // Select node
+                selectedNodeSide = side;
+                selectedNodeValue = val;
+                node.classList.add('border-indigo-500', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-200', 'dot-pulse');
+            }
+        }
+
+        // Draw Connections in SVG
+        function drawLines() {
+            const svg = document.getElementById('matching-svg');
+            svg.innerHTML = '';
+            
+            const svgRect = svg.getBoundingClientRect();
+            if (svgRect.width === 0 || svgRect.height === 0) return;
+
+            const isTeacher = currentMode === 'teacher' || (currentMode === 'slide' && slideAnswerVisible);
+            const displayConnections = isTeacher ? correctPairs : connections;
+
+            // Map and Draw Lines
+            for (let leftKey in displayConnections) {
+                const rightVal = displayConnections[leftKey];
+                const leftEl = document.getElementById(`left-${leftKey}`);
+                const rightEl = document.getElementById(`right-${rightVal}`);
+
+                if (!leftEl || !rightEl) continue;
+
+                // Find Dot locations
+                const leftDot = leftEl.querySelector('.dot').getBoundingClientRect();
+                const rightDot = rightEl.querySelector('.dot').getBoundingClientRect();
+
+                // Coordinates relative to SVG canvas
+                const x1 = (leftDot.left + leftDot.right) / 2 - svgRect.left;
+                const y1 = (leftDot.top + leftDot.bottom) / 2 - svgRect.top;
+                const x2 = (rightDot.left + rightDot.right) / 2 - svgRect.left;
+                const y2 = (rightDot.top + rightDot.bottom) / 2 - svgRect.top;
+
+                // Create Curve path for premium visual appeal
+                const dx = Math.abs(x2 - x1) * 0.45;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+                
+                path.setAttribute('d', d);
+                path.setAttribute('fill', 'none');
+                
+                // Color configuration
+                let strokeColor = '#6366f1'; // Indigo (normal editing)
+                let strokeWidth = '4';
+                let strokeDash = '';
+
+                if (isTeacher) {
+                    strokeColor = '#10b981'; // Solid Emerald for Teacher answers
+                    strokeWidth = '5';
+                } else {
+                    // Check if already checked
+                    const isChecked = svg.getAttribute('data-checked') === 'true';
+                    if (isChecked) {
+                        const correct = correctPairs[leftKey] === rightVal;
+                        strokeColor = correct ? '#10b981' : '#ef4444'; // Green or Red
+                        strokeWidth = '5';
+                    }
+                }
+
+                path.setAttribute('stroke', strokeColor);
+                path.setAttribute('stroke-width', strokeWidth);
+                path.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(path);
+            }
+        }
+
+        // Show correct connections in teacher notes
+        function showCorrectConnections() {
+            playSound('success');
+            setMode('teacher');
+            drawLines();
+        }
+
+        // Clear Connections
+        function clearConnections() {
+            playSound('tap');
+            connections = {};
+            const svg = document.getElementById('matching-svg');
+            svg.setAttribute('data-checked', 'false');
+            
+            // Remove node borders
+            document.querySelectorAll('.matching-node').forEach(el => {
+                el.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
+            });
+            
+            document.getElementById('matching-feedback').innerHTML = `<i class="fa-solid fa-info-circle text-indigo-500"></i> 連線已清除。`;
+            saveProgress();
+            drawLines();
+        }
+
+        // Check Connections
+        function checkConnections() {
+            let correctCount = 0;
+            let totalCount = Object.keys(correctPairs).length;
+            const connectedKeys = Object.keys(connections);
+
+            if (connectedKeys.length < totalCount) {
+                playSound('error');
+                document.getElementById('matching-feedback').innerHTML = `<span class="text-amber-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 請完成所有連線後再進行檢查！ (${connectedKeys.length}/${totalCount})</span>`;
+                return;
+            }
+
+            const svg = document.getElementById('matching-svg');
+            svg.setAttribute('data-checked', 'true');
+
+            // Visually highlight connected items
+            for (let leftKey in connections) {
+                const rightVal = connections[leftKey];
+                const isCorrect = correctPairs[leftKey] === rightVal;
+
+                const leftEl = document.getElementById(`left-${leftKey}`);
+                const rightEl = document.getElementById(`right-${rightVal}`);
+
+                leftEl.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
+                rightEl.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'border-red-500', 'bg-red-50/50');
+
+                if (isCorrect) {
+                    correctCount++;
+                    leftEl.classList.add('border-emerald-500', 'bg-emerald-50/50');
+                    rightEl.classList.add('border-emerald-500', 'bg-emerald-50/50');
+                } else {
+                    leftEl.classList.add('border-red-500', 'bg-red-50/50');
+                    rightEl.classList.add('border-red-500', 'bg-red-50/50');
+                }
+            }
+
+            drawLines();
+
+            if (correctCount === totalCount) {
+                playSound('success');
+                // Trigger Confetti!
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    origin: { y: 0.8 }
+                });
+                document.getElementById('matching-feedback').innerHTML = `<span class="text-emerald-700 font-black"><i class="fa-solid fa-circle-check"></i> 太棒了！所有的連線均完全正確！ 🎉</span>`;
+            } else {
+                playSound('error');
+                document.getElementById('matching-feedback').innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> 答錯了喔！連線有錯誤，綠色代表正確、紅色代表錯誤。再想想看！</span>`;
+            }
+            recordWorksheetScore();
+        }
+
+        // Generate Certificate
+        function generateCertificate() {
+            // Get student info
+            const classVal = document.getElementById('student-class').value.trim();
+            const nameVal = document.getElementById('student-name').value.trim();
+            const targetVal = document.getElementById('practice-target').value.trim();
+
+            if (!nameVal || !classVal) {
+                playSound('error');
+                alert("請填寫班級和姓名再生成證書唷！");
+                // Scroll to metadata card
+                document.getElementById('student-name').focus();
+                return;
+            }
+
+            if (!targetVal) {
+                playSound('error');
+                alert("請填寫「今天我要練習」的實踐承諾再生成證書唷！");
+                document.getElementById('practice-target').focus();
+                return;
+            }
+
+            // Populate Modal Content
+            document.getElementById('cert-class').innerText = classVal;
+            document.getElementById('cert-name').innerText = nameVal;
+            document.getElementById('cert-target').innerText = `今天我要練習：${targetVal}`;
+            
+            // Format current date
+            const dateObj = new Date();
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const date = String(dateObj.getDate()).padStart(2, '0');
+            document.getElementById('cert-date').innerText = `${year} 年 ${month} 月 ${date} 日`;
+
+            // Open Modal
+            const modal = document.getElementById('certificate-modal');
+            modal.classList.remove('hidden');
+            playSound('success');
+
+            // Trigger beautiful Confetti explosion!
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+            recordWorksheetScore();
+        }
+
+        function closeModal() {
+            playSound('tap');
+            document.getElementById('certificate-modal').classList.add('hidden');
+        }
+
+        function printCertificate() {
+            playSound('tap');
+            window.print();
+        }
+
+        // ==========================================
+        // PRESENTATION SLIDE SYSTEM
+        // ==========================================
+        let currentSlideIndex = 0;
+        let slideAnswerVisible = false;
+
+        function renderSlide() {
+            slideAnswerVisible = false; // Reset answer visibility on slide change
+            updateSlideView();
+        }
+
+        function updateSlideView() {
+            const titleEl = document.getElementById('slide-title');
+            const badgeEl = document.getElementById('slide-badge');
+            const iconEl = document.getElementById('slide-header-icon');
+            const bodyEl = document.getElementById('slide-body');
+            const actionBtn = document.getElementById('slide-action-btn');
+
+            badgeEl.innerText = `投影片 ${currentSlideIndex + 1} / 11`;
+            
+            // Set action button state by default
+            actionBtn.classList.remove('hidden');
+            actionBtn.innerHTML = `<i class="fa-solid fa-lightbulb"></i> 顯示參考答案與引導`;
+
+            // Restore matching game back to worksheet if it is not Slide 9
+            if (currentSlideIndex !== 9) {
+                const matchingContainer = document.getElementById('matching-container');
+                const worksheetParent = document.getElementById('worksheet-matching-parent');
+                if (matchingContainer && worksheetParent && matchingContainer.parentElement !== worksheetParent) {
+                    worksheetParent.insertBefore(matchingContainer, worksheetParent.firstChild);
+                }
+            }
+
+            switch(currentSlideIndex) {
+                case 0: // Intro
+                    titleEl.innerText = "課程導引與目標";
+                    iconEl.innerText = "🎯";
+                    actionBtn.classList.add('hidden');
+                    bodyEl.innerHTML = `
+                        <div class="space-y-6 max-w-xl text-left w-full mx-auto">
+                            <div class="text-center bg-white/60 border border-slate-100 p-6 rounded-3xl shadow-sm space-y-4">
+                                <h3 class="text-2xl font-black text-slate-800">🎯 學習目標</h3>
+                                <p class="text-base text-slate-600 leading-relaxed font-medium">
+                                    當和同學、朋友發生不愉快時，學習用適當的方法修補關係，讓友誼更穩固。
+                                </p>
+                            </div>
+                            
+                            <div class="bg-amber-50 border border-amber-200/50 rounded-3xl p-6 flex items-start gap-4 shadow-sm">
+                                <span class="text-3xl">💡</span>
+                                <div>
+                                    <h4 class="font-bold text-amber-800 text-base">小提醒</h4>
+                                    <p class="text-sm text-amber-700 font-medium mt-1 leading-relaxed">
+                                        先冷靜，再處理問題，通常能得到更好的結果！
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5: // MCQ 1-5
+                    const qId = currentSlideIndex;
+                    const q = mcqQuestions.find(item => item.id === qId);
+                    titleEl.innerText = `勾選題 ${q.id}：${q.title}`;
+                    iconEl.innerText = "🙋";
+                    
+                    if (slideAnswerVisible) {
+                        actionBtn.innerHTML = `<i class="fa-solid fa-eye-slash"></i> 隱藏參考答案`;
+                    }
+
+                    let optionsHtml = '';
+                    q.options.forEach((opt, index) => {
+                        const optId = `slide-mcq-${q.id}-${index}`;
+                        const originId = `mcq-${q.id}-${index}`;
+                        const isChecked = document.getElementById(originId) ? document.getElementById(originId).checked : false;
+                        
+                        let optClass = 'bg-white/50 border-slate-200';
+                        let badgeHtml = '';
+                        let noteHtml = '';
+
+                        if (slideAnswerVisible) {
+                            if (opt.correct) {
+                                optClass = 'bg-emerald-50 border-emerald-300';
+                                badgeHtml = `<span class="text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">正確</span>`;
+                            } else {
+                                optClass = 'bg-red-50/50 border-red-200';
+                                if (opt.note) {
+                                    noteHtml = `<p class="text-xs text-red-600 mt-1 font-semibold text-left"><i class="fa-solid fa-circle-exclamation mr-1"></i>${opt.note}</p>`;
+                                }
+                            }
+                        }
+
+                        optionsHtml += `
+                            <div class="p-4 border-2 rounded-2xl transition-all flex items-start gap-4 text-left shadow-sm w-full ${optClass}">
+                                <input type="checkbox" id="${optId}" ${isChecked ? 'checked' : ''} onchange="syncSlideMCQ(${q.id}, ${index}, this.checked)" class="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 mt-0.5">
+                                <div class="flex-grow">
+                                    <label for="${optId}" class="text-sm md:text-base font-bold text-slate-700 cursor-pointer select-none">${opt.text}</label>
+                                    ${noteHtml}
+                                </div>
+                                ${badgeHtml}
+                            </div>
+                        `;
+                    });
+
+                    bodyEl.innerHTML = `
+                        <div class="space-y-3 w-full max-w-2xl mx-auto">
+                            ${optionsHtml}
+                        </div>
+                    `;
+                    break;
+
+                case 6:
+                case 7:
+                case 8: // Scenario 6-8
+                    const sId = currentSlideIndex;
+                    const s = scenarios.find(item => item.id === sId);
+                    titleEl.innerText = `${sId === 8 ? '想一想' : '情境問答 ' + (sId - 5)}：${s.title}`;
+                    iconEl.innerText = "📝";
+
+                    if (slideAnswerVisible) {
+                        actionBtn.innerHTML = `<i class="fa-solid fa-eye-slash"></i> 隱藏參考解答`;
+                    }
+
+                    const originTextVal = document.getElementById(`textarea-${sId}`) ? document.getElementById(`textarea-${sId}`).value : '';
+
+                    let guideHtml = '';
+                    if (slideAnswerVisible) {
+                        guideHtml = `
+                            <div class="bg-indigo-50 border border-indigo-200/50 rounded-2xl p-5 mt-6 w-full text-left space-y-3 shadow-inner">
+                                <p class="text-xs md:text-sm text-indigo-900 font-bold leading-relaxed flex items-center gap-1.5"><i class="fa-solid fa-chalkboard-user"></i> <strong>討論指引：</strong>${s.teacherGuide}</p>
+                                <div class="p-3 bg-white rounded-lg border border-indigo-100">
+                                    <p class="text-xs text-slate-400 font-black uppercase tracking-widest">💡 參考我訊息句型示範：</p>
+                                    <p class="text-xs md:text-sm text-indigo-700 font-bold mt-1.5 leading-relaxed">${s.example}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    bodyEl.innerHTML = `
+                        <div class="w-full max-w-2xl mx-auto text-left space-y-4">
+                            <div class="bg-sky-50 border border-sky-100 rounded-3xl p-5 text-sm md:text-base font-bold text-slate-700 leading-relaxed shadow-sm text-center">
+                                ${s.desc}
+                            </div>
+                            <div class="space-y-2">
+                                <label for="slide-textarea-${sId}" class="block text-xs font-black text-slate-400 uppercase tracking-widest">學生回答區</label>
+                                <textarea id="slide-textarea-${sId}" oninput="syncSlideTextarea(${sId}, this.value)" rows="3" placeholder="請在此輸入引導學生發言的討論摘要或回答..." class="w-full rounded-2xl border-2 border-slate-200 p-4 font-bold text-sm focus:border-indigo-500 focus:outline-none transition-colors bg-white/40 focus:bg-white shadow-sm">${originTextVal}</textarea>
+                            </div>
+                            ${guideHtml}
+                        </div>
+                    `;
+                    break;
+
+                case 9: // Matching Game
+                    titleEl.innerText = "連連看：錯誤與行動配對";
+                    iconEl.innerText = "🔗";
+
+                    if (slideAnswerVisible) {
+                        actionBtn.innerHTML = `<i class="fa-solid fa-eye-slash"></i> 顯示學生連線`;
+                    }
+
+                    // Move matching container to slide body
+                    bodyEl.innerHTML = '';
+                    const matchingContainer = document.getElementById('matching-container');
+                    bodyEl.appendChild(matchingContainer);
+                    
+                    // Trigger SVG resize and line updates
+                    setTimeout(() => {
+                        drawLines();
+                    }, 50);
+                    break;
+
+                case 10: // Summary
+                    titleEl.innerText = "我的提醒與實踐承諾";
+                    iconEl.innerText = "🏆";
+                    actionBtn.classList.add('hidden');
+
+                    const practiceVal = document.getElementById('practice-target') ? document.getElementById('practice-target').value : '';
+
+                    bodyEl.innerHTML = `
+                        <div class="w-full max-w-3xl mx-auto text-left space-y-6">
+                            <!-- 4 Tips Grid in Slide -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-white border border-slate-100 rounded-2xl flex items-center gap-3 shadow-sm">
+                                    <span class="text-2xl text-sky-500"><i class="fa-solid fa-face-smile-beam"></i></span>
+                                    <h4 class="font-bold text-slate-700 text-xs md:text-sm">先冷靜，再說話</h4>
+                                </div>
+                                <div class="p-4 bg-white border border-slate-100 rounded-2xl flex items-center gap-3 shadow-sm">
+                                    <span class="text-2xl text-rose-500"><i class="fa-solid fa-shield-cat"></i></span>
+                                    <h4 class="font-bold text-slate-700 text-xs md:text-sm">做錯事時勇敢承認</h4>
+                                </div>
+                                <div class="p-4 bg-white border border-slate-100 rounded-2xl flex items-center gap-3 shadow-sm">
+                                    <span class="text-2xl text-emerald-500"><i class="fa-solid fa-comments"></i></span>
+                                    <h4 class="font-bold text-slate-700 text-xs md:text-sm">真誠道歉比找藉口更重要</h4>
+                                </div>
+                                <div class="p-4 bg-white border border-slate-100 rounded-2xl flex items-center gap-3 shadow-sm">
+                                    <span class="text-2xl text-amber-500"><i class="fa-solid fa-hourglass-half"></i></span>
+                                    <h4 class="font-bold text-slate-700 text-xs md:text-sm">修補關係需要耐心與誠意</h4>
+                                </div>
+                            </div>
+
+                            <hr class="border-slate-200">
+
+                            <!-- Today's Commitment in Slide -->
+                            <div class="space-y-4">
+                                <div class="space-y-2">
+                                    <label for="slide-practice-target" class="block font-black text-sm text-slate-800">✍️ 今天我要練習：</label>
+                                    <textarea id="slide-practice-target" oninput="syncSlidePractice(this.value)" rows="3" placeholder="請寫下你今天決定練習的一個人際修補行動...（例如：當同學生氣時，我要先深呼吸三秒鐘再開口。）" class="w-full rounded-2xl border-2 border-slate-200 p-4 font-bold text-sm focus:border-indigo-500 focus:outline-none transition-colors shadow-sm bg-white/40 focus:bg-white">${practiceVal}</textarea>
+                                </div>
+
+                                <div class="flex justify-center pt-2 gap-4">
+                                    <button onclick="generateCertificate()" class="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-black rounded-full text-base transition-all transform active:scale-95 shadow-md flex items-center gap-2">
+                                        <i class="fa-solid fa-award"></i> 生成友誼修補小勇士證書 🏆
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        // Sync helper functions
+        function syncSlideMCQ(qId, index, isChecked) {
+            const originId = `mcq-${qId}-${index}`;
+            const originEl = document.getElementById(originId);
+            if (originEl) {
+                originEl.checked = isChecked;
+                saveProgress();
+            }
+        }
+
+        function syncSlideTextarea(sId, val) {
+            const originEl = document.getElementById(`textarea-${sId}`);
+            if (originEl) {
+                originEl.value = val;
+                saveProgress();
+            }
+        }
+
+        function syncSlidePractice(val) {
+            const originEl = document.getElementById('practice-target');
+            if (originEl) {
+                originEl.value = val;
+                saveProgress();
+            }
+        }
+
+        // Slide Navigation functions
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                playSound('tap');
+                renderSlide();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < 10) {
+                currentSlideIndex++;
+                playSound('tap');
+                renderSlide();
+            }
+        }
+
+        function toggleSlideAnswer() {
+            slideAnswerVisible = !slideAnswerVisible;
+            playSound('tap');
+            updateSlideView();
+        }
+
+        // Keydown keyboard event listener for slides
+        document.addEventListener('keydown', (e) => {
+            if (currentMode === 'slide') {
+                if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                    prevSlide();
+                } else if (e.key === 'Escape') {
+                    setMode('teacher');
+                } else if (e.key === ' ' || e.key === 'Spacebar') {
+                    // Check if focus is in textarea to avoid spacebar issues
+                    if (document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') {
+                        e.preventDefault();
+                        toggleSlideAnswer();
+                    }
+                }
+            }
+        });
+
+        function printCertificate() {
+            playSound('tap');
+            window.print();
+        }
+
+        // Record progress score to global SPEDMIX dashboard
+        function recordWorksheetScore() {
+            if (typeof window.spedProgress !== 'undefined' && window.spedProgress.recordExercise) {
+                // Calculate MCQ score
+                let mcqScore = 0;
+                mcqQuestions.forEach(q => {
+                    let correct = true;
+                    q.options.forEach((opt, index) => {
+                        const el = document.getElementById(`mcq-${q.id}-${index}`);
+                        if (el && el.checked !== opt.correct) {
+                            correct = false;
+                        }
+                    });
+                    if (correct) mcqScore++;
+                });
+
+                // Calculate matching score
+                let matchScore = 0;
+                for (let leftKey in correctPairs) {
+                    if (connections[leftKey] === correctPairs[leftKey]) {
+                        matchScore++;
+                    }
+                }
+
+                const totalScore = mcqScore + matchScore;
+                window.spedProgress.recordExercise(totalScore, 10, '修補友誼與真誠道歉');
+            }
+        }
+    </script>
+<script src="../progress.js"></script>
+</body>
+
+</html>
