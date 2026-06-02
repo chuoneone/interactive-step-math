@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佳音翰林 國中英語 七年級下學期 Unit 5 文法測驗</title>
+    <link rel="icon" href="../images/dog.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF5EE; }
+        .main-container { transition: transform 0.3s ease-in-out; width: 100%; }
+        .option-btn { background-color: white; color: #8b0000; border: 3px solid #ffccd5; border-radius: 1.5rem; transition: all 0.3s ease; font-size: 1.5rem; font-weight: bold; padding: 1.5rem 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; }
+        .option-btn:hover { background-color: #fff0f2; border-color: #ff69b4; }
+        .option-btn.selected { border-color: #e53e3e; background-color: #fff0f2; box-shadow: 0 6px 12px rgba(229,62,62,0.15); }
+        .option-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .correct { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .incorrect-reveal { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+        .speaker-btn { background-color: #fff0f5; color: #db7093; border-radius: 50%; width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease; }
+        .speaker-btn:hover { background-color: #ffe4e1; transform: scale(1.1); }
+        .progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 9999px; overflow: hidden; }
+        .progress-bar { height: 1.25rem; background-color: #ff69b4; width: 0%; transition: width 0.5s ease-in-out; border-radius: 9999px; }
+        .rule-card { background-color: #fffafa; border: 1px dashed #db7093; border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; text-align: left; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-5xl mx-auto px-4 py-8">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-pink-800">佳音翰林 國中英語 iEnglish</h1>
+            <h2 class="text-2xl font-semibold text-pink-600">七年級 Unit 5 過去式文法測驗</h2>
+        </div>
+
+        <div id="preview-container" class="main-container p-6 md:p-8">
+             <h2 class="text-3xl font-bold text-center text-pink-700 mb-6">文法重點提示</h2>
+             
+             <div class="rule-card text-gray-700 space-y-3 leading-relaxed">
+                 <p class="font-bold text-pink-700 text-lg border-b border-pink-100 pb-1">💡 過去式文法速記：</p>
+                 <p><strong>1. 過去時間指標：</strong>yesterday (昨天), ... ago (以前), last... (上一個...), this morning (今天早上)。</p>
+                 <p><strong>2. be動詞過去式：</strong>主詞單數用 <code>was</code>，複數用 <code>were</code>。</p>
+                 <p><strong>3. 一般動詞過去式：</strong>規則變化字尾加 <code>-ed</code> 或去 y 加 <code>-ied</code>；不規則變化需熟記 (如：go→went, eat→ate, buy→bought)。</p>
+                 <p><strong>4. 過去式否定與問句：</strong>使用助動詞 <code>didn't / Did</code> 開頭，後方動詞<strong>必須恢復原形</strong>！</p>
+             </div>
+
+             <div class="text-center flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="start-quiz-btn" class="bg-pink-500 text-white font-bold py-4 px-10 text-xl rounded-full shadow-xl hover:bg-pink-600 transition-transform transform hover:scale-110">開始挑戰</button>
+                <button id="leaderboard-btn" class="bg-amber-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-amber-600 transition-transform transform hover:scale-105">排行榜 🏆</button>
+                <button id="download-btn" class="bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-purple-700 transition-transform transform hover:scale-105">下載測驗卷 (PDF)</button>
+             </div>
+        </div>
+
+        <div id="quiz-container" class="hidden main-container p-6 md:p-8">
+            <div class="mb-6">
+                 <div class="flex justify-between items-center mb-2">
+                    <div id="question-counter" class="text-lg font-semibold text-gray-600"></div>
+                    <div id="timer-counter" class="text-lg font-bold text-red-500">剩餘時間: 10:00</div>
+                    <div id="score-counter" class="text-lg font-bold text-pink-600">分數: 0</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="w-full flex flex-col justify-center items-center">
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <h3 id="question-text" class="text-2xl md:text-3xl font-bold text-center text-gray-800 leading-relaxed"></h3>
+                    <button id="speak-question-btn" class="speaker-btn flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    </button>
+                </div>
+                
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl"></div>
+                
+                <div id="control-buttons" class="mt-10 text-center w-full">
+                    <button id="check-answer-btn" class="bg-blue-500 text-white font-bold py-4 px-12 text-xl rounded-full shadow-lg hover:bg-blue-600 transition-transform transform hover:scale-105 w-full md:w-auto">檢核答案</button>
+                    <button id="next-question-btn" class="hidden bg-pink-500 text-white font-bold py-4 px-12 text-xl rounded-full shadow-lg hover:bg-pink-600 transition-transform transform hover:scale-105 w-full md:w-auto" disabled>下一題</button>
+                </div>
+
+                <div id="explain-box" class="hidden w-full max-w-4xl bg-indigo-50 border border-indigo-200 rounded-xl p-6 mt-6 text-left font-medium text-slate-700 text-lg">
+                    <strong class="text-indigo-800">💡 解析：</strong>
+                    <span id="explain-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-container" class="hidden text-center main-container p-8">
+            <h2 class="text-4xl font-bold text-pink-700 mb-4">測驗完成！</h2>
+            <p class="text-2xl text-gray-600 mb-2">你的最終分數是</p>
+            <p id="final-score" class="text-5xl font-extrabold text-pink-500 mb-8"></p>
+            <div id="result-buttons" class="flex flex-col sm:flex-row justify-center items-center gap-4"></div>
+        </div>
+    </div>
+
+
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full mx-4 shadow-2xl border border-pink-100 transform scale-95 transition-transform duration-300">
+            <h3 class="text-2xl font-bold text-pink-800 text-center mb-4">🏆 個人挑戰最佳紀錄 (Top 10)</h3>
+            <div class="overflow-y-auto max-h-60 mb-6">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-pink-100 text-pink-700 font-bold">
+                            <th class="py-2 px-3">名次</th>
+                            <th class="py-2 px-3 text-right">分數</th>
+                            <th class="py-2 px-3 text-right">時間</th>
+                            <th class="py-2 px-3 text-right">日期</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody" class="text-gray-700">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="close-leaderboard-btn" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all text-center">關閉</button>
+        </div>
+    </div>
+    
+    <footer class="fixed bottom-0 left-0 w-full text-center text-gray-400 text-sm bg-white bg-opacity-80 py-2 border-t border-gray-200 backdrop-blur-sm">
+        © 2026 特教米克師｜採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW" target="_blank" class="text-sky-600 hover:underline">CC BY-NC-SA 4.0 創用CC授權</a>｜非商業用途歡迎轉載 or 改編，請保留署名並附上原始連結。
+    </footer>
+
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+            <p id="export-status" class="text-lg font-semibold text-gray-800">正在產生 PDF...</p>
+        </div>
+    </div>
+    <div id="export-render-container" style="position: absolute; left: -9999px; top: -9999px;"></div>
+
+    <script>
+        const quizData = [
+            {
+                q: "Yesterday, I ______ to the park with my dog.",
+                options: ["walk", "walks", "walked", "walking"],
+                ans: 2,
+                explain: "Yesterday 表示過去時間，規則動詞 walk 需在字尾加上 ed 變為 walked。"
+            },
+            {
+                q: "Sarah ______ to the library two hours ago.",
+                options: ["gone", "went", "goes", "go"],
+                ans: 1,
+                explain: "two hours ago (兩小時前) 表示過去時間，動詞 go 的過去式是不規則變化 went。"
+            },
+            {
+                q: "They ______ have lunch because they were busy.",
+                options: ["don't", "didn't", "doesn't", "wasn't"],
+                ans: 1,
+                explain: "過去時間的否定句，要用助動詞 didn't 加原形動詞 have。"
+            },
+            {
+                q: "______ you see the movie last night?",
+                options: ["Did", "Do", "Does", "Done"],
+                ans: 0,
+                explain: "過去式的 Yes/No 疑問句，句首要用助動詞 Did 開頭，後方的動詞 see 需使用原形。"
+            },
+            {
+                q: "My brother ______ an apple for breakfast this morning.",
+                options: ["eats", "eaten", "ate", "eat"],
+                ans: 2,
+                explain: "this morning (今天早上，表示已過去的時間)，不規則動詞 eat 的過去式為 ate。"
+            },
+            {
+                q: "I ____ a great movie with my brother yesterday evening.",
+                options: ["watched", "watches", "watch", "watching"],
+                ans: 0,
+                explain: "yesterday evening (昨天傍晚) 表示過去時間，規則動詞 watch 的過去式為 watched。"
+            },
+            {
+                q: "She ____ to the library last Sunday.",
+                options: ["goes", "went", "going", "go"],
+                ans: 1,
+                explain: "last Sunday (上週日) 表示過去時間，不規則動詞 go 的過去式為 went。"
+            },
+            {
+                q: "Did you ____ your homework last night?",
+                options: ["did", "does", "do", "done"],
+                ans: 2,
+                explain: "在過去式助動詞 Did 開頭的疑問句中，後面要用原形動詞 do。"
+            },
+            {
+                q: "They ____ soccer in the park two hours ago.",
+                options: ["plays", "played", "play", "playing"],
+                ans: 1,
+                explain: "Two hours ago (兩小時前) 表示過去時間，規則動詞 play 的過去式為 played。"
+            },
+            {
+                q: "My father ____ a new car last month.",
+                options: ["buys", "buy", "buying", "bought"],
+                ans: 3,
+                explain: "last month (上個月) 表示過去時間，不規則動詞 buy 的過去式為 bought。"
+            },
+            {
+                q: "I ____ not see Lily at the party last night.",
+                options: ["did", "does", "do", "was"],
+                ans: 0,
+                explain: "過去式的否定句，在一般動詞前使用 didn't (did not) 加原形動詞 see。"
+            },
+            {
+                q: "He ____ English very hard for the exam yesterday.",
+                options: ["study", "studied", "studys", "studying"],
+                ans: 1,
+                explain: "yesterday (昨天) 表示過去時間，動詞 study 要字尾「去 y 加 ied」變為 studied。"
+            },
+            {
+                q: "____ you eat breakfast this morning?",
+                options: ["Did", "Do", "Does", "Are"],
+                ans: 0,
+                explain: "this morning (今天早上，此處指已過去的時間)，疑問句用過去式助動詞 Did 開頭。"
+            },
+            {
+                q: "We ____ a beautiful song in music class last Monday.",
+                options: ["sings", "sing", "sang", "singed"],
+                ans: 2,
+                explain: "last Monday (上週一) 表示過去時間，不規則動詞 sing 的過去式為 sang。"
+            },
+            {
+                q: "Tom ____ to school yesterday because he was sick.",
+                options: ["don't go", "doesn't go", "didn't go", "not went"],
+                ans: 2,
+                explain: "過去式的否定句結構為 didn't + 原形動詞 go (didn't go)。"
+            },
+            {
+                q: "What ____ you do last weekend?",
+                options: ["does", "are", "did", "do"],
+                ans: 2,
+                explain: "last weekend (上週末) 表示過去時間，疑問詞 What 後方需加上過去式助動詞 did。"
+            },
+            {
+                q: "My mother ____ a delicious cake for me last night.",
+                options: ["makes", "made", "make", "making"],
+                ans: 1,
+                explain: "last night (昨晚) 表示過去時間，不規則動詞 make 的過去式為 made。"
+            },
+            {
+                q: "It ____ a lot in Taipei last night.",
+                options: ["rains", "raining", "rain", "rained"],
+                ans: 3,
+                explain: "last night (昨晚) 表示過去時間，規則動詞 rain 的過去式為 rained。"
+            },
+            {
+                q: "I ____ my keys on the table this morning.",
+                options: ["leaving", "leave", "left", "leaves"],
+                ans: 2,
+                explain: "this morning (今天早上，指已過去的時間)，不規則動詞 leave 的過去式為 left。"
+            },
+            {
+                q: "They ____ their grandparents in the countryside last summer.",
+                options: ["visit", "visits", "visiting", "visited"],
+                ans: 3,
+                explain: "last summer (去年夏天) 表示過去時間，規則動詞 visit 的過去式為 visited。"
+            }
+        ];
+        
+        const previewContainer = document.getElementById('preview-container');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreCounter = document.getElementById('score-counter');
+        const timerCounter = document.getElementById('timer-counter');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const checkAnswerBtn = document.getElementById('check-answer-btn');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const speakQuestionBtn = document.getElementById('speak-question-btn');
+        const finalScore = document.getElementById('final-score');
+        const progressBar = document.getElementById('progress-bar');
+        const resultButtonsContainer = document.getElementById('result-buttons');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const exportStatus = document.getElementById('export-status');
+        const explainBox = document.getElementById('explain-box');
+        const explainText = document.getElementById('explain-text');
+
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let attempts = 0;
+        let selectedButton = null;
+        let synth = window.speechSynthesis;
+        let incorrectlyAnswered = [];
+        
+        let username = '';
+        let timerInterval = null;
+        let countdownInterval = null;
+        let remainingSeconds = 600; // 10 minutes for 20 questions
+
+        function speak(text, lang) {
+            if (synth.speaking) { synth.cancel(); }
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.8;
+            synth.speak(utterance);
+        }
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+
+
+        function startQuiz(mode = 'all') {
+            previewContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            if (mode === 'incorrect' && incorrectlyAnswered.length > 0) {
+                shuffledQuestions = shuffleArray([...incorrectlyAnswered]);
+            } else {
+                shuffledQuestions = shuffleArray([...quizData]);
+            }
+            correctCount = 0;
+            incorrectlyAnswered = [];
+            currentQuestionIndex = 0;
+            scoreCounter.textContent = `分數: ${correctCount * 5}`;
+
+            // Timer initialization
+            remainingSeconds = 600;
+            updateTimerDisplay();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(tick, 1000);
+            
+            loadQuestion();
+        }
+
+        function tick() {
+            remainingSeconds--;
+            updateTimerDisplay();
+            if (remainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                speak("Time is up!", "en-US");
+                showResults(true);
+            }
+        }
+
+        function updateTimerDisplay() {
+            const min = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+            const sec = String(remainingSeconds % 60).padStart(2, '0');
+            timerCounter.textContent = `剩餘時間: ${min}:${sec}`;
+        }
+
+        function loadQuestion() {
+            attempts = 0;
+            selectedButton = null;
+            optionsContainer.innerHTML = '';
+            checkAnswerBtn.classList.remove('hidden');
+            nextQuestionBtn.classList.add('hidden');
+            explainBox.classList.add('hidden');
+            explainText.textContent = '';
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                showResults();
+                return;
+            }
+
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                const progressPercentage = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+            }
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            questionCounter.textContent = `問題 ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
+            questionText.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.q}`;
+            
+            // Speak question: replace dashes with "blank"
+            const spokenQuestion = currentQuestion.q.replace(/_{2,}/g, ' ');
+            speak(spokenQuestion, 'en-US');
+
+            currentQuestion.options.forEach((optionText, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn', 'w-full', 'text-left');
+                button.dataset.index = index;
+                button.textContent = `(${String.fromCharCode(65 + index)}) ${optionText}`;
+                
+                button.addEventListener('click', () => {
+                    if (button.disabled) return;
+                    
+                    // Pronounce option on click instead of hover
+                    speak(optionText, 'en-US');
+                    
+                    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedButton = button;
+                });
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer() {
+            if (!selectedButton) return;
+            
+            attempts++;
+            const allButtons = Array.from(optionsContainer.children);
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const correctAnswerIndex = currentQuestion.ans;
+            const selectedAnswerIndex = parseInt(selectedButton.dataset.index);
+            
+            const correctFeedbacks = ['Good', 'Nice', 'Awesome', 'Excellent', 'Great job', 'Well done'];
+            const incorrectFeedbacks = ['No worries', 'Almost there', 'Keep trying', 'Not quite'];
+
+            // Show explanation
+            explainBox.classList.remove('hidden');
+            explainText.textContent = currentQuestion.explain;
+
+            if (selectedAnswerIndex === correctAnswerIndex) {
+                if (attempts === 1) {
+                    correctCount++;
+                    scoreCounter.textContent = `分數: ${correctCount * 5}`;
+                }
+                selectedButton.classList.add('correct');
+                speak(correctFeedbacks[Math.floor(Math.random() * correctFeedbacks.length)], 'en-US');
+                allButtons.forEach(btn => btn.disabled = true);
+                checkAnswerBtn.classList.add('hidden');
+                nextQuestionBtn.classList.remove('hidden');
+                nextQuestionBtn.disabled = false;
+                nextQuestionBtn.textContent = '下一題';
+            } else {
+                selectedButton.classList.add('incorrect-reveal');
+                allButtons.forEach(btn => {
+                    btn.disabled = true;
+                    if (parseInt(btn.dataset.index) === correctAnswerIndex) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                if (!incorrectlyAnswered.some(q => q.q === currentQuestion.q)) {
+                    incorrectlyAnswered.push(currentQuestion);
+                }
+
+                speak(incorrectFeedbacks[Math.floor(Math.random() * incorrectFeedbacks.length)], 'en-US');
+                checkAnswerBtn.classList.add('hidden');
+                nextQuestionBtn.classList.remove('hidden');
+                
+                // Lock next button for 5 seconds
+                nextQuestionBtn.disabled = true;
+                let count = 5;
+                nextQuestionBtn.textContent = `下一題 (${count}秒)`;
+                
+                if (countdownInterval) clearInterval(countdownInterval);
+                countdownInterval = setInterval(() => {
+                    count--;
+                    if (count <= 0) {
+                        clearInterval(countdownInterval);
+                        nextQuestionBtn.disabled = false;
+                        nextQuestionBtn.textContent = '下一題';
+                    } else {
+                        nextQuestionBtn.textContent = `下一題 (${count}秒)`;
+                    }
+                }, 1000);
+            }
+        }
+
+        function showResults(timedOut = false) {
+            clearInterval(timerInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            const totalQuestions = shuffledQuestions.length;
+            const finalScoreValue = correctCount * 5;
+            const timeSpent = 600 - remainingSeconds;
+            
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            finalScore.innerHTML = `${finalScoreValue} 分<br><span class="text-xl text-gray-500">(答對 ${correctCount}/${totalQuestions} 題，用時 ${timeSpent} 秒)</span>`;
+            
+            saveToLeaderboard(finalScoreValue, 600 - remainingSeconds);
+            
+            resultButtonsContainer.innerHTML = '';
+
+            if (incorrectlyAnswered.length > 0) {
+                const redoIncorrectBtn = document.createElement('button');
+                redoIncorrectBtn.id = 'redo-incorrect-btn';
+                redoIncorrectBtn.className = 'bg-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-orange-600 transition-transform transform hover:scale-105 w-full sm:w-auto';
+                redoIncorrectBtn.textContent = `重做錯題 (${incorrectlyAnswered.length} 題)`;
+                redoIncorrectBtn.addEventListener('click', () => startQuiz('incorrect'));
+                resultButtonsContainer.appendChild(redoIncorrectBtn);
+            }
+
+            const restartAllBtn = document.createElement('button');
+            restartAllBtn.id = 'restart-btn';
+            restartAllBtn.className = 'bg-pink-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-pink-600 transition-transform transform hover:scale-105 w-full sm:w-auto';
+            restartAllBtn.textContent = '全部重測';
+            restartAllBtn.addEventListener('click', () => startQuiz('all'));
+            resultButtonsContainer.appendChild(restartAllBtn);
+            
+            const backBtn = document.createElement('button');
+            backBtn.className = 'bg-gray-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-600 transition-transform transform hover:scale-105 w-full sm:w-auto';
+            backBtn.textContent = '返回說明';
+            backBtn.addEventListener('click', () => {
+                resultContainer.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+            });
+            resultButtonsContainer.appendChild(backBtn);
+            
+            const praiseText = timedOut ? "Time is up! Let's view the results." : `Good job! Your final score is ${finalScoreValue} points.`;
+            speak(praiseText, 'en-US');
+        }
+
+        function saveToLeaderboard(score, time) {
+            let leaderboard = JSON.parse(localStorage.getItem('grammar_leaderboard_G7S2_U5')) || [];
+            leaderboard.push({
+                score: score,
+                time: time,
+                date: new Date().toLocaleDateString('zh-TW')
+            });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10);
+            localStorage.setItem('grammar_leaderboard_G7S2_U5', JSON.stringify(leaderboard));
+        }
+
+        function showLeaderboard() {
+            const tbody = document.getElementById('leaderboard-tbody');
+            tbody.innerHTML = '';
+            const leaderboard = JSON.parse(localStorage.getItem('grammar_leaderboard_G7S2_U5')) || [];
+            
+            if (leaderboard.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-400">目前尚無紀錄</td></tr>';
+            } else {
+                leaderboard.forEach((entry, idx) => {
+                    const row = document.createElement('tr');
+                    row.className = "border-b border-pink-50/50 hover:bg-pink-50/30";
+                    
+                    let medal = idx + 1;
+                    if (idx === 0) medal = '🥇';
+                    else if (idx === 1) medal = '🥈';
+                    else if (idx === 2) medal = '🥉';
+                    
+                    row.innerHTML = `
+                        <td class="py-2 px-3 font-bold">${medal}</td>
+                        <td class="py-2 px-3 text-right font-extrabold text-pink-600">${entry.score}</td>
+                        <td class="py-2 px-3 text-right text-gray-500 text-sm">${entry.time} 秒</td>
+                        <td class="py-2 px-3 text-right text-gray-400 text-xs">${entry.date}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            
+            const modal = document.getElementById('leaderboard-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('div').classList.remove('scale-95');
+                modal.querySelector('div').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeLeaderboard() {
+            const modal = document.getElementById('leaderboard-modal');
+            modal.querySelector('div').classList.remove('scale-100');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+
+
+        function createQuestionElementForPdf(question, questionNumber) {
+            const container = document.createElement('div');
+            container.style.fontFamily = "'Noto Sans TC', sans-serif";
+            container.style.border = "1px solid #333";
+            container.style.padding = '8px';
+            container.style.width = '350px';
+            container.style.backgroundColor = 'white';
+            container.style.color = 'black';
+            
+            const promptText = document.createElement('p');
+            promptText.textContent = `(${questionNumber}) ${question.q}`;
+            promptText.style.fontSize = '18px';
+            promptText.style.fontWeight = 'bold';
+            promptText.style.margin = '0 0 8px 0';
+            container.appendChild(promptText);
+
+            question.options.forEach((opt, index) => {
+                const optionLabel = `(${String.fromCharCode(65 + index)})`;
+                const optionText = document.createElement('p');
+                optionText.textContent = `${optionLabel} ${opt}`;
+                optionText.style.fontSize = '16px';
+                optionText.style.margin = '4px 0';
+                container.appendChild(optionText);
+            });
+
+            return container;
+        }
+
+        async function exportPdf() {
+            const renderContainer = document.getElementById('export-render-container');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            const MARGIN = 10;
+            const PAGE_WIDTH = doc.internal.pageSize.getWidth();
+            const USABLE_WIDTH = PAGE_WIDTH - (MARGIN * 2);
+            
+            const ITEM_WIDTH_MM = (USABLE_WIDTH - 5) / 2;
+            let ITEM_HEIGHT_MM = 0;
+            const GAP_V = 5;
+
+            // Render title as HTML and convert to image to bypass Unicode limitation
+            const titleEl = document.createElement('div');
+            titleEl.style.fontFamily = "'Noto Sans TC', sans-serif";
+            titleEl.style.fontSize = '24px';
+            titleEl.style.fontWeight = 'bold';
+            titleEl.style.textAlign = 'center';
+            titleEl.style.width = '700px';
+            titleEl.style.color = '#9d174d'; // pink color for grammar
+            titleEl.textContent = document.title;
+            
+            renderContainer.appendChild(titleEl);
+            const titleCanvas = await html2canvas(titleEl, { scale: 2 });
+            const titleImgData = titleCanvas.toDataURL('image/png');
+            renderContainer.innerHTML = '';
+            
+            const titleWidthMm = USABLE_WIDTH;
+            const titleHeightMm = titleWidthMm * (titleCanvas.height / titleCanvas.width);
+            
+            doc.addImage(titleImgData, 'PNG', MARGIN, MARGIN, titleWidthMm, titleHeightMm);
+            
+            let yPos = MARGIN + titleHeightMm + 5;
+
+            const allQuestions = [...quizData];
+
+            for (let i = 0; i < allQuestions.length; i++) {
+                exportStatus.textContent = `正在處理第 ${i + 1} / ${allQuestions.length} 題...`;
+                
+                const question = allQuestions[i];
+                const element = createQuestionElementForPdf(question, i + 1);
+                renderContainer.appendChild(element);
+
+                const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+                const imgData = canvas.toDataURL('image/png');
+                
+                if (ITEM_HEIGHT_MM === 0) {
+                    const aspectRatio = canvas.height / canvas.width;
+                    ITEM_HEIGHT_MM = ITEM_WIDTH_MM * aspectRatio;
+                }
+
+                const col = i % 2;
+                const xPos = MARGIN + (col * (ITEM_WIDTH_MM + 5));
+                const currentY = yPos + Math.floor(i / 2) * (ITEM_HEIGHT_MM + GAP_V);
+                
+                if (currentY + ITEM_HEIGHT_MM > doc.internal.pageSize.getHeight() - MARGIN) {
+                    doc.addPage();
+                    yPos = MARGIN + 10 - (Math.floor(i / 2) * (ITEM_HEIGHT_MM + GAP_V));
+                }
+                
+                const finalYPos = yPos + Math.floor(i / 2) * (ITEM_HEIGHT_MM + GAP_V);
+                doc.addImage(imgData, 'PNG', xPos, finalYPos, ITEM_WIDTH_MM, ITEM_HEIGHT_MM);
+
+                renderContainer.innerHTML = '';
+            }
+
+            doc.save('G7S2_Unit5_Grammar_Quiz.pdf');
+        }
+
+        async function handleDownload() {
+            loadingOverlay.classList.remove('hidden');
+            
+            setTimeout(async () => {
+                 try {
+                    await exportPdf();
+                } catch (error) {
+                    console.error("PDF generation failed:", error);
+                    exportStatus.textContent = '產生失敗!';
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } finally {
+                    loadingOverlay.classList.add('hidden');
+                }
+            }, 100);
+        }
+
+        // Listeners
+        startQuizBtn.addEventListener('click', () => startQuiz('all'));
+        document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
+        document.getElementById('close-leaderboard-btn').addEventListener('click', closeLeaderboard);
+        downloadBtn.addEventListener('click', handleDownload);
+        checkAnswerBtn.addEventListener('click', checkAnswer);
+        nextQuestionBtn.addEventListener('click', nextQuestion);
+        
+
+        
+        speakQuestionBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                const currentQuestion = shuffledQuestions[currentQuestionIndex];
+                const spokenQuestion = currentQuestion.q.replace(/_{2,}/g, ' ');
+                speak(spokenQuestion, 'en-US');
+            }
+        });
+
+        document.querySelector('body').addEventListener('submit', (e) => e.preventDefault());
+    </script>
+</body>
+</html>
