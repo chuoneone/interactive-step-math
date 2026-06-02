@@ -306,9 +306,9 @@
             quizContainer.classList.remove('hidden');
             resultContainer.classList.add('hidden');
             if (mode === 'incorrect' && incorrectlyAnswered.length > 0) {
-                shuffledQuestions = shuffleArray([...incorrectlyAnswered]);
+                shuffledQuestions = [...incorrectlyAnswered];
             } else {
-                shuffledQuestions = shuffleArray([...quizData]);
+                shuffledQuestions = [...quizData];
             }
             correctCount = 0;
             incorrectlyAnswered = [];
