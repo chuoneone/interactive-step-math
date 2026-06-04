@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-2 平行四邊形：平行四邊形判別</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC & Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- KaTeX CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Outfit', sans-serif;
+      background-color: #0b1329;
+      color: #f1f5f9;
+    }
+    .custom-shadow {
+      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+    }
+    .card-border {
+      border: 1px solid rgba(241, 245, 249, 0.08);
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-animation {
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes bounce-custom {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .bounce-animation {
+      animation: bounce-custom 0.4s ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-12">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center border-b border-slate-800 gap-4">
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-600 text-white font-extrabold px-4 py-2 rounded-xl text-xl tracking-wider shadow-lg shadow-blue-500/20">
+        數學領域
+      </div>
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white">
+          4-2 平行四邊形 <span class="text-blue-400 text-2xl font-black">(三、平行四邊形判別)</span>
+        </h1>
+        <p class="text-slate-400 text-sm">國中數學八年級下學期 · 互動式引導學習單</p>
+      </div>
+    </div>
+    
+    <!-- TTS Speech controls -->
+    <div class="flex items-center gap-3 bg-slate-900/60 py-2 px-4 rounded-xl border border-slate-800">
+      <span class="text-slate-400 text-sm font-medium">🔊 語音速度：</span>
+      <button onclick="changeSpeed(0.8)" id="btn-slow" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">慢</button>
+      <button onclick="changeSpeed(1.0)" id="btn-normal" class="px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold">中</button>
+      <button onclick="changeSpeed(1.2)" id="btn-fast" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">快</button>
+    </div>
+  </header>
+
+  <!-- Navigation tabs -->
+  <nav class="w-full max-w-7xl mx-auto px-6 py-6 flex flex-wrap gap-3">
+    <a href="G8S2-4-2-01.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
+      一、對角與對邊
+    </a>
+    <a href="G8S2-4-2-02.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
+      二、對角線性質
+    </a>
+    <a href="G8S2-4-2-03.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-500/20">
+      三、平行四邊形判別
+    </a>
+  </nav>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left Column -->
+    <div class="lg:col-span-6 flex flex-col gap-6">
+      <div id="question-card" class="bg-slate-900/60 rounded-3xl p-6 card-border custom-shadow">
+        <div class="flex justify-between items-center mb-4">
+          <span id="question-number-badge" class="bg-blue-900/40 text-blue-400 font-extrabold text-sm px-3 py-1 rounded-lg border border-blue-800/40">
+            第 1 題 / 共 8 題
+          </span>
+          <button onclick="speakCurrentQuestion()" class="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition font-bold border border-blue-500/20">
+            <span>🔊 唸題目</span>
+          </button>
+        </div>
+
+        <h2 id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-white mb-6">
+          讀取中...
+        </h2>
+
+        <div class="w-full bg-slate-950/80 rounded-2xl p-6 border border-slate-800 flex justify-center items-center min-h-[280px]">
+          <div id="svg-container" class="w-full flex justify-center"></div>
+        </div>
+      </div>
+      
+      <!-- Progress Trackers -->
+      <div class="bg-slate-900/40 rounded-2xl p-4 card-border">
+        <div class="flex justify-between text-sm font-semibold mb-2">
+          <span class="text-slate-400">概念三 練習進度</span>
+          <span id="progress-text" class="text-blue-400">0% (0 / 8)</span>
+        </div>
+        <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800">
+          <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="lg:col-span-6 flex flex-col gap-6">
+      <div class="bg-slate-900/60 rounded-3xl p-6 md:p-8 card-border flex flex-col gap-6">
+        <div>
+          <h3 class="text-lg font-bold text-slate-400 mb-1">🎯 選擇正確選項</h3>
+          <p id="scaffolding-hint" class="text-slate-300 text-base leading-relaxed bg-blue-500/5 py-3 px-4 rounded-xl border border-blue-500/10 mt-1">
+            提示...
+          </p>
+        </div>
+
+        <div id="steps-panel" class="flex flex-col gap-4">
+          <!-- Options rendered here -->
+        </div>
+
+        <div class="flex justify-between items-center gap-4 border-t border-slate-800 pt-4">
+          <button onclick="prevQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
+            ← 上一題
+          </button>
+          <button onclick="nextQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
+            下一題 →
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Complete Modal -->
+  <div id="complete-modal" class="fixed inset-0 bg-slate-950/80 flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-slate-900 rounded-3xl p-8 max-w-md w-full border border-slate-800 text-center flex flex-col gap-6 custom-shadow">
+      <div class="text-6xl">🎉</div>
+      <h2 class="text-3xl font-extrabold text-white">恭喜完成全部單元！</h2>
+      <p class="text-slate-300 text-lg">您已經順利完成「4-2 平行四邊形」所有課程概念練習囉，表現太棒了！</p>
+      <button onclick="closeModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-xl text-lg transition block text-center">
+        完成練習
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let speechRate = 1.0;
+    
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-TW';
+        utterance.rate = speechRate;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function changeSpeed(rate) {
+      speechRate = rate;
+      const speeds = [0.8, 1.0, 1.2];
+      const buttons = ['btn-slow', 'btn-normal', 'btn-fast'];
+      buttons.forEach((id, idx) => {
+        const btn = document.getElementById(id);
+        if (speeds[idx] === rate) {
+          btn.className = "px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold";
+        } else {
+          btn.className = "px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300";
+        }
+      });
+      speakText("速度調整");
+    }
+
+    // Concept 3 Database
+    const questionsData = [
+      {
+        id: 1,
+        type: "choice",
+        question: "下列何者可以作為一個平行四邊形的四個邊長？",
+        scaffolding: "平行四邊形的對邊必須相等，因此四邊長中，必須有兩組兩兩相等的數字，如 (D) 6, 8, 6, 8 組成相對的邊。",
+        options: [
+          "(A) 6，5，6，4",
+          "(B) 3，2，2.5，2",
+          "(C) 6，7，10，9",
+          "(D) 6，8，6，8"
+        ],
+        answer: 3,
+        svgType: "choice_helper",
+        svgData: { desc: "對邊相等原則" }
+      },
+      {
+        id: 2,
+        type: "choice",
+        question: "阿明用四根不同長度的木棒作為邊長，依逆時針方向連接。哪一組「無法」組成平行四邊形？",
+        scaffolding: "對邊必須相等。若以逆時針依序排列，相等的邊必須交錯排列（如 5,2,5,2 或 1,4,1,4）。若將相同邊長排在一起（如 4,4,6,6），會變成二對等長邊相鄰，無法形成平行四邊形。",
+        options: [
+          "(A) 4，4，6，6",
+          "(B) 1，4，1，4",
+          "(C) 8，8，8，8",
+          "(D) 5，2，5，2"
+        ],
+        answer: 0,
+        svgType: "choice_helper",
+        svgData: { desc: "逆時針排序對稱性" }
+      },
+      {
+        id: 3,
+        type: "choice",
+        question: "四邊形 ABCD 需滿足下列哪一個選項中的條件，才能「確定是」平行四邊形？",
+        scaffolding: "∠A = ∠C (對角相等) 且 AB // CD (可推得同側內角互補)，能夠唯一確定是平行四邊形。若是 (D) AB = CD 且 AD // BC 則可能是等腰梯形。",
+        options: [
+          "(A) ∠A = ∠B 且 ∠C = ∠D",
+          "(B) ∠A = ∠C 且 AB // CD",
+          "(C) ∠A + ∠B = ∠C + ∠D = 180°",
+          "(D) AB = CD 且 AD // BC"
+        ],
+        answer: 1,
+        svgType: "choice_helper",
+        svgData: { desc: "平行四邊形判定性質" }
+      },
+      {
+        id: 4,
+        type: "choice",
+        question: "下列四個條件中，哪一個「不能」用來判別四邊形 ABCD 為平行四邊形？",
+        scaffolding: "一組對邊平行且另一組對邊等長（AB // CD, AD = BC）是等腰梯形的特徵，不能保證為平行四邊形。",
+        options: [
+          "(A) AB // CD，∠A = ∠C",
+          "(B) AB // CD，AB = CD",
+          "(C) AB // CD，AD = BC",
+          "(D) AB = CD，AD = BC"
+        ],
+        answer: 2,
+        svgType: "choice_helper",
+        svgData: { desc: "反例：等腰梯形" }
+      },
+      {
+        id: 5,
+        type: "choice",
+        question: "當四邊形 PQRS 滿足下列哪一個選項的條件時，才能「確定是」平行四邊形？",
+        scaffolding: "平行四邊形兩組對角分別相等，即 ∠P = ∠R (對角) 且 ∠Q = ∠S (對角)，故選 (D)。",
+        options: [
+          "(A) ∠P + ∠Q = ∠R + ∠S = 180°",
+          "(B) PS // QR，PQ = RS",
+          "(C) ∠P = ∠Q 且 ∠R = ∠S",
+          "(D) ∠P = ∠R 且 ∠Q = ∠S"
+        ],
+        answer: 3,
+        svgType: "choice_helper",
+        svgData: { desc: "對角相等判定法" }
+      },
+      {
+        id: 6,
+        type: "choice",
+        question: "有一個四邊形 ABCD，已知 ∠A = 120°，當加上下列哪一個條件時，「無法」判別為平行四邊形？",
+        scaffolding: "若加上 (A) ∠B = 120°，則同側內角 (∠A+∠B = 240°) 不互補，此四邊形必不是平行四邊形。",
+        options: [
+          "(A) ∠B = 120°",
+          "(B) ∠B = 60°",
+          "(C) ∠A + ∠B = 180°",
+          "(D) ∠A = ∠C"
+        ],
+        answer: 0,
+        svgType: "choice_helper",
+        svgData: { desc: "鄰角互補原則" }
+      },
+      {
+        id: 7,
+        type: "choice",
+        question: "下列哪一組三角形可以拼出平行四邊形？",
+        scaffolding: "必須是「兩個完全全等的三角形」才能以對應邊緊貼拼出平行四邊形。故選 (A)。",
+        options: [
+          "(A) 兩個全等直角三角形",
+          "(B) 兩個形狀不同的直角三角形",
+          "(C) 兩個大小不同的銳角三角形",
+          "(D) 兩個不全等的等腰三角形"
+        ],
+        answer: 0,
+        svgType: "choice_helper",
+        svgData: { desc: "三角形拼合原則" }
+      },
+      {
+        id: 8,
+        type: "choice",
+        question: "如圖，若 △ABC 與 △ACD 皆為正三角形，則四邊形 ABCD 為下列何者？",
+        scaffolding: "共用邊 AC，AB = BC = AC = CD = DA，故四邊等長，且對角相等。其為菱形，而菱形是平行四邊形的一種。",
+        options: [
+          "(A) 長方形",
+          "(B) 正方形",
+          "(C) 平行四邊形",
+          "(D) 梯形"
+        ],
+        answer: 2,
+        svgType: "choice_helper",
+        svgData: { desc: "雙正三角形結構" }
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    const completedProgress = Array(8).fill(false);
+
+    function loadQuestion() {
+      const q = questionsData[currentQuestionIndex];
+      document.getElementById("question-number-badge").innerText = `第 ${q.id} 題 / 共 8 題`;
+      document.getElementById("question-text").innerText = q.question;
+      document.getElementById("scaffolding-hint").innerText = "提示：" + q.scaffolding;
+      
+      renderMathElements();
+      renderSVG(q.svgType, q.svgData);
+      renderOptions();
+      speakCurrentQuestion();
+    }
+
+    function speakCurrentQuestion() {
+      const q = questionsData[currentQuestionIndex];
+      speakText(q.question);
+    }
+
+    function renderMathElements() {
+      if (window.katex) {
+        const textEl = document.getElementById("question-text");
+        let html = textEl.innerHTML;
+        const regex = /\\\((.*?)\\\)/g;
+        html = html.replace(regex, (match, latex) => {
+          try {
+            return window.katex.renderToString(latex, { throwOnError: false, displayMode: false });
+          } catch(e) {
+            return match;
+          }
+        });
+        textEl.innerHTML = html;
+      }
+    }
+
+    function renderOptions() {
+      const q = questionsData[currentQuestionIndex];
+      const panel = document.getElementById("steps-panel");
+      panel.innerHTML = "";
+      
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "flex flex-col gap-4 w-full";
+      
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.className = "w-full py-4 px-6 bg-slate-950 hover:bg-slate-850 text-white text-left font-bold text-xl rounded-2xl border border-slate-800 transition active:scale-98 flex items-center justify-between";
+        btn.innerHTML = `<span>${opt}</span><span id="check-icon-${index}" class="text-2xl hidden"></span>`;
+        btn.onclick = () => selectChoiceAndVerify(opt, index);
+        cardDiv.appendChild(btn);
+      });
+      
+      panel.appendChild(cardDiv);
+    }
+
+    function selectChoiceAndVerify(opt, idx) {
+      const q = questionsData[currentQuestionIndex];
+      const container = document.getElementById("steps-panel").firstElementChild;
+      
+      Array.from(container.children).forEach((btn, i) => {
+        btn.className = "w-full py-4 px-6 bg-slate-950 hover:bg-slate-850 text-white text-left font-bold text-xl rounded-2xl border border-slate-800 transition active:scale-98 flex items-center justify-between";
+        const icon = document.getElementById(`check-icon-${i}`);
+        if (icon) icon.className = "text-2xl hidden";
+      });
+      
+      const isCorrect = (idx === q.answer);
+      const card = document.getElementById("question-card");
+      
+      if (isCorrect) {
+        card.classList.add("bounce-animation");
+        setTimeout(() => card.classList.remove("bounce-animation"), 400);
+        speakText("答對了！非常棒！");
+        
+        const activeBtn = container.children[idx];
+        activeBtn.className = "w-full py-4 px-6 bg-emerald-900/40 text-emerald-300 text-left font-extrabold text-xl rounded-2xl border-2 border-emerald-500 transition flex items-center justify-between shadow-lg shadow-emerald-500/10";
+        const icon = document.getElementById(`check-icon-${idx}`);
+        icon.innerText = "✓";
+        icon.className = "text-emerald-400 text-2xl block font-black";
+        
+        completedProgress[currentQuestionIndex] = true;
+        updateProgressBar();
+        
+        if (completedProgress.every(x => x === true)) {
+          confetti({ particleCount: 160, spread: 85, origin: { y: 0.65 } });
+          setTimeout(showModal, 600);
+        } else {
+          setTimeout(nextQuestion, 1600);
+        }
+      } else {
+        card.classList.add("shake-animation");
+        setTimeout(() => card.classList.remove("shake-animation"), 400);
+        speakText("答錯囉，請再想想平行四邊形的判定性質。");
+        
+        const activeBtn = container.children[idx];
+        activeBtn.className = "w-full py-4 px-6 bg-rose-900/40 text-rose-300 text-left font-extrabold text-xl rounded-2xl border-2 border-rose-500 transition flex items-center justify-between shadow-lg shadow-rose-500/10";
+        const icon = document.getElementById(`check-icon-${idx}`);
+        icon.innerText = "✗";
+        icon.className = "text-rose-400 text-2xl block font-black";
+      }
+    }
+
+    function showModal() {
+      document.getElementById("complete-modal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("complete-modal").classList.add("hidden");
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      } else {
+        speakText("這是第一題。");
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < 7) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        speakText("最後一題囉！");
+      }
+    }
+
+    function updateProgressBar() {
+      const correctCount = completedProgress.filter(x => x).length;
+      const percent = Math.round((correctCount / 8) * 100);
+      document.getElementById("progress-text").innerText = `${percent}% (${correctCount} / 8)`;
+      document.getElementById("progress-bar").style.width = `${percent}%`;
+    }
+
+    function renderSVG(type, data) {
+      const container = document.getElementById("svg-container");
+      container.innerHTML = "";
+      
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("width", "460");
+      svg.setAttribute("height", "250");
+      svg.setAttribute("viewBox", "0 0 460 250");
+      svg.style.overflow = "visible";
+      
+      const pA = { x: 150, y: 40 };
+      const pB = { x: 70, y: 195 };
+      const pC = { x: 350, y: 195 };
+      const pD = { x: 430, y: 40 };
+      
+      const grid = document.createElementNS(svgNS, "path");
+      grid.setAttribute("d", "M 0 40 L 460 40 M 0 90 L 460 90 M 0 140 L 460 140 M 0 190 L 460 190 M 90 0 L 90 250 M 180 0 L 180 250 M 270 0 L 270 250 M 360 0 L 360 250");
+      grid.setAttribute("stroke", "rgba(241,245,249,0.02)");
+      grid.setAttribute("stroke-width", "1");
+      svg.appendChild(grid);
+
+      const shape = document.createElementNS(svgNS, "polygon");
+      shape.setAttribute("points", `${pA.x},${pA.y} ${pD.x},${pD.y} ${pC.x},${pC.y} ${pB.x},${pB.y}`);
+      shape.setAttribute("fill", "rgba(59, 130, 246, 0.08)");
+      shape.setAttribute("stroke", "#3b82f6");
+      shape.setAttribute("stroke-width", "4");
+      svg.appendChild(shape);
+
+      if (type === "choice_helper" && currentQuestionIndex === 7) {
+        // Draw the double equilateral triangles shared at AC
+        svg.innerHTML = "";
+        svg.appendChild(grid);
+        
+        // Triangle ABC: A(250, 40), B(150, 213), C(350, 213)
+        // Triangle ACD: A(250, 40), C(350, 213), D(450, 40)? Or D is reflected: D(350, 40)
+        // Let's draw two triangles: △ABC and △ACD
+        const p1 = { x: 250, y: 40 };   // A
+        const p2 = { x: 160, y: 196 };  // B
+        const p3 = { x: 340, y: 196 };  // C
+        const p4 = { x: 430, y: 40 };   // D
+        
+        const poly1 = document.createElementNS(svgNS, "polygon");
+        poly1.setAttribute("points", `${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}`);
+        poly1.setAttribute("fill", "rgba(59, 130, 246, 0.08)");
+        poly1.setAttribute("stroke", "#3b82f6");
+        poly1.setAttribute("stroke-width", "3");
+        svg.appendChild(poly1);
+        
+        const poly2 = document.createElementNS(svgNS, "polygon");
+        poly2.setAttribute("points", `${p1.x},${p1.y} ${p3.x},${p3.y} ${p4.x},${p4.y}`);
+        poly2.setAttribute("fill", "rgba(167, 139, 250, 0.08)");
+        poly2.setAttribute("stroke", "#a78bfa");
+        poly2.setAttribute("stroke-width", "3");
+        svg.appendChild(poly2);
+        
+        drawText(svg, svgNS, p1.x, p1.y - 12, "A", "#ffffff", "22px", "bold", "middle");
+        drawText(svg, svgNS, p2.x - 22, p2.y + 10, "B", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, p3.x, p3.y + 25, "C", "#ffffff", "22px", "bold", "middle");
+        drawText(svg, svgNS, p4.x + 12, p4.y + 5, "D", "#ffffff", "22px", "bold");
+      }
+      else {
+        drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, 250, 130, data.desc, "#fbbf24", "22px", "bold", "middle");
+      }
+
+      container.appendChild(svg);
+    }
+
+    function drawText(svg, ns, x, y, text, color, size, weight, align = "start") {
+      const txt = document.createElementNS(ns, "text");
+      txt.setAttribute("x", x);
+      txt.setAttribute("y", y);
+      txt.setAttribute("fill", color);
+      txt.setAttribute("font-size", size);
+      txt.setAttribute("font-weight", weight);
+      txt.setAttribute("text-anchor", align);
+      txt.textContent = text;
+      svg.appendChild(txt);
+    }
+
+    window.onload = loadQuestion;
+  </script>
+</body>
+</html>
