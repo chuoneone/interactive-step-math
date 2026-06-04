@@ -191,15 +191,7 @@
           <div id="options-buttons" class="flex flex-wrap gap-3"></div>
         </div>
 
-        <!-- Controls -->
-        <div class="flex gap-4">
-          <button id="check-btn" onclick="checkCurrentStep()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95 shadow-md shadow-blue-500/10">
-            檢查此步驟
-          </button>
-          <button id="next-step-btn" onclick="advanceStep()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95 shadow-md shadow-emerald-500/10 hidden">
-            進入下一步驟
-          </button>
-        </div>
+        <!-- Controls auto-handled -->
 
         <!-- Pagination -->
         <div class="flex justify-between items-center gap-4 border-t border-slate-100 pt-4">
@@ -579,8 +571,6 @@
       panel.innerHTML = "";
       
       document.getElementById("options-panel-container").classList.remove("hidden");
-      document.getElementById("check-btn").classList.remove("hidden");
-      document.getElementById("next-step-btn").classList.add("hidden");
 
       for (let i = 0; i <= currentStepIndex; i++) {
         const step = q.steps[i];
@@ -703,56 +693,80 @@
       });
     }
 
-    function clickOptionValue(val) {
-      if (!activeSlotKey) return;
-      const el = document.getElementById(`slot-${activeSlotKey}`);
-      if (el) {
-        slotValues[activeSlotKey] = val;
-        el.innerText = val;
-        el.classList.remove("wrong");
-        
-        const q = questionsData[currentQuestionIndex];
-        const step = q.steps[currentStepIndex];
-        let foundNext = false;
-        
-        for (let f of step.formula) {
-          if (f.type === "slot" && !slotValues[f.key] && f.key !== activeSlotKey) {
-            selectSlot(f.key);
-            foundNext = true;
-            break;
+        function disableOptions(disable) {
+      const container = document.getElementById("options-buttons");
+      if (container) {
+        const buttons = container.querySelectorAll("button");
+        buttons.forEach(btn => {
+          btn.disabled = disable;
+          if (disable) {
+            btn.classList.add("opacity-50", "pointer-events-none");
+          } else {
+            btn.classList.remove("opacity-50", "pointer-events-none");
           }
-        }
+        });
       }
     }
 
-    function checkCurrentStep() {
+    function clickOptionValue(val) {
+      const q = questionsData[currentQuestionIndex];
+      const step = q.steps[currentStepIndex];
+      
+      // Use activeSlotKey if it points to an empty slot, otherwise find the first empty slot
+      let targetKey = activeSlotKey;
+      if (!targetKey || slotValues[targetKey]) {
+        const firstEmpty = step.formula.find(f => f.type === "slot" && !slotValues[f.key]);
+        if (firstEmpty) {
+          targetKey = firstEmpty.key;
+        }
+      }
+      
+      if (!targetKey) return;
+      
+      slotValues[targetKey] = val;
+      const el = document.getElementById("slot-" + targetKey);
+      if (el) {
+        el.innerText = val;
+        el.classList.remove("wrong");
+        el.classList.remove("active");
+      }
+      
+      // Focus on the next empty slot
+      const nextEmpty = step.formula.find(f => f.type === "slot" && !slotValues[f.key]);
+      if (nextEmpty) {
+        selectSlot(nextEmpty.key);
+      } else {
+        activeSlotKey = "";
+      }
+      
+      // Auto-check if all slots in the current step are filled
+      const allFilled = step.formula.every(f => f.type !== "slot" || slotValues[f.key]);
+      if (allFilled) {
+        disableOptions(true);
+        setTimeout(autoCheckStep, 350); // Small delay to let user see selection
+      }
+    }
+
+    function autoCheckStep() {
       const q = questionsData[currentQuestionIndex];
       const step = q.steps[currentStepIndex];
       let allCorrect = true;
-      let unfilled = false;
       
       step.formula.forEach(f => {
         if (f.type === "slot") {
           const val = slotValues[f.key];
-          const el = document.getElementById(`slot-${f.key}`);
-          
-          if (!val) {
-            unfilled = true;
-            el.classList.add("wrong");
-          } else if (val !== f.answer) {
+          const el = document.getElementById("slot-" + f.key);
+          if (val !== f.answer) {
             allCorrect = false;
-            el.classList.add("wrong");
+            if (el) el.classList.add("wrong");
           } else {
-            el.classList.remove("wrong");
-            el.classList.add("correct");
+            if (el) {
+              el.classList.remove("wrong");
+              el.classList.add("correct");
+            }
           }
         }
       });
-      
-      if (unfilled) {
-        speakText("還有空格未完成。");
-        return;
-      }
       
       const card = document.getElementById("question-card");
       
@@ -763,7 +777,7 @@
         
         step.formula.forEach(f => {
           if (f.type === "slot") {
-            const el = document.getElementById(`slot-${f.key}`);
+            const el = document.getElementById("slot-" + f.key);
             if (el) {
               el.onclick = null;
               el.className = "slot correct";
@@ -771,34 +785,53 @@
           }
         });
         
-        if (currentStepIndex < q.steps.length - 1) {
-          document.getElementById("check-btn").classList.add("hidden");
-          document.getElementById("next-step-btn").classList.remove("hidden");
-        } else {
-          completedProgress[currentQuestionIndex] = true;
-          updateProgressBar();
-          updateTabProgressBadges();
-          
-          if (completedProgress.every(x => x === true)) {
-            confetti({ particleCount: 160, spread: 85, origin: { y: 0.65 } });
-            setTimeout(showModal, 600);
+        setTimeout(() => {
+          disableOptions(false);
+          if (currentStepIndex < q.steps.length - 1) {
+            currentStepIndex++;
+            activeSlotKey = "";
+            renderSteps();
           } else {
-            setTimeout(nextQuestion, 1600);
+            completedProgress[currentQuestionIndex] = true;
+            updateProgressBar();
+            updateTabProgressBadges();
+            
+            if (completedProgress.every(x => x === true)) {
+              confetti({ particleCount: 160, spread: 85, origin: { y: 0.65 } });
+              setTimeout(showModal, 600);
+            } else {
+              setTimeout(nextQuestion, 600);
+            }
           }
-        }
+        }, 1200);
       } else {
         card.classList.add("shake-animation");
         setTimeout(() => card.classList.remove("shake-animation"), 400);
         speakText("算式中的答案有誤，再確認看看。");
+        
+        setTimeout(() => {
+          // Clear only the wrong slot inputs
+          step.formula.forEach(f => {
+            if (f.type === "slot") {
+              const val = slotValues[f.key];
+              if (val !== f.answer) {
+                slotValues[f.key] = "";
+                const el = document.getElementById("slot-" + f.key);
+                if (el) {
+                  el.innerText = "";
+                  el.className = "slot";
+                }
+              }
+            }
+          });
+          
+          disableOptions(false);
+          const firstEmpty = step.formula.find(f => f.type === "slot" && !slotValues[f.key]);
+          if (firstEmpty) {
+            selectSlot(firstEmpty.key);
+          }
+        }, 1200);
       }
-    }
-
-    function advanceStep() {
-      currentStepIndex++;
-      activeSlotKey = "";
-      document.getElementById("check-btn").classList.remove("hidden");
-      document.getElementById("next-step-btn").classList.add("hidden");
-      renderSteps();
     }
 
     function showModal() {
