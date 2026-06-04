@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-2 平行四邊形互動式講義 (點擊版)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC & Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- KaTeX CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Outfit', sans-serif;
+      background-color: #0b1329;
+      color: #f1f5f9;
+    }
+    .custom-shadow {
+      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+    }
+    .card-border {
+      border: 1px solid rgba(241, 245, 249, 0.08);
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-animation {
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes bounce-custom {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .bounce-animation {
+      animation: bounce-custom 0.4s ease-in-out;
+    }
+    
+    /* Specs classes */
+    .math-line {
+      font-size: 26px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      line-height: 1.8;
+      margin: 14px 0;
+    }
+    .math, .math-display {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+    }
+    .math-display {
+      justify-content: center;
+      width: 100%;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+    .katex {
+      font-size: 1.15em;
+    }
+    .slot {
+      min-width: 68px;
+      min-height: 48px;
+      padding: 4px 14px;
+      border: 3px solid #93c5fd;
+      border-radius: 12px;
+      background: #1e293b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b82f6;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 800;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .slot.active {
+      animation: pulseSlot 1s infinite;
+      background: #1e3a8a;
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+    .slot.correct {
+      background: #064e3b;
+      border-color: #10b981;
+      color: #a7f3d0;
+      cursor: not-allowed;
+    }
+    .slot.wrong {
+      background: #7f1d1d;
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+    @keyframes pulseSlot {
+      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-12">
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center border-b border-slate-800 gap-4">
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-600 text-white font-extrabold px-4 py-2 rounded-xl text-xl tracking-wider shadow-lg shadow-blue-500/20">
+        數學領域
+      </div>
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white">
+          4-2 平行四邊形 <span class="text-blue-400 text-2xl font-black">(點擊選數版)</span>
+        </h1>
+        <p class="text-slate-400 text-sm">國中數學八年級下學期 · 互動式引導學習單</p>
+      </div>
+    </div>
+    
+    <!-- TTS Speech controls -->
+    <div class="flex items-center gap-3 bg-slate-900/60 py-2 px-4 rounded-xl border border-slate-800">
+      <span class="text-slate-400 text-sm font-medium">🔊 語音速度：</span>
+      <button onclick="changeSpeed(0.8)" id="btn-slow" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">慢</button>
+      <button onclick="changeSpeed(1.0)" id="btn-normal" class="px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold">中</button>
+      <button onclick="changeSpeed(1.2)" id="btn-fast" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">快</button>
+    </div>
+  </header>
+
+  <!-- Main Tabs -->
+  <nav class="w-full max-w-7xl mx-auto px-6 py-6 flex flex-wrap gap-3">
+    <button onclick="switchSection(1)" id="tab-1" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-500/20">
+      一、對角與對邊 (0/8)
+    </button>
+    <button onclick="switchSection(2)" id="tab-2" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
+      二、對角線性質 (0/8)
+    </button>
+    <button onclick="switchSection(3)" id="tab-3" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
+      三、平行四邊形判別 (0/8)
+    </button>
+  </nav>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left Column: Questions Sidebar & SVG Viewer -->
+    <div class="lg:col-span-6 flex flex-col gap-6">
+      
+      <!-- Current Question Card -->
+      <div id="question-card" class="bg-slate-900/60 rounded-3xl p-6 card-border custom-shadow">
+        <div class="flex justify-between items-center mb-4">
+          <span id="question-number-badge" class="bg-blue-900/40 text-blue-400 font-extrabold text-sm px-3 py-1 rounded-lg border border-blue-800/40">
+            第 1 題 / 共 8 題
+          </span>
+          <button onclick="speakCurrentQuestion()" class="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition font-bold border border-blue-500/20">
+            <span>🔊 唸題目</span>
+          </button>
+        </div>
+
+        <!-- Question Text (rendered using KaTeX) -->
+        <h2 id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-white mb-6">
+          讀取中...
+        </h2>
+
+        <!-- SVG Geometry Diagram Container -->
+        <div class="w-full bg-slate-950/80 rounded-2xl p-6 border border-slate-800 flex justify-center items-center min-h-[280px]">
+          <div id="svg-container" class="w-full flex justify-center"></div>
+        </div>
+      </div>
+      
+      <!-- Progress Trackers -->
+      <div class="bg-slate-900/40 rounded-2xl p-4 card-border">
+        <div class="flex justify-between text-sm font-semibold mb-2">
+          <span class="text-slate-400">目前章節進度</span>
+          <span id="progress-text" class="text-blue-400">0% (0 / 8)</span>
+        </div>
+        <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800">
+          <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Progressive Steps, Slot Inputs, Option Buttons -->
+    <div class="lg:col-span-6 flex flex-col gap-6">
+      
+      <!-- Interactive Scaffolding Cards -->
+      <div class="bg-slate-900/60 rounded-3xl p-6 md:p-8 card-border flex flex-col gap-6">
+        <div>
+          <h3 class="text-lg font-bold text-slate-400 mb-1">💡 循序漸進引導解題</h3>
+          <p class="text-slate-400 text-sm">請依照步驟，點擊對應的空格並點選下方按鈕填入答案。</p>
+        </div>
+
+        <!-- Steps Panel (Scrollable) -->
+        <div id="steps-panel" class="flex flex-col gap-6 max-h-[420px] overflow-y-auto pr-2">
+          <!-- Progressive steps will be dynamically injected here -->
+        </div>
+
+        <!-- Input options buttons section -->
+        <div id="options-panel-container" class="border-t border-slate-800 pt-6">
+          <span class="text-slate-400 text-sm font-bold block mb-3">👇 請點選答案填入藍色空格：</span>
+          <div id="options-buttons" class="flex flex-wrap gap-3">
+            <!-- Dynamically generated clicking options -->
+          </div>
+        </div>
+
+        <!-- Confirm and Next actions -->
+        <div class="flex gap-4">
+          <button id="check-btn" onclick="checkCurrentStep()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95">
+            檢查此步驟
+          </button>
+          <button id="next-step-btn" onclick="advanceStep()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95 hidden">
+            進入下一步驟
+          </button>
+        </div>
+
+        <!-- Slide footer -->
+        <div class="flex justify-between items-center gap-4 border-t border-slate-800 pt-4">
+          <button onclick="prevQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
+            ← 上一題
+          </button>
+          <button onclick="nextQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
+            下一題 →
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Section Finished Modal -->
+  <div id="complete-modal" class="fixed inset-0 bg-slate-950/80 flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-slate-900 rounded-3xl p-8 max-w-md w-full border border-slate-800 text-center flex flex-col gap-6 custom-shadow">
+      <div class="text-6xl">🎉</div>
+      <h2 class="text-3xl font-extrabold text-white">恭喜完成此章節！</h2>
+      <p id="modal-desc" class="text-slate-300 text-lg">您已經順利完成所有的步驟囉！</p>
+      <button onclick="closeModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-xl text-lg transition">
+        繼續挑戰下一章節
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let speechRate = 1.0;
+    
+    // Traditional Chinese speech synthesis voice helper
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-TW';
+        utterance.rate = speechRate;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function changeSpeed(rate) {
+      speechRate = rate;
+      const speeds = [0.8, 1.0, 1.2];
+      const buttons = ['btn-slow', 'btn-normal', 'btn-fast'];
+      buttons.forEach((id, idx) => {
+        const btn = document.getElementById(id);
+        if (speeds[idx] === rate) {
+          btn.className = "px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold";
+        } else {
+          btn.className = "px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300";
+        }
+      });
+      speakText("速度調整");
+    }
+
+    // Step-by-step math definitions
+    const sectionsData = {
+      1: [
+        {
+          id: 1,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 的周長為 \\(56\\)，線段 \\(\\overline{AB} = 12\\)，求線段 \\(\\overline{AD}\\) 的長度。",
+          svgType: "ab_cd_param",
+          svgData: { ab: "12", ad: "AD = ?" },
+          steps: [
+            {
+              desc: "第一步：平行四邊形的對邊相等，得到 \\(\\overline{AB} = \\overline{CD} = 12\\)。且 \\(\\overline{AD} = \\overline{BC}\\)。所以：",
+              formula: [
+                { type: "math", latex: "2\\overline{AD} = 56 - (" },
+                { type: "slot", key: "step1_1", answer: "24" },
+                { type: "math", latex: ")" }
+              ],
+              options: ["12", "24", "32", "56"]
+            },
+            {
+              desc: "第二步：化簡上式：",
+              formula: [
+                { type: "math", latex: "2\\overline{AD} =" },
+                { type: "slot", key: "step2_1", answer: "32" }
+              ],
+              options: ["12", "16", "32", "44"]
+            },
+            {
+              desc: "第三步：同除以 2，解出 \\(\\overline{AD}\\)：",
+              formula: [
+                { type: "math", latex: "\\overline{AD} =" },
+                { type: "slot", key: "step3_1", answer: "16" }
+              ],
+              options: ["12", "16", "24", "28"]
+            }
+          ]
+        },
+        {
+          id: 2,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，若 \\(\\overline{AB} = 2x+1\\)，\\(\\overline{BC} = 6\\)，\\(\\overline{CD} = 7\\)，求 \\(x\\) 以及周長的值。",
+          svgType: "algebra_sides",
+          svgData: { ab: "2x+1", bc: "6", cd: "7" },
+          steps: [
+            {
+              desc: "第一步：根據對邊相等的性質，\\(\\overline{AB} = \\overline{CD}\\)，列出關係式：",
+              formula: [
+                { type: "math", latex: "2x + 1 =" },
+                { type: "slot", key: "step1_1", answer: "7" }
+              ],
+              options: ["1", "6", "7", "13"]
+            },
+            {
+              desc: "第二步：搬移常數項，求出 \\(2x\\) 和 \\(x\\)：",
+              formula: [
+                { type: "math", latex: "2x =" },
+                { type: "slot", key: "step2_1", answer: "6" },
+                { type: "math", latex: "\\Rightarrow x =" },
+                { type: "slot", key: "step2_2", answer: "3" }
+              ],
+              options: ["3", "4", "6", "8"]
+            },
+            {
+              desc: "第三步：計算平行四邊形 \\(ABCD\\) 的周長：",
+              formula: [
+                { type: "math", latex: "\\text{周長} = 2 \\times ( 7 + " },
+                { type: "slot", key: "step3_1", answer: "6" },
+                { type: "math", latex: ") =" },
+                { type: "slot", key: "step3_2", answer: "26" }
+              ],
+              options: ["6", "13", "20", "26"]
+            }
+          ]
+        },
+        {
+          id: 3,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，\\(\\overline{AB} + \\overline{CD} = 20\\)，\\(\\overline{BC} + \\overline{DA} = 30\\)，求 \\(\\overline{AB} + \\overline{BC}\\) 的值。",
+          svgType: "ab_bc_sums",
+          svgData: { ab_cd: "AB + CD = 20", bc_da: "BC + DA = 30" },
+          steps: [
+            {
+              desc: "第一步：因為對邊相等，\\(\\overline{AB} = \\overline{CD}\\)，可以算得其長度為：",
+              formula: [
+                { type: "math", latex: "\\overline{AB} = " },
+                { type: "slot", key: "step1_1", answer: "10" }
+              ],
+              options: ["5", "10", "15", "20"]
+            },
+            {
+              desc: "第二步：同理，因為 \\(\\overline{BC} = \\overline{DA}\\)，可得其長度為：",
+              formula: [
+                { type: "math", latex: "\\overline{BC} = " },
+                { type: "slot", key: "step2_1", answer: "15" }
+              ],
+              options: ["10", "15", "20", "30"]
+            },
+            {
+              desc: "第三步：將兩者相加得到最終答案：",
+              formula: [
+                { type: "math", latex: "\\overline{AB} + \\overline{BC} = 10 + 15 =" },
+                { type: "slot", key: "step3_1", answer: "25" }
+              ],
+              options: ["20", "25", "30", "50"]
+            }
+          ]
+        },
+        {
+          id: 4,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，\\(\\overline{AD} = 6\\)，\\(\\overline{CD} = 7\\)，\\(\\overline{AB} = 2x+1\\)，\\(\\overline{BC} = y-3\\)，求 \\(x\\) 與 \\(y\\) 的值。",
+          svgType: "four_sides_algebra",
+          svgData: { ab: "2x+1", bc: "y-3", cd: "7", ad: "6" },
+          steps: [
+            {
+              desc: "第一步：對邊相等，\\(\\overline{AB} = \\overline{CD}\\)：",
+              formula: [
+                { type: "math", latex: "2x + 1 = " },
+                { type: "slot", key: "step1_1", answer: "7" },
+                { type: "math", latex: "\\Rightarrow x = " },
+                { type: "slot", key: "step1_2", answer: "3" }
+              ],
+              options: ["3", "6", "7", "8"]
+            },
+            {
+              desc: "第二步：同理，\\(\\overline{BC} = \\overline{AD}\\)：",
+              formula: [
+                { type: "math", latex: "y - 3 = " },
+                { type: "slot", key: "step2_1", answer: "6" },
+                { type: "math", latex: "\\Rightarrow y = " },
+                { type: "slot", key: "step2_2", answer: "9" }
+              ],
+              options: ["3", "6", "9", "10"]
+            }
+          ]
+        },
+        {
+          id: 5,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，若 \\(\\angle A = 105^\\circ\\)，求 \\(\\angle B, \\angle C, \\angle D\\) 的度數。",
+          svgType: "angles_param",
+          svgData: { a: "105°", b: "∠B", c: "∠C", d: "∠D" },
+          steps: [
+            {
+              desc: "第一步：平行四邊形對角相等，可先求得 \\(\\angle C\\)：",
+              formula: [
+                { type: "math", latex: "\\angle C = \\angle A = " },
+                { type: "slot", key: "step1_1", answer: "105" },
+                { type: "math", latex: "^\\circ" }
+              ],
+              options: ["75", "105", "180"]
+            },
+            {
+              desc: "第二步：鄰角互補，可求得鄰角 \\(\\angle B\\)：",
+              formula: [
+                { type: "math", latex: "\\angle B = 180^\\circ - 105^\\circ = " },
+                { type: "slot", key: "step2_1", answer: "75" },
+                { type: "math", latex: "^\\circ" }
+              ],
+              options: ["75", "90", "105"]
+            },
+            {
+              desc: "第三步：對角相等，求得對角 \\(\\angle D\\)：",
+              formula: [
+                { type: "math", latex: "\\angle D = \\angle B = " },
+                { type: "slot", key: "step3_1", answer: "75" },
+                { type: "math", latex: "^\\circ" }
+              ],
+              options: ["75", "105", "180"]
+            }
+          ]
+        },
+        {
+          id: 6,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，\\(\\angle A = (6x-4)^\\circ\\)，\\(\\angle C = (4x+24)^\\circ\\)，求 \\(x, \\angle A, \\angle B\\) 的度數。",
+          svgType: "angles_algebra",
+          svgData: { a: "(6x-4)°", c: "(4x+24)°" },
+          steps: [
+            {
+              desc: "第一步：對角相等，\\(\\angle A = \\angle C\\)：",
+              formula: [
+                { type: "math", latex: "6x - 4 = 4x + " },
+                { type: "slot", key: "step1_1", answer: "24" }
+              ],
+              options: ["4", "6", "24", "28"]
+            },
+            {
+              desc: "第二步：移項化簡求得 \\(x\\) 的值：",
+              formula: [
+                { type: "math", latex: "2x = " },
+                { type: "slot", key: "step2_1", answer: "28" },
+                { type: "math", latex: "\\Rightarrow x = " },
+                { type: "slot", key: "step2_2", answer: "14" }
+              ],
+              options: ["10", "14", "20", "28"]
+            },
+            {
+              desc: "第三步：將 \\(x\\) 代入，求 \\(\\angle A\\) 和鄰角 \\(\\angle B\\)：",
+              formula: [
+                { type: "math", latex: "\\angle A = (6 \\times 14 - 4)^\\circ = " },
+                { type: "slot", key: "step3_1", answer: "80" },
+                { type: "math", latex: "^\\circ, \\quad \\angle B = 180^\\circ - 80^\\circ = " },
+                { type: "slot", key: "step3_2", answer: "100" },
+                { type: "math", latex: "^\\circ" }
+              ],
+              options: ["80", "100", "120", "180"]
+            }
+          ]
+        },
+        {
+          id: 7,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，若 \\(\\angle A\\) 比 \\(\\angle B\\) 大 \\(10^\\circ\\)，求 \\(\\angle D\\) 的度數。",
+          svgType: "angles_relation",
+          svgData: { text: "∠A = ∠B + 10°" },
+          steps: [
+            {
+              desc: "第一步：設 \\(\\angle B = y^\\circ\\)，因為 \\(\\angle A\\) 比 \\(\\angle B\\) 大 \\(10^\\circ\\)，所以可以表示為：",
+              formula: [
+                { type: "math", latex: "\\angle A = y + " },
+                { type: "slot", key: "step1_1", answer: "10" }
+              ],
+              options: ["10", "20", "90", "180"]
+            },
+            {
+              desc: "第二步：鄰角互補，\\(\\angle A + \\angle B = 180^\\circ\\)：",
+              formula: [
+                { type: "math", latex: "(y + 10) + y = 180 \\Rightarrow 2y = " },
+                { type: "slot", key: "step2_1", answer: "170" },
+                { type: "math", latex: "\\Rightarrow y = " },
+                { type: "slot", key: "step2_2", answer: "85" }
+              ],
+              options: ["85", "95", "170", "180"]
+            },
+            {
+              desc: "第三步：對角相等：",
+              formula: [
+                { type: "math", latex: "\\angle D = \\angle B = " },
+                { type: "slot", key: "step3_1", answer: "85" },
+                { type: "math", latex: "^\\circ" }
+              ],
+              options: ["85", "95", "105"]
+            }
+          ]
+        },
+        {
+          id: 8,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，若 \\(\\angle B\\) 比 \\(\\angle A\\) 小 \\(116^\\circ\\)，求 \\(\\angle A\\) 的度數。",
+          svgType: "angles_relation2",
+          svgData: { text: "∠B = ∠A - 116°" },
+          steps: [
+            {
+              desc: "第一步：設 \\(\\angle A = y^\\circ\\)，因為 \\(\\angle B\\) 比 \\(\\angle A\\) 小 \\(116^\\circ\\)，所以可以表示為：",
+              formula: [
+                { type: "math", latex: "\\angle B = y - " },
+                { type: "slot", key: "step1_1", answer: "116" }
+              ],
+              options: ["64", "116", "180"]
+            },
+            {
+              desc: "第二步：鄰角互補，\\(\\angle A + \\angle B = 180^\\circ\\)：",
+              formula: [
+                { type: "math", latex: "y + (y - 116) = 180 \\Rightarrow 2y = " },
+                { type: "slot", key: "step2_1", answer: "296" },
+                { type: "math", latex: "\\Rightarrow y = " },
+                { type: "slot", key: "step2_2", answer: "148" }
+              ],
+              options: ["148", "164", "296", "360"]
+            }
+          ]
+        }
+      ],
+      2: [
+        {
+          id: 1,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線 \\(AC\\) 和 \\(BD\\) 相交於 \\(O\\) 點。若 \\(AO = 8x+3\\)，\\(OC = 9x-1\\)，求對角線 \\(AC\\) 的長度。",
+          svgType: "diagonals_simple",
+          svgData: { ao: "8x+3", oc: "9x-1" },
+          steps: [
+            {
+              desc: "第一步：對角線互相平分：\\(\\overline{AO} = \\overline{OC}\\)：",
+              formula: [
+                { type: "math", latex: "8x + 3 = 9x - " },
+                { type: "slot", key: "step1_1", answer: "1" }
+              ],
+              options: ["1", "3", "8", "9"]
+            },
+            {
+              desc: "第二步：解得 \\(x\\) 的值：",
+              formula: [
+                { type: "math", latex: "x = " },
+                { type: "slot", key: "step2_1", answer: "4" }
+              ],
+              options: ["2", "4", "5", "8"]
+            },
+            {
+              desc: "第三步：代入求得 \\(\\overline{AO}\\) 並算出對角線 \\(\\overline{AC}\\)：",
+              formula: [
+                { type: "math", latex: "\\overline{AO} = 8 \\times 4 + 3 = 35, \\quad \\overline{AC} = 2 \\times 35 = " },
+                { type: "slot", key: "step3_1", answer: "70" }
+              ],
+              options: "35,70,80,90".split(",")
+            }
+          ]
+        },
+        {
+          id: 2,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線相交於 \\(O\\)。若 \\(AO = 2y-2\\)，\\(OC = x+2\\)，\\(BO = -x+7\\)，\\(DO = 3y-4\\)，求 \\(AC\\) 與 \\(BD\\) 的長度。",
+          svgType: "diagonals_complex",
+          svgData: { ao: "2y-2", oc: "x+2", bo: "-x+7", od: "3y-4" },
+          steps: [
+            {
+              desc: "第一步：\\(\\overline{AO} = \\overline{OC}\\)，將式子移項整理得到：",
+              formula: [
+                { type: "math", latex: "2y - x = " },
+                { type: "slot", key: "step1_1", answer: "4" }
+              ],
+              options: ["2", "4", "6", "8"]
+            },
+            {
+              desc: "第二步：\\(\\overline{BO} = \\overline{DO}\\)，將式子移項整理得到：",
+              formula: [
+                { type: "math", latex: "3y + x = " },
+                { type: "slot", key: "step2_1", answer: "11" }
+              ],
+              options: ["7", "9", "11", "13"]
+            },
+            {
+              desc: "第三步：聯立兩式相加 (\\(5y = 15\\)) 解得 \\(y\\) 與 \\(x\\)：",
+              formula: [
+                { type: "math", latex: "y = " },
+                { type: "slot", key: "step3_1", answer: "3" },
+                { type: "math", latex: ", \\quad x = " },
+                { type: "slot", key: "step3_2", answer: "2" }
+              ],
+              options: ["1", "2", "3", "5"]
+            },
+            {
+              desc: "第四步：求對角線長度：",
+              formula: [
+                { type: "math", latex: "\\overline{AC} = 2 \\times \\overline{AO} = 2 \\times (2+2) = " },
+                { type: "slot", key: "step4_1", answer: "8" },
+                { type: "math", latex: ", \\quad \\overline{BD} = 2 \\times \\overline{BO} = 2 \\times (-2+7) = " },
+                { type: "slot", key: "step4_2", answer: "10" }
+              ],
+              options: ["6", "8", "10", "12"]
+            }
+          ]
+        },
+        {
+          id: 3,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線相交於 \\(O\\)。若 \\(AC \\perp BD\\)，且 \\(AC = 6\\)，\\(BD = 8\\)，求此平行四邊形 \\(ABCD\\) 的周長。",
+          svgType: "diagonals_perp",
+          svgData: { ac: "6", bd: "8" },
+          steps: [
+            {
+              desc: "第一步：對角線平分，得到 \\(\\overline{AO}\\) 與 \\(\\overline{BO}\\)：",
+              formula: [
+                { type: "math", latex: "\\overline{AO} = " },
+                { type: "slot", key: "step1_1", answer: "3" },
+                { type: "math", latex: ", \\quad \\overline{BO} = " },
+                { type: "slot", key: "step1_2", answer: "4" }
+              ],
+              options: ["3", "4", "6", "8"]
+            },
+            {
+              desc: "第二步：在直角三角形 \\(AOB\\) 中，利用畢氏定理求邊長 \\(\\overline{AB}\\)：",
+              formula: [
+                { type: "math", latex: "\\overline{AB} = \\sqrt{3^2 + 4^2} = " },
+                { type: "slot", key: "step2_1", answer: "5" }
+              ],
+              options: ["5", "7", "10", "25"]
+            },
+            {
+              desc: "第三步：平行四邊形四邊相等，求周長：",
+              formula: [
+                { type: "math", latex: "\\text{周長} = 4 \\times 5 = " },
+                { type: "slot", key: "step3_1", answer: "20" }
+              ],
+              options: ["10", "20", "24", "40"]
+            }
+          ]
+        },
+        {
+          id: 4,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線相交於 \\(O\\)。若 \\(AB = 5\\)，\\(AD = 9\\)，且 \\(\\Delta OAB\\) 的周長為 \\(20\\)，求 \\(\\Delta OAD\\) 的周長。",
+          svgType: "diagonals_triangles",
+          svgData: { ab: "5", ad: "9", oab: "周長 = 20" },
+          steps: [
+            {
+              desc: "第一步：由 \\(\\Delta OAB\\) 的周長，得到對角線半段的和：",
+              formula: [
+                { type: "math", latex: "\\overline{AO} + \\overline{BO} = 20 - 5 = " },
+                { type: "slot", key: "step1_1", answer: "15" }
+              ],
+              options: ["10", "15", "20", "25"]
+            },
+            {
+              desc: "第二步：因為 \\(\\overline{DO} = \\overline{BO}\\)，且 \\(\\overline{AD} = 9\\)：",
+              formula: [
+                { type: "math", latex: "\\Delta OAD \\text{周長} = \\overline{AO} + \\overline{DO} + \\overline{AD} = 15 + 9 = " },
+                { type: "slot", key: "step2_1", answer: "24" }
+              ],
+              options: ["18", "24", "30", "34"]
+            }
+          ]
+        },
+        {
+          id: 5,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線相交於 \\(O\\)。若 \\(\\Delta AOB\\) 的面積為 \\(71\\)，則平行四邊形 \\(ABCD\\) 的面積為多少？",
+          svgType: "diagonals_area",
+          svgData: { aob: "面積 = 71" },
+          steps: [
+            {
+              desc: "第一步：對角線平分出四個面積相等的三角形。所以：",
+              formula: [
+                { type: "math", latex: "\\text{面積} = 4 \\times " },
+                { type: "slot", key: "step1_1", answer: "71" },
+                { type: "math", latex: " = " },
+                { type: "slot", key: "step1_2", answer: "284" }
+              ],
+              options: ["71", "142", "213", "284"]
+            }
+          ]
+        },
+        {
+          id: 6,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線相交於 \\(O\\)。若整個平行四邊形面積為 \\(60\\)，則其中 \\(\\Delta BOC\\) 的面積為多少？",
+          svgType: "diagonals_area_rev",
+          svgData: { total: "面積 = 60" },
+          steps: [
+            {
+              desc: "第一步：對角線平分出四個等面積三角形，故每個小三角形面積為總面積的四分之一：",
+              formula: [
+                { type: "math", latex: "\\Delta BOC \\text{面積} = 60 \\div " },
+                { type: "slot", key: "step1_1", answer: "4" },
+                { type: "math", latex: " = " },
+                { type: "slot", key: "step1_2", answer: "15" }
+              ],
+              options: ["2", "4", "15", "30"]
+            }
+          ]
+        },
+        {
+          id: 7,
+          type: "stepflow",
+          question: "平行四邊形 \\(ABCD\\) 中，對角線相交於 \\(O\\)。若 \\(\\Delta ABC\\) 為正三角形，且 \\(AO = 5\\)，求平行四邊形 \\(ABCD\\) 的面積。",
+          svgType: "diagonals_equilateral",
+          svgData: { ao: "5" },
+          steps: [
+            {
+              desc: "第一步：因為對角線平分，對角線 \\(\\overline{AC} = 2 \\times 5 = 10\\)。因為 \\(\\Delta ABC\\) 為正三角形，所以邊長為：",
+              formula: [
+                { type: "math", latex: "\\overline{AB} = \\overline{BC} = " },
+                { type: "slot", key: "step1_1", answer: "10" }
+              ],
+              options: ["5", "10", "15", "20"]
+            },
+            {
+              desc: "第二步：計算平行四邊形面積，利用正三角形公式與對角線性質，面積為兩個 \\(\\Delta ABC\\)：",
+              formula: [
+                { type: "math", latex: "\\text{面積} = 2 \\times (\\frac{\\sqrt{3}}{4} \\times 10^2) = " },
+                { type: "slot", key: "step2_1", answer: "50" },
+                { type: "math", latex: "\\sqrt{3}" }
+              ],
+              options: ["25", "50", "75", "100"]
+            }
+          ]
+        },
+        {
+          id: 8,
+          type: "stepflow",
+          question: "平行四邊形 \\(PQRS\\) 中，對角線相交於 \\(O\\)。已知面積為 \\(84\\)，垂直高線 \\(PD = 7\\)，\\(SE = 12\\)，求對角線 \\(PR\\) 與 \\(SQ\\) 的長度。",
+          svgType: "diagonals_heights",
+          svgData: { pd: "7", se: "12", area: "84" },
+          steps: [
+            {
+              desc: "第一步：由面積式 \\(SQ \\times PD = 84\\) 得對角線 \\(SQ\\)：",
+              formula: [
+                { type: "math", latex: "\\overline{SQ} = 84 \\div 7 = " },
+                { type: "slot", key: "step1_1", answer: "12" }
+              ],
+              options: ["7", "12", "14", "24"]
+            },
+            {
+              desc: "第二步：同理由面積式 \\(PR \\times SE = 84\\) 得對角線 \\(PR\\)：",
+              formula: [
+                { type: "math", latex: "\\overline{PR} = 84 \\div 12 = " },
+                { type: "slot", key: "step2_1", answer: "7" }
+              ],
+              options: ["6", "7", "12", "14"]
+            }
+          ]
+        }
+      ],
+      3: [
+        {
+          id: 1,
+          type: "choice",
+          question: "下列何者可以作為一個平行四邊形的四個邊長？",
+          options: [
+            "(A) 6，5，6，4",
+            "(B) 3，2，2.5，2",
+            "(C) 6，7，10，9",
+            "(D) 6，8，6，8"
+          ],
+          answer: 3,
+          svgType: "choice_helper",
+          svgData: { desc: "對邊相等原則" }
+        },
+        {
+          id: 2,
+          type: "choice",
+          question: "阿明用四根不同長度的木棒作為邊長，依逆時針方向連接。哪一組「無法」組成平行四邊形？",
+          options: [
+            "(A) 4，4，6，6",
+            "(B) 1，4，1，4",
+            "(C) 8，8，8，8",
+            "(D) 5，2，5，2"
+          ],
+          answer: 0,
+          svgType: "choice_helper",
+          svgData: { desc: "逆時針排序對稱性" }
+        },
+        {
+          id: 3,
+          type: "choice",
+          question: "四邊形 ABCD 需滿足下列哪一個選項中的條件，才能「確定是」平行四邊形？",
+          options: [
+            "(A) ∠A = ∠B 且 ∠C = ∠D",
+            "(B) ∠A = ∠C 且 AB // CD",
+            "(C) ∠A + ∠B = ∠C + ∠D = 180°",
+            "(D) AB = CD 且 AD // BC"
+          ],
+          answer: 1,
+          svgType: "choice_helper",
+          svgData: { desc: "平行四邊形判定性質" }
+        },
+        {
+          id: 4,
+          type: "choice",
+          question: "下列四個條件中，哪一個「不能」用來判別四邊形 ABCD 為平行四邊形？",
+          options: [
+            "(A) AB // CD，∠A = ∠C",
+            "(B) AB // CD，AB = CD",
+            "(C) AB // CD，AD = BC",
+            "(D) AB = CD，AD = BC"
+          ],
+          answer: 2,
+          svgType: "choice_helper",
+          svgData: { desc: "反例：等腰梯形" }
+        },
+        {
+          id: 5,
+          type: "choice",
+          question: "當四邊形 PQRS 滿足下列哪一個選項的條件時，才能「確定是」平行四邊形？",
+          options: [
+            "(A) ∠P + ∠Q = ∠R + ∠S = 180°",
+            "(B) PS // QR，PQ = RS",
+            "(C) ∠P = ∠Q 且 ∠R = ∠S",
+            "(D) ∠P = ∠R 且 ∠Q = ∠S"
+          ],
+          answer: 3,
+          svgType: "choice_helper",
+          svgData: { desc: "對角相等判定法" }
+        },
+        {
+          id: 6,
+          type: "choice",
+          question: "有一個四邊形 ABCD，已知 ∠A = 120°，當加上下列哪一個條件時，「無法」判別為平行四邊形？",
+          options: [
+            "(A) ∠B = 120°",
+            "(B) ∠B = 60°",
+            "(C) ∠A + ∠B = 180°",
+            "(D) ∠A = ∠C"
+          ],
+          answer: 0,
+          svgType: "choice_helper",
+          svgData: { desc: "鄰角互補原則" }
+        },
+        {
+          id: 7,
+          type: "choice",
+          question: "下列哪一組三角形可以拼出平行四邊形？",
+          options: [
+            "(A) 兩個全等直角三角形",
+            "(B) 兩個形狀不同的直角三角形",
+            "(C) 兩個大小不同的銳角三角形",
+            "(D) 兩個不全等的等腰三角形"
+          ],
+          answer: 0,
+          svgType: "choice_helper",
+          svgData: { desc: "三角形拼合原則" }
+        },
+        {
+          id: 8,
+          type: "choice",
+          question: "如圖，若 △ABC 與 △ACD 皆為正三角形，則四邊形 ABCD 為下列何者？",
+          options: [
+            "(A) 長方形",
+            "(B) 正方形",
+            "(C) 平行四邊形",
+            "(D) 梯形"
+          ],
+          answer: 2,
+          svgType: "choice_helper",
+          svgData: { desc: "雙正三角形結構" }
+        }
+      ]
+    };
+
+    // State Variables
+    let currentSection = 1;
+    let currentQuestionIndex = 0;
+    let currentStepIndex = 0; // 0-indexed
+    let activeSlotKey = "";
+
+    const completedProgress = {
+      1: Array(8).fill(false),
+      2: Array(8).fill(false),
+      3: Array(8).fill(false)
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      switchSection(1);
+      updateTabProgressBadges();
+    });
+
+    function switchSection(sec) {
+      currentSection = sec;
+      currentQuestionIndex = 0;
+      currentStepIndex = 0;
+      
+      // Highlight correct tab
+      for (let i = 1; i <= 3; i++) {
+        const tab = document.getElementById(`tab-${i}`);
+        if (i === sec) {
+          tab.className = "flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-500/20";
+        } else {
+          tab.className = "flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800";
+        }
+      }
+      
+      loadQuestion();
+      updateProgressBar();
+    }
+
+    function loadQuestion() {
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      
+      // Update basic details
+      document.getElementById("question-number-badge").innerText = `第 ${q.id} 題 / 共 8 題`;
+      document.getElementById("question-text").innerText = q.question;
+      
+      // Render dynamic math formulas in question text
+      renderMathElements();
+      
+      // Render geometry diagram
+      renderSVG(q.svgType, q.svgData);
+      
+      // Set step index to 0 or current state
+      currentStepIndex = 0;
+      
+      // Render steps panel
+      renderSteps();
+      
+      // Auto speech
+      speakCurrentQuestion();
+    }
+
+    function speakCurrentQuestion() {
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      // Speak plain text question representation
+      const plainText = q.question
+        .replace(/\\overline\{([A-Z]{2})\}/g, "線段 $1")
+        .replace(/\\(angle|Delta)/g, "")
+        .replace(/\\square/g, "平行四邊形")
+        .replace(/[\{\}\(\)\\\^]/g, "");
+      speakText(plainText);
+    }
+
+    function renderMathElements() {
+      // Re-run KaTeX typeset on document body or specific divs
+      if (window.katex) {
+        // Typeset using basic browser text regex if LaTeX markers found
+        const textEl = document.getElementById("question-text");
+        let html = textEl.innerHTML;
+        // Find all \\( ... \\)
+        const regex = /\\\((.*?)\\\)/g;
+        html = html.replace(regex, (match, latex) => {
+          try {
+            return window.katex.renderToString(latex, { throwOnError: false, displayMode: false });
+          } catch(e) {
+            return match;
+          }
+        });
+        textEl.innerHTML = html;
+      }
+    }
+
+    // Render stepflow steps dynamically
+    function renderSteps() {
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      const panel = document.getElementById("steps-panel");
+      panel.innerHTML = "";
+      
+      if (q.type === "stepflow") {
+        // Show options panel
+        document.getElementById("options-panel-container").classList.remove("hidden");
+        document.getElementById("check-btn").classList.remove("hidden");
+        document.getElementById("next-step-btn").classList.add("hidden");
+
+        // Render all steps up to currentStepIndex
+        for (let i = 0; i <= currentStepIndex; i++) {
+          const step = q.steps[i];
+          const isCurrentStep = (i === currentStepIndex);
+          const isCompleted = (i < currentStepIndex);
+          
+          const stepDiv = document.createElement("div");
+          stepDiv.className = `p-5 rounded-2xl border transition-all duration-300 ${
+            isCurrentStep 
+              ? 'bg-slate-850 border-blue-500 custom-shadow' 
+              : 'bg-slate-900/30 border-slate-800 opacity-80'
+          }`;
+          
+          // Step title
+          const stepTitle = document.createElement("div");
+          stepTitle.className = "text-sm text-slate-400 font-bold mb-2";
+          stepTitle.innerText = `步驟 ${i + 1}`;
+          stepDiv.appendChild(stepTitle);
+          
+          // Step Description
+          const stepDesc = document.createElement("p");
+          stepDesc.className = "text-lg text-slate-200 mb-3 leading-relaxed";
+          stepDesc.innerHTML = parseLatexText(step.desc);
+          stepDiv.appendChild(stepDesc);
+          
+          // Step Math Line & Slots
+          const mathLine = document.createElement("div");
+          mathLine.className = "math-line bg-slate-950/60 p-4 rounded-xl border border-slate-800/40";
+          
+          step.formula.forEach(f => {
+            if (f.type === "math") {
+              const mathSpan = document.createElement("span");
+              mathSpan.className = "math";
+              mathSpan.dataset.latex = f.latex;
+              mathLine.appendChild(mathSpan);
+            } 
+            else if (f.type === "slot") {
+              const slotSpan = document.createElement("span");
+              slotSpan.className = "slot";
+              slotSpan.id = `slot-${f.key}`;
+              slotSpan.dataset.key = f.key;
+              slotSpan.dataset.answer = f.answer;
+              
+              // Restore existing value if any
+              if (slotValues[f.key]) {
+                slotSpan.innerText = slotValues[f.key];
+              } else {
+                slotSpan.innerText = "";
+              }
+              
+              // Handle correct styling
+              if (isCompleted) {
+                slotSpan.classList.add("correct");
+              } else if (isCurrentStep) {
+                if (activeSlotKey === f.key || (!activeSlotKey && !activeSlotKeySet(step.formula))) {
+                  activeSlotKey = f.key;
+                  slotSpan.classList.add("active");
+                }
+                slotSpan.onclick = () => selectSlot(f.key);
+              }
+              
+              mathLine.appendChild(slotSpan);
+            }
+          });
+          
+          stepDiv.appendChild(mathLine);
+          panel.appendChild(stepDiv);
+        }
+        
+        // Auto scroll to bottom
+        panel.scrollTop = panel.scrollHeight;
+        
+        // Initialize KaTeX rendering on math lines
+        renderKaTeXInSteps();
+        
+        // Load Options Panel
+        loadOptionsPanel();
+      } 
+      else if (q.type === "choice") {
+        // Choice section: Hide options selector panel, hide step check buttons
+        document.getElementById("options-panel-container").classList.add("hidden");
+        document.getElementById("check-btn").classList.add("hidden");
+        document.getElementById("next-step-btn").classList.add("hidden");
+        
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "flex flex-col gap-4 w-full";
+        
+        q.options.forEach((opt, index) => {
+          const btn = document.createElement("button");
+          btn.className = "w-full py-4 px-6 bg-slate-950 hover:bg-slate-850 text-white text-left font-bold text-xl rounded-2xl border border-slate-800 transition active:scale-98 flex items-center justify-between";
+          btn.innerHTML = `<span>${opt}</span><span id="check-icon-${index}" class="text-2xl hidden"></span>`;
+          btn.onclick = () => selectChoiceAndVerify(index);
+          cardDiv.appendChild(btn);
+        });
+        
+        panel.appendChild(cardDiv);
+      }
+    }
+
+    // Helper: parse simple inline \\( ... \\) for descriptions
+    function parseLatexText(text) {
+      if (!window.katex) return text;
+      const regex = /\\\((.*?)\\\)/g;
+      return text.replace(regex, (match, latex) => {
+        try {
+          return window.katex.renderToString(latex, { throwOnError: false, displayMode: false });
+        } catch(e) {
+          return match;
+        }
+      });
+    }
+
+    // Keypad slot helpers
+    let slotValues = {}; // Storage for slot values
+    
+    function activeSlotKeySet(formula) {
+      // Find the first unfilled slot in formula to set as active
+      for (let f of formula) {
+        if (f.type === "slot" && !slotValues[f.key]) {
+          return f.key;
+        }
+      }
+      return "";
+    }
+
+    function selectSlot(key) {
+      // Remove active classes
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      const step = q.steps[currentStepIndex];
+      step.formula.forEach(f => {
+        if (f.type === "slot") {
+          const el = document.getElementById(`slot-${f.key}`);
+          if (el) el.classList.remove("active");
+        }
+      });
+      
+      activeSlotKey = key;
+      const activeEl = document.getElementById(`slot-${key}`);
+      if (activeEl) {
+        // Clicking a filled slot clears it as per specification
+        if (slotValues[key]) {
+          slotValues[key] = "";
+          activeEl.innerText = "";
+        }
+        activeEl.classList.add("active");
+      }
+    }
+
+    // Options selection loading
+    function loadOptionsPanel() {
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      const step = q.steps[currentStepIndex];
+      const container = document.getElementById("options-buttons");
+      container.innerHTML = "";
+      
+      // Option list
+      const options = step.options;
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-2xl rounded-2xl transition border border-slate-700 active:scale-95 min-w-[65px] text-center";
+        btn.innerText = opt;
+        btn.onclick = () => clickOptionValue(opt);
+        container.appendChild(btn);
+      });
+    }
+
+    function clickOptionValue(val) {
+      if (!activeSlotKey) return;
+      const el = document.getElementById(`slot-${activeSlotKey}`);
+      if (el) {
+        slotValues[activeSlotKey] = val;
+        el.innerText = val;
+        el.classList.remove("wrong");
+        
+        // Auto-advance to next empty slot inside current step
+        const q = sectionsData[currentSection][currentQuestionIndex];
+        const step = q.steps[currentStepIndex];
+        let foundNext = false;
+        
+        for (let f of step.formula) {
+          if (f.type === "slot" && !slotValues[f.key] && f.key !== activeSlotKey) {
+            selectSlot(f.key);
+            foundNext = true;
+            break;
+          }
+        }
+        
+        if (!foundNext) {
+          // Keep current active if all filled
+        }
+      }
+    }
+
+    // Verify current step values
+    function checkCurrentStep() {
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      const step = q.steps[currentStepIndex];
+      let allCorrect = true;
+      let unfilled = false;
+      
+      step.formula.forEach(f => {
+        if (f.type === "slot") {
+          const val = slotValues[f.key];
+          const el = document.getElementById(`slot-${f.key}`);
+          
+          if (!val) {
+            unfilled = true;
+            el.classList.add("wrong");
+          } else if (val !== f.answer) {
+            allCorrect = false;
+            el.classList.add("wrong");
+          } else {
+            el.classList.remove("wrong");
+            el.classList.add("correct");
+          }
+        }
+      });
+      
+      if (unfilled) {
+        speakText("還有空格沒有填入數字喔！");
+        return;
+      }
+      
+      const card = document.getElementById("question-card");
+      
+      if (allCorrect) {
+        card.classList.add("bounce-animation");
+        setTimeout(() => card.classList.remove("bounce-animation"), 400);
+        speakText("這個步驟答對了！非常優異！");
+        
+        // Show correct classes, disable further clicks on current slots
+        step.formula.forEach(f => {
+          if (f.type === "slot") {
+            const el = document.getElementById(`slot-${f.key}`);
+            if (el) {
+              el.onclick = null;
+              el.className = "slot correct";
+            }
+          }
+        });
+        
+        // Hide Check Button, Show Next Step or finish
+        if (currentStepIndex < q.steps.length - 1) {
+          document.getElementById("check-btn").classList.add("hidden");
+          document.getElementById("next-step-btn").classList.remove("hidden");
+        } else {
+          // Question fully completed
+          completedProgress[currentSection][currentQuestionIndex] = true;
+          updateProgressBar();
+          updateTabProgressBadges();
+          
+          if (completedProgress[currentSection].every(x => x === true)) {
+            confetti({ particleCount: 160, spread: 85, origin: { y: 0.65 } });
+            setTimeout(showModal, 600);
+          } else {
+            setTimeout(nextQuestion, 1600);
+          }
+        }
+      } else {
+        card.classList.add("shake-animation");
+        setTimeout(() => card.classList.remove("shake-animation"), 400);
+        speakText("算式中的數值不完全正確，請再確認看看。");
+      }
+    }
+
+    function advanceStep() {
+      currentStepIndex++;
+      activeSlotKey = "";
+      document.getElementById("check-btn").classList.remove("hidden");
+      document.getElementById("next-step-btn").classList.add("hidden");
+      renderSteps();
+    }
+
+    // Verify Multiple Choice (Section 3)
+    function selectChoiceAndVerify(idx) {
+      const q = sectionsData[currentSection][currentQuestionIndex];
+      const container = document.getElementById("steps-panel").firstElementChild;
+      
+      // Style reset
+      Array.from(container.children).forEach((btn, i) => {
+        btn.className = "w-full py-4 px-6 bg-slate-950 hover:bg-slate-850 text-white text-left font-bold text-xl rounded-2xl border border-slate-800 transition active:scale-98 flex items-center justify-between";
+        const icon = document.getElementById(`check-icon-${i}`);
+        if (icon) icon.className = "text-2xl hidden";
+      });
+      
+      const isCorrect = (idx === q.answer);
+      const card = document.getElementById("question-card");
+      
+      if (isCorrect) {
+        card.classList.add("bounce-animation");
+        setTimeout(() => card.classList.remove("bounce-animation"), 400);
+        speakText("答對了！恭喜！");
+        
+        const activeBtn = container.children[idx];
+        activeBtn.className = "w-full py-4 px-6 bg-emerald-900/40 text-emerald-300 text-left font-extrabold text-xl rounded-2xl border-2 border-emerald-500 transition flex items-center justify-between shadow-lg shadow-emerald-500/10";
+        const icon = document.getElementById(`check-icon-${idx}`);
+        icon.innerText = "✓";
+        icon.className = "text-emerald-400 text-2xl block font-black";
+        
+        completedProgress[currentSection][currentQuestionIndex] = true;
+        updateProgressBar();
+        updateTabProgressBadges();
+        
+        if (completedProgress[currentSection].every(x => x === true)) {
+          confetti({ particleCount: 160, spread: 85, origin: { y: 0.65 } });
+          setTimeout(showModal, 600);
+        } else {
+          setTimeout(nextQuestion, 1600);
+        }
+      } else {
+        card.classList.add("shake-animation");
+        setTimeout(() => card.classList.remove("shake-animation"), 400);
+        speakText("這個選項不對喔，再觀察看看圖形與定義。");
+        
+        const activeBtn = container.children[idx];
+        activeBtn.className = "w-full py-4 px-6 bg-rose-900/40 text-rose-300 text-left font-extrabold text-xl rounded-2xl border-2 border-rose-500 transition flex items-center justify-between shadow-lg shadow-rose-500/10";
+        const icon = document.getElementById(`check-icon-${idx}`);
+        icon.innerText = "✗";
+        icon.className = "text-rose-400 text-2xl block font-black";
+      }
+    }
+
+    // Modal Control
+    function showModal() {
+      document.getElementById("complete-modal").classList.remove("hidden");
+    }
+    
+    function closeModal() {
+      document.getElementById("complete-modal").classList.add("hidden");
+      if (currentSection < 3) {
+        switchSection(currentSection + 1);
+      }
+    }
+
+    // Navigation
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        slotValues = {};
+        loadQuestion();
+      } else {
+        speakText("已經是第一題囉。");
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < 7) {
+        currentQuestionIndex++;
+        slotValues = {};
+        loadQuestion();
+      } else {
+        speakText("已經是最後一題囉。您可以切換至其他章節練習。");
+      }
+    }
+
+    function updateProgressBar() {
+      const correctCount = completedProgress[currentSection].filter(x => x).length;
+      const percent = Math.round((correctCount / 8) * 100);
+      
+      document.getElementById("progress-text").innerText = `${percent}% (${correctCount} / 8)`;
+      document.getElementById("progress-bar").style.width = `${percent}%`;
+    }
+
+    function updateTabProgressBadges() {
+      const titles = ["一、對角與對邊", "二、對角線性質", "三、平行四邊形判別"];
+      for (let i = 1; i <= 3; i++) {
+        const correctCount = completedProgress[i].filter(x => x).length;
+        const tab = document.getElementById(`tab-${i}`);
+        if (tab) {
+          tab.innerText = `${titles[i-1]} (${correctCount}/8)`;
+        }
+      }
+    }
+
+    // KaTeX Batch rendering
+    function renderKaTeXInSteps() {
+      if (!window.katex) return;
+      document.querySelectorAll('.math').forEach(el => {
+        if (!el.dataset.rendered) {
+          window.katex.render(el.dataset.latex, el, {
+            throwOnError: false,
+            displayMode: false
+          });
+          el.dataset.rendered = "true";
+        }
+      });
+      document.querySelectorAll('.math-display').forEach(el => {
+        if (!el.dataset.rendered) {
+          window.katex.render(el.dataset.latex, el, {
+            throwOnError: false,
+            displayMode: true
+          });
+          el.dataset.rendered = "true";
+        }
+      });
+    }
+
+    // SVG Drawing Engine (Unchanged but cleaned)
+    function renderSVG(type, data) {
+      const container = document.getElementById("svg-container");
+      container.innerHTML = "";
+      
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("width", "460");
+      svg.setAttribute("height", "250");
+      svg.setAttribute("viewBox", "0 0 460 250");
+      svg.style.overflow = "visible";
+      
+      const pA = { x: 150, y: 40 };
+      const pB = { x: 70, y: 195 };
+      const pC = { x: 350, y: 195 };
+      const pD = { x: 430, y: 40 };
+      const pO = { x: (pA.x + pC.x)/2, y: (pA.y + pB.y)/2 };
+      
+      // Grid lines
+      const grid = document.createElementNS(svgNS, "path");
+      grid.setAttribute("d", "M 0 40 L 460 40 M 0 90 L 460 90 M 0 140 L 460 140 M 0 190 L 460 190 M 90 0 L 90 250 M 180 0 L 180 250 M 270 0 L 270 250 M 360 0 L 360 250");
+      grid.setAttribute("stroke", "rgba(241,245,249,0.02)");
+      grid.setAttribute("stroke-width", "1");
+      svg.appendChild(grid);
+
+      // Primary polygon
+      const shape = document.createElementNS(svgNS, "polygon");
+      shape.setAttribute("points", `${pA.x},${pA.y} ${pD.x},${pD.y} ${pC.x},${pC.y} ${pB.x},${pB.y}`);
+      shape.setAttribute("fill", "rgba(59, 130, 246, 0.08)");
+      shape.setAttribute("stroke", "#3b82f6");
+      shape.setAttribute("stroke-width", "4");
+      svg.appendChild(shape);
+
+      // Vertex Labels
+      if (type !== "diagonals_heights") {
+        drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#ffffff", "22px", "bold");
+      }
+
+      if (type === "ab_cd_param") {
+        drawText(svg, svgNS, (pA.x + pB.x)/2 - 35, (pA.y + pB.y)/2 + 5, data.ab, "#fbbf24", "20px", "bold");
+        drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, data.ad, "#22d3ee", "20px", "bold", "middle");
+      } 
+      else if (type === "algebra_sides") {
+        drawText(svg, svgNS, (pA.x + pB.x)/2 - 60, (pA.y + pB.y)/2 + 5, data.ab, "#fbbf24", "20px", "bold");
+        drawText(svg, svgNS, (pB.x + pC.x)/2, pB.y + 25, data.bc, "#22d3ee", "20px", "bold", "middle");
+        drawText(svg, svgNS, (pC.x + pD.x)/2 + 15, (pC.y + pD.y)/2 + 5, data.cd, "#fbbf24", "20px", "bold");
+      }
+      else if (type === "ab_bc_sums") {
+        drawText(svg, svgNS, 250, 100, data.ab_cd, "#fbbf24", "20px", "bold", "middle");
+        drawText(svg, svgNS, 250, 140, data.bc_da, "#22d3ee", "20px", "bold", "middle");
+      }
+      else if (type === "four_sides_algebra") {
+        drawText(svg, svgNS, (pA.x + pB.x)/2 - 65, (pA.y + pB.y)/2 + 5, data.ab, "#fbbf24", "18px", "bold");
+        drawText(svg, svgNS, (pB.x + pC.x)/2, pB.y + 25, data.bc, "#22d3ee", "18px", "bold", "middle");
+        drawText(svg, svgNS, (pC.x + pD.x)/2 + 15, (pC.y + pD.y)/2 + 5, data.cd, "#fbbf24", "18px", "bold");
+        drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, data.ad, "#22d3ee", "18px", "bold", "middle");
+      }
+      else if (type === "angles_param") {
+        drawText(svg, svgNS, pA.x + 12, pA.y + 32, data.a, "#fbbf24", "18px", "bold");
+        drawText(svg, svgNS, pB.x + 25, pB.y - 12, data.b, "#22d3ee", "18px", "bold");
+        drawText(svg, svgNS, pC.x - 55, pC.y - 12, data.c, "#fbbf24", "18px", "bold");
+        drawText(svg, svgNS, pD.x - 55, pD.y + 32, data.d, "#22d3ee", "18px", "bold");
+      }
+      else if (type === "angles_algebra") {
+        drawText(svg, svgNS, pA.x + 12, pA.y + 32, data.a, "#fbbf24", "18px", "bold");
+        drawText(svg, svgNS, pC.x - 110, pC.y - 12, data.c, "#fbbf24", "18px", "bold");
+      }
+      else if (type === "angles_relation" || type === "angles_relation2") {
+        drawText(svg, svgNS, 250, 125, data.text, "#fbbf24", "22px", "bold", "middle");
+      }
+      else if (type.startsWith("diagonals_")) {
+        // Draw diagonals
+        const lineAC = document.createElementNS(svgNS, "line");
+        lineAC.setAttribute("x1", pA.x); lineAC.setAttribute("y1", pA.y);
+        lineAC.setAttribute("x2", pC.x); lineAC.setAttribute("y2", pC.y);
+        lineAC.setAttribute("stroke", "#a78bfa");
+        lineAC.setAttribute("stroke-width", "3");
+        svg.appendChild(lineAC);
+
+        const lineBD = document.createElementNS(svgNS, "line");
+        lineBD.setAttribute("x1", pB.x); lineBD.setAttribute("y1", pB.y);
+        lineBD.setAttribute("x2", pD.x); lineBD.setAttribute("y2", pD.y);
+        lineBD.setAttribute("stroke", "#f472b6");
+        lineBD.setAttribute("stroke-width", "3");
+        svg.appendChild(lineBD);
+        
+        // Dot at center O
+        const dot = document.createElementNS(svgNS, "circle");
+        dot.setAttribute("cx", pO.x); dot.setAttribute("cy", pO.y); dot.setAttribute("r", "5");
+        dot.setAttribute("fill", "#ffffff");
+        svg.appendChild(dot);
+        drawText(svg, svgNS, pO.x, pO.y - 10, "O", "#ffffff", "20px", "bold", "middle");
+
+        if (type === "diagonals_simple" || type === "diagonals_complex") {
+          drawText(svg, svgNS, (pA.x + pO.x)/2 - 12, (pA.y + pO.y)/2 + 18, data.ao, "#a78bfa", "16px", "bold", "middle");
+          drawText(svg, svgNS, (pC.x + pO.x)/2 + 12, (pC.y + pO.y)/2 - 8, data.oc, "#a78bfa", "16px", "bold", "middle");
+          
+          if (data.bo) {
+            drawText(svg, svgNS, (pB.x + pO.x)/2 - 15, (pB.y + pO.y)/2 - 5, data.bo, "#f472b6", "16px", "bold", "middle");
+            drawText(svg, svgNS, (pD.x + pO.x)/2 + 15, (pD.y + pO.y)/2 + 12, data.od, "#f472b6", "16px", "bold", "middle");
+          }
+        }
+        else if (type === "diagonals_perp") {
+          const perpMark = document.createElementNS(svgNS, "path");
+          perpMark.setAttribute("d", `M ${pO.x - 10} ${pO.y} L ${pO.x - 10} ${pO.y + 10} L ${pO.x} ${pO.y + 10}`);
+          perpMark.setAttribute("fill", "none");
+          perpMark.setAttribute("stroke", "#10b981");
+          perpMark.setAttribute("stroke-width", "2");
+          svg.appendChild(perpMark);
+          
+          drawText(svg, svgNS, 250, 235, `AC = ${data.ac} ，BD = ${data.bd}`, "#ffffff", "18px", "bold", "middle");
+        }
+        else if (type === "diagonals_triangles") {
+          const polyOAB = document.createElementNS(svgNS, "polygon");
+          polyOAB.setAttribute("points", `${pA.x},${pA.y} ${pB.x},${pB.y} ${pO.x},${pO.y}`);
+          polyOAB.setAttribute("fill", "rgba(167, 139, 250, 0.2)");
+          svg.appendChild(polyOAB);
+          
+          drawText(svg, svgNS, (pA.x + pB.x)/2 - 25, (pA.y + pB.y)/2, `5`, "#ffffff", "18px", "bold");
+          drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, `9`, "#ffffff", "18px", "bold", "middle");
+          drawText(svg, svgNS, 150, 135, "△OAB", "#a78bfa", "18px", "bold");
+          drawText(svg, svgNS, 150, 160, data.oab, "#a78bfa", "16px", "bold");
+        }
+        else if (type === "diagonals_area") {
+          const polyOAB = document.createElementNS(svgNS, "polygon");
+          polyOAB.setAttribute("points", `${pA.x},${pA.y} ${pB.x},${pB.y} ${pO.x},${pO.y}`);
+          polyOAB.setAttribute("fill", "rgba(167, 139, 250, 0.2)");
+          svg.appendChild(polyOAB);
+          drawText(svg, svgNS, (pA.x + pB.x)/2 - 5, (pA.y + pB.y)/2 + 35, data.aob, "#a78bfa", "18px", "bold", "middle");
+        }
+        else if (type === "diagonals_area_rev") {
+          drawText(svg, svgNS, 250, 125, data.total, "#3b82f6", "22px", "bold", "middle");
+        }
+        else if (type === "diagonals_equilateral") {
+          const polyABC = document.createElementNS(svgNS, "polygon");
+          polyABC.setAttribute("points", `${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}`);
+          polyABC.setAttribute("fill", "rgba(59, 130, 246, 0.15)");
+          svg.appendChild(polyABC);
+          
+          drawText(svg, svgNS, (pA.x + pO.x)/2 - 12, (pA.y + pO.y)/2 + 18, "AO=5", "#fbbf24", "16px", "bold");
+          drawText(svg, svgNS, 250, 235, "△ABC 為正三角形", "#ffffff", "18px", "bold", "middle");
+        }
+        else if (type === "diagonals_heights") {
+          const pP = pA; const pQ = pB; const pR = pC; const pS = pD;
+          const pD_foot = { x: 215, y: 135 };
+          const pE_foot = { x: 280, y: 95 };
+          
+          const h1 = document.createElementNS(svgNS, "line");
+          h1.setAttribute("x1", pP.x); h1.setAttribute("y1", pP.y);
+          h1.setAttribute("x2", pD_foot.x); h1.setAttribute("y2", pD_foot.y);
+          h1.setAttribute("stroke", "#10b981");
+          h1.setAttribute("stroke-width", "2");
+          h1.setAttribute("stroke-dasharray", "4");
+          
+          const h2 = document.createElementNS(svgNS, "line");
+          h2.setAttribute("x1", pS.x); h2.setAttribute("y1", pS.y);
+          h2.setAttribute("x2", pE_foot.x); h2.setAttribute("y2", pE_foot.y);
+          h2.setAttribute("stroke", "#fbbf24");
+          h2.setAttribute("stroke-width", "2");
+          h2.setAttribute("stroke-dasharray", "4");
+          
+          svg.innerHTML = "";
+          svg.appendChild(grid);
+          svg.appendChild(shape);
+          svg.appendChild(lineAC);
+          svg.appendChild(lineBD);
+          svg.appendChild(dot);
+          svg.appendChild(h1);
+          svg.appendChild(h2);
+          
+          drawText(svg, svgNS, pP.x - 18, pP.y + 5, "P", "#ffffff", "20px", "bold");
+          drawText(svg, svgNS, pQ.x - 18, pQ.y + 10, "Q", "#ffffff", "20px", "bold");
+          drawText(svg, svgNS, pR.x + 12, pR.y + 10, "R", "#ffffff", "20px", "bold");
+          drawText(svg, svgNS, pS.x + 12, pS.y + 5, "S", "#ffffff", "20px", "bold");
+          drawText(svg, svgNS, pO.x, pO.y - 10, "O", "#ffffff", "20px", "bold", "middle");
+          drawText(svg, svgNS, pD_foot.x, pD_foot.y + 15, "D", "#10b981", "15px", "bold");
+          drawText(svg, svgNS, pE_foot.x, pE_foot.y - 6, "E", "#fbbf24", "15px", "bold");
+          
+          drawText(svg, svgNS, (pP.x + pD_foot.x)/2 - 25, (pP.y + pD_foot.y)/2, "PD=7", "#10b981", "15px", "bold");
+          drawText(svg, svgNS, (pS.x + pE_foot.x)/2 + 8, (pS.y + pE_foot.y)/2 + 18, "SE=12", "#fbbf24", "15px", "bold");
+          drawText(svg, svgNS, 250, 235, `平行四邊形面積 = ${data.area}`, "#ffffff", "18px", "bold", "middle");
+        }
+      }
+      else if (type === "choice_helper") {
+        drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, 250, 130, data.desc, "#fbbf24", "22px", "bold", "middle");
+      }
+
+      container.appendChild(svg);
+    }
+
+    function drawText(svg, ns, x, y, text, color, size, weight, align = "start") {
+      const txt = document.createElementNS(ns, "text");
+      txt.setAttribute("x", x);
+      txt.setAttribute("y", y);
+      txt.setAttribute("fill", color);
+      txt.setAttribute("font-size", size);
+      txt.setAttribute("font-weight", weight);
+      txt.setAttribute("text-anchor", align);
+      txt.textContent = text;
+      svg.appendChild(txt);
+    }
+  </script>
+</body>
+</html>
