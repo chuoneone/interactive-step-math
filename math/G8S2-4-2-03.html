@@ -17,14 +17,14 @@
   <style>
     body {
       font-family: 'Noto Sans TC', 'Outfit', sans-serif;
-      background-color: #0b1329;
-      color: #f1f5f9;
+      background-color: #f8fafc;
+      color: #1e293b;
     }
     .custom-shadow {
-      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.15);
     }
     .card-border {
-      border: 1px solid rgba(241, 245, 249, 0.08);
+      border: 1px solid rgba(15, 23, 42, 0.08);
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -46,72 +46,61 @@
 <body class="min-h-screen flex flex-col pb-12">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center border-b border-slate-800 gap-4">
+  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center border-b border-slate-200 gap-4">
     <div class="flex items-center gap-4">
       <div class="bg-blue-600 text-white font-extrabold px-4 py-2 rounded-xl text-xl tracking-wider shadow-lg shadow-blue-500/20">
         數學領域
       </div>
       <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-white">
-          4-2 平行四邊形 <span class="text-blue-400 text-2xl font-black">(三、平行四邊形判別)</span>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
+          4-2 平行四邊形 <span class="text-blue-600 text-2xl font-black">(三、平行四邊形判別)</span>
         </h1>
-        <p class="text-slate-400 text-sm">國中數學八年級下學期 · 互動式引導學習單</p>
+        <p class="text-slate-500 text-sm">國中數學八年級下學期 · 互動式引導學習單</p>
       </div>
     </div>
     
     <!-- TTS Speech controls -->
-    <div class="flex items-center gap-3 bg-slate-900/60 py-2 px-4 rounded-xl border border-slate-800">
-      <span class="text-slate-400 text-sm font-medium">🔊 語音速度：</span>
-      <button onclick="changeSpeed(0.8)" id="btn-slow" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">慢</button>
+    <div class="flex items-center gap-3 bg-white py-2 px-4 rounded-xl border border-slate-200 shadow-sm">
+      <span class="text-slate-600 text-sm font-medium">🔊 語音速度：</span>
+      <button onclick="changeSpeed(0.8)" id="btn-slow" class="px-2 py-1 text-xs rounded bg-slate-100 hover:bg-slate-200 text-slate-600">慢</button>
       <button onclick="changeSpeed(1.0)" id="btn-normal" class="px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold">中</button>
-      <button onclick="changeSpeed(1.2)" id="btn-fast" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">快</button>
+      <button onclick="changeSpeed(1.2)" id="btn-fast" class="px-2 py-1 text-xs rounded bg-slate-100 hover:bg-slate-200 text-slate-600">快</button>
     </div>
   </header>
 
-  <!-- Navigation tabs -->
-  <nav class="w-full max-w-7xl mx-auto px-6 py-6 flex flex-wrap gap-3">
-    <a href="G8S2-4-2-01.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
-      一、對角與對邊
-    </a>
-    <a href="G8S2-4-2-02.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
-      二、對角線性質
-    </a>
-    <a href="G8S2-4-2-03.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-500/20">
-      三、平行四邊形判別
-    </a>
-  </nav>
+  <!-- Navigation tabs removed -->
 
   <!-- Main Workspace -->
-  <main class="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
     
     <!-- Left Column -->
     <div class="lg:col-span-6 flex flex-col gap-6">
-      <div id="question-card" class="bg-slate-900/60 rounded-3xl p-6 card-border custom-shadow">
+      <div id="question-card" class="bg-white rounded-3xl p-6 card-border custom-shadow">
         <div class="flex justify-between items-center mb-4">
-          <span id="question-number-badge" class="bg-blue-900/40 text-blue-400 font-extrabold text-sm px-3 py-1 rounded-lg border border-blue-800/40">
+          <span id="question-number-badge" class="bg-blue-50 text-blue-600 font-extrabold text-sm px-3 py-1 rounded-lg border border-blue-100">
             第 1 題 / 共 8 題
           </span>
-          <button onclick="speakCurrentQuestion()" class="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition font-bold border border-blue-500/20">
+          <button onclick="speakCurrentQuestion()" class="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition font-bold border border-blue-100">
             <span>🔊 唸題目</span>
           </button>
         </div>
 
-        <h2 id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-white mb-6">
+        <h2 id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 mb-6">
           讀取中...
         </h2>
 
-        <div class="w-full bg-slate-950/80 rounded-2xl p-6 border border-slate-800 flex justify-center items-center min-h-[280px]">
+        <div class="w-full bg-slate-50 rounded-2xl p-6 border border-slate-100 flex justify-center items-center min-h-[280px]">
           <div id="svg-container" class="w-full flex justify-center"></div>
         </div>
       </div>
       
       <!-- Progress Trackers -->
-      <div class="bg-slate-900/40 rounded-2xl p-4 card-border">
+      <div class="bg-white rounded-2xl p-4 card-border custom-shadow">
         <div class="flex justify-between text-sm font-semibold mb-2">
-          <span class="text-slate-400">概念三 練習進度</span>
-          <span id="progress-text" class="text-blue-400">0% (0 / 8)</span>
+          <span class="text-slate-500">概念三 練習進度</span>
+          <span id="progress-text" class="text-blue-600">0% (0 / 8)</span>
         </div>
-        <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800">
+        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
           <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
         </div>
       </div>
@@ -119,10 +108,10 @@
 
     <!-- Right Column -->
     <div class="lg:col-span-6 flex flex-col gap-6">
-      <div class="bg-slate-900/60 rounded-3xl p-6 md:p-8 card-border flex flex-col gap-6">
+      <div class="bg-white rounded-3xl p-6 md:p-8 card-border flex flex-col gap-6 custom-shadow">
         <div>
-          <h3 class="text-lg font-bold text-slate-400 mb-1">🎯 選擇正確選項</h3>
-          <p id="scaffolding-hint" class="text-slate-300 text-base leading-relaxed bg-blue-500/5 py-3 px-4 rounded-xl border border-blue-500/10 mt-1">
+          <h3 class="text-lg font-bold text-slate-800 mb-1">🎯 選擇正確選項</h3>
+          <p id="scaffolding-hint" class="text-slate-700 text-base leading-relaxed bg-blue-50 py-3 px-4 rounded-xl border border-blue-100 mt-1">
             提示...
           </p>
         </div>
@@ -131,8 +120,8 @@
           <!-- Options rendered here -->
         </div>
 
-        <div class="flex justify-between items-center gap-4 border-t border-slate-800 pt-4">
-          <button onclick="prevQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
+        <div class="flex justify-between items-center gap-4 border-t border-slate-100 pt-4">
+          <button onclick="prevQuestion()" class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-center border border-slate-200">
             ← 上一題
           </button>
           <button onclick="nextQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
@@ -145,12 +134,12 @@
   </main>
 
   <!-- Complete Modal -->
-  <div id="complete-modal" class="fixed inset-0 bg-slate-950/80 flex items-center justify-center z-50 p-4 hidden">
-    <div class="bg-slate-900 rounded-3xl p-8 max-w-md w-full border border-slate-800 text-center flex flex-col gap-6 custom-shadow">
+  <div id="complete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full border border-slate-100 text-center flex flex-col gap-6 custom-shadow">
       <div class="text-6xl">🎉</div>
-      <h2 class="text-3xl font-extrabold text-white">恭喜完成全部單元！</h2>
-      <p class="text-slate-300 text-lg">您已經順利完成「4-2 平行四邊形」所有課程概念練習囉，表現太棒了！</p>
-      <button onclick="closeModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-xl text-lg transition block text-center">
+      <h2 class="text-3xl font-extrabold text-slate-850">恭喜完成全部單元！</h2>
+      <p class="text-slate-600 text-lg">您已經順利完成「4-2 平行四邊形」所有課程概念練習囉，表現太棒了！</p>
+      <button onclick="closeModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-xl text-lg transition block text-center shadow-lg shadow-blue-500/10">
         完成練習
       </button>
     </div>
@@ -178,7 +167,7 @@
         if (speeds[idx] === rate) {
           btn.className = "px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold";
         } else {
-          btn.className = "px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300";
+          btn.className = "px-2 py-1 text-xs rounded bg-slate-100 hover:bg-slate-200 text-slate-600";
         }
       });
       speakText("速度調整");
@@ -354,7 +343,7 @@
       
       q.options.forEach((opt, index) => {
         const btn = document.createElement("button");
-        btn.className = "w-full py-4 px-6 bg-slate-950 hover:bg-slate-850 text-white text-left font-bold text-xl rounded-2xl border border-slate-800 transition active:scale-98 flex items-center justify-between";
+        btn.className = "w-full py-4 px-6 bg-white hover:bg-slate-50 text-slate-800 text-left font-bold text-xl rounded-2xl border border-slate-200 shadow-sm transition active:scale-98 flex items-center justify-between";
         btn.innerHTML = `<span>${opt}</span><span id="check-icon-${index}" class="text-2xl hidden"></span>`;
         btn.onclick = () => selectChoiceAndVerify(opt, index);
         cardDiv.appendChild(btn);
@@ -368,7 +357,7 @@
       const container = document.getElementById("steps-panel").firstElementChild;
       
       Array.from(container.children).forEach((btn, i) => {
-        btn.className = "w-full py-4 px-6 bg-slate-950 hover:bg-slate-850 text-white text-left font-bold text-xl rounded-2xl border border-slate-800 transition active:scale-98 flex items-center justify-between";
+        btn.className = "w-full py-4 px-6 bg-white hover:bg-slate-50 text-slate-800 text-left font-bold text-xl rounded-2xl border border-slate-200 shadow-sm transition active:scale-98 flex items-center justify-between";
         const icon = document.getElementById(`check-icon-${i}`);
         if (icon) icon.className = "text-2xl hidden";
       });
@@ -382,7 +371,7 @@
         speakText("答對了！非常棒！");
         
         const activeBtn = container.children[idx];
-        activeBtn.className = "w-full py-4 px-6 bg-emerald-900/40 text-emerald-300 text-left font-extrabold text-xl rounded-2xl border-2 border-emerald-500 transition flex items-center justify-between shadow-lg shadow-emerald-500/10";
+        activeBtn.className = "w-full py-4 px-6 bg-emerald-50 text-emerald-700 text-left font-extrabold text-xl rounded-2xl border-2 border-emerald-500 transition flex items-center justify-between shadow-lg shadow-emerald-500/10";
         const icon = document.getElementById(`check-icon-${idx}`);
         icon.innerText = "✓";
         icon.className = "text-emerald-400 text-2xl block font-black";
@@ -402,7 +391,7 @@
         speakText("答錯囉，請再想想平行四邊形的判定性質。");
         
         const activeBtn = container.children[idx];
-        activeBtn.className = "w-full py-4 px-6 bg-rose-900/40 text-rose-300 text-left font-extrabold text-xl rounded-2xl border-2 border-rose-500 transition flex items-center justify-between shadow-lg shadow-rose-500/10";
+        activeBtn.className = "w-full py-4 px-6 bg-rose-50 text-rose-700 text-left font-extrabold text-xl rounded-2xl border-2 border-rose-500 transition flex items-center justify-between shadow-lg shadow-rose-500/10";
         const icon = document.getElementById(`check-icon-${idx}`);
         icon.innerText = "✗";
         icon.className = "text-rose-400 text-2xl block font-black";
@@ -460,13 +449,13 @@
       
       const grid = document.createElementNS(svgNS, "path");
       grid.setAttribute("d", "M 0 40 L 460 40 M 0 90 L 460 90 M 0 140 L 460 140 M 0 190 L 460 190 M 90 0 L 90 250 M 180 0 L 180 250 M 270 0 L 270 250 M 360 0 L 360 250");
-      grid.setAttribute("stroke", "rgba(241,245,249,0.02)");
+      grid.setAttribute("stroke", "rgba(15,23,42,0.04)");
       grid.setAttribute("stroke-width", "1");
       svg.appendChild(grid);
 
       const shape = document.createElementNS(svgNS, "polygon");
       shape.setAttribute("points", `${pA.x},${pA.y} ${pD.x},${pD.y} ${pC.x},${pC.y} ${pB.x},${pB.y}`);
-      shape.setAttribute("fill", "rgba(59, 130, 246, 0.08)");
+      shape.setAttribute("fill", "rgba(59, 130, 246, 0.05)");
       shape.setAttribute("stroke", "#3b82f6");
       shape.setAttribute("stroke-width", "4");
       svg.appendChild(shape);
@@ -498,17 +487,17 @@
         poly2.setAttribute("stroke-width", "3");
         svg.appendChild(poly2);
         
-        drawText(svg, svgNS, p1.x, p1.y - 12, "A", "#ffffff", "22px", "bold", "middle");
-        drawText(svg, svgNS, p2.x - 22, p2.y + 10, "B", "#ffffff", "22px", "bold");
-        drawText(svg, svgNS, p3.x, p3.y + 25, "C", "#ffffff", "22px", "bold", "middle");
-        drawText(svg, svgNS, p4.x + 12, p4.y + 5, "D", "#ffffff", "22px", "bold");
+        drawText(svg, svgNS, p1.x, p1.y - 12, "A", "#1e293b", "22px", "bold", "middle");
+        drawText(svg, svgNS, p2.x - 22, p2.y + 10, "B", "#1e293b", "22px", "bold");
+        drawText(svg, svgNS, p3.x, p3.y + 25, "C", "#1e293b", "22px", "bold", "middle");
+        drawText(svg, svgNS, p4.x + 12, p4.y + 5, "D", "#1e293b", "22px", "bold");
       }
       else {
-        drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#ffffff", "22px", "bold");
-        drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#ffffff", "22px", "bold");
-        drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#ffffff", "22px", "bold");
-        drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#ffffff", "22px", "bold");
-        drawText(svg, svgNS, 250, 130, data.desc, "#fbbf24", "22px", "bold", "middle");
+        drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#1e293b", "22px", "bold");
+        drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#1e293b", "22px", "bold");
+        drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#1e293b", "22px", "bold");
+        drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#1e293b", "22px", "bold");
+        drawText(svg, svgNS, 250, 130, data.desc, "#d97706", "22px", "bold", "middle");
       }
 
       container.appendChild(svg);

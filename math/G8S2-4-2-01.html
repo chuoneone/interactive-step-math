@@ -17,14 +17,14 @@
   <style>
     body {
       font-family: 'Noto Sans TC', 'Outfit', sans-serif;
-      background-color: #0b1329;
-      color: #f1f5f9;
+      background-color: #f8fafc;
+      color: #1e293b;
     }
     .custom-shadow {
-      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.15);
     }
     .card-border {
-      border: 1px solid rgba(241, 245, 249, 0.08);
+      border: 1px solid rgba(15, 23, 42, 0.08);
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -73,11 +73,11 @@
       padding: 4px 14px;
       border: 3px solid #93c5fd;
       border-radius: 12px;
-      background: #1e293b;
+      background: #ffffff;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: #3b82f6;
+      color: #2563eb;
       cursor: pointer;
       font-size: 24px;
       font-weight: 800;
@@ -86,97 +86,86 @@
     }
     .slot.active {
       animation: pulseSlot 1s infinite;
-      background: #1e3a8a;
-      border-color: #3b82f6;
-      color: #93c5fd;
+      background: #dbeafe;
+      border-color: #2563eb;
+      color: #1e40af;
     }
     .slot.correct {
-      background: #064e3b;
+      background: #d1fae5;
       border-color: #10b981;
-      color: #a7f3d0;
+      color: #065f46;
       cursor: not-allowed;
     }
     .slot.wrong {
-      background: #7f1d1d;
+      background: #fee2e2;
       border-color: #ef4444;
-      color: #fca5a5;
+      color: #991b1b;
     }
     @keyframes pulseSlot {
-      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
-      70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.3); }
+      70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col pb-12">
 
   <!-- Header -->
-  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center border-b border-slate-800 gap-4">
+  <header class="w-full max-w-7xl mx-auto px-6 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center border-b border-slate-200 gap-4">
     <div class="flex items-center gap-4">
       <div class="bg-blue-600 text-white font-extrabold px-4 py-2 rounded-xl text-xl tracking-wider shadow-lg shadow-blue-500/20">
         數學領域
       </div>
       <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-white">
-          4-2 平行四邊形 <span class="text-blue-400 text-2xl font-black">(一、對角與對邊)</span>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
+          4-2 平行四邊形 <span class="text-blue-600 text-2xl font-black">(一、對角與對邊)</span>
         </h1>
-        <p class="text-slate-400 text-sm">國中數學八年級下學期 · 互動式引導學習單</p>
+        <p class="text-slate-500 text-sm">國中數學八年級下學期 · 互動式引導學習單</p>
       </div>
     </div>
     
     <!-- TTS Speech controls -->
-    <div class="flex items-center gap-3 bg-slate-900/60 py-2 px-4 rounded-xl border border-slate-800">
-      <span class="text-slate-400 text-sm font-medium">🔊 語音速度：</span>
-      <button onclick="changeSpeed(0.8)" id="btn-slow" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">慢</button>
+    <div class="flex items-center gap-3 bg-white py-2 px-4 rounded-xl border border-slate-200 shadow-sm">
+      <span class="text-slate-600 text-sm font-medium">🔊 語音速度：</span>
+      <button onclick="changeSpeed(0.8)" id="btn-slow" class="px-2 py-1 text-xs rounded bg-slate-100 hover:bg-slate-200 text-slate-600">慢</button>
       <button onclick="changeSpeed(1.0)" id="btn-normal" class="px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold">中</button>
-      <button onclick="changeSpeed(1.2)" id="btn-fast" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300">快</button>
+      <button onclick="changeSpeed(1.2)" id="btn-fast" class="px-2 py-1 text-xs rounded bg-slate-100 hover:bg-slate-200 text-slate-600">快</button>
     </div>
   </header>
 
-  <!-- Navigation tabs pointing to modular files -->
-  <nav class="w-full max-w-7xl mx-auto px-6 py-6 flex flex-wrap gap-3">
-    <a href="G8S2-4-2-01.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-500/20">
-      一、對角與對邊
-    </a>
-    <a href="G8S2-4-2-02.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
-      二、對角線性質
-    </a>
-    <a href="G8S2-4-2-03.html" class="flex-1 min-w-[200px] py-4 px-6 rounded-2xl font-bold text-lg text-center transition-all duration-200 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
-      三、平行四邊形判別
-    </a>
-  </nav>
+  <!-- Navigation tabs removed -->
 
   <!-- Main Workspace -->
-  <main class="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
     
     <!-- Left Column: Current Question Card -->
     <div class="lg:col-span-6 flex flex-col gap-6">
-      <div id="question-card" class="bg-slate-900/60 rounded-3xl p-6 card-border custom-shadow">
+      <div id="question-card" class="bg-white rounded-3xl p-6 card-border custom-shadow">
         <div class="flex justify-between items-center mb-4">
-          <span id="question-number-badge" class="bg-blue-900/40 text-blue-400 font-extrabold text-sm px-3 py-1 rounded-lg border border-blue-800/40">
+          <span id="question-number-badge" class="bg-blue-50 text-blue-600 font-extrabold text-sm px-3 py-1 rounded-lg border border-blue-100">
             第 1 題 / 共 8 題
           </span>
-          <button onclick="speakCurrentQuestion()" class="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition font-bold border border-blue-500/20">
+          <button onclick="speakCurrentQuestion()" class="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition font-bold border border-blue-100">
             <span>🔊 唸題目</span>
           </button>
         </div>
 
-        <h2 id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-white mb-6">
+        <h2 id="question-text" class="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 mb-6">
           讀取中...
         </h2>
 
-        <div class="w-full bg-slate-950/80 rounded-2xl p-6 border border-slate-800 flex justify-center items-center min-h-[280px]">
+        <div class="w-full bg-slate-50 rounded-2xl p-6 border border-slate-100 flex justify-center items-center min-h-[280px]">
           <div id="svg-container" class="w-full flex justify-center"></div>
         </div>
       </div>
       
       <!-- Progress Trackers -->
-      <div class="bg-slate-900/40 rounded-2xl p-4 card-border">
+      <div class="bg-white rounded-2xl p-4 card-border custom-shadow">
         <div class="flex justify-between text-sm font-semibold mb-2">
-          <span class="text-slate-400">概念一 練習進度</span>
-          <span id="progress-text" class="text-blue-400">0% (0 / 8)</span>
+          <span class="text-slate-500">概念一 練習進度</span>
+          <span id="progress-text" class="text-blue-600">0% (0 / 8)</span>
         </div>
-        <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden border border-slate-800">
+        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
           <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
         </div>
       </div>
@@ -184,10 +173,10 @@
 
     <!-- Right Column: Interactive Scaffolding Cards & Keypad -->
     <div class="lg:col-span-6 flex flex-col gap-6">
-      <div class="bg-slate-900/60 rounded-3xl p-6 md:p-8 card-border flex flex-col gap-6">
+      <div class="bg-white rounded-3xl p-6 md:p-8 card-border flex flex-col gap-6 custom-shadow">
         <div>
-          <h3 class="text-lg font-bold text-slate-400 mb-1">💡 循序漸進引導解題</h3>
-          <p class="text-slate-400 text-sm">請依照步驟，點擊對應的空格並點選下方按鈕填入答案。</p>
+          <h3 class="text-lg font-bold text-slate-800 mb-1">💡 循序漸進引導解題</h3>
+          <p class="text-slate-500 text-sm">請依照步驟，點擊對應的空格並點選下方按鈕填入答案。</p>
         </div>
 
         <div id="steps-panel" class="flex flex-col gap-6 max-h-[420px] overflow-y-auto pr-2">
@@ -195,24 +184,24 @@
         </div>
 
         <!-- Options selection panel -->
-        <div id="options-panel-container" class="border-t border-slate-800 pt-6">
-          <span class="text-slate-400 text-sm font-bold block mb-3">👇 請點選答案填入藍色空格：</span>
+        <div id="options-panel-container" class="border-t border-slate-100 pt-6">
+          <span class="text-slate-600 text-sm font-bold block mb-3">👇 請點選答案填入藍色空格：</span>
           <div id="options-buttons" class="flex flex-wrap gap-3"></div>
         </div>
 
         <!-- Controls -->
         <div class="flex gap-4">
-          <button id="check-btn" onclick="checkCurrentStep()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95">
+          <button id="check-btn" onclick="checkCurrentStep()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95 shadow-md shadow-blue-500/10">
             檢查此步驟
           </button>
-          <button id="next-step-btn" onclick="advanceStep()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95 hidden">
+          <button id="next-step-btn" onclick="advanceStep()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-lg py-4 rounded-2xl transition active:scale-95 shadow-md shadow-emerald-500/10 hidden">
             進入下一步驟
           </button>
         </div>
 
         <!-- Pagination -->
-        <div class="flex justify-between items-center gap-4 border-t border-slate-800 pt-4">
-          <button onclick="prevQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
+        <div class="flex justify-between items-center gap-4 border-t border-slate-100 pt-4">
+          <button onclick="prevQuestion()" class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-center border border-slate-200">
             ← 上一題
           </button>
           <button onclick="nextQuestion()" class="flex-1 py-3 px-4 bg-slate-850 hover:bg-slate-800 text-slate-300 font-bold rounded-xl transition text-center">
@@ -225,12 +214,12 @@
   </main>
 
   <!-- Complete Modal -->
-  <div id="complete-modal" class="fixed inset-0 bg-slate-950/80 flex items-center justify-center z-50 p-4 hidden">
-    <div class="bg-slate-900 rounded-3xl p-8 max-w-md w-full border border-slate-800 text-center flex flex-col gap-6 custom-shadow">
+  <div id="complete-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full border border-slate-100 text-center flex flex-col gap-6 custom-shadow">
       <div class="text-6xl">🎉</div>
-      <h2 class="text-3xl font-extrabold text-white">完成本單元！</h2>
-      <p class="text-slate-300 text-lg">您已經順利完成「對角與對邊」概念的所有步驟囉！</p>
-      <a href="G8S2-4-2-02.html" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-xl text-lg transition block text-center">
+      <h2 class="text-3xl font-extrabold text-slate-850">完成本單元！</h2>
+      <p class="text-slate-600 text-lg">您已經順利完成「對角與對邊」概念的所有步驟囉！</p>
+      <a href="G8S2-4-2-02.html" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-xl text-lg transition block text-center shadow-lg shadow-blue-500/10">
         挑戰下一個概念：對角線性質
       </a>
     </div>
@@ -258,7 +247,7 @@
         if (speeds[idx] === rate) {
           btn.className = "px-2 py-1 text-xs rounded bg-blue-600 text-white font-bold";
         } else {
-          btn.className = "px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300";
+          btn.className = "px-2 py-1 text-xs rounded bg-slate-100 hover:bg-slate-200 text-slate-600";
         }
       });
       speakText("速度調整");
@@ -598,23 +587,21 @@
         
         const stepDiv = document.createElement("div");
         stepDiv.className = `p-5 rounded-2xl border transition-all duration-300 ${
-          isCurrentStep 
-            ? 'bg-slate-850 border-blue-500 custom-shadow' 
-            : 'bg-slate-900/30 border-slate-800 opacity-80'
+          isCurrentStep ? 'bg-blue-50/50 border-blue-400 shadow-sm shadow-blue-500/5' : 'bg-slate-50 border-slate-200 opacity-80'
         }`;
         
         const stepTitle = document.createElement("div");
-        stepTitle.className = "text-sm text-slate-400 font-bold mb-2";
+        stepTitle.className = "text-sm text-slate-500 font-bold mb-2";
         stepTitle.innerText = `步驟 ${i + 1}`;
         stepDiv.appendChild(stepTitle);
         
         const stepDesc = document.createElement("p");
-        stepDesc.className = "text-lg text-slate-200 mb-3 leading-relaxed";
+        stepDesc.className = "text-lg text-slate-800 mb-3 leading-relaxed";
         stepDesc.innerHTML = parseLatexText(step.desc);
         stepDiv.appendChild(stepDesc);
         
         const mathLine = document.createElement("div");
-        mathLine.className = "math-line bg-slate-950/60 p-4 rounded-xl border border-slate-800/40";
+        mathLine.className = "math-line bg-white p-4 rounded-xl border border-slate-200";
         
         step.formula.forEach(f => {
           if (f.type === "math") {
@@ -707,7 +694,7 @@
       
       step.options.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-2xl rounded-2xl transition border border-slate-700 active:scale-95 min-w-[65px] text-center";
+        btn.className = "px-6 py-4 bg-white hover:bg-slate-50 text-slate-850 font-extrabold text-2xl rounded-2xl transition border border-slate-200 shadow-sm active:scale-95 min-w-[65px] text-center";
         btn.innerText = opt;
         btn.onclick = () => clickOptionValue(opt);
         container.appendChild(btn);
@@ -878,53 +865,53 @@
       
       const grid = document.createElementNS(svgNS, "path");
       grid.setAttribute("d", "M 0 40 L 460 40 M 0 90 L 460 90 M 0 140 L 460 140 M 0 190 L 460 190 M 90 0 L 90 250 M 180 0 L 180 250 M 270 0 L 270 250 M 360 0 L 360 250");
-      grid.setAttribute("stroke", "rgba(241,245,249,0.02)");
+      grid.setAttribute("stroke", "rgba(15,23,42,0.04)");
       grid.setAttribute("stroke-width", "1");
       svg.appendChild(grid);
 
       const shape = document.createElementNS(svgNS, "polygon");
       shape.setAttribute("points", `${pA.x},${pA.y} ${pD.x},${pD.y} ${pC.x},${pC.y} ${pB.x},${pB.y}`);
-      shape.setAttribute("fill", "rgba(59, 130, 246, 0.08)");
+      shape.setAttribute("fill", "rgba(59, 130, 246, 0.05)");
       shape.setAttribute("stroke", "#3b82f6");
       shape.setAttribute("stroke-width", "4");
       svg.appendChild(shape);
 
-      drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#ffffff", "22px", "bold");
-      drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#ffffff", "22px", "bold");
-      drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#ffffff", "22px", "bold");
-      drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#ffffff", "22px", "bold");
+      drawText(svg, svgNS, pA.x - 22, pA.y + 5, "A", "#1e293b", "22px", "bold");
+      drawText(svg, svgNS, pB.x - 22, pB.y + 10, "B", "#1e293b", "22px", "bold");
+      drawText(svg, svgNS, pC.x + 12, pC.y + 10, "C", "#1e293b", "22px", "bold");
+      drawText(svg, svgNS, pD.x + 12, pD.y + 5, "D", "#1e293b", "22px", "bold");
 
       if (type === "ab_cd_param") {
-        drawText(svg, svgNS, (pA.x + pB.x)/2 - 35, (pA.y + pB.y)/2 + 5, data.ab, "#fbbf24", "20px", "bold");
-        drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, data.ad, "#22d3ee", "20px", "bold", "middle");
+        drawText(svg, svgNS, (pA.x + pB.x)/2 - 35, (pA.y + pB.y)/2 + 5, data.ab, "#d97706", "20px", "bold");
+        drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, data.ad, "#0891b2", "20px", "bold", "middle");
       } 
       else if (type === "algebra_sides") {
-        drawText(svg, svgNS, (pA.x + pB.x)/2 - 60, (pA.y + pB.y)/2 + 5, data.ab, "#fbbf24", "20px", "bold");
-        drawText(svg, svgNS, (pB.x + pC.x)/2, pB.y + 25, data.bc, "#22d3ee", "20px", "bold", "middle");
-        drawText(svg, svgNS, (pC.x + pD.x)/2 + 15, (pC.y + pD.y)/2 + 5, data.cd, "#fbbf24", "20px", "bold");
+        drawText(svg, svgNS, (pA.x + pB.x)/2 - 60, (pA.y + pB.y)/2 + 5, data.ab, "#d97706", "20px", "bold");
+        drawText(svg, svgNS, (pB.x + pC.x)/2, pB.y + 25, data.bc, "#0891b2", "20px", "bold", "middle");
+        drawText(svg, svgNS, (pC.x + pD.x)/2 + 15, (pC.y + pD.y)/2 + 5, data.cd, "#d97706", "20px", "bold");
       }
       else if (type === "ab_bc_sums") {
-        drawText(svg, svgNS, 250, 100, data.ab_cd, "#fbbf24", "20px", "bold", "middle");
-        drawText(svg, svgNS, 250, 140, data.bc_da, "#22d3ee", "20px", "bold", "middle");
+        drawText(svg, svgNS, 250, 100, data.ab_cd, "#d97706", "20px", "bold", "middle");
+        drawText(svg, svgNS, 250, 140, data.bc_da, "#0891b2", "20px", "bold", "middle");
       }
       else if (type === "four_sides_algebra") {
-        drawText(svg, svgNS, (pA.x + pB.x)/2 - 65, (pA.y + pB.y)/2 + 5, data.ab, "#fbbf24", "18px", "bold");
-        drawText(svg, svgNS, (pB.x + pC.x)/2, pB.y + 25, data.bc, "#22d3ee", "18px", "bold", "middle");
-        drawText(svg, svgNS, (pC.x + pD.x)/2 + 15, (pC.y + pD.y)/2 + 5, data.cd, "#fbbf24", "18px", "bold");
-        drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, data.ad, "#22d3ee", "18px", "bold", "middle");
+        drawText(svg, svgNS, (pA.x + pB.x)/2 - 65, (pA.y + pB.y)/2 + 5, data.ab, "#d97706", "18px", "bold");
+        drawText(svg, svgNS, (pB.x + pC.x)/2, pB.y + 25, data.bc, "#0891b2", "18px", "bold", "middle");
+        drawText(svg, svgNS, (pC.x + pD.x)/2 + 15, (pC.y + pD.y)/2 + 5, data.cd, "#d97706", "18px", "bold");
+        drawText(svg, svgNS, (pA.x + pD.x)/2, pA.y - 12, data.ad, "#0891b2", "18px", "bold", "middle");
       }
       else if (type === "angles_param") {
-        drawText(svg, svgNS, pA.x + 12, pA.y + 32, data.a, "#fbbf24", "18px", "bold");
-        drawText(svg, svgNS, pB.x + 25, pB.y - 12, data.b, "#22d3ee", "18px", "bold");
-        drawText(svg, svgNS, pC.x - 55, pC.y - 12, data.c, "#fbbf24", "18px", "bold");
-        drawText(svg, svgNS, pD.x - 55, pD.y + 32, data.d, "#22d3ee", "18px", "bold");
+        drawText(svg, svgNS, pA.x + 12, pA.y + 32, data.a, "#d97706", "18px", "bold");
+        drawText(svg, svgNS, pB.x + 25, pB.y - 12, data.b, "#0891b2", "18px", "bold");
+        drawText(svg, svgNS, pC.x - 55, pC.y - 12, data.c, "#d97706", "18px", "bold");
+        drawText(svg, svgNS, pD.x - 55, pD.y + 32, data.d, "#0891b2", "18px", "bold");
       }
       else if (type === "angles_algebra") {
-        drawText(svg, svgNS, pA.x + 12, pA.y + 32, data.a, "#fbbf24", "18px", "bold");
-        drawText(svg, svgNS, pC.x - 110, pC.y - 12, data.c, "#fbbf24", "18px", "bold");
+        drawText(svg, svgNS, pA.x + 12, pA.y + 32, data.a, "#d97706", "18px", "bold");
+        drawText(svg, svgNS, pC.x - 110, pC.y - 12, data.c, "#d97706", "18px", "bold");
       }
       else if (type === "angles_relation" || type === "angles_relation2") {
-        drawText(svg, svgNS, 250, 125, data.text, "#fbbf24", "22px", "bold", "middle");
+        drawText(svg, svgNS, 250, 125, data.text, "#d97706", "22px", "bold", "middle");
       }
 
       container.appendChild(svg);
