@@ -257,26 +257,26 @@
         svgData: { ab: "12", ad: "AD = ?" },
         steps: [
           {
-            desc: "第一步：平行四邊形的對邊相等，得到 \\(\\overline{AB} = \\overline{CD} = 12\\)。且 \\(\\overline{AD} = \\overline{BC}\\)。所以：",
+            desc: "第一步：設線段 \\(\\overline{AD} = x\\)。根據對邊相等的性質，周長可列式為：",
             formula: [
-              { type: "math", latex: "2\\overline{AD} = 56 - (" },
+              { type: "math", latex: "2x +" },
               { type: "slot", key: "step1_1", answer: "24" },
-              { type: "math", latex: ")" }
+              { type: "math", latex: "= 56" }
             ],
             options: ["12", "24", "32", "56"]
           },
           {
-            desc: "第二步：化簡上式：",
+            desc: "第二步：移項化簡，求得 \\(2x\\) 的值：",
             formula: [
-              { type: "math", latex: "2\\overline{AD} =" },
+              { type: "math", latex: "2x =" },
               { type: "slot", key: "step2_1", answer: "32" }
             ],
             options: ["12", "16", "32", "44"]
           },
           {
-            desc: "第三步：同除以 2，解出 \\(\\overline{AD}\\)：",
+            desc: "第三步：同除以 2，解出 \\(x\\)（即 \\(\\overline{AD}\\) 的長度）：",
             formula: [
-              { type: "math", latex: "\\overline{AD} =" },
+              { type: "math", latex: "x =" },
               { type: "slot", key: "step3_1", answer: "16" }
             ],
             options: ["12", "16", "24", "28"]
