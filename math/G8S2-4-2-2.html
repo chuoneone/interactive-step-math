@@ -380,6 +380,99 @@
             options: ["5", "3", "2", "6"]
           }
         ]
+      },
+      {
+        id: 3,
+        category: "對邊相等：周長求邊長",
+        text: "已知 ABCD 是平行四邊形，若 <mark>\\overline{AB} = 3</mark>，且周長 <mark>\\overline{AB} + \\overline{BC} + \\overline{CD} + \\overline{AD} = 14</mark>，求 <mark>\\overline{AD}</mark> 的長度？",
+        svg: `<svg width="220" height="200" viewBox="0 0 220 200" class="mx-auto">
+                <polygon points="60,150 160,150 200,60 100,60" fill="#f5f3ff" stroke="#818cf8" stroke-width="4"/>
+                <text x="95" y="50" font-weight="bold" font-size="16" fill="#1e293b">A</text>
+                <text x="205" y="55" font-weight="bold" font-size="16" fill="#1e293b">D</text>
+                <text x="45" y="165" font-weight="bold" font-size="16" fill="#1e293b">B</text>
+                <text x="165" y="165" font-weight="bold" font-size="16" fill="#1e293b">C</text>
+                <text x="45" y="110" font-weight="extrabold" font-size="15" fill="#4f46e5">3</text>
+              </svg>`,
+        steps: [
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\overline{CD} ="></span>
+                         <span class="slot" data-ans="3"></span>
+                       </div>`,
+            options: ["3", "4", "7", "6"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\overline{AB} + \\overline{CD} ="></span>
+                         <span class="slot" data-ans="6"></span>
+                       </div>`,
+            options: ["6", "3", "8", "14"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\overline{BC} + \\overline{AD} = 14 - 6 ="></span>
+                         <span class="slot" data-ans="8"></span>
+                       </div>`,
+            options: ["8", "6", "10", "12"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\overline{AD} ="></span>
+                         <span class="slot" data-ans="4"></span>
+                       </div>`,
+            options: ["4", "8", "3", "5"]
+          }
+        ]
+      },
+      {
+        id: 4,
+        category: "對邊相等：求對邊長度",
+        text: "已知 ABCD 是平行四邊形，若對邊和 <mark>\\overline{AB} + \\overline{CD} = 20</mark>，且對邊和 <mark>\\overline{BC} + \\overline{AD} = 30</mark>，求 (1) <mark>\\overline{AB}</mark> 與 (2) <mark>\\overline{AD}</mark> 的長度？",
+        svg: `<svg width="220" height="200" viewBox="0 0 220 200" class="mx-auto">
+                <polygon points="60,150 160,150 200,60 100,60" fill="#f5f3ff" stroke="#818cf8" stroke-width="4"/>
+                <text x="95" y="50" font-weight="bold" font-size="16" fill="#1e293b">A</text>
+                <text x="205" y="55" font-weight="bold" font-size="16" fill="#1e293b">D</text>
+                <text x="45" y="165" font-weight="bold" font-size="16" fill="#1e293b">B</text>
+                <text x="165" y="165" font-weight="bold" font-size="16" fill="#1e293b">C</text>
+              </svg>`,
+        steps: [
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="2 \\times \\overline{AB} ="></span>
+                         <span class="slot" data-ans="20"></span>
+                       </div>`,
+            options: ["20", "10", "30", "15"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\overline{AB} ="></span>
+                         <span class="slot" data-ans="10"></span>
+                       </div>`,
+            options: ["10", "5", "20", "15"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="2 \\times \\overline{AD} ="></span>
+                         <span class="slot" data-ans="30"></span>
+                       </div>`,
+            options: ["30", "15", "20", "10"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\overline{AD} ="></span>
+                         <span class="slot" data-ans="15"></span>
+                       </div>`,
+            options: ["15", "10", "30", "20"]
+          }
+        ]
       }
     ];
 
