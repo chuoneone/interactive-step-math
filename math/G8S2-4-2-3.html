@@ -398,6 +398,126 @@
             options: ["110", "70", "180", "40"]
           }
         ]
+      },
+      {
+        id: 3,
+        category: "對角相等：求未知角度",
+        text: "已知 ABCD 是平行四邊形，求各未知角 <mark>\\angle 2</mark>、<mark>\\angle 4</mark>、<mark>\\angle B</mark>、<mark>\\angle D</mark> 的度數？",
+        svg: `<svg width="220" height="200" viewBox="0 0 220 200" class="mx-auto">
+                <polygon points="60,150 160,150 200,60 100,60" fill="#f5f3ff" stroke="#818cf8" stroke-width="4"/>
+                <line x1="100" y1="60" x2="160" y2="150" stroke="#818cf8" stroke-width="3"/>
+                <text x="95" y="50" font-weight="bold" font-size="16" fill="#1e293b">A</text>
+                <text x="205" y="55" font-weight="bold" font-size="16" fill="#1e293b">D</text>
+                <text x="45" y="165" font-weight="bold" font-size="16" fill="#1e293b">B</text>
+                <text x="165" y="165" font-weight="bold" font-size="16" fill="#1e293b">C</text>
+                
+                <!-- Angle Arcs at A -->
+                <path d="M 89.85 82.85 A 25 25 0 0 0 113.87 80.8" fill="none" stroke="#818cf8" stroke-width="1.5"/>
+                <path d="M 113.87 80.8 A 25 25 0 0 0 125 60" fill="none" stroke="#818cf8" stroke-width="1.5"/>
+                
+                <!-- Angle Arcs at C -->
+                <path d="M 135 150 A 25 25 0 0 1 146.13 129.2" fill="none" stroke="#818cf8" stroke-width="1.5"/>
+                <path d="M 146.13 129.2 A 25 25 0 0 1 170.15 127.15" fill="none" stroke="#818cf8" stroke-width="1.5"/>
+                
+                <!-- Labels at A -->
+                <text x="101" y="75" font-size="12" fill="#4f46e5" font-weight="bold" text-anchor="middle">1</text>
+                <text x="97" y="98" font-size="12" fill="#e11d48" font-weight="bold" text-anchor="middle">65°</text>
+                <text x="113" y="67" font-size="12" fill="#4f46e5" font-weight="bold" text-anchor="middle">3</text>
+                <text x="133" y="78" font-size="12" fill="#e11d48" font-weight="bold" text-anchor="middle">45°</text>
+                
+                <!-- Labels at C -->
+                <text x="147" y="143" font-size="12" fill="#4f46e5" font-weight="bold" text-anchor="middle">2</text>
+                <text x="159" y="135" font-size="12" fill="#4f46e5" font-weight="bold" text-anchor="middle">4</text>
+              </svg>`,
+        steps: [
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle 2 ="></span>
+                         <span class="slot" data-ans="45"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["45", "65", "70", "110"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle 4 ="></span>
+                         <span class="slot" data-ans="65"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["65", "45", "70", "110"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle B = 180^\\circ - 65^\\circ -"></span>
+                         <span class="slot" data-ans="45"></span>
+                         <span class="math" data-latex="^\\circ ="></span>
+                         <span class="slot" data-ans="70"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["45", "70", "65", "80"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle D = \\angle B ="></span>
+                         <span class="slot" data-ans="70"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["70", "110", "65", "45"]
+          }
+        ]
+      },
+      {
+        id: 4,
+        category: "鄰角互補、對角相等",
+        text: "已知 ABCD 是平行四邊形，求各未知角 <mark>\\angle B</mark>、<mark>\\angle C</mark>、<mark>\\angle D</mark> 的度數？",
+        svg: `<svg width="220" height="200" viewBox="0 0 220 200" class="mx-auto">
+                <polygon points="60,150 160,150 200,60 100,60" fill="#f5f3ff" stroke="#818cf8" stroke-width="4"/>
+                <text x="95" y="50" font-weight="bold" font-size="16" fill="#1e293b">A</text>
+                <text x="205" y="55" font-weight="bold" font-size="16" fill="#1e293b">D</text>
+                <text x="45" y="165" font-weight="bold" font-size="16" fill="#1e293b">B</text>
+                <text x="165" y="165" font-weight="bold" font-size="16" fill="#1e293b">C</text>
+                
+                <!-- Angle Arc at A -->
+                <path d="M 89.85 82.85 A 25 25 0 0 0 125 60" fill="none" stroke="#818cf8" stroke-width="1.5"/>
+                
+                <!-- Label at A -->
+                <text x="118" y="90" font-size="12" fill="#e11d48" font-weight="bold" text-anchor="middle">110°</text>
+              </svg>`,
+        steps: [
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle B = 180^\\circ -"></span>
+                         <span class="slot" data-ans="110"></span>
+                         <span class="math" data-latex="^\\circ ="></span>
+                         <span class="slot" data-ans="70"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["110", "70", "180", "120"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle C = \\angle A ="></span>
+                         <span class="slot" data-ans="110"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["110", "70", "180", "120"]
+          },
+          {
+            instruction: "",
+            mathLine: `<div class="math-line">
+                         <span class="math" data-latex="\\angle D = \\angle B ="></span>
+                         <span class="slot" data-ans="70"></span>
+                         <span class="math" data-latex="^\\circ"></span>
+                       </div>`,
+            options: ["70", "110", "180", "120"]
+          }
+        ]
       }
     ];
 
