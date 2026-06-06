@@ -32,7 +32,7 @@
       flex-wrap: wrap;
       gap: 12px;
       line-height: 1.4;
-      margin: 8px 0;
+      margin: 0;
     }
     
     .math, .math-display {
@@ -568,22 +568,27 @@
         
         const isStepCorrect = (progress.currentStep > stepIdx) || progress.completed;
         
-        const titleRow = document.createElement("div");
-        titleRow.className = "flex items-center justify-between border-b border-slate-100 pb-1.5";
-        titleRow.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-extrabold text-sm">
-              ${stepIdx + 1}
-            </span>
-          </div>
-          ${isStepCorrect ? '<span class="text-emerald-600 font-black text-sm flex items-center gap-1">✔ 完成</span>' : ''}
+        const stepRow = document.createElement("div");
+        stepRow.className = "flex items-center gap-3 w-full";
+        stepRow.innerHTML = `
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-extrabold text-sm shrink-0">
+            ${stepIdx + 1}
+          </span>
         `;
-        stepCard.appendChild(titleRow);
         
         const mathArea = document.createElement("div");
-        mathArea.className = "py-2 flex justify-center bg-slate-50 rounded-xl border border-slate-100";
+        mathArea.className = "flex-1 py-1 px-3 flex justify-center items-center bg-slate-50 rounded-xl border border-slate-100 min-h-[48px]";
         mathArea.innerHTML = step.mathLine;
-        stepCard.appendChild(mathArea);
+        stepRow.appendChild(mathArea);
+        
+        if (isStepCorrect) {
+          const checkMark = document.createElement("span");
+          checkMark.className = "text-emerald-600 font-black text-sm shrink-0 flex items-center gap-1";
+          checkMark.innerHTML = "✔ 完成";
+          stepRow.appendChild(checkMark);
+        }
+        
+        stepCard.appendChild(stepRow);
         
         const slots = mathArea.querySelectorAll(".slot");
         
