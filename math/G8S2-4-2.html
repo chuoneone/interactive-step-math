@@ -581,11 +581,6 @@
         `;
         stepCard.appendChild(titleRow);
         
-        const instruction = document.createElement("p");
-        instruction.className = "text-slate-600 text-lg font-bold";
-        instruction.textContent = step.instruction;
-        stepCard.appendChild(instruction);
-        
         const mathArea = document.createElement("div");
         mathArea.className = "py-4 flex justify-center bg-slate-50 rounded-2xl border border-slate-100";
         mathArea.innerHTML = step.mathLine;
