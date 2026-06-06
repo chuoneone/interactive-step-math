@@ -610,14 +610,12 @@
           shuffledOptions.forEach(opt => {
             const optBtn = document.createElement("button");
             
-            // 🐶 配合老師的個人風格，選項按鈕搭配「狗狗/肉球」圖示
             if (q.id === 3) {
               optBtn.className = "dog-btn w-full max-w-sm text-left pl-6 animate-pulse-subtle";
-              optBtn.innerHTML = `🐶 ${opt}`;
             } else {
               optBtn.className = "dog-btn";
-              optBtn.innerHTML = `🐾 ${opt}`;
             }
+            optBtn.textContent = opt;
             
             optBtn.onclick = () => fillNextSlot(opt, slots);
             optionsArea.appendChild(optBtn);
