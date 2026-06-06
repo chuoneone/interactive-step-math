@@ -25,14 +25,14 @@
     
     /* 數學算式與 slot 混排樣式 */
     .math-line {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
-      line-height: 1.8;
-      margin: 16px 0;
+      line-height: 1.4;
+      margin: 8px 0;
     }
     
     .math, .math-display {
@@ -54,18 +54,18 @@
     
     /* 互動填答格 slot 樣式 */
     .slot {
-      min-width: 64px;
-      min-height: 52px;
-      padding: 4px 16px;
+      min-width: 56px;
+      min-height: 44px;
+      padding: 2px 12px;
       border: 3px solid #c7d2fe;
-      border-radius: 14px;
+      border-radius: 12px;
       background: #f5f3ff;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       color: #4338ca;
       cursor: pointer;
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 800;
       transition: all 0.2s ease;
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -93,14 +93,14 @@
     
     /* 🐶 狗狗風格按鈕 (Dog-themed button) */
     .dog-btn {
-      min-width: 68px;
+      min-width: 64px;
       background-color: #fffbeb; /* amber-50 */
       border: 3px solid #fde68a; /* amber-200 */
       color: #78350f; /* amber-900 */
-      border-radius: 20px;
-      font-size: 20px;
+      border-radius: 16px;
+      font-size: 18px;
       font-weight: 800;
-      padding: 10px 20px;
+      padding: 6px 16px;
       transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       cursor: pointer;
       display: inline-flex;
@@ -211,7 +211,7 @@
     </section>
 
     <!-- 右側：步驟解鎖流程區 -->
-    <section class="md:col-span-7 flex flex-col gap-6" id="steps-container">
+    <section class="md:col-span-7 flex flex-col gap-3" id="steps-container">
       <!-- 動態生成步驟區 -->
     </section>
 
@@ -563,13 +563,13 @@
         if (stepIdx > progress.currentStep) return;
         
         const stepCard = document.createElement("div");
-        stepCard.className = "step-card bg-white border border-slate-200/80 rounded-3xl p-6 shadow-md transition-all duration-500 flex flex-col gap-4";
+        stepCard.className = "step-card bg-white border border-slate-200/80 rounded-2xl p-3 md:p-4 shadow-md transition-all duration-500 flex flex-col gap-2";
         stepCard.id = `step-card-${stepIdx}`;
         
         const isStepCorrect = (progress.currentStep > stepIdx) || progress.completed;
         
         const titleRow = document.createElement("div");
-        titleRow.className = "flex items-center justify-between border-b border-slate-100 pb-3";
+        titleRow.className = "flex items-center justify-between border-b border-slate-100 pb-1.5";
         titleRow.innerHTML = `
           <div class="flex items-center gap-2">
             <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-extrabold text-sm">
@@ -582,7 +582,7 @@
         stepCard.appendChild(titleRow);
         
         const mathArea = document.createElement("div");
-        mathArea.className = "py-4 flex justify-center bg-slate-50 rounded-2xl border border-slate-100";
+        mathArea.className = "py-2 flex justify-center bg-slate-50 rounded-xl border border-slate-100";
         mathArea.innerHTML = step.mathLine;
         stepCard.appendChild(mathArea);
         
@@ -606,7 +606,7 @@
         
         if (!isStepCorrect) {
           const optionsArea = document.createElement("div");
-          optionsArea.className = "flex flex-wrap gap-3 justify-center py-2";
+          optionsArea.className = "flex flex-wrap gap-2 justify-center py-1";
           
           const shuffledOptions = [...step.options].sort(() => Math.random() - 0.5);
           
@@ -626,7 +626,7 @@
           stepCard.appendChild(optionsArea);
           
           const actionRow = document.createElement("div");
-          actionRow.className = "flex items-center justify-between border-t border-slate-100 pt-4 mt-2 gap-4";
+          actionRow.className = "flex items-center justify-between border-t border-slate-100 pt-2 mt-1 gap-2";
           
           const feedbackText = document.createElement("div");
           feedbackText.className = "text-rose-500 font-extrabold text-lg flex items-center gap-1.5 hidden";
