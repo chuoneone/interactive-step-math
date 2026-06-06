@@ -613,10 +613,10 @@
             // 🐶 配合老師的個人風格，選項按鈕搭配「狗狗/肉球」圖示
             if (q.id === 3) {
               optBtn.className = "dog-btn w-full max-w-sm text-left pl-6 animate-pulse-subtle";
-              optBtn.innerHTML = `<img src="dog.png" class="w-6 h-6 object-contain inline-block" alt="🐶"><span>${opt}</span>`;
+              optBtn.innerHTML = `🐶 ${opt}`;
             } else {
               optBtn.className = "dog-btn";
-              optBtn.innerHTML = `<img src="dog.png" class="w-6 h-6 object-contain inline-block" alt="🐾"><span>${opt}</span>`;
+              optBtn.innerHTML = `🐾 ${opt}`;
             }
             
             optBtn.onclick = () => fillNextSlot(opt, slots);
