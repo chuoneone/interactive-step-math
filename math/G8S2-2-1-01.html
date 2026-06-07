@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>互動式函數探索系統 - 2-1 函數概念</title>
+  <link rel="icon" href="../images/dog.png" type="image/png">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- KaTeX CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+    
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 數學算式排版樣式 */
+    .math-line {
+      font-size: 26px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      line-height: 1.8;
+      margin: 14px 0;
+    }
+    
+    .math, .math-display {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+    }
+    
+    .math-display {
+      justify-content: center;
+      width: 100%;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+    
+    .katex {
+      font-size: 1.15em;
+    }
+    
+    /* 互動填答格 Slot */
+    .slot {
+      min-width: 64px;
+      min-height: 48px;
+      padding: 4px 14px;
+      border: 3px solid #93c5fd;
+      border-radius: 12px;
+      background: #eff6ff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1d4ed8;
+      cursor: pointer;
+      font-size: 28px;
+      font-weight: 800;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    
+    .slot.active {
+      animation: pulseSlot 1s infinite;
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+
+    /* 藍色系 Slot（求 y 總價） */
+    .slot.slot-blue {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .slot.slot-blue.active {
+      animation: pulseBlueSlot 1s infinite;
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+
+    /* 綠色系 Slot（求 x 瓶數） */
+    .slot.slot-green {
+      border-color: #6ee7b7;
+      background: #ecfdf5;
+      color: #059669;
+    }
+    .slot.slot-green.active {
+      animation: pulseGreenSlot 1s infinite;
+      background: #d1fae5;
+      border-color: #10b981;
+    }
+
+    /* 黃色系 Slot（填寫關係式） */
+    .slot.slot-yellow {
+      border-color: #fde047;
+      background: #fef9c3;
+      color: #a16207;
+    }
+    .slot.slot-yellow.active {
+      animation: pulseYellowSlot 1s infinite;
+      background: #fef08a;
+      border-color: #eab308;
+    }
+    
+    .slot.correct {
+      background: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #166534 !important;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+      cursor: default;
+    }
+    
+    .slot.wrong {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #991b1b !important;
+      animation: shake 0.4s ease;
+    }
+    
+    @keyframes pulseSlot {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45); }
+      70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+
+    @keyframes pulseBlueSlot {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45); }
+      70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+
+    @keyframes pulseGreenSlot {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes pulseYellowSlot {
+      0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.45); }
+      70% { box-shadow: 0 0 0 8px rgba(234, 179, 8, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* 平滑過渡 */
+    .step-card {
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* 隱藏滾動條 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- 導覽列與進度監控 -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="bg-blue-600 text-white text-sm font-bold px-3 py-1 rounded-full shadow-sm">單元：函數及其圖形</span>
+        <h1 class="text-lg md:text-xl font-extrabold text-slate-800 tracking-tight">認識函數概念與變數關係</h1>
+      </div>
+      <div class="flex items-center gap-2 md:gap-4">
+        <!-- 計時器 -->
+        <div class="flex items-center gap-2 bg-rose-50 border border-rose-200 text-rose-700 px-3 py-1.5 rounded-lg font-mono font-bold text-sm shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="timer-display">07:00</span>
+        </div>
+        <!-- 分數顯示 -->
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-1.5 rounded-lg font-bold text-sm shadow-sm flex items-center gap-1.5">
+          <span>挑戰總得分：</span>
+          <span id="score-display" class="text-base text-emerald-800 font-black">0 / 5</span>
+        </div>
+        <!-- 排行榜按鈕 -->
+        <button onclick="showLeaderboard()" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3 py-1.5 rounded-lg font-bold text-sm shadow-sm flex items-center gap-1 transition">
+          🏆 排行榜
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 頂部滑動題目選擇導覽列 -->
+  <nav class="bg-slate-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 py-2 flex gap-3 overflow-x-auto no-scrollbar">
+      <button id="tab-1" onclick="switchQuestion(1)" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 whitespace-nowrap shrink-0 bg-blue-600 text-white shadow-md">
+        挑戰一：認識函數概念 <span id="tab-badge-1" class="ml-1 text-xs px-2 py-0.5 rounded-full bg-blue-700 text-blue-100 font-black">0/5</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 主要內容區 -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+    
+    <!-- 左側：情境複習與實物對應教具 (md:col-span-5) -->
+    <section class="md:col-span-5 bg-white rounded-2xl p-5 border border-slate-200 shadow-md md:sticky md:top-20 space-y-5">
+      
+      <!-- 標題與情境說明 -->
+      <div class="border-b border-slate-100 pb-3">
+        <span class="text-xs font-bold text-blue-600 tracking-wider uppercase">情境複習與貼教具</span>
+        <h2 class="text-lg font-bold text-slate-800 mt-1 leading-relaxed">
+          小翊到便利商店購買運動飲料，每瓶飲料的價格為 <span class="text-amber-600">30 元</span>。觀察飲料瓶數與總價的對應關係。
+        </h2>
+      </div>
+
+      <!-- 實物教具 SVG -->
+      <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/60 flex flex-col items-center justify-center relative min-h-[160px]">
+        <div class="absolute top-2 left-2 bg-slate-200/80 text-[10px] font-bold px-2 py-0.5 rounded text-slate-600">
+          凱莉的實物教具
+        </div>
+        <svg viewBox="0 0 340 120" class="w-full h-auto drop-shadow-sm">
+          <!-- Reusable sport drink bottle definition -->
+          <defs>
+            <g id="drink-bottle">
+              <!-- Cap -->
+              <rect x="7" y="0" width="6" height="4" fill="#fbbf24" rx="0.5" />
+              <!-- Neck -->
+              <path d="M5 4 L5 8 L2 12 L2 42 L18 42 L18 12 L15 8 L15 4 Z" fill="#eff6ff" stroke="#94a3b8" stroke-width="1" />
+              <!-- Liquid -->
+              <path d="M3 12 L3 41 L17 41 L17 12 Z" fill="#f97316" opacity="0.85" />
+              <!-- Label -->
+              <rect x="2.5" y="22" width="15" height="10" fill="#facc15" />
+              <text x="10" y="29" font-size="5" font-weight="bold" fill="#78350f" text-anchor="middle">SPORT</text>
+            </g>
+          </defs>
+
+          <!-- Group 1: 1 bottle -->
+          <g transform="translate(15, 10)">
+            <use href="#drink-bottle" x="10" y="5" />
+            <rect x="0" y="55" width="40" height="16" fill="white" stroke="#e2e8f0" rx="4" />
+            <text x="20" y="66" font-size="9" font-weight="bold" fill="#1e293b" text-anchor="middle">1 瓶 30元</text>
+          </g>
+
+          <!-- Group 2: 2 bottles -->
+          <g transform="translate(90, 10)">
+            <use href="#drink-bottle" x="2" y="5" />
+            <use href="#drink-bottle" x="18" y="5" />
+            <rect x="0" y="55" width="40" height="16" fill="white" stroke="#e2e8f0" rx="4" />
+            <text x="20" y="66" font-size="9" font-weight="bold" fill="#1e293b" text-anchor="middle">2 瓶 60元</text>
+          </g>
+
+          <!-- Group 3: 3 bottles -->
+          <g transform="translate(165, 10)">
+            <use href="#drink-bottle" x="-5" y="5" />
+            <use href="#drink-bottle" x="10" y="5" />
+            <use href="#drink-bottle" x="25" y="5" />
+            <rect x="-7" y="55" width="44" height="16" fill="white" stroke="#e2e8f0" rx="4" />
+            <text x="15" y="66" font-size="9" font-weight="bold" fill="#1e293b" text-anchor="middle">3 瓶 90元</text>
+          </g>
+
+          <!-- Group 4: 4 bottles -->
+          <g transform="translate(245, 10)">
+            <use href="#drink-bottle" x="-12" y="5" />
+            <use href="#drink-bottle" x="3" y="5" />
+            <use href="#drink-bottle" x="18" y="5" />
+            <use href="#drink-bottle" x="33" y="5" />
+            <rect x="-14" y="55" width="48" height="16" fill="white" stroke="#e2e8f0" rx="4" />
+            <text x="10" y="66" font-size="9" font-weight="bold" fill="#1e293b" text-anchor="middle">4 瓶 120元</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- 雅璇的對應關係表格 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-1.5">
+          📊 瓶數與總價對應表
+        </h3>
+        <table class="w-full text-center border-collapse border border-slate-200 text-lg font-bold">
+          <thead>
+            <tr class="bg-slate-50">
+              <th class="border border-slate-200 py-2.5 text-emerald-600">瓶數 <span class="math" data-latex="\color{#10b981}{x}"></span> (綠)</th>
+              <td class="border border-slate-200 py-2.5">1</td>
+              <td class="border border-slate-200 py-2.5">2</td>
+              <td class="border border-slate-200 py-2.5">3</td>
+              <td class="border border-slate-200 py-2.5">4</td>
+              <td class="border border-slate-200 py-2.5">5</td>
+              <td class="border border-slate-200 py-2.5">6</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="border border-slate-200 py-2.5 text-blue-600">總價 <span class="math" data-latex="\color{#3b82f6}{y}"></span> (藍)</th>
+              <td class="border border-slate-200 py-2.5 text-slate-500">30</td>
+              <td class="border border-slate-200 py-2.5 text-slate-500">60</td>
+              <td id="table-y-3" class="border border-slate-200 py-2.5 text-slate-300 font-black">?</td>
+              <td class="border border-slate-200 py-2.5 text-slate-500">120</td>
+              <td id="table-y-5" class="border border-slate-200 py-2.5 text-slate-300 font-black">?</td>
+              <td class="border border-slate-200 py-2.5 text-slate-500">180</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 雅璇的摘要卡片 -->
+      <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+        <h4 class="text-sm font-extrabold text-indigo-900 flex items-center gap-1.5 mb-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          雅璇的觀念整理
+        </h4>
+        <p class="text-xs text-indigo-950 leading-relaxed">
+          1. 自變數 <span class="text-emerald-600 font-bold">x</span> 通常代表「原因」（如：飲料瓶數）。<br>
+          2. 應變數 <span class="text-blue-600 font-bold">y</span> 通常代表「結果」（如：付出的總價）。<br>
+          3. 函數規則：<strong>「每一個 <span class="text-emerald-600 font-bold">x</span>，都只對應一個唯一的 <span class="text-blue-600 font-bold">y</span>」</strong>。
+        </p>
+      </div>
+    </section>
+
+    <!-- 右側：詠文引導逐步解題 (md:col-span-7) -->
+    <section class="md:col-span-7 space-y-6" id="steps-container">
+      
+      <!-- 詠文的固定步驟引導進度條 -->
+      <div class="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-sm overflow-x-auto no-scrollbar gap-2">
+        <div id="prog-card-1" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm whitespace-nowrap">
+          <span class="w-5 h-5 flex items-center justify-center rounded-full bg-blue-700 text-[10px] font-black">1</span>看表格
+        </div>
+        <div class="text-slate-300 text-sm font-bold">➔</div>
+        <div id="prog-card-2" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-500 border border-slate-200 whitespace-nowrap">
+          <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 text-[10px] font-black">2</span>找規律
+        </div>
+        <div class="text-slate-300 text-sm font-bold">➔</div>
+        <div id="prog-card-3" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-500 border border-slate-200 whitespace-nowrap">
+          <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 text-[10px] font-black">3</span>寫關係式
+        </div>
+        <div class="text-slate-300 text-sm font-bold">➔</div>
+        <div id="prog-card-4" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-500 border border-slate-200 whitespace-nowrap">
+          <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 text-[10px] font-black">4</span>代入求值
+        </div>
+        <div class="text-slate-300 text-sm font-bold">➔</div>
+        <div id="prog-card-5" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-500 border border-slate-200 whitespace-nowrap">
+          <span class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 text-[10px] font-black">5</span>延伸挑戰
+        </div>
+      </div>
+
+      <!-- ================= 挑戰步驟區 ================= -->
+      <div id="steps-group" class="space-y-6">
+        
+        <!-- Step 1: 看表格 -->
+        <div id="step-card-q1-1" class="step-card bg-white rounded-2xl p-5 border-l-8 border-blue-500 shadow-md">
+          <div class="flex justify-between items-center mb-3">
+            <span class="bg-blue-100 text-blue-800 text-xs font-extrabold px-2.5 py-1 rounded-full">步驟 1 / 5：看表格</span>
+            <span id="status-q1-1" class="text-xs font-bold text-slate-400">進行中...</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-2 font-medium">
+            觀察對應表，當飲料瓶數為 3 瓶和 5 瓶時，請計算對應的總價：
+          </p>
+          <div class="math-line mb-3">
+            <span class="math" data-latex="\text{當 }\color{#10b981}{x} = 3\text{ 時，}\color{#3b82f6}{y} ="></span>
+            <span class="slot slot-blue slot-q1-s1 active" data-idx="0" data-ans="90" onclick="clearSlot(1, 1, 0)">?</span>
+          </div>
+          <div class="math-line">
+            <span class="math" data-latex="\text{當 }\color{#10b981}{x} = 5\text{ 時，}\color{#3b82f6}{y} ="></span>
+            <span class="slot slot-blue slot-q1-s1" data-idx="1" data-ans="150" onclick="clearSlot(1, 1, 1)">?</span>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3" id="ctrl-q1-1">
+            <div class="flex gap-2">
+              <button onclick="fillOption('60')" class="bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">60</button>
+              <button onclick="fillOption('90')" class="bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">90</button>
+              <button onclick="fillOption('150')" class="bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">150</button>
+            </div>
+            <button onclick="checkAnswer(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-2.5 rounded-xl transition shadow-md active:scale-95">檢查答案</button>
+          </div>
+          <div id="explain-q1-1" class="hidden mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 leading-relaxed">
+            <strong>💡 精彩解析：</strong>因為每瓶飲料 30 元，當 <span class="math" data-latex="\color{#10b981}{x = 3}"></span> 時，總價 <span class="math" data-latex="\color{#3b82f6}{y = 30 \times 3 = 90}"></span> 元；當 <span class="math" data-latex="\color{#10b981}{x = 5}"></span> 時，總價 <span class="math" data-latex="\color{#3b82f6}{y = 30 \times 5 = 150}"></span> 元。左側表格已為您填入數值！
+          </div>
+        </div>
+
+        <!-- Step 2: 找規律 -->
+        <div id="step-card-q1-2" class="step-card bg-slate-100/50 rounded-2xl p-5 border-l-8 border-slate-300 opacity-40 pointer-events-none max-h-[100px] overflow-hidden">
+          <div class="flex justify-between items-center mb-3">
+            <span class="bg-slate-200 text-slate-600 text-xs font-extrabold px-2.5 py-1 rounded-full">步驟 2 / 5：找規律</span>
+            <span id="status-q1-2" class="text-xs font-bold text-slate-400">尚未解鎖</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-2 font-medium">
+            觀察這組關係：對應表中，每一個瓶數 <span class="text-emerald-600 font-bold">x</span> 對應到幾個總價 <span class="text-blue-600 font-bold">y</span>？
+          </p>
+          <div class="math-line mb-3">
+            <span class="math" data-latex="\text{每一個 }\color{#10b981}{x}"></span>
+            <span class="slot slot-q1-s2" data-idx="0" data-ans="都只" onclick="clearSlot(1, 2, 0)">?</span>
+            <span class="math" data-latex="\text{對應一個唯一的 }\color{#3b82f6}{y}"></span>
+          </div>
+          <div class="math-line">
+            <span class="math" data-latex="\text{這時我們稱 }\color{#3b82f6}{y}\text{ 是 }\color{#10b981}{x}\text{ 的 }"></span>
+            <span class="slot slot-q1-s2" data-idx="1" data-ans="函數" onclick="clearSlot(1, 2, 1)">?</span>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3" id="ctrl-q1-2">
+            <div class="flex gap-2">
+              <button onclick="fillOption('都只')" class="bg-slate-100 hover:bg-indigo-100 active:scale-95 border border-slate-300 px-5 py-2 rounded-xl text-lg font-bold transition">都只</button>
+              <button onclick="fillOption('不只')" class="bg-slate-100 hover:bg-indigo-100 active:scale-95 border border-slate-300 px-5 py-2 rounded-xl text-lg font-bold transition">不只</button>
+              <button onclick="fillOption('函數')" class="bg-slate-100 hover:bg-indigo-100 active:scale-95 border border-slate-300 px-5 py-2 rounded-xl text-lg font-bold transition">函數</button>
+            </div>
+            <button onclick="checkAnswer(2)" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-2.5 rounded-xl transition shadow-md active:scale-95">檢查答案</button>
+          </div>
+          <div id="explain-q1-2" class="hidden mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 leading-relaxed">
+            <strong>💡 精彩解析：</strong>因為每買一種瓶數 <span class="math" data-latex="\color{#10b981}{x}"></span> 只會產生一個確定的總價 <span class="math" data-latex="\color{#3b82f6}{y}"></span>（不論買幾瓶，收銀機都不可能結帳出兩種價格），即「每一個 <span class="math" data-latex="\color{#10b981}{x}"></span> <strong>都只</strong>對應一個唯一的 <span class="math" data-latex="\color{#3b82f6}{y}"></span>」，所以 <span class="math" data-latex="\color{#3b82f6}{y}"></span> 是 <span class="math" data-latex="\color{#10b981}{x}"></span> 的<strong>函數</strong>。
+          </div>
+        </div>
+
+        <!-- Step 3: 寫關係式 -->
+        <div id="step-card-q1-3" class="step-card bg-slate-100/50 rounded-2xl p-5 border-l-8 border-slate-300 opacity-40 pointer-events-none max-h-[100px] overflow-hidden">
+          <div class="flex justify-between items-center mb-3">
+            <span class="bg-slate-200 text-slate-600 text-xs font-extrabold px-2.5 py-1 rounded-full">步驟 3 / 5：寫關係式</span>
+            <span id="status-q1-3" class="text-xs font-bold text-slate-400">尚未解鎖</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-2 font-medium">
+            因為每增加 1 瓶，總價 <span class="text-blue-600 font-bold">y</span> 就增加 30 元。試著寫出對應關係式（黃框標示）：
+          </p>
+          <!-- 雅璇的黃框關係式 -->
+          <div class="math-line p-3 border-2 border-yellow-400 bg-yellow-50 rounded-xl inline-flex">
+            <span class="math text-yellow-800" data-latex="\color{#3b82f6}{y} ="></span>
+            <span class="slot slot-yellow slot-q1-s3 active" data-idx="0" data-ans="30x" onclick="clearSlot(1, 3, 0)">?</span>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3" id="ctrl-q1-3">
+            <div class="flex gap-2">
+              <button onclick="fillOption('30')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-300 text-yellow-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">30</button>
+              <button onclick="fillOption('30x')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-300 text-yellow-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">30x</button>
+              <button onclick="fillOption('x+30')" class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-300 text-yellow-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">x+30</button>
+            </div>
+            <button onclick="checkAnswer(3)" class="bg-yellow-600 hover:bg-yellow-700 text-yellow-950 font-extrabold px-6 py-2.5 rounded-xl transition shadow-md active:scale-95">檢查答案</button>
+          </div>
+          <div id="explain-q1-3" class="hidden mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 leading-relaxed">
+            <strong>💡 精彩解析：</strong>總價是瓶數的 30 倍，因此關係式為 <span class="math border-b border-yellow-400 bg-yellow-50 px-1" data-latex="\color{#3b82f6}{y} = 30\color{#10b981}{x}"></span>，可簡化表示成 <span class="math border-b border-yellow-400 bg-yellow-50 px-1" data-latex="30\color{#10b981}{x}"></span>。
+          </div>
+        </div>
+
+        <!-- Step 4: 代入求值 -->
+        <div id="step-card-q1-4" class="step-card bg-slate-100/50 rounded-2xl p-5 border-l-8 border-slate-300 opacity-40 pointer-events-none max-h-[100px] overflow-hidden">
+          <div class="flex justify-between items-center mb-3">
+            <span class="bg-slate-200 text-slate-600 text-xs font-extrabold px-2.5 py-1 rounded-full">步驟 4 / 5：代入求值</span>
+            <span id="status-q1-4" class="text-xs font-bold text-slate-400">尚未解鎖</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-2 font-medium">
+            利用求出的關係式 <span class="math" data-latex="\color{#3b82f6}{y} = 30\color{#10b981}{x}"></span> 進行數值代入：
+          </p>
+          <div class="math-line mb-3">
+            <span class="math" data-latex="\text{當 }\color{#10b981}{x} = 4\text{（4瓶）時，}\color{#3b82f6}{y} = 30 \times 4 ="></span>
+            <span class="slot slot-blue slot-q1-s4" data-idx="0" data-ans="120" onclick="clearSlot(1, 4, 0)">?</span>
+          </div>
+          <div class="math-line">
+            <span class="math" data-latex="\text{當 }\color{#3b82f6}{y} = 90\text{ 元時，代入 } 90 = 30\color{#10b981}{x} \implies \color{#10b981}{x} ="></span>
+            <span class="slot slot-green slot-q1-s4" data-idx="1" data-ans="3" onclick="clearSlot(1, 4, 1)">?</span>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3" id="ctrl-q1-4">
+            <div class="flex gap-2">
+              <button onclick="fillOption('3')" class="bg-slate-100 hover:bg-indigo-100 active:scale-95 border border-slate-300 px-5 py-2 rounded-xl text-lg font-bold transition">3</button>
+              <button onclick="fillOption('90')" class="bg-slate-100 hover:bg-indigo-100 active:scale-95 border border-slate-300 px-5 py-2 rounded-xl text-lg font-bold transition">90</button>
+              <button onclick="fillOption('120')" class="bg-slate-100 hover:bg-indigo-100 active:scale-95 border border-slate-300 px-5 py-2 rounded-xl text-lg font-bold transition">120</button>
+            </div>
+            <button onclick="checkAnswer(4)" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-6 py-2.5 rounded-xl transition shadow-md active:scale-95">檢查答案</button>
+          </div>
+          <div id="explain-q1-4" class="hidden mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 leading-relaxed">
+            <strong>💡 精彩解析：</strong>
+            - 買 4 瓶，總價 <span class="math" data-latex="\color{#3b82f6}{y} = 30 \times 4 = 120"></span> 元。<br>
+            - 總價 90 元時，列式 <span class="math" data-latex="90 = 30\color{#10b981}{x}"></span>，兩邊同除以 30，解出瓶數 <span class="math" data-latex="\color{#10b981}{x} = 3"></span> 瓶。
+          </div>
+        </div>
+
+        <!-- Step 5: 延伸挑戰 -->
+        <div id="step-card-q1-5" class="step-card bg-slate-100/50 rounded-2xl p-5 border-l-8 border-slate-300 opacity-40 pointer-events-none max-h-[100px] overflow-hidden">
+          <div class="flex justify-between items-center mb-3">
+            <span class="bg-slate-200 text-slate-600 text-xs font-extrabold px-2.5 py-1 rounded-full">步驟 5 / 5：延伸挑戰</span>
+            <span id="status-q1-5" class="text-xs font-bold text-slate-400">尚未解鎖</span>
+          </div>
+          <p class="text-sm text-slate-500 mb-2 font-medium">
+            小翊到便利商店購買每瓶 30 元的運動飲料，共花了 360 元，可以買幾瓶？
+          </p>
+          <div class="math-line mb-3 text-slate-700">
+            先列式：<span class="math" data-latex="360 = 30\color{#10b981}{x}"></span>
+          </div>
+          <div class="math-line">
+            <span class="math" data-latex="\text{解出 }\color{#10b981}{x} ="></span>
+            <span class="slot slot-green slot-q1-s5" data-idx="0" data-ans="12" onclick="clearSlot(1, 5, 0)">?</span>
+            <span class="math" data-latex="\text{瓶}"></span>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3" id="ctrl-q1-5">
+            <div class="flex gap-2">
+              <button onclick="fillOption('10')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">10</button>
+              <button onclick="fillOption('12')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">12</button>
+              <button onclick="fillOption('30')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-700 px-5 py-2 rounded-xl text-lg font-bold transition active:scale-95">30</button>
+            </div>
+            <button onclick="checkAnswer(5)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-2.5 rounded-xl transition shadow-md active:scale-95">檢查答案</button>
+          </div>
+          <div id="explain-q1-5" class="hidden mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 leading-relaxed">
+            <strong>💡 精彩解析：</strong>列式 <span class="math" data-latex="360 = 30\color{#10b981}{x}"></span>，等號兩邊同除以 30，解出瓶數 <span class="math" data-latex="\color{#10b981}{x} = 12"></span> 瓶！恭喜通過所有挑戰！
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast 提示區 -->
+  <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-3xl opacity-0 transition-all z-[200] pointer-events-none font-black text-lg shadow-2xl"></div>
+
+  <!-- 開始視窗 -->
+  <div id="start-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[200] p-4 text-center">
+    <div class="bg-white p-10 rounded-[32px] shadow-2xl max-w-sm w-full transform transition-all border border-slate-100">
+      <div class="text-7xl mb-6">⏱️</div>
+      <h3 class="text-3xl font-black text-slate-800 mb-3">函數挑戰</h3>
+      <p class="text-slate-500 mb-8 text-lg">你需要在 7 分鐘內挑戰完成 5 個步驟，理解自變數與應變數的函數對應關係！</p>
+      <input type="text" id="player-name" placeholder="輸入你的名字" class="w-full mb-6 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none text-center text-lg font-bold">
+      <button onclick="startGame()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-blue-200 text-xl">開始挑戰</button>
+    </div>
+  </div>
+
+  <!-- 結束結算視窗 -->
+  <div id="result-modal" class="fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-500">
+    <div class="bg-white rounded-[40px] p-8 md:p-12 max-w-sm w-full mx-4 shadow-2xl transform scale-90 transition-all duration-500" id="result-content">
+      <div class="text-center">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6"><span class="text-5xl">🏆</span></div>
+        <h2 class="text-3xl font-black text-slate-800 mb-2">挑戰完成！</h2>
+        <div class="grid grid-cols-2 gap-4 mb-10">
+          <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
+            <div class="text-blue-600 font-black text-3xl mb-1" id="final-score">0</div>
+            <div class="text-blue-400 font-black text-xs uppercase tracking-wider">總分數</div>
+          </div>
+          <div class="bg-red-50 p-6 rounded-3xl border-2 border-red-100">
+            <div class="text-red-600 font-black text-3xl mb-1" id="final-time">00:00</div>
+            <div class="text-red-400 font-black text-xs uppercase tracking-wider">剩餘時間</div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <button onclick="showLeaderboard()" class="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-2xl text-lg font-black shadow-md transition-all active:scale-95">查看排行榜</button>
+          <button onclick="location.reload()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-lg font-black shadow-md transition-all active:scale-95">再試一次</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 排行榜視窗 -->
+  <div id="leaderboard-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[200] hidden p-4">
+    <div class="bg-white p-8 rounded-[32px] shadow-2xl max-w-md w-full border border-slate-100">
+      <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">🏆 排行榜 (本機紀錄)</h3>
+      <div id="leaderboard-list" class="flex flex-col gap-3 mb-6 max-h-60 overflow-y-auto pr-2">
+        <!-- 動態生成 -->
+      </div>
+      <button onclick="closeLeaderboard()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition-all">關閉</button>
+    </div>
+  </div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 420; // 7 minutes
+    let timerInterval;
+    let playerName = "";
+    let completedSteps = new Set();
+    let mistakesPerStep = new Set();
+    
+    // Configs
+    const totalSteps = 5;
+    const LEADERBOARD_KEY = 'math_leaderboard_8s2_2_1_01';
+
+    window.onload = () => {
+      // Render KaTeX for elements with data-latex
+      document.querySelectorAll('.math').forEach(el => {
+        const latex = el.dataset.latex;
+        if (latex) {
+          katex.render(latex, el, { throwOnError: false });
+        }
+      });
+      // Render general formulas
+      renderMathInElement(document.body, { delimiters: [{ left: '$', right: '$', display: false }] });
+      updateActiveSlot();
+    };
+
+    function startGame() {
+      const nameInput = document.getElementById('player-name').value.trim();
+      if (!nameInput) {
+        showToast("請輸入名字以開始挑戰！ 🔍");
+        return;
+      }
+      playerName = nameInput;
+      document.getElementById('start-modal').classList.add('hidden');
+
+      timeLeft = 420;
+      startTimer();
+      updateActiveSlot();
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endGame(false);
+          return;
+        }
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        const s = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById('timer-display').innerText = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function getActiveStepElement() {
+      const stepsGroup = document.getElementById('steps-group');
+      return stepsGroup.querySelector('.step-card:not(.completed)');
+    }
+
+    function updateActiveSlot() {
+      // Remove active from all slots
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+      
+      const activeStep = getActiveStepElement();
+      if (activeStep) {
+        const slots = activeStep.querySelectorAll('.slot');
+        const emptySlot = Array.from(slots).find(s => s.innerText === "?");
+        if (emptySlot) {
+          emptySlot.classList.add('active');
+        }
+      }
+    }
+
+    function fillOption(val) {
+      const activeStep = getActiveStepElement();
+      if (!activeStep) return;
+      
+      const slots = activeStep.querySelectorAll('.slot');
+      const emptySlot = Array.from(slots).find(s => s.innerText === "?" || s.classList.contains('active'));
+      if (emptySlot) {
+        emptySlot.innerText = val;
+        emptySlot.classList.remove('active');
+        emptySlot.classList.add('filled');
+        updateActiveSlot();
+      }
+    }
+
+    function clearSlot(qIdx, stepIdx, slotIdx) {
+      const stepEl = document.getElementById(`step-card-q${qIdx}-${stepIdx}`);
+      if (stepEl.classList.contains('completed')) return;
+      
+      const slot = stepEl.querySelector(`.slot[data-idx="${slotIdx}"]`);
+      if (slot) {
+        slot.innerText = "?";
+        slot.classList.remove('filled', 'wrong');
+        updateActiveSlot();
+      }
+    }
+
+    function checkAnswer(stepIdx) {
+      const stepCard = document.getElementById(`step-card-q1-${stepIdx}`);
+      const slots = stepCard.querySelectorAll('.slot');
+      
+      // Check if all slots in this step are filled
+      const hasUnfilled = Array.from(slots).some(s => s.innerText === "?");
+      if (hasUnfilled) {
+        showToast("請先填入所有空格！ 🔍");
+        return;
+      }
+      
+      // Check correctness
+      let isCorrect = true;
+      slots.forEach(s => {
+        const correctAns = s.dataset.ans.trim();
+        const filledAns = s.innerText.trim();
+        if (correctAns !== filledAns) {
+          isCorrect = false;
+          s.classList.add('wrong');
+          s.classList.remove('filled');
+        } else {
+          s.classList.remove('wrong');
+        }
+      });
+      
+      const stepKey = `q1-${stepIdx}`;
+      if (isCorrect) {
+        if (!completedSteps.has(stepKey)) {
+          if (!mistakesPerStep.has(stepKey)) {
+            score++;
+            document.getElementById('score-display').innerText = `${score} / ${totalSteps}`;
+          }
+          completedSteps.add(stepKey);
+        }
+        
+        // Update tab badge
+        const badge = document.getElementById('tab-badge-1');
+        badge.innerText = `${completedSteps.size}/${totalSteps}`;
+        if (completedSteps.size === totalSteps) {
+          badge.classList.remove('bg-blue-700', 'text-blue-100');
+          badge.classList.add('bg-emerald-600', 'text-emerald-50');
+        }
+        
+        slots.forEach(s => {
+          s.classList.remove('active', 'filled', 'wrong');
+          s.classList.add('correct');
+        });
+        
+        stepCard.classList.remove('border-blue-500', 'border-emerald-500', 'border-yellow-500');
+        stepCard.classList.add('completed', 'border-emerald-500', 'bg-emerald-50/20');
+        
+        const statusSpan = document.getElementById(`status-q1-${stepIdx}`);
+        statusSpan.innerText = "✔ 完成";
+        statusSpan.classList.remove('text-slate-400');
+        statusSpan.classList.add('text-emerald-600', 'font-extrabold');
+        
+        const ctrlArea = document.getElementById(`ctrl-q1-${stepIdx}`);
+        if (ctrlArea) ctrlArea.classList.add('hidden');
+        
+        const explainArea = document.getElementById(`explain-q1-${stepIdx}`);
+        if (explainArea) explainArea.classList.remove('hidden');
+
+        // Extra UI action for Step 1: Reveal values in the table!
+        if (stepIdx === 1) {
+          const t3 = document.getElementById('table-y-3');
+          t3.innerText = "90";
+          t3.classList.remove('text-slate-300');
+          t3.classList.add('text-blue-600');
+          
+          const t5 = document.getElementById('table-y-5');
+          t5.innerText = "150";
+          t5.classList.remove('text-slate-300');
+          t5.classList.add('text-blue-600');
+        }
+
+        // Scroll & Unlock next step
+        const nextStepIdx = stepIdx + 1;
+        updateStepCardProgress(nextStepIdx);
+        
+        const nextStepCard = document.getElementById(`step-card-q1-${nextStepIdx}`);
+        if (nextStepCard) {
+          nextStepCard.classList.remove('opacity-40', 'pointer-events-none', 'bg-slate-100/50');
+          
+          // Apply step border style
+          if (nextStepIdx === 3) {
+            nextStepCard.classList.add('bg-white', 'shadow-md', 'border-yellow-500');
+          } else if (nextStepIdx === 5) {
+            nextStepCard.classList.add('bg-white', 'shadow-md', 'border-emerald-500');
+          } else {
+            nextStepCard.classList.add('bg-white', 'shadow-md', 'border-blue-500');
+          }
+          nextStepCard.style.maxHeight = '1000px';
+          
+          const nextStatusSpan = document.getElementById(`status-q1-${nextStepIdx}`);
+          nextStatusSpan.innerText = "進行中...";
+          
+          const nextSlot = nextStepCard.querySelector('.slot');
+          if (nextSlot) nextSlot.classList.add('active');
+          
+          setTimeout(() => {
+            nextStepCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            updateActiveSlot();
+          }, 300);
+        } else {
+          // No more steps
+          endGame(true);
+        }
+        
+      } else {
+        mistakesPerStep.add(stepKey);
+        showToast("答案不對喔，再觀察對應關係算算看！ 💡");
+        setTimeout(() => {
+          slots.forEach(s => {
+            if (s.classList.contains('wrong')) {
+              s.innerText = "?";
+              s.classList.remove('wrong');
+            }
+          });
+          updateActiveSlot();
+        }, 1000);
+      }
+    }
+
+    function updateStepCardProgress(stepIdx) {
+      for (let i = 1; i <= 5; i++) {
+        const card = document.getElementById(`prog-card-${i}`);
+        if (!card) continue;
+        const badge = card.querySelector('span');
+        if (i < stepIdx) {
+          // Completed step
+          card.setAttribute('class', 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap animate-bounce');
+          badge.setAttribute('class', 'w-5 h-5 flex items-center justify-center rounded-full bg-emerald-600 text-emerald-50 text-[10px] font-black');
+          badge.innerText = '✔';
+        } else if (i === stepIdx) {
+          // Active step
+          card.setAttribute('class', 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm whitespace-nowrap');
+          badge.setAttribute('class', 'w-5 h-5 flex items-center justify-center rounded-full bg-blue-700 text-white text-[10px] font-black');
+          badge.innerText = i;
+        } else {
+          // Future step
+          card.setAttribute('class', 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-500 border border-slate-200 whitespace-nowrap');
+          badge.setAttribute('class', 'w-5 h-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 text-[10px] font-black');
+          badge.innerText = i;
+        }
+      }
+    }
+
+    function endGame(isAllCompleted) {
+      clearInterval(timerInterval);
+      
+      const completedProblemsCount = completedSteps.has('q1-5') ? 1 : 0;
+      const timeUsed = 420 - timeLeft;
+      const finalScore = completedProblemsCount * 1000 + timeLeft;
+      
+      let board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+      board.push({
+        name: playerName || "訪客",
+        score: finalScore,
+        timeUsed: timeUsed,
+        completed: completedSteps.size,
+        date: new Date().toLocaleDateString()
+      });
+      board.sort((a, b) => b.score - a.score);
+      board = board.slice(0, 10);
+      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+
+      if (window.spedProgress) {
+        window.spedProgress.recordExercise(score, 5, "函數概念挑戰");
+      }
+
+      document.getElementById('final-score').innerText = finalScore;
+      const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const s = (timeLeft % 60).toString().padStart(2, '0');
+      document.getElementById('final-time').innerText = `${m}:${s}`;
+      
+      document.getElementById('result-modal').classList.remove('opacity-0', 'pointer-events-none');
+      const resultCard = document.getElementById('result-content');
+      resultCard.classList.remove('scale-90');
+      resultCard.classList.add('scale-100');
+    }
+
+    function showLeaderboard() {
+      const board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = board.map((entry, i) => `
+        <div class="flex justify-between items-center p-3 ${i === 0 ? 'bg-yellow-50 border-yellow-300' : 'bg-slate-50 border-slate-100'} border-2 rounded-xl">
+          <div class="flex items-center gap-3">
+            <span class="font-black text-xl w-6 text-center ${i === 0 ? 'text-yellow-500' : 'text-slate-400'}">${i + 1}</span>
+            <div>
+              <div class="font-bold text-slate-700">${entry.name}</div>
+              <div class="text-xs text-slate-400">${entry.date}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-black text-blue-600">${entry.score} 分</div>
+            <div class="text-xs text-slate-500">完成 ${entry.completed} 步 / 耗時 ${entry.timeUsed} 秒</div>
+          </div>
+        </div>
+      `).join('') || '<div class="text-center text-slate-400 py-4">目前尚無紀錄！</div>';
+
+      document.getElementById('leaderboard-modal').classList.remove('hidden');
+    }
+
+    function closeLeaderboard() {
+      document.getElementById('leaderboard-modal').classList.add('hidden');
+    }
+
+    function showToast(msg, isSuccess = false) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.backgroundColor = isSuccess ? "#059669" : "#1e293b";
+      toast.style.opacity = 1;
+      setTimeout(() => {
+        toast.style.opacity = 0;
+      }, 2000);
+    }
+  </script>
+  <script src="../progress.js"></script>
+</body>
+</html>
