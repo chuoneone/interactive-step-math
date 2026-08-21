@@ -1,6 +1,6 @@
-# 💻 互動式數學 (Interactive Math) Skill
+# 💻 互動式步驟數學 (Interactive Step Math) Skill
 
-> **簡介與說明**：專為特教老師、數學教材設計師與學生打造的互動式數學解題工具生成器。提供「選項點擊填入式」與「鍵盤輸入式」雙模式，自動產出具備逐步解鎖 (Step-by-step unlock)、高品質 KaTeX 公式渲染、Tailwind 響應式佈局、答錯防呆訂正與 Web Audio 音效提示的單一 HTML 互動教學網頁。
+> **簡介與說明**：專為特教老師、數學教材設計師與學生打造的步驟化互動解題工具生成器。提供「選項點擊填入式」與「鍵盤輸入式」雙模式，自動產出具備逐步解鎖 (Step-by-step unlock)、高品質 KaTeX 公式渲染、Tailwind 響應式佈局、答錯防呆訂正與 Web Audio 音效提示的單一 HTML 互動教學網頁。
 
 ---
 
