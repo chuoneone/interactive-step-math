@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>互動式數學：同類根式加法運算 (鍵盤輸入版)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+    }
+    .math-line {
+      font-size: 28px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      line-height: 1.8;
+      margin: 12px 0;
+    }
+    .math, .math-display {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+    }
+    .katex {
+      font-size: 1.15em;
+    }
+    /* 輸入框樣式 */
+    .input-slot {
+      width: 64px;
+      height: 52px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e40af;
+      background-color: #eff6ff;
+      border: 3px solid #93c5fd;
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+    }
+    .input-slot:focus {
+      background-color: #dbeafe;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+    }
+    .input-slot.correct {
+      background-color: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #166534 !important;
+    }
+    .input-slot.wrong {
+      background-color: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .step-card {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
+
+  <!-- 頂部導覽與狀態列 -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">特教數學</span>
+        <h1 class="text-lg md:text-xl font-bold text-slate-800">同類根式加法計算</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl flex items-center space-x-2">
+          <span class="text-amber-700 text-sm font-semibold">目前得分</span>
+          <span id="score-badge" class="text-lg font-black text-amber-900">0 分</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要內容區：桌機兩欄 / 手機直式 -->
+  <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+      <!-- 左側：題目固定區塊 (md:sticky) -->
+      <section class="md:col-span-5">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm sticky top-20">
+          <div class="flex items-center justify-between mb-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold bg-blue-100 text-blue-700">
+              第 1 題
+            </span>
+            <span class="text-xs text-slate-400 font-medium">鍵盤輸入版</span>
+          </div>
+
+          <div class="text-2xl font-bold text-slate-800 mb-5 leading-relaxed">
+            計算 <mark class="bg-yellow-200 text-yellow-900 px-2 py-0.5 rounded-lg font-bold"><span class="math" data-latex="3\sqrt{2} + 5\sqrt{2}"></span></mark> 的值。
+          </div>
+
+          <!-- 解題觀念提示卡片 -->
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-2">
+            <div class="flex items-center space-x-2 text-blue-800 font-bold text-base">
+              <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              </svg>
+              <span>解題小撇步</span>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              兩個算式都有共同的根式 <span class="math" data-latex="\sqrt{2}"></span>，可以運用分配律將係數提出相加：
+            </p>
+            <div class="text-center font-bold text-blue-900 py-1 bg-white rounded-lg border border-blue-100">
+              <span class="math" data-latex="a\sqrt{c} + b\sqrt{c} = (a + b)\sqrt{c}"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右側：逐步解鎖步驟區 -->
+      <section class="md:col-span-7 space-y-6">
+
+        <!-- Step 1: 提出共同根式 -->
+        <div id="step-1" class="step-card bg-white border-2 border-blue-400 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-black">1</span>
+              <h2 class="text-lg font-bold text-slate-800">步驟一：提出共同根式</h2>
+            </div>
+            <span id="step-1-badge" class="hidden px-2.5 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-md">✔ 完成</span>
+          </div>
+
+          <p class="text-slate-600 font-medium mb-4">
+            請將 <span class="math" data-latex="\sqrt{2}"></span> 前面的係數填入括號中：
+          </p>
+
+          <!-- 算式與輸入框 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-center">
+            <div class="math-line">
+              <span class="math" data-latex="="></span>
+              <span class="math" data-latex="("></span>
+              <input type="text" id="s1-in1" class="input-slot" data-expected="3" maxlength="3" placeholder="" inputmode="numeric">
+              <span class="math" data-latex="+"></span>
+              <input type="text" id="s1-in2" class="input-slot" data-expected="5" maxlength="3" placeholder="" inputmode="numeric">
+              <span class="math" data-latex=")\sqrt{2}"></span>
+            </div>
+          </div>
+
+          <!-- 提示訊息與操作按鈕 -->
+          <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div id="s1-msg" class="text-sm font-bold min-h-[24px]"></div>
+            <button id="s1-btn" onclick="checkStep(1)" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold rounded-xl transition duration-150 shadow-md">
+              檢查答案
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: 計算括號數值 (初始鎖定) -->
+        <div id="step-2" class="step-card bg-white border border-slate-200 opacity-40 pointer-events-none rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="w-7 h-7 bg-slate-300 text-slate-600 rounded-full flex items-center justify-center text-sm font-black">2</span>
+              <h2 class="text-lg font-bold text-slate-800">步驟二：計算括號內的加法</h2>
+            </div>
+            <span id="step-2-badge" class="hidden px-2.5 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-md">✔ 完成</span>
+          </div>
+
+          <p class="text-slate-600 font-medium mb-4">
+            計算 <span class="math" data-latex="3 + 5"></span> 的值，填入最終答案：
+          </p>
+
+          <!-- 算式與輸入框 -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-center">
+            <div class="math-line">
+              <span class="math" data-latex="="></span>
+              <span class="math" data-latex="("></span>
+              <input type="text" id="s2-in1" class="input-slot" data-expected="8" maxlength="3" placeholder="" inputmode="numeric">
+              <span class="math" data-latex=")\sqrt{2}"></span>
+            </div>
+          </div>
+
+          <!-- 提示訊息與操作按鈕 -->
+          <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div id="s2-msg" class="text-sm font-bold min-h-[24px]"></div>
+            <button id="s2-btn" onclick="checkStep(2)" class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold rounded-xl transition duration-150 shadow-md">
+              檢查答案
+            </button>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- 完成結算 Modal -->
+  <div id="finish-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center border border-slate-100 transform transition-all animate-bounce-short">
+      <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-black text-slate-800 mb-2">太棒了！全部答對！</h3>
+      <p class="text-slate-500 mb-6 font-medium">你已經成功掌握同類根式的加法運算了！</p>
+      
+      <div class="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-200 flex justify-around">
+        <div>
+          <div class="text-xs text-slate-400 font-bold uppercase">總得分</div>
+          <div id="final-score" class="text-3xl font-black text-blue-600 mt-1">2 / 2</div>
+        </div>
+      </div>
+
+      <div class="flex space-x-3">
+        <button onclick="resetExercise()" class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition shadow-md active:scale-95">
+          再做一次
+        </button>
+        <button onclick="closeModal()" class="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition active:scale-95">
+          關閉視窗
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 頁尾 -->
+  <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
+    互動式特教數學教材 · 設計者：朱一 (pppchin7@gmail.com)
+  </footer>
+
+  <!-- JavaScript 邏輯 -->
+  <script>
+    // Web Audio API 提示音音效生成
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playSound(isCorrect) {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (isCorrect) {
+          // 清脆答對雙音階 (E5 -> G5)
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.35);
+        } else {
+          // 低音提示 (C3)
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(130.81, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.25);
+        }
+      } catch (e) {
+        console.warn('Audio Context not available', e);
+      }
+    }
+
+    // 狀態管理
+    let score = 0;
+    const stepScores = { 1: false, 2: false }; // 是否已得過分
+    const stepFailed = { 1: false, 2: false }; // 是否曾答錯過
+
+    // KaTeX 自動渲染
+    function renderMath() {
+      document.querySelectorAll('.math').forEach(el => {
+        if (!el.dataset.rendered && window.katex) {
+          katex.render(el.dataset.latex, el, {
+            throwOnError: false,
+            displayMode: false
+          });
+          el.dataset.rendered = "true";
+        }
+      });
+      document.querySelectorAll('.math-display').forEach(el => {
+        if (!el.dataset.rendered && window.katex) {
+          katex.render(el.dataset.latex, el, {
+            throwOnError: false,
+            displayMode: true
+          });
+          el.dataset.rendered = "true";
+        }
+      });
+    }
+
+    // 初始化與事件監聽
+    window.addEventListener('DOMContentLoaded', () => {
+      renderMath();
+      setupInputs();
+      document.getElementById('s1-in1').focus();
+    });
+
+    function setupInputs() {
+      const inputs = document.querySelectorAll('.input-slot');
+      inputs.forEach((input, index) => {
+        // 輸入時清除錯誤樣式
+        input.addEventListener('input', () => {
+          input.classList.remove('wrong');
+        });
+
+        // 支援 Enter 跳下一格或送出
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const stepNum = input.id.startsWith('s1') ? 1 : 2;
+            const currentStepInputs = Array.from(document.querySelectorAll(`#step-${stepNum} .input-slot`));
+            const curIdx = currentStepInputs.indexOf(input);
+
+            if (curIdx < currentStepInputs.length - 1) {
+              currentStepInputs[curIdx + 1].focus();
+            } else {
+              checkStep(stepNum);
+            }
+          }
+        });
+      });
+    }
+
+    // 檢查步驟
+    function checkStep(stepNum) {
+      const stepEl = document.getElementById(`step-${stepNum}`);
+      const inputs = stepEl.querySelectorAll('.input-slot');
+      const msgEl = document.getElementById(`s${stepNum}-msg`);
+      const btnEl = document.getElementById(`s${stepNum}-btn`);
+      const badgeEl = document.getElementById(`step-${stepNum}-badge`);
+
+      let allFilled = true;
+      let allCorrect = true;
+
+      inputs.forEach(input => {
+        const val = input.value.trim();
+        const expected = input.dataset.expected.trim();
+
+        if (val === '') {
+          allFilled = false;
+        } else if (val !== expected) {
+          allCorrect = false;
+          input.classList.add('wrong');
+        } else {
+          input.classList.remove('wrong');
+        }
+      });
+
+      if (!allFilled) {
+        msgEl.className = "text-sm font-bold text-amber-600";
+        msgEl.textContent = "請填滿所有空格喔！";
+        playSound(false);
+        return;
+      }
+
+      if (!allCorrect) {
+        stepFailed[stepNum] = true; // 標記曾答錯，此步無法給分
+        msgEl.className = "text-sm font-bold text-red-500";
+        msgEl.textContent = "再想想看喔，檢查一下算式！";
+        playSound(false);
+        return;
+      }
+
+      // 答對處理
+      playSound(true);
+      msgEl.className = "text-sm font-bold text-green-600";
+      msgEl.textContent = "答對了！太棒了！";
+      badgeEl.classList.remove('hidden');
+
+      inputs.forEach(input => {
+        input.classList.add('correct');
+        input.readOnly = true;
+      });
+
+      btnEl.classList.add('hidden');
+
+      // 計分規則：第一次就答對才給分，同一步驟不重複計分
+      if (!stepScores[stepNum] && !stepFailed[stepNum]) {
+        score += 1;
+        stepScores[stepNum] = true;
+      }
+      document.getElementById('score-badge').textContent = `${score} 分`;
+
+      // 步驟流轉
+      if (stepNum === 1) {
+        unlockStep2();
+      } else if (stepNum === 2) {
+        showFinishModal();
+      }
+    }
+
+    function unlockStep2() {
+      const step2 = document.getElementById('step-2');
+      step2.classList.remove('opacity-40', 'pointer-events-none');
+      step2.classList.add('border-blue-400', 'border-2');
+      const badgeNumber = step2.querySelector('.w-7');
+      if (badgeNumber) {
+        badgeNumber.classList.remove('bg-slate-300', 'text-slate-600');
+        badgeNumber.classList.add('bg-blue-600', 'text-white');
+      }
+      
+      step2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        document.getElementById('s2-in1').focus();
+      }, 300);
+    }
+
+    function showFinishModal() {
+      document.getElementById('final-score').textContent = `${score} / 2 分`;
+      const modal = document.getElementById('finish-modal');
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('finish-modal').classList.add('hidden');
+    }
+
+    function resetExercise() {
+      score = 0;
+      stepScores[1] = false;
+      stepScores[2] = false;
+      stepFailed[1] = false;
+      stepFailed[2] = false;
+
+      document.getElementById('score-badge').textContent = `0 分`;
+
+      // 重置 Step 1
+      const s1Inputs = document.querySelectorAll('#step-1 .input-slot');
+      s1Inputs.forEach(inEl => {
+        inEl.value = '';
+        inEl.readOnly = false;
+        inEl.className = 'input-slot';
+      });
+      document.getElementById('s1-msg').textContent = '';
+      document.getElementById('s1-btn').classList.remove('hidden');
+      document.getElementById('step-1-badge').classList.add('hidden');
+
+      // 重置 Step 2
+      const step2 = document.getElementById('step-2');
+      step2.className = 'step-card bg-white border border-slate-200 opacity-40 pointer-events-none rounded-2xl p-6 shadow-sm';
+      const s2Inputs = document.querySelectorAll('#step-2 .input-slot');
+      s2Inputs.forEach(inEl => {
+        inEl.value = '';
+        inEl.readOnly = false;
+        inEl.className = 'input-slot';
+      });
+      document.getElementById('s2-msg').textContent = '';
+      document.getElementById('s2-btn').classList.remove('hidden');
+      document.getElementById('step-2-badge').classList.add('hidden');
+      const badgeNumber = step2.querySelector('.w-7');
+      if (badgeNumber) {
+        badgeNumber.className = 'w-7 h-7 bg-slate-300 text-slate-600 rounded-full flex items-center justify-center text-sm font-black';
+      }
+
+      closeModal();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        document.getElementById('s1-in1').focus();
+      }, 300);
+    }
+  </script>
+</body>
+</html>
